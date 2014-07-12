@@ -1,5 +1,3 @@
-__author__ = 'Michael'
-
 import cmaker
 
 def test_configure():

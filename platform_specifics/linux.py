@@ -1,5 +1,3 @@
-__author__ = 'Michael'
-
 import abstract
 
 class LinuxPlatform(abstract.CMakePlatform):

@@ -1,5 +1,3 @@
-__author__ = 'Michael'
-
 import os
 import subprocess
 
@@ -30,14 +28,14 @@ class CMaker(object):
         if return_status != 0:
             raise RuntimeError("Could not successfully configure your project.  Please see CMake's output for more information.")
 
-    def make(self):
+    def make(self, config="Release"):
         """
         Calls the system-specific make program to compile code
         """
         if not os.path.exists("cmake_build"):
             raise RuntimeError("CMake build folder (cmake_build) does not exist.  Did you forget to run configure before make?")
         os.chdir("cmake_build")
-        return_status = subprocess.call("cmake --build ./ --target install --config Release")
+        return_status = subprocess.call("cmake --build ./ --target install --config {:s}".format(config))
         os.chdir("..")
         return return_status
 

@@ -1,5 +1,3 @@
-__author__ = 'Michael'
-
 import sys
 import platform
 
