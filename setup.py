@@ -29,7 +29,7 @@ setup(
     long_description=readme + '\n\n' + history,
     author='PyCMake team',
     author_email='msarahan@gmail.com',
-    url='https://github.com/msarahan/PyCMake',
+    url='https://github.com/PyCMake/PyCMake',
     packages=[
         'PyCMake',
     ],
