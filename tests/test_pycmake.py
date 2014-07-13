@@ -1,16 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""
-test_PyCMake
+"""test_pycmake
 ----------------------------------
 
-Tests for `PyCMake` module.
+Tests for `pycmake` module.
 """
 
 import unittest
 
-from PyCMake import PyCMake
+from pycmake import pycmake
 
 
 class TestPycmake(unittest.TestCase):

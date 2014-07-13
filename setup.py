@@ -4,7 +4,6 @@
 import os
 import sys
 
-
 try:
     from setuptools import setup
 except ImportError:
@@ -14,13 +13,11 @@ except ImportError:
 readme = open('README.rst').read()
 history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 
-requirements = [
-    # TODO: put package requirements here
-]
+# TODO: put package requirements here
+requirements = []
 
-test_requirements = [
-    # TODO: put package test requirements here
-]
+# TODO: put package test requirements here
+test_requirements = []
 
 setup(
     name='PyCMake',
@@ -28,13 +25,11 @@ setup(
     description='Simplify building Python extensions with CMake',
     long_description=readme + '\n\n' + history,
     author='PyCMake team',
-    author_email='msarahan@gmail.com',
+    author_email='pycmake@googlegroups.com',
     url='https://github.com/PyCMake/PyCMake',
-    packages=[
-        'PyCMake',
-    ],
-    package_dir={'PyCMake':
-                 'PyCMake'},
+    packages=['pycmake', 'pycmake.platform_specifics'],
+    package_dir={'pycmake': 'pycmake', 
+                 'pycmake.platform_specifics': 'pycmake/platform_specifics'},
     include_package_data=True,
     install_requires=requirements,
     license="MIT",
@@ -51,7 +46,7 @@ setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
-    ],
+        ],
     test_suite='tests',
     tests_require=test_requirements
-)
+    )
