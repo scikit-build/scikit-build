@@ -20,9 +20,8 @@ class CMakePlatform(object):
     def cleanup_test():
         shutil.rmtree('cmake_test_compile')
 
-    def get_best_generator(self, generator=None, languages=["CXX", "C"]):
-        """
-        Loop over generators to find one that works
+    def get_best_generator(self, generator=None, languages=("CXX", "C")):
+        """Loop over generators to find one that works.
 
         Languages is a list of all the languages you'll need for your project.
         """
