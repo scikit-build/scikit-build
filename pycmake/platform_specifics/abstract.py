@@ -2,56 +2,73 @@ import os
 import shutil
 import subprocess
 
+test_folder = "cmake_test_compile"
+list_file = "CMakeLists.txt"
+cache_file = "CMakeCache.txt"
+
 class CMakePlatform(object):
     def __init__(self):
-        self.default_generators = list()
+	self.default_generators = list()
 
     @staticmethod
     def write_test_cmakelist(languages):
-        if not os.path.exists("cmake_test_compile"):
-            os.makedirs("cmake_test_compile")
-        with open("cmake_test_compile/CMakeLists.txt", "w") as f:
-            f.write("cmake_minimum_required(VERSION 2.8)\n")
-            f.write("PROJECT(compiler_test NONE)\n")
-            for language in languages:
-                f.write("ENABLE_LANGUAGE({:s})\n".format(language))
+	if not os.path.exists(test_folder):
+	    os.makedirs(test_folder)
+	with open("{:s}/{:s}".format(test_folder, list_file), "w") as f:
+	    f.write("cmake_minimum_required(VERSION 2.8)\n")
+	    f.write("PROJECT(compiler_test NONE)\n")
+	    for language in languages:
+		f.write("ENABLE_LANGUAGE({:s})\n".format(language))
 
     @staticmethod
     def cleanup_test():
-        shutil.rmtree('cmake_test_compile')
+        if os.path.exists(test_folder):
+	    shutil.rmtree(test_folder)
 
     def get_best_generator(self, generator=None, languages=("CXX", "C")):
-        """Loop over generators to find one that works.
+	"""Loop over generators to find one that works.
 
-        Languages is a list of all the languages you'll need for your project.
-        """
-        if generator is not None:
-            generators = [generator, ]
-        else:
-            generators = self.default_generators
+	Languages is a list of all the languages you'll need for your project.
+	"""
+	if generator is not None:
+	    generators = [generator, ]
+	else:
+	    generators = self.default_generators
 
-        self.write_test_cmakelist(languages)
+	self.write_test_cmakelist(languages)
 
-        # back up the current path
-        backup_path = os.getcwd()
-        # cd into the cmake_test_compile folder as working dir (rmtree this later for cleanliness)
-        # TODO: make this more robust in terms of checking where we are, if the folder exists, etc.
-        os.chdir("cmake_test_compile")
+	# cd into the cmake_test_compile folder as working dir (rmtree this later for cleanliness)
+	# TODO: make this more robust in terms of checking where we are, if the folder exists, etc.
+	os.chdir(test_folder)
+	print os.getcwd()
+	os.makedirs("build")
+	os.chdir("build")
+	print os.listdir(".")
+	print os.listdir("..")
 
-        # working generator is the first generator we find that works.
-        working_generator = None
-        for generator in generators:
-            # clear the cache for each attempted generator type
-            if os.path.exists("CMakeCache.txt"):
-                os.remove("CMakeCache.txt")
-            # call cmake to see if the compiler specified by this generator works for the specified languages
-            status = subprocess.call('cmake ./ -G "{:s}"'.format(generator))
-            # cmake succeeded, this generator should work
-            if status == 0:
-                # we have a working generator, don't bother looking for more
-                working_generator = generator
-                break
+	# working generator is the first generator we find that works.
+	working_generator = None
+	
+	status=-1
+	
+	for generator in generators:
+	    # clear the cache for each attempted generator type
+	    if os.path.exists(cache_file):
+		os.remove(cache_file)
+	    try:
+	        # call cmake to see if the compiler specified by this generator works for the specified languages
+	        cmake_execution_string = 'cmake ../ -G "{:s}"'.format(generator)
+	        print(cmake_execution_string)
+	        status = subprocess.call(cmake_execution_string)
+	    except OSError as e:
+	        # ignore errors from the OS - just don't report success for this generator.
+	        print(e)
+	    # cmake succeeded, this generator should work
+	    if status == 0:
+		# we have a working generator, don't bother looking for more
+		working_generator = generator
+		break
 
-        os.chdir(backup_path)
-        return working_generator
+	os.chdir("../..")
+	return working_generator
 

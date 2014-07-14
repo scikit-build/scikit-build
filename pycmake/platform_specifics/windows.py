@@ -18,15 +18,11 @@ class WindowsPlatform(abstract.CMakePlatform):
         else:
             raise RuntimeError("Only Python 2 and 3 are supported - please add support in platform_specific PyCMake folder")
 
-        # Python is Win32, build a Win32 module
+        # Python is Win64, build a Win64 module
         if platform.architecture() == "x64":
             vs_base += " Win64"
         # only VS 11 and above support ARM, but include it here in hopes of making future work easier.
         elif platform.architecture() == "ARM":
             vs_base += " ARM"
+        # we're implicitly doing nothing for 32-bit builds.  Their generator string IDs seem to be just the vs_base.
         self.default_generators.append(vs_base)
-
-
-if __name__ == "__main__":
-    plat = WindowsPlatform()
-    discoved_platform =  plat.get_best_generator()

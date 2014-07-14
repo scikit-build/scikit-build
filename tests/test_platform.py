@@ -26,23 +26,27 @@ def test_write_compiler_test_file():
     platform.cleanup_test()
 
 def test_cxx_compiler():
-    platform.write_test_cmakelist(["CXX", "C"])
+    generator = platform.get_best_generator(languages=["CXX", "C"])
     # TODO: this isn't a true unit test.  It depends on the test CMakeLists.txt file having been written correctly.
     # with the known test file present, this tries to generate a makefile (or solution, or whatever).
     # This test verifies that a working compiler is present on the system, but doesn't actually compile anything.
-    generator = platform.get_best_generator()
-    assert(generator is not None)
-    platform.cleanup_test()
+    try:
+        assert(generator is not None)
+    except:
+        platform.cleanup_test()
+        raise
 
 
 def test_fortran_compiler():
-    platform.write_test_cmakelist(["Fortran"])
+    generator = platform.get_best_generator(languages=["Fortran"])
     # TODO: this isn't a true unit test.  It depends on the test CMakeLists.txt file having been written correctly.
     # with the known test file present, this tries to generate a makefile (or solution, or whatever).
     # This test verifies that a working compiler is present on the system, but doesn't actually compile anything.
-    generator = platform.get_best_generator()
-    assert(generator is not None)
-    platform.cleanup_test()
+    try:
+        assert(generator is not None)
+    except:
+        platform.cleanup_test()
+        raise
 
 
 def test_generator_cleanup():
