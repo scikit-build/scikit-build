@@ -1,8 +1,9 @@
-import linux
-import osx
-import windows
+from pycmake.platform_specifics import linux
+from pycmake.platform_specifics import osx
+from pycmake.platform_specifics import windows
 
 import platform
+
 
 def get_platform():
     this_platform = platform.system()
@@ -13,4 +14,5 @@ def get_platform():
     elif this_platform == "OSX":
         return osx.OSXPlatform()
     else:
-        raise RuntimeError("Unsupported platform: {:s}.  Please contact the PyCMake team.".format(this_platform))
+        raise RuntimeError(
+            "Unsupported platform: {:s}.  Please contact the PyCMake team.".format(this_platform))

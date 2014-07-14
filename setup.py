@@ -17,7 +17,7 @@ history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 requirements = []
 
 # TODO: put package test requirements here
-test_requirements = []
+test_requirements = ["nose", ]
 
 setup(
     name='PyCMake',
@@ -28,7 +28,7 @@ setup(
     author_email='pycmake@googlegroups.com',
     url='https://github.com/PyCMake/PyCMake',
     packages=['pycmake', 'pycmake.platform_specifics'],
-    package_dir={'pycmake': 'pycmake', 
+    package_dir={'pycmake': 'pycmake',
                  'pycmake.platform_specifics': 'pycmake/platform_specifics'},
     include_package_data=True,
     install_requires=requirements,
@@ -41,12 +41,11 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
         "Programming Language :: Python :: 2",
-        'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
-        ],
+    ],
     test_suite='tests',
     tests_require=test_requirements
-    )
+)

@@ -2,12 +2,4 @@
 Credits
 =======
 
-Development Lead
-----------------
-
-* PyCMake team <msarahan@gmail.com>
-
-Contributors
-------------
-
-None yet. Why not be the first?
+Please see the GitHub project page at https://github.com/PyCMake/PyCMake/graphs/contributors
