@@ -25,6 +25,12 @@ class CMakePlatform(object):
         if os.path.exists(test_folder):
 	    shutil.rmtree(test_folder)
 
+    def get_cmake_exe_path(self):
+        """Override this method with additional logic where necessary if CMake is not on PATH.
+        """
+        return "cmake"
+
+    # TODO: this method name is not great.  Does anyone have a better idea for renaming it?
     def get_best_generator(self, generator=None, languages=("CXX", "C")):
 	"""Loop over generators to find one that works.
 
@@ -34,22 +40,23 @@ class CMakePlatform(object):
 	    generators = [generator, ]
 	else:
 	    generators = self.default_generators
+	    
+	cmake_exe_path = self.get_cmake_exe_path()
 
 	self.write_test_cmakelist(languages)
+
+        # back up current folder so we go back to it when done testing
+        backup_folder = os.getcwd()
 
 	# cd into the cmake_test_compile folder as working dir (rmtree this later for cleanliness)
 	# TODO: make this more robust in terms of checking where we are, if the folder exists, etc.
 	os.chdir(test_folder)
-	print os.getcwd()
-	os.makedirs("build")
-	os.chdir("build")
-	print os.listdir(".")
-	print os.listdir("..")
 
 	# working generator is the first generator we find that works.
 	working_generator = None
 	
-	status=-1
+	# initial status is failure.  If subprocess call of cmake succeeds, it gets set to 0.
+	status = -1
 	
 	for generator in generators:
 	    # clear the cache for each attempted generator type
@@ -57,11 +64,11 @@ class CMakePlatform(object):
 		os.remove(cache_file)
 	    try:
 	        # call cmake to see if the compiler specified by this generator works for the specified languages
-	        cmake_execution_string = 'cmake ../ -G "{:s}"'.format(generator)
-	        print(cmake_execution_string)
-	        status = subprocess.call(cmake_execution_string)
+	        cmake_execution_string = '{:s} ./ -G "{:s}"'.format(cmake_exe_path, generator)
+	        status = subprocess.call(cmake_execution_string, shell=True)
 	    except OSError as e:
 	        # ignore errors from the OS - just don't report success for this generator.
+	        print("Error encountered when attempting to use generator {:s}:".format(generator))
 	        print(e)
 	    # cmake succeeded, this generator should work
 	    if status == 0:
@@ -69,6 +76,6 @@ class CMakePlatform(object):
 		working_generator = generator
 		break
 
-	os.chdir("../..")
+	os.chdir(backup_folder)
 	return working_generator
 

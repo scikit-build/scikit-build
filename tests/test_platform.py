@@ -21,9 +21,13 @@ def test_platform_has_entries():
 def test_write_compiler_test_file():
     # write the file that CMake will use to test compile (empty list indicates we're testing no languages.)
     platform.write_test_cmakelist([])
-    # verify that the test file exists (it's not valid, because it has no languages)
-    assert(os.path.exists("cmake_test_compile/CMakeLists.txt"))
-    platform.cleanup_test()
+    try:
+        # verify that the test file exists (it's not valid, because it has no languages)
+        assert(os.path.exists("cmake_test_compile/CMakeLists.txt"))
+    except:
+        raise
+    finally:        
+        platform.cleanup_test()
 
 def test_cxx_compiler():
     generator = platform.get_best_generator(languages=["CXX", "C"])
@@ -33,8 +37,9 @@ def test_cxx_compiler():
     try:
         assert(generator is not None)
     except:
-        platform.cleanup_test()
         raise
+    finally:
+        platform.cleanup_test()
 
 
 def test_fortran_compiler():
@@ -45,8 +50,9 @@ def test_fortran_compiler():
     try:
         assert(generator is not None)
     except:
-        platform.cleanup_test()
         raise
+    finally:
+        platform.cleanup_test()
 
 
 def test_generator_cleanup():
