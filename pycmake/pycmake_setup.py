@@ -1,5 +1,6 @@
 import distutils
 
+
 def setup(*args, **kw):
     """
     We wrap distutils setup so that we can do the CMake build, then proceed as usual with Distutils, appending

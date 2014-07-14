@@ -3,7 +3,9 @@ import subprocess
 
 from pycmake import platform_specifics
 
+
 class CMaker(object):
+
     def __init__(self, generator=None, **defines):
         if generator:
             self.generator = generator
@@ -23,19 +25,23 @@ class CMaker(object):
         if not os.path.exists("cmake_build"):
             os.makedirs("cmake_build")
         os.chdir("cmake_build")
-        return_status = subprocess.call('cmake ../ -G "{:s}" -DCMAKE_PREFIX_INSTALL=.'.format(generator_id), shell=True)
+        return_status = subprocess.call(
+            'cmake ../ -G "{:s}" -DCMAKE_PREFIX_INSTALL=.'.format(generator_id), shell=True)
         os.chdir("..")
         if return_status != 0:
-            raise RuntimeError("Could not successfully configure your project.  Please see CMake's output for more information.")
+            raise RuntimeError(
+                "Could not successfully configure your project.  Please see CMake's output for more information.")
 
     def make(self, config="Release"):
         """
         Calls the system-specific make program to compile code
         """
         if not os.path.exists("cmake_build"):
-            raise RuntimeError("CMake build folder (cmake_build) does not exist.  Did you forget to run configure before make?")
+            raise RuntimeError(
+                "CMake build folder (cmake_build) does not exist.  Did you forget to run configure before make?")
         os.chdir("cmake_build")
-        return_status = subprocess.call("cmake --build ./ --target install --config {:s}".format(config), shell=True)
+        return_status = subprocess.call(
+            "cmake --build ./ --target install --config {:s}".format(config), shell=True)
         os.chdir("..")
         return return_status
 

@@ -6,5 +6,3 @@
 
 Tests for `pycmake` module.
 """
-
-
