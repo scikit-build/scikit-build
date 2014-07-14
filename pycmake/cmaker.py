@@ -1,7 +1,7 @@
 import os
 import subprocess
 
-import platform_specifics
+from pycmake import platform_specifics
 
 class CMaker(object):
     def __init__(self, generator=None, **defines):

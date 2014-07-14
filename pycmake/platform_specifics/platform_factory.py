@@ -1,6 +1,6 @@
-import linux
-import osx
-import windows
+from pycmake.platform_specifics import linux
+from pycmake.platform_specifics import osx
+from pycmake.platform_specifics import windows
 
 import platform
 
