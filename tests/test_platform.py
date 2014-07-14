@@ -15,13 +15,15 @@ from pycmake.platform_specifics import get_platform
 global platform
 platform = get_platform()
 
+def test_platform_has_entries():
+    assert(len(platform.default_generators) > 0)
 
 def test_write_compiler_test_file():
     # write the file that CMake will use to test compile (empty list indicates we're testing no languages.)
     platform.write_test_cmakelist([])
     # verify that the test file exists (it's not valid, because it has no languages)
     assert(os.path.exists("cmake_test_compile/CMakeLists.txt"))
-
+    platform.cleanup_test()
 
 def test_cxx_compiler():
     platform.write_test_cmakelist(["CXX", "C"])
@@ -30,6 +32,7 @@ def test_cxx_compiler():
     # This test verifies that a working compiler is present on the system, but doesn't actually compile anything.
     generator = platform.get_best_generator()
     assert(generator is not None)
+    platform.cleanup_test()
 
 
 def test_fortran_compiler():
@@ -39,11 +42,10 @@ def test_fortran_compiler():
     # This test verifies that a working compiler is present on the system, but doesn't actually compile anything.
     generator = platform.get_best_generator()
     assert(generator is not None)
+    platform.cleanup_test()
 
 
 def test_generator_cleanup():
-    # TODO: this isn't a true unit test.  It is assuming that the file was created at all, when it may not have been,
-    #    and this test will be equally successful.
-    platform.cleanup_test()
+    # TODO: this isn't a true unit test.  It is checking that none of the other tests have left a mess.
     assert(not os.path.exists("cmake_test_compile"))
 
