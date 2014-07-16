@@ -1,4 +1,4 @@
-from pycmake.platform_specifics import abstract
+from . import abstract
 
 
 class LinuxPlatform(abstract.CMakePlatform):
