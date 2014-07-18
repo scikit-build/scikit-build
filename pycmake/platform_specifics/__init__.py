@@ -1,2 +1,2 @@
-from platform_factory import get_platform
+from .platform_factory import get_platform
 
