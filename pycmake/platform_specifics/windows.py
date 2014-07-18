@@ -2,7 +2,7 @@ import sys
 import platform
 
 # base class functionality
-from pycmake.platform_specifics import abstract
+from . import abstract
 
 
 class WindowsPlatform(abstract.CMakePlatform):
