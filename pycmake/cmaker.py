@@ -25,30 +25,30 @@ class CMaker(object):
             if rtn != 0:
                 sys.exit('CMake is not installed, aborting build.')
 
-    def configure(self, clargs=()):
+    def configure(self, clargs=(), generator=None):
         """Calls cmake to generate the makefile (or VS solution, or XCode project).
         """
         clargs, generator_id = pop_arg('-G', clargs, 
                                        self.generator.get_best_generator(generator))
         if not os.path.exists("cmake_build"):
             os.makedirs("cmake_build")
-        cmd = 'cmake ../ -G "{0:s}" -DCMAKE_PREFIX_INSTALL=. {1}'
-        cmd = cmd.format(generator_id, " ".join(clargs))
-        rtn = subprocess.call(cmd, shell=True, cwd="cmake_build")
+        cmd = ['cmake', '..',  '-G', generator_id, '-DCMAKE_PREFIX_INSTALL=.']
+        cmd.extend(clargs)
+        rtn = subprocess.check_call(cmd, cwd="cmake_build")
         if rtn != 0:
             raise RuntimeError("Could not successfully configure your project. "
                                "Please see CMake's output for more information.")
 
-    def make(self, clargs=()):
-        """Calls the system-specific make program to compile code
+    def make(self, clargs=(), config="Release", source_dir="."):
+        """Calls the system-specific make program to compile code.
         """
-        clargs, config = pop_arg('-G', clargs, "Release")
+        clargs, config = pop_arg('-G', clargs, config)
         if not os.path.exists("cmake_build"):
             raise RuntimeError("CMake build folder (cmake_build) does not exist. "
                                "Did you forget to run configure before make?")
-        cmd = "cmake --build ./ --target install --config {0:s} {1}"
-        cmd = cmd.format(config, " ".join(clargs))
-        rtn = subprocess.call(cmd, shell=True, cwd="cmake_build")
+        cmd = ["cmake", "--build", source_dir, "--target", "install", "--config", config]
+        cmd.exdend(clargs)
+        rtn = subprocess.check_call(cmd, cwd="cmake_build")
         return rtn 
 
     def install(self):
@@ -60,5 +60,5 @@ class CMaker(object):
 
 if __name__ == "__main__":
     maker = CMaker()
-    os.chdir("tests")
+    #os.chdir("tests")
     maker.configure("Visual Studio 11")
