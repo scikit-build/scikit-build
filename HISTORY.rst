@@ -3,7 +3,4 @@
 History
 -------
 
-0.1.0 (2014-07-12)
----------------------
-
-* First release on PyPI.
+PyCMake was created at SciPy 2014 in response to general difficulties building C++ and Fortran based Python extensions across platforms.
