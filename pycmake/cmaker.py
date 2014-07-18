@@ -42,7 +42,7 @@ class CMaker(object):
     def make(self, clargs=(), config="Release", source_dir="."):
         """Calls the system-specific make program to compile code.
         """
-        clargs, config = pop_arg('-G', clargs, config)
+        clargs, config = pop_arg('--config', clargs, config)
         if not os.path.exists("cmake_build"):
             raise RuntimeError("CMake build folder (cmake_build) does not exist. "
                                "Did you forget to run configure before make?")
