@@ -44,3 +44,6 @@ docs/_build
 
 # IDE junk
 .idea/*
+
+# build output (testing)
+pycmake/cmake_test_compile/*

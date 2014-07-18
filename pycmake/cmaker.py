@@ -27,14 +27,13 @@ class CMaker(object):
         if not os.path.exists("cmake_build"):
             os.makedirs("cmake_build")
         os.chdir("cmake_build")
-        return_status = subprocess.call(
-            'cmake ../ -G "{:s}" -DCMAKE_PREFIX_INSTALL=.'.format(generator_id), shell=True)
+        return_status = subprocess.check_call(['cmake', '../', '-G', generator_id, "-DCMAKE_PREFIX_INSTALL=."])
         os.chdir("..")
         if return_status != 0:
             raise RuntimeError(
                 "Could not successfully configure your project.  Please see CMake's output for more information.")
 
-    def make(self, clargs=(), config="Release"):
+    def make(self, clargs=(), config="Release", source_dir="./"):
         """
         Calls the system-specific make program to compile code
         """
@@ -42,8 +41,7 @@ class CMaker(object):
             raise RuntimeError(
                 "CMake build folder (cmake_build) does not exist.  Did you forget to run configure before make?")
         os.chdir("cmake_build")
-        return_status = subprocess.call(
-            "cmake --build ./ --target install --config {:s}".format(config), shell=True)
+        return_status = subprocess.check_call(["cmake", "--build", source_dir, "--target", "install", "--config", config])
         os.chdir("..")
         return return_status
 
@@ -56,5 +54,5 @@ class CMaker(object):
 
 if __name__ == "__main__":
     maker = CMaker()
-    os.chdir("tests")
+    #os.chdir("tests")
     maker.configure("Visual Studio 11")
