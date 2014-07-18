@@ -14,5 +14,5 @@ def get_platform():
     elif this_platform == "Darwin" :
         return osx.OSXPlatform()
     else:
-        raise RuntimeError(
-            "Unsupported platform: {:s}.  Please contact the PyCMake team.".format(this_platform))
+        raise RuntimeError("Unsupported platform: {:s}. Please contact "
+                           "the PyCMake team.".format(this_platform))

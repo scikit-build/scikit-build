@@ -1,4 +1,5 @@
 import os
+import platform
 import subprocess
 
 from pycmake import platform_specifics
@@ -7,12 +8,13 @@ from pycmake import platform_specifics
 class CMaker(object):
 
     def __init__(self, generator=None, **defines):
-        if generator:
-            self.generator = generator
-        else:
-            self.generator = platform_specifics.get_platform()
+        self.generator = generator or platform_specifics.get_platform()
+        if platform.system() != 'Windows':
+            rtn = subprocess.call(['which', 'cmake'])
+            if rtn != 0:
+                sys.exit('CMake is not installed, aborting build.')
 
-    def configure(self, generator=None):
+    def configure(self, clargs=(), generator=None):
         """
         Calls cmake to generate the makefile (or VS solution, or XCode project)
 
@@ -31,7 +33,7 @@ class CMaker(object):
             raise RuntimeError(
                 "Could not successfully configure your project.  Please see CMake's output for more information.")
 
-    def make(self, config="Release", source_dir="./"):
+    def make(self, clargs=(), config="Release", source_dir="./"):
         """
         Calls the system-specific make program to compile code
         """
@@ -42,6 +44,12 @@ class CMaker(object):
         return_status = subprocess.check_call(["cmake", "--build", source_dir, "--target", "install", "--config", config])
         os.chdir("..")
         return return_status
+
+    def install(self):
+        """Returns a list of tuples of (install location, file list) to install
+        via distutils that is compatible with the data_files keyword argument.
+        """
+        return []
 
 
 if __name__ == "__main__":
