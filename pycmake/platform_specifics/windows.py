@@ -18,8 +18,9 @@ class WindowsPlatform(abstract.CMakePlatform):
         elif python_major_version == 2:
             vs_base = "Visual Studio 9 2008"
         else:
-            raise RuntimeError(
-                "Only Python 2 and 3 are supported - please add support in platform_specific PyCMake folder")
+            raise RuntimeError("Only Python 2 and 3 are supported - "
+                               "please add support in platform_specific "
+                               "PyCMake folder")
 
         # Python is Win64, build a Win64 module
         if platform.architecture() == "x64":
