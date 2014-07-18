@@ -4,4 +4,4 @@ __author__ = 'PyCMake team'
 __email__ = 'pycmake@googlegroups.com'
 __version__ = '0.1.0'
 
-from pycmake.distutils_wrapper import setup
+from pycmake.distutils_wrap import setup
