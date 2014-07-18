@@ -29,7 +29,7 @@ def parse_args():
     dutils = []
     cmake = []
     make = []
-    argsets = [distutils_args, cmake, make]
+    argsets = [dutils, cmake, make]
     i = 0
     for arg in sys.argv:
         if arg == '--':
@@ -38,9 +38,9 @@ def parse_args():
             argsets[i].append(arg)
 
     # handle argument transformations
-    dutils, cmake = move_arg('--build-type', distutils_args, cmake, 
+    dutils, cmake = move_arg('--build-type', dutils, cmake, 
                              newarg='-DCMAKE_BUILD_TYPE')
-    dutils, make = move_arg('-j', distutils_args, make)
+    dutils, make = move_arg('-j', dutils, make)
     op = os.path
     absappend = lambda x: op.join(op.dirname(op.abspath(sys.argv[0])), x)
     dutils, dutils = move_arg('--egg-base', dutils, dutils, f=absappend)

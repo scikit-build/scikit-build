@@ -14,7 +14,7 @@ class CMaker(object):
             if rtn != 0:
                 sys.exit('CMake is not installed, aborting build.')
 
-    def configure(self, generator=None):
+    def configure(self, clargs=(), generator=None):
         """
         Calls cmake to generate the makefile (or VS solution, or XCode project)
 
@@ -34,7 +34,7 @@ class CMaker(object):
             raise RuntimeError(
                 "Could not successfully configure your project.  Please see CMake's output for more information.")
 
-    def make(self, config="Release"):
+    def make(self, clargs=(), config="Release"):
         """
         Calls the system-specific make program to compile code
         """
