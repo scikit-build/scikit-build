@@ -12,7 +12,7 @@ PyCMake
         :target: https://pypi.python.org/pypi/PyCMake
 
 
-Simplify building Python extensions with CMake
+Simplify building Python extensions with CMake.  PyCMake is fundamentally just glue between distutils and CMake.  It wraps distutils.setup so that a CMake build step occurs before calling distutils.setup, and automatically appends CMake-built output into the distutils package_data as appropriate.
 
 * Free software: MIT license
 * Documentation: http://PyCMake.readthedocs.org.
