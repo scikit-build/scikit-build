@@ -1,9 +1,20 @@
 import os
 import platform
 import subprocess
+import argparse
 
 from pycmake import platform_specifics
 
+def pop_arg(arg, a, default=None):
+    """Pops an arg(ument) from an argument list a and returns the new list 
+    and the value of the argument if present and a default otherwise.
+    """
+    parser = argparse.ArgumentParser()
+    parser.add_argument(arg)
+    ns, a = parser.parse_known_args(a)
+    ns = tuple(vars(ns).items())
+    val = ns[0][1] if len(ns) > 0 else None
+    return a, val
 
 class CMaker(object):
 
@@ -15,35 +26,30 @@ class CMaker(object):
                 sys.exit('CMake is not installed, aborting build.')
 
     def configure(self, clargs=(), generator=None):
+        """Calls cmake to generate the makefile (or VS solution, or XCode project).
         """
-        Calls cmake to generate the makefile (or VS solution, or XCode project)
-
-        Input:
-        ------
-        generator: string
-            The string representing the CMake generator to use.  If None, uses defaults for your platform.
-        """
-        generator_id = self.generator.get_best_generator(generator)
+        clargs, generator_id = pop_arg('-G', clargs, 
+                                       self.generator.get_best_generator(generator))
         if not os.path.exists("cmake_build"):
             os.makedirs("cmake_build")
-        os.chdir("cmake_build")
-        return_status = subprocess.check_call(['cmake', '../', '-G', generator_id, "-DCMAKE_PREFIX_INSTALL=."])
-        os.chdir("..")
-        if return_status != 0:
-            raise RuntimeError(
-                "Could not successfully configure your project.  Please see CMake's output for more information.")
+        cmd = ['cmake', '..',  '-G', generator_id, '-DCMAKE_PREFIX_INSTALL=.']
+        cmd.extend(clargs)
+        rtn = subprocess.check_call(cmd, cwd="cmake_build")
+        if rtn != 0:
+            raise RuntimeError("Could not successfully configure your project. "
+                               "Please see CMake's output for more information.")
 
-    def make(self, clargs=(), config="Release", source_dir="./"):
+    def make(self, clargs=(), config="Release", source_dir="."):
+        """Calls the system-specific make program to compile code.
         """
-        Calls the system-specific make program to compile code
-        """
+        clargs, config = pop_arg('--config', clargs, config)
         if not os.path.exists("cmake_build"):
-            raise RuntimeError(
-                "CMake build folder (cmake_build) does not exist.  Did you forget to run configure before make?")
-        os.chdir("cmake_build")
-        return_status = subprocess.check_call(["cmake", "--build", source_dir, "--target", "install", "--config", config])
-        os.chdir("..")
-        return return_status
+            raise RuntimeError("CMake build folder (cmake_build) does not exist. "
+                               "Did you forget to run configure before make?")
+        cmd = ["cmake", "--build", source_dir, "--target", "install", "--config", config]
+        cmd.exdend(clargs)
+        rtn = subprocess.check_call(cmd, cwd="cmake_build")
+        return rtn 
 
     def install(self):
         """Returns a list of tuples of (install location, file list) to install
