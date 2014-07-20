@@ -1,11 +1,9 @@
 #!/usr/bin/env python
 from __future__ import print_function
-from PyCMake import setup
+from pycmake.distutils_wrap import setup
 
 PKG = "test1"
 version = "test"
-
-
 
 setup(
     name=PKG,
