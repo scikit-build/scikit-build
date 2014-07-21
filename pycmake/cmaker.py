@@ -21,20 +21,19 @@ def pop_arg(arg, a, default=None):
 
 class CMaker(object):
 
-    def __init__(self, generator=None, **defines):
-        self.generator = generator or platform_specifics.get_platform()
+    def __init__(self, **defines):
         if platform.system() != 'Windows':
             rtn = subprocess.call(['which', 'cmake'])
             if rtn != 0:
                 sys.exit('CMake is not installed, aborting build.')
 
-    def configure(self, clargs=(), generator=None):
+    def configure(self, clargs=(), generator_id=None):
         """Calls cmake to generate the makefile (or VS solution, or XCode project).
         """
         # TODO: needs to parse languages somehow? or does it matter? it would
         #    be an additional arg to the get_best_generator function.
-        clargs, generator_id = pop_arg('-G', clargs, 
-                                       self.generator.get_best_generator(generator))
+        clargs, generator_id = pop_arg('-G', clargs)
+        platform_specifics.get_platform().get_best_generator(generator_id)
         if generator_id is None:
             sys.exit("Could not get working generator for your system."
                      "  Aborting build.")
@@ -70,21 +69,23 @@ class CMaker(object):
         return self._parse_manifest()
 
     def _parse_manifest(self):
-        installed_files = dict()
+        installed_files = list()
         with open("cmake_build/install_manifest.txt","r") as manifest:
             base_path = os.getcwd()
             for path in manifest.readlines():
+                '''
+                common_prefix = os.path.commonprefix([base_path, path])
                 # strip off the base path - keep only the relative path
-                path = path.replace(base_path, "")
+                relpath = path.replace(common_prefix, "")
+                
+                # get rid of a leading slash
+                path = path[1:]
+                '''
+                if platform.system()=="Windows":
+                    path = path.replace("/", "\\\\")
                 # trim newline characters (sometimes at end of filename)
                 path = path.replace("\n", "")
-                folder, filename = os.path.split(path)
-                # get rid of a leading slash
-                folder = folder[1:]
-                if folder not in installed_files:
-                    installed_files[folder]=list()
-                installed_files[folder].append(filename)
-        values = [(key, val) for key, val in installed_files.items()]
-        return values
+                installed_files.append(path)
+        return [("", installed_files),]
                 
             

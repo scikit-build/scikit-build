@@ -43,11 +43,12 @@ def parse_args():
     dutils, cmake = move_arg('--build-type', dutils, cmake, 
                              newarg='-DCMAKE_BUILD_TYPE', 
                              concatenate_value=True)
+    dutils, cmake = move_arg('-G', dutils, cmake)
     dutils, make = move_arg('-j', dutils, make)
     op = os.path
     absappend = lambda x: op.join(op.dirname(op.abspath(sys.argv[0])), x)
     dutils, dutils = move_arg('--egg-base', dutils, dutils, f=absappend)
-
+    
     return dutils, cmake, make
 
 def setup(*args, **kw):
@@ -60,7 +61,7 @@ def setup(*args, **kw):
     cmkr.configure(cmake_args)
     cmkr.make(make_args)
     extra_data_files = cmkr.install()
-    data_files = kw.get('data_files', [])
+    data_files = kw.get('package_data', [])
     data_files.extend(extra_data_files)
-    kw['data_files'] = data_files
+    kw['package_data'] = data_files
     return distutils.core.setup(*args, **kw)
