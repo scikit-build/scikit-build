@@ -4,7 +4,7 @@ distutils infrastructure.
 import os
 import sys
 import argparse
-import distutils.core
+import setuptools
 
 from pycmake import cmaker
 
@@ -61,7 +61,13 @@ def setup(*args, **kw):
     cmkr.configure(cmake_args)
     cmkr.make(make_args)
     extra_data_files = cmkr.install()
-    data_files = kw.get('package_data', [])
-    data_files.extend(extra_data_files)
+    data_files = kw.get('package_data', {})
+    base_path_files = data_files.get("", [])
+    base_path_files.extend(extra_data_files)
+    data_files[""] = base_path_files
     kw['package_data'] = data_files
-    return distutils.core.setup(*args, **kw)
+    packages = kw.get("packages", [])
+    packages.extend(setuptools.find_packages())
+    kw["packages"] = packages
+    print kw
+    return setuptools.setup(*args, **kw)

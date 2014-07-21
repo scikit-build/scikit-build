@@ -33,7 +33,7 @@ class CMaker(object):
         # TODO: needs to parse languages somehow? or does it matter? it would
         #    be an additional arg to the get_best_generator function.
         clargs, generator_id = pop_arg('-G', clargs)
-        platform_specifics.get_platform().get_best_generator(generator_id)
+        generator_id = platform_specifics.get_platform().get_best_generator(generator_id)
         if generator_id is None:
             sys.exit("Could not get working generator for your system."
                      "  Aborting build.")
@@ -68,24 +68,39 @@ class CMaker(object):
         """
         return self._parse_manifest()
 
+    @staticmethod
+    def _remove_cwd_prefix(path):
+        base_path = os.getcwd()
+        if platform.system()=="Windows":
+            base_path = base_path.replace("\\\\", "/")
+        common_prefix = os.path.commonprefix([base_path, path])
+        # strip off the base path - keep only the relative path
+        relpath = path.replace(common_prefix, "")                
+        # get rid of a leading slash
+        path = relpath[1:]
+        # trim newline characters (sometimes at end of filename)
+        path = path.replace("\n", "")
+        return path
+
+    @staticmethod
+    def _touch_init(folder):
+        init = os.path.join(folder, "__init__.py")
+        if not os.path.exists(init):
+            with open(init, "w") as f:
+                f.write("\n")
+        return CMaker._remove_cwd_prefix(init)
+
     def _parse_manifest(self):
         installed_files = list()
         with open("cmake_build/install_manifest.txt","r") as manifest:
-            base_path = os.getcwd()
             for path in manifest.readlines():
-                '''
-                common_prefix = os.path.commonprefix([base_path, path])
-                # strip off the base path - keep only the relative path
-                relpath = path.replace(common_prefix, "")
+                # do we have an __init__.py file in the folder?
+                # if not, we should create one so that distutils can find files there.
+                init_path = CMaker._touch_init(os.path.split(path)[0])
+                installed_files.append(CMaker._remove_cwd_prefix(path))
+                if init_path not in installed_files:
+                    installed_files.append(init_path)
+        return installed_files
                 
-                # get rid of a leading slash
-                path = path[1:]
-                '''
-                if platform.system()=="Windows":
-                    path = path.replace("/", "\\\\")
-                # trim newline characters (sometimes at end of filename)
-                path = path.replace("\n", "")
-                installed_files.append(path)
-        return [("", installed_files),]
-                
+    
             

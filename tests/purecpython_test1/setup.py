@@ -3,7 +3,7 @@ from __future__ import print_function
 from pycmake.distutils_wrap import setup
 
 PKG = "test1"
-version = "test"
+version = "0.1.0"
 
 setup(
     name=PKG,
