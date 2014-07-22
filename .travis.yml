@@ -16,4 +16,10 @@ before_install:
 install: pip install -r requirements.txt
 
 # command to run tests, e.g. python setup.py test
-script: nosetests -w tests
+script:
+  # test PyCMake itself
+  - nosetests -w tests
+  # install PyCMake
+  - pip install .
+  # test using PyCMake to build various kinds of projects
+  - nosetests -w test_projects
