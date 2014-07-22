@@ -11,7 +11,7 @@ def get_platform():
         return linux.LinuxPlatform()
     elif this_platform == "Windows":
         return windows.WindowsPlatform()
-    elif this_platform == "Darwin" :
+    elif this_platform == "Darwin":
         return osx.OSXPlatform()
     else:
         raise RuntimeError("Unsupported platform: {:s}. Please contact "
