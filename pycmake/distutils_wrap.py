@@ -69,5 +69,4 @@ def setup(*args, **kw):
     base_path_files.extend(extra_data_files)
     data_files[""] = base_path_files
     kw['package_data'] = data_files
-    print(kw)
     return distutils.core.setup(*args, **kw)
