@@ -1,5 +1,3 @@
-#include <Python.h>
-
 #include "Python.h"
 
 struct module_state {
