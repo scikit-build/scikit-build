@@ -67,7 +67,8 @@ class CMaker(object):
             os.makedirs("cmake_build")
         cmd = ['cmake', '..',  '-G', generator_id,
                '-DCMAKE_INSTALL_PREFIX={0}'.format(os.getcwd()),
-               '-DPYTHON_EXECUTABLE=' + sys.executable, ]
+               '-DPYTHON_EXECUTABLE=' + sys.executable, 
+               '-DPYTHON_VERSION_STRING=' + sys.version.split(' ')[0], ]
         cmd.extend(clargs)
         # changes dir to cmake_build and calls cmake's configure step
         # to generate makefile
