@@ -34,10 +34,17 @@ class CMakePlatform(object):
 
     # TODO: this method name is not great.  Does anyone have a better idea for
     # renaming it?
-    def get_best_generator(self, generator=None, languages=("CXX", "C")):
+    def get_best_generator(self, generator=None, languages=("CXX", "C"), cleanup=True):
         """Loop over generators to find one that works.
 
-        Languages is a list of all the languages you'll need for your project.
+        Parameters:
+        generator: string or None
+            If provided, uses only provided generator, instead of trying system defaults.
+        languages: tuple
+            the languages you'll need for your project, in terms that CMake recognizes.
+        cleanup: bool
+            If True, cleans up temporary folder used to test generators.  Set to False
+            for debugging to see CMake's output files.
         """
         if generator is not None:
             generators = [generator, ]
@@ -86,4 +93,6 @@ class CMakePlatform(object):
                 break
 
         os.chdir(backup_folder)
+        if cleanup:
+            CMakePlatform.cleanup_test()
         return working_generator
