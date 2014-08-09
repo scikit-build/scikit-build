@@ -4,7 +4,7 @@ import platform
 import subprocess
 import argparse
 
-from pycmake import platform_specifics
+from pycmake.platform_specifics import get_platform
 
 
 def pop_arg(arg, a, default=None):
@@ -57,12 +57,12 @@ class CMaker(object):
 		
         Input:
         ------
-        generator: string
+        generator_id: string
             The string representing the CMake generator to use.  If None, uses defaults for your platform.
         """
 
         clargs, generator_id = pop_arg('-G', clargs)
-        generator_id = platform_specifics.get_platform().get_best_generator(
+        generator_id = get_platform().get_best_generator(
             generator_id)
         if generator_id is None:
             sys.exit("Could not get working generator for your system."
