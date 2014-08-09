@@ -34,7 +34,8 @@ class CMakePlatform(object):
 
     # TODO: this method name is not great.  Does anyone have a better idea for
     # renaming it?
-    def get_best_generator(self, generator=None, languages=("CXX", "C"), cleanup=True):
+    def get_best_generator(
+            self, generator=None, languages=("CXX", "C"), cleanup=True):
         """Loop over generators to find one that works.
 
         Parameters:

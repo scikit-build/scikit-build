@@ -8,7 +8,7 @@ from pycmake.platform_specifics import get_platform
 
 
 def pop_arg(arg, a, default=None):
-    """Pops an arg(ument) from an argument list a and returns the new list 
+    """Pops an arg(ument) from an argument list a and returns the new list
     and the value of the argument if present and a default otherwise.
     """
     parser = argparse.ArgumentParser()
@@ -54,7 +54,7 @@ class CMaker(object):
 
     def configure(self, clargs=(), generator_id=None):
         """Calls cmake to generate the makefile (or VS solution, or XCode project).
-		
+
         Input:
         ------
         generator_id: string
@@ -70,9 +70,9 @@ class CMaker(object):
 
         if not os.path.exists("cmake_build"):
             os.makedirs("cmake_build")
-        cmd = ['cmake', '..',  '-G', generator_id,
+        cmd = ['cmake', '..', '-G', generator_id,
                '-DCMAKE_INSTALL_PREFIX={0}'.format(os.getcwd()),
-               '-DPYTHON_EXECUTABLE=' + sys.executable, 
+               '-DPYTHON_EXECUTABLE=' + sys.executable,
                '-DPYTHON_VERSION_STRING=' + sys.version.split(' ')[0], ]
         cmd.extend(clargs)
         # changes dir to cmake_build and calls cmake's configure step

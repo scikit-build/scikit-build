@@ -1,4 +1,4 @@
-"""This module provides functionality for wrapping key components of the 
+"""This module provides functionality for wrapping key components of the
 distutils infrastructure.
 """
 import os
@@ -11,7 +11,7 @@ from pycmake import cmaker
 
 def move_arg(arg, a, b, newarg=None, f=lambda x: x, concatenate_value=False):
     """Moves an argument from a list to b list, possibly giving it a new name
-    and/or performing a transformation on the value. Returns a and b. The arg need 
+    and/or performing a transformation on the value. Returns a and b. The arg need
     not be present in a.
     """
     newarg = newarg or arg
@@ -55,7 +55,7 @@ def parse_args():
 
 
 def setup(*args, **kw):
-    """This function wraps distutils.core.setup() so that we can run cmake, make, 
+    """This function wraps distutils.core.setup() so that we can run cmake, make,
     CMake build, then proceed as usual with a distutils, appending the
     CMake-generated output as necessary.
     """
