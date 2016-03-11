@@ -6,7 +6,7 @@ import sys
 import argparse
 import distutils.core
 
-from pycmake import cmaker
+from . import cmaker
 
 
 def move_arg(arg, a, b, newarg=None, f=lambda x: x, concatenate_value=False):

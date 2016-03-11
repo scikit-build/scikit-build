@@ -15,4 +15,4 @@ def get_platform():
         return osx.OSXPlatform()
     else:
         raise RuntimeError("Unsupported platform: {:s}. Please contact "
-                           "the PyCMake team.".format(this_platform))
+                           "the scikit-build team.".format(this_platform))

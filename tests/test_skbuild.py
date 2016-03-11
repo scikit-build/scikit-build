@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""test_pycmake
+"""test_skbuild
 ----------------------------------
 
-Tests for `pycmake` module.
+Tests for `skbuild` module.
 """

@@ -4,9 +4,9 @@ Installation
 
 At the command line::
 
-    $ easy_install PyCMake
+    $ easy_install scikit-build
 
 Or, if you have virtualenvwrapper installed::
 
-    $ mkvirtualenv PyCMake
-    $ pip install PyCMake
+    $ mkvirtualenv scikit-build
+    $ pip install scikit-build

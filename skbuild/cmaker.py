@@ -4,7 +4,7 @@ import platform
 import subprocess
 import argparse
 
-from pycmake.platform_specifics import get_platform
+from .platform_specifics import get_platform
 
 
 def pop_arg(arg, a, default=None):

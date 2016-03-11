@@ -46,4 +46,5 @@ docs/_build
 .idea/*
 
 # build output (testing)
-pycmake/cmake_test_compile/*
+skbuild/cmake_test_compile/*
+
