@@ -1,5 +1,5 @@
 from . import unix
 
 
-class BSDPlatform(unix.CMakePlatform):
+class BSDPlatform(unix.UnixPlatform):
     pass
