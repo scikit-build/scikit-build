@@ -9,7 +9,7 @@ Tests for platforms, to verify that CMake correctly does a test compilation.
 
 import os
 
-from pycmake.platform_specifics import get_platform
+from skbuild.platform_specifics import get_platform
 
 # platform is shared across each test.  It's a platform-specific object
 # that defines default CMake generator strings.

@@ -25,7 +25,7 @@ clean-pyc:
 	find . -name '*~' -exec rm -f {} +
 
 lint:
-	flake8 PyCMake tests
+	flake8 skbuild tests
 
 test:
 	python setup.py test
@@ -34,15 +34,15 @@ test-all:
 	tox
 
 coverage:
-	coverage run --source PyCMake setup.py test
+	coverage run --source skbuild setup.py test
 	coverage report -m
 	coverage html
 	open htmlcov/index.html
 
 docs:
-	rm -f docs/PyCMake.rst
+	rm -f docs/skbuild rst
 	rm -f docs/modules.rst
-	sphinx-apidoc -o docs/ PyCMake
+	sphinx-apidoc -o docs/ skbuild
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
 	open docs/_build/html/index.html
