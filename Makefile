@@ -1,15 +1,19 @@
 .PHONY: clean-pyc clean-build docs clean
 
 help:
-	@echo "clean-build - remove build artifacts"
-	@echo "clean-pyc - remove Python file artifacts"
-	@echo "lint - check style with flake8"
-	@echo "test - run tests quickly with the default Python"
-	@echo "test-all - run tests on every Python version with tox"
-	@echo "coverage - check code coverage quickly with the default Python"
-	@echo "docs - generate Sphinx HTML documentation, including API docs"
-	@echo "release - package and upload a release"
-	@echo "dist - package"
+	@echo "$(MAKE) [target]"
+	@echo
+	@echo "  targets:"
+	@echo "    clean-build - remove build artifacts"
+	@echo "    clean-pyc   - remove Python file artifacts"
+	@echo "    lint        - check style with flake8"
+	@echo "    test        - run tests quickly with the default Python"
+	@echo "    test-all    - run tests on every Python version with tox"
+	@echo "    coverage    - check code coverage quickly with the default Python"
+	@echo "    docs        - generate Sphinx HTML documentation, including API docs"
+	@echo "    release     - package and upload a release"
+	@echo "    dist        - package"
+	@echo
 
 clean: clean-build clean-pyc
 	rm -fr htmlcov/

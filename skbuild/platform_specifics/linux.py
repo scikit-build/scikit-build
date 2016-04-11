@@ -1,8 +1,5 @@
-from . import abstract
+from . import unix
 
 
-class LinuxPlatform(abstract.CMakePlatform):
-
-    def __init__(self):
-        super(LinuxPlatform, self).__init__()
-        self.default_generators = ["Unix Makefiles", ]
+class LinuxPlatform(unix.UnixPlatform):
+    pass
