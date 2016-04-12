@@ -11,6 +11,8 @@ notifications:
         [Build {{&projectName}} {{buildVersion}} {{status}}]({{buildUrl}})
         (commit {{commitUrl}} by @{{&commitAuthorUsername}})
 
+shallow_clone: true
+
 environment:
   matrix:
     - py: python2
@@ -22,11 +24,11 @@ matrix:
 
 install:
   - "cinst cmake"
-  - "cinst {py}"
+  - "cinst ${py}"
 
 before_build:
   - cmd: pip install -r requirements.txt
 
 test_script:
-  - cmd: "{py} -m nose -w tests"
+  - cmd: "${py} -m nose -w tests"
 
