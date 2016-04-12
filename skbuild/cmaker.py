@@ -1,8 +1,11 @@
+import argparse
+import itertools
 import os
-import sys
+import os.path
 import platform
 import subprocess
-import argparse
+import sys
+import sysconfig
 
 from .platform_specifics import get_platform
 
@@ -70,10 +73,57 @@ class CMaker(object):
 
         if not os.path.exists("cmake_build"):
             os.makedirs("cmake_build")
+
+        # determine python include dir
+        python_include_dir = (sysconfig.get_path('include') or
+                              sysconfig.get_path('platinclude'))
+
+        # determine direct path to libpython
+        python_library = sysconfig.get_config_var('LIBRARY')
+
+        # if static, try to find a suitable dynamic libpython
+        if os.path.splitext(python_library)[1][-2:] == '.a':
+            candidate_extensions = ('.so', '.a')
+            if sysconfig.get_config_var('WITH_DYLD'):
+                candidate_extensions = ('.dylib',) + candidate_extensions
+
+            python_version = sysconfig.get_config_var('VERSION')
+            candidate_versions = (python_version,)
+            if python_version:
+                candidate_versions += ('',)
+
+            abiflags = getattr(sys, 'abiflags', '')
+            candidate_abiflags = (abiflags,)
+            if abiflags:
+                candidate_abiflags += ('',)
+
+            libdir = sysconfig.get_config_var('LIBDIR')
+            candidates = (
+                os.path.join(
+                    libdir,
+                    ''.join(('libpython', ver, abi, ext))
+                )
+                for (ext, ver, abi) in itertools.product(
+                    candidate_extensions,
+                    candidate_versions,
+                    candidate_abiflags
+                )
+            )
+
+            for candidate in candidates:
+                if os.path.exists(candidate):
+                    # we found a (likely alternate) libpython
+                    python_library = candidate
+                    break
+
         cmd = ['cmake', '..', '-G', generator_id,
                '-DCMAKE_INSTALL_PREFIX={0}'.format(os.getcwd()),
                '-DPYTHON_EXECUTABLE=' + sys.executable,
-               '-DPYTHON_VERSION_STRING=' + sys.version.split(' ')[0], ]
+               '-DPYTHON_VERSION_STRING=' + sys.version.split(' ')[0],
+               '-DPYTHON_INCLUDE_DIR=' + python_include_dir,
+               '-DPYTHON_LIBRARY=' + python_library,
+               ]
+
         cmd.extend(clargs)
         # changes dir to cmake_build and calls cmake's configure step
         # to generate makefile
@@ -102,15 +152,13 @@ class CMaker(object):
         return self._parse_manifest()
 
     def _parse_manifest(self):
-        installed_files = list()
+        installed_files = {}
         with open("cmake_build/install_manifest.txt", "r") as manifest:
             for path in manifest.readlines():
-                # do we have an __init__.py file in the folder?
-                # if not, we should create one so that distutils can find files
-                # there.
-                init_path = _touch_init(os.path.split(path)[0])
                 cleaned_relative_path = _remove_cwd_prefix(path)
-                # distutils likes only the filename - gets confused by relative
-                # path???
-                installed_files.append(os.path.split(cleaned_relative_path)[1])
-        return installed_files
+                package, relative_path = cleaned_relative_path.split(os.sep, 1)
+                path_set = installed_files.get(package, set())
+                path_set.add(relative_path)
+                installed_files[package] = path_set
+
+        return { k: list(v) for k,v in installed_files.items() }

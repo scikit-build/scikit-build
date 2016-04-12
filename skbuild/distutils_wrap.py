@@ -63,10 +63,12 @@ def setup(*args, **kw):
     cmkr = cmaker.CMaker()
     cmkr.configure(cmake_args)
     cmkr.make(make_args)
-    extra_data_files = cmkr.install()
-    data_files = kw.get('package_data', {})
-    base_path_files = data_files.get("", [])
-    base_path_files.extend(extra_data_files)
-    data_files[""] = base_path_files
+
+    data_files = kw.get('package_data', {}).copy()
+    for package, paths in cmkr.install().items():
+        base_paths = data_files.get(package, [])
+        base_paths.extend(paths)
+        data_files[package] = base_paths
     kw['package_data'] = data_files
+
     return distutils.core.setup(*args, **kw)
