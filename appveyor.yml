@@ -1,6 +1,6 @@
 ---
 
-version: "0.0.1.{ build }"
+version: "0.0.1.{build}"
 
 notifications:
   - provider: GitHubPullRequest
@@ -22,11 +22,11 @@ matrix:
 
 install:
   - "cinst cmake"
-  - "cinst { py }"
+  - "cinst {py}"
 
 before_build:
   - cmd: pip install -r requirements.txt
 
 test_script:
-  - cmd: "{ py } -m nose -w tests"
+  - cmd: "{py} -m nose -w tests"
 
