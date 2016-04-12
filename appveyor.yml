@@ -1,34 +1,34 @@
 ---
 
-version: "0.0.1.{build}"
+version: 0.0.1.{build}
 
 notifications:
   - provider: GitHubPullRequest
     auth_token:
       secure: iXYaAwXJcHdnRGTeb1Gk1PembhlZleCGDK2oJgsiFvA=
-      template: >-
-        {{#passed}}:white_check_mark:{{/passed}}{{#failed}}:x:{{/failed}}
-        [Build {{&projectName}} {{buildVersion}} {{status}}]({{buildUrl}})
-        (commit {{commitUrl}} by @{{&commitAuthorUsername}})
+    template: >-
+      {{#passed}}:white_check_mark:{{/passed}}{{#failed}}:x:{{/failed}}
+      [Build {{&projectName}} {{buildVersion}} {{status}}]({{buildUrl}})
+      (commit {{commitUrl}} by @{{&commitAuthorUsername}})
 
 shallow_clone: true
 
 environment:
   matrix:
-    - py: python2
-    - py: python2-x86_32
-    - py: python
+    - PYTHON: python2
+    - PYTHON: python2-x86_32
+    - PYTHON: python
 
 matrix:
   fast_finish: true
 
 install:
-  - "cinst cmake"
-  - "cinst ${py}"
+  - cmd: cinst cmake
+  - cmd: cinst %PYTHON%
 
 before_build:
   - cmd: pip install -r requirements.txt
 
 test_script:
-  - cmd: "${py} -m nose -w tests"
+  - cmd: %PYTHON% -m nose -w tests
 
