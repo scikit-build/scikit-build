@@ -1,0 +1,22 @@
+---
+
+version: "0.0.1.{ build }"
+
+environment:
+  matrix:
+    - py: python2
+    - py: python2-x86_32
+    - py: python
+
+matrix:
+  fast_finish: true
+
+install:
+  - cinst cmake
+  - cinst { py }
+
+before_build:
+  - cmd: pip install -r requirements.txt
+
+test_script:
+  - cmd: { py } -m nose -w tests
