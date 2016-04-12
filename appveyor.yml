@@ -1,6 +1,6 @@
 ---
 
-version: 0.0.1.{build}
+version: "0.0.1.{build}"
 
 notifications:
   - provider: GitHubPullRequest
@@ -23,12 +23,12 @@ matrix:
   fast_finish: true
 
 install:
-  - cmd: cinst cmake
-  - cmd: cinst %PYTHON%
+  - cmd: "cinst cmake"
+  - cmd: "cinst %PYTHON%"
 
 before_build:
-  - cmd: pip install -r requirements.txt
+  - cmd: "pip install -r requirements.txt"
 
 test_script:
-  - cmd: %PYTHON% -m nose -w tests
+  - cmd: "%PYTHON% -m nose -w tests"
 
