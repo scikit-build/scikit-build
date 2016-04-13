@@ -9,6 +9,8 @@ import sysconfig
 
 from .platform_specifics import get_platform
 
+CMAKE_BUILD_DIR = os.path.join("skbuild", "cmake")
+PACKAGE_BUILD_DIR = os.path.join("skbuild", "lib")
 
 def pop_arg(arg, a, default=None):
     """Pops an arg(ument) from an argument list a and returns the new list
@@ -71,12 +73,45 @@ class CMaker(object):
             sys.exit("Could not get working generator for your system."
                      "  Aborting build.")
 
-        if not os.path.exists("cmake_build"):
-            os.makedirs("cmake_build")
+        if not os.path.exists(CMAKE_BUILD_DIR):
+            os.makedirs(CMAKE_BUILD_DIR)
+
+        if not os.path.exists(PACKAGE_BUILD_DIR):
+            os.makedirs(PACKAGE_BUILD_DIR)
+
+        python_version = sysconfig.get_config_var('VERSION')
 
         # determine python include dir
-        python_include_dir = (sysconfig.get_path('include') or
-                              sysconfig.get_path('platinclude'))
+        python_include_dir = sysconfig.get_config_var('INCLUDEPY')
+
+        # if Python.h not found, try to find a suitable include dir
+        if not os.path.exists(os.path.join(python_include_dir, 'Python.h')):
+            candidate_prefixes = tuple(
+                filter(bool, (
+                    os.path.dirname(sysconfig.get_config_var('INCLUDEPY')),
+                    sysconfig.get_config_var('INCLUDEDIR'),
+                    os.path.dirname(sysconfig.get_path('include')),
+                    os.path.dirname(sysconfig.get_path('platinclude'))
+                ))
+            )
+
+            candidate_versions = (python_version,)
+            if python_version:
+                candidate_versions += ('',)
+
+            candidates = (
+                os.path.join(prefix, ''.join(('python', ver)))
+                for (prefix, ver) in itertools.product(
+                    candidate_prefixes,
+                    candidate_versions
+                )
+            )
+
+            for candidate in candidates:
+                if os.path.exists(os.path.join(candidate, 'Python.h')):
+                    # we found an include directory
+                    python_include_dir = candidate
+                    break
 
         # determine direct path to libpython
         python_library = sysconfig.get_config_var('LIBRARY')
@@ -87,7 +122,6 @@ class CMaker(object):
             if sysconfig.get_config_var('WITH_DYLD'):
                 candidate_extensions = ('.dylib',) + candidate_extensions
 
-            python_version = sysconfig.get_config_var('VERSION')
             candidate_versions = (python_version,)
             if python_version:
                 candidate_versions += ('',)
@@ -98,6 +132,13 @@ class CMaker(object):
                 candidate_abiflags += ('',)
 
             libdir = sysconfig.get_config_var('LIBDIR')
+            if sysconfig.get_config_var('MULTIARCH'):
+                masd = sysconfig.get_config_var('multiarchsubdir')
+                if masd:
+                    if masd.startswith(os.sep):
+                        masd = masd[len(os.sep):]
+                    libdir = os.path.join(libdir, masd)
+
             candidates = (
                 os.path.join(
                     libdir,
@@ -116,8 +157,9 @@ class CMaker(object):
                     python_library = candidate
                     break
 
-        cmd = ['cmake', '..', '-G', generator_id,
-               '-DCMAKE_INSTALL_PREFIX={0}'.format(os.getcwd()),
+        cmd = ['cmake', os.getcwd(), '-G', generator_id,
+               '-DCMAKE_INSTALL_PREFIX={0}'.format(
+                    os.path.join(os.getcwd(), PACKAGE_BUILD_DIR)),
                '-DPYTHON_EXECUTABLE=' + sys.executable,
                '-DPYTHON_VERSION_STRING=' + sys.version.split(' ')[0],
                '-DPYTHON_INCLUDE_DIR=' + python_include_dir,
@@ -127,7 +169,7 @@ class CMaker(object):
         cmd.extend(clargs)
         # changes dir to cmake_build and calls cmake's configure step
         # to generate makefile
-        rtn = subprocess.check_call(cmd, cwd="cmake_build")
+        rtn = subprocess.check_call(cmd, cwd=CMAKE_BUILD_DIR)
         if rtn != 0:
             raise RuntimeError("Could not successfully configure your project. "
                                "Please see CMake's output for more information.")
@@ -136,13 +178,15 @@ class CMaker(object):
         """Calls the system-specific make program to compile code.
         """
         clargs, config = pop_arg('--config', clargs, config)
-        if not os.path.exists("cmake_build"):
-            raise RuntimeError("CMake build folder (cmake_build) does not exist. "
-                               "Did you forget to run configure before make?")
+        if not os.path.exists(CMAKE_BUILD_DIR):
+            raise RuntimeError(("CMake build folder ({}) does not exist. "
+                                "Did you forget to run configure before "
+                                "make?").format(CMAKE_BUILD_DIR))
+
         cmd = ["cmake", "--build", source_dir,
                "--target", "install", "--config", config]
         cmd.extend(clargs)
-        rtn = subprocess.check_call(cmd, cwd="cmake_build")
+        rtn = subprocess.check_call(cmd, cwd=CMAKE_BUILD_DIR)
         return rtn
 
     def install(self):
@@ -153,12 +197,9 @@ class CMaker(object):
 
     def _parse_manifest(self):
         installed_files = {}
-        with open("cmake_build/install_manifest.txt", "r") as manifest:
-            for path in manifest.readlines():
-                cleaned_relative_path = _remove_cwd_prefix(path)
-                package, relative_path = cleaned_relative_path.split(os.sep, 1)
-                path_set = installed_files.get(package, set())
-                path_set.add(relative_path)
-                installed_files[package] = path_set
+        install_manifest_path = os.path.join(CMAKE_BUILD_DIR,
+                                             "install_manifest.txt")
+        with open(install_manifest_path, "r") as manifest:
+            return [_remove_cwd_prefix(path) for path in manifest]
 
-        return { k: list(v) for k,v in installed_files.items() }
+        return []
