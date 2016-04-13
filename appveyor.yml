@@ -15,20 +15,36 @@ shallow_clone: true
 
 environment:
   matrix:
-    - PYTHON: python2
-    - PYTHON: python2-x86_32
-    - PYTHON: python
+    - PYTHON: "C:\\Python27"
+    - PYTHON: "C:\\Python27-x64"
+    - PYTHON: "C:\\Python33"
+    - PYTHON: "C:\\Python33-x64"
+      DISTUTILS_USE_SDK: "1"
+    - PYTHON: "C:\\Python34"
+    - PYTHON: "C:\\Python34-x64"
+      DISTUTILS_USE_SDK: "1"
+    - PYTHON: "C:\\Python35"
+    - PYTHON: "C:\\Python35-x64"
+
+build: off
 
 matrix:
   fast_finish: true
 
 install:
+  - "%PYTHON%\\python.exe -m pip install -U pip"
+  - "%PYTHON%\\python.exe -m pip install wheel"
   - cmd: "cinst cmake"
-  - cmd: "cinst %PYTHON%"
 
 before_build:
-  - cmd: "%PYTHON% pip install -r requirements.txt"
+  - cmd: "%PYTHON%\\python.exe -m pip install -r requirements.txt"
 
 test_script:
-  - cmd: "%PYTHON% -m nose -w tests"
+  - cmd: "build.cmd %PYTHON%\\python.exe -m nose -w tests"
+
+after_test:
+  - cmd: "build.cmd %PYTHON%\\python.exe setup.py bdist_wheel"
+
+artifacts:
+  - path: "dist\\*"
 
