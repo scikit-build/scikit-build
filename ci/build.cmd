@@ -21,4 +21,11 @@ IF "%DISTUTILS_USE_SDK%"=="1" (
     ECHO Using default MSVC build environment
 )
 
+
+:: workaround for CMake not wanting sh.exe on PATH for MinGW
+SET PATH=%PATH:C:\Program Files (x86)\Git\bin;=%
+SET PATH=%PATH:C:\Program Files\Git\bin;=%
+SET PATH=C:\MinGW\bin;%PATH%
+ECHO "PATH: %PATH%"
+
 CALL %*
