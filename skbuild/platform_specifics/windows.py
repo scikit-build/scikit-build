@@ -9,7 +9,7 @@ class WindowsPlatform(abstract.CMakePlatform):
 
     def __init__(self):
         super(WindowsPlatform, self).__init__()
-        self.default_generators = ["MSYS Makefiles", "MinGW Makefiles"]
+        self.default_generators = ["MinGW Makefiles", ]
         python_major_version = sys.version_info[0]
         # python 3 from the mothership uses VS 2010
         if python_major_version == 3:
