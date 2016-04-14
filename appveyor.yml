@@ -32,20 +32,28 @@ matrix:
   fast_finish: true
 
 install:
-  - "%PYTHON%\\python.exe -m pip install -U pip"
-  - "%PYTHON%\\python.exe -m pip install wheel"
-  - cmd: "cinst cmake"
+  - cmd: >-
+      %PYTHON%\python.exe -m pip install -U pip
+  - cmd: >-
+      %PYTHON%\python.exe -m pip install wheel
+  - cmd: >-
+      cinst cmake
 
 before_test:
-  - cmd: "%PYTHON%\\python.exe -m pip install -r requirements.txt"
-  - cmd: "%PYTHON%\\python.exe -m pip install -r requirements-dev.txt"
+  - cmd: >-
+      ci\build.cmd %PYTHON%\python.exe -m pip install -r requirements.txt
+  - cmd: >-
+      ci\build.cmd %PYTHON%\python.exe -m pip install -r requirements-dev.txt
 
 test_script:
-  - cmd: "ci\\build.cmd %PYTHON%\\python.exe -m nose -w tests"
+  - cmd: >-
+      ci\build.cmd %PYTHON%\python.exe -m nose -w tests
 
 after_test:
-  - cmd: "ci\\build.cmd %PYTHON%\\python.exe setup.py bdist_wheel"
+  - cmd: >-
+      ci\build.cmd %PYTHON%\python.exe setup.py bdist_wheel
 
 artifacts:
-  - path: "dist\\*"
+  - path: >-
+      dist\*
 
