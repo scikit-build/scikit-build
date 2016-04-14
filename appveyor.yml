@@ -50,6 +50,7 @@ test_script: >-
   set PATH=%PATH:C:\Program Files (x86)\Git\bin;=% &
   set PATH=%PATH:C:\Program Files\Git\bin;=% &
   set PATH=C:\MinGW\bin;%PATH% &
+  echo "PATH: "%PATH% &
   ci\build.cmd %PYTHON%\python.exe -m nose -w tests
 
 after_test: >-
