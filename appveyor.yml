@@ -36,8 +36,9 @@ install:
   - "%PYTHON%\\python.exe -m pip install wheel"
   - cmd: "cinst cmake"
 
-before_build:
+before_test:
   - cmd: "%PYTHON%\\python.exe -m pip install -r requirements.txt"
+  - cmd: "%PYTHON%\\python.exe -m pip install -r requirements-dev.txt"
 
 test_script:
   - cmd: "ci\\build.cmd %PYTHON%\\python.exe -m nose -w tests"

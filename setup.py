@@ -13,11 +13,11 @@ except ImportError:
 readme = open('README.rst').read()
 history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 
-# TODO: put package requirements here
-requirements = []
+requirements = list(filter(bool, (
+    line.strip() for line in open('requirements.txt'))))
 
-# TODO: put package test requirements here
-test_requirements = ["nose", ]
+dev_requirements = list(filter(bool, (
+    line.strip() for line in open('requirements-dev.txt'))))
 
 setup(
     name='scikit-build',
@@ -47,5 +47,5 @@ setup(
         'Programming Language :: Python :: 3.4',
     ],
     test_suite='tests',
-    tests_require=test_requirements
+    tests_require=dev_requirements
 )
