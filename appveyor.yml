@@ -37,18 +37,18 @@ matrix:
 build: off
 
 install: >-
-  %PYTHON%\python.exe -m pip install -U pip
-  %PYTHON%\python.exe -m pip install wheel
+  %PYTHON%\python.exe -m pip install -U pip &&
+  %PYTHON%\python.exe -m pip install wheel &&
   cinst cmake
 
 before_test: >-
-  ci\build.cmd %PYTHON%\python.exe -m pip install -r requirements.txt
+  ci\build.cmd %PYTHON%\python.exe -m pip install -r requirements.txt &&
   ci\build.cmd %PYTHON%\python.exe -m pip install -r requirements-dev.txt
 
 # workaround for CMake not wanting sh.exe on PATH for MinGW
 test_script: >-
-  set PATH=%PATH:C:\Program Files (x86)\Git\bin;=%
-  set PATH=C:\MinGW\bin;%PATH%
+  set PATH=%PATH:C:\Program Files (x86)\Git\bin;=% &
+  set PATH=C:\MinGW\bin;%PATH% &
   ci\build.cmd %PYTHON%\python.exe -m nose -w tests
 
 after_test: >-
