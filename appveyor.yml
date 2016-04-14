@@ -34,13 +34,6 @@ environment:
 matrix:
   fast_finish: true
 
-before_build:
-  # workaround for CMake not wanting sh.exe on PATH for MinGW
-  - cmd: >-
-      set PATH=%PATH:C:\Program Files (x86)\Git\bin;=%
-  - cmd: >-
-      set PATH=C:\MinGW\bin;%PATH%
-
 build: off
 
 install:
@@ -56,6 +49,11 @@ before_test:
       ci\build.cmd %PYTHON%\python.exe -m pip install -r requirements.txt
   - cmd: >-
       ci\build.cmd %PYTHON%\python.exe -m pip install -r requirements-dev.txt
+  # workaround for CMake not wanting sh.exe on PATH for MinGW
+  - cmd: >-
+      set PATH=%PATH:C:\Program Files (x86)\Git\bin;=%
+  - cmd: >-
+      set PATH=C:\MinGW\bin;%PATH%
 
 test_script:
   - cmd: >-
