@@ -40,10 +40,10 @@ before_build:
   - cmd: "%PYTHON%\\python.exe -m pip install -r requirements.txt"
 
 test_script:
-  - cmd: "build.cmd %PYTHON%\\python.exe -m nose -w tests"
+  - cmd: "ci\\build.cmd %PYTHON%\\python.exe -m nose -w tests"
 
 after_test:
-  - cmd: "build.cmd %PYTHON%\\python.exe setup.py bdist_wheel"
+  - cmd: "ci\\build.cmd %PYTHON%\\python.exe setup.py bdist_wheel"
 
 artifacts:
   - path: "dist\\*"
