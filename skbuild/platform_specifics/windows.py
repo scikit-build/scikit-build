@@ -31,4 +31,4 @@ class WindowsPlatform(abstract.CMakePlatform):
             vs_base += " ARM"
         # we're implicitly doing nothing for 32-bit builds.  Their generator
         # string IDs seem to be just the vs_base.
-        self.default_generators.append(vs_base)
+        self.default_generators.insert(0, vs_base)
