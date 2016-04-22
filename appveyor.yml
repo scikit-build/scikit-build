@@ -104,7 +104,6 @@ install:
   - cmd: "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
 
   # Check that we have the expected version and architecture for Python
-  - cmd: ECHO "PYTHON VERSION:"
   - cmd: "python --version"
   - cmd: "\
       python -c \"import struct; \
