@@ -70,6 +70,15 @@ environment:
       PYTHON_ARCH: "64"
       CMAKE_GENERATOR: Visual Studio 10
 
+init:
+  - cmd: "ECHO RDP CONNECTION INFORMATION (IN CASE OF HANGING BUILD)"
+  - ps: "\
+      iex (\
+        (new-object net.webclient).DownloadString(\
+          'https://raw.githubusercontent.com/\
+           appveyor/ci/master/scripts/enable-rdp.ps1'\
+        ))"
+
 install:
   # If there is a newer build queued for the same PR, cancel this one.
   # The AppVeyor 'rollout builds' option is supposed to serve the same
