@@ -1,6 +1,155 @@
 ---
 
+# borrowed heavily from ogrisel/python-appveyor-demo
+
 version: "0.0.1.{build}"
+
+environment:
+  global:
+    # SDK v7.0 MSVC Express 2008's SetEnv.cmd script will fail if the
+    # /E:ON and /V:ON options are not enabled in the batch script intepreter
+    # See: http://stackoverflow.com/a/13751649/163740
+    CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run-with-env.cmd"
+
+  matrix:
+    - PYTHON: "C:\\Python27"
+      PYTHON_VERSION: "2.7.x"
+      PYTHON_ARCH: "32"
+
+    - PYTHON: "C:\\Python27-x64"
+      PYTHON_VERSION: "2.7.x"
+      PYTHON_ARCH: "64"
+
+    - PYTHON: "C:\\Python35"
+      PYTHON_VERSION: "3.5.x"
+      PYTHON_ARCH: "32"
+
+    - PYTHON: "C:\\Python35-x64"
+      PYTHON_VERSION: "3.5.x"
+      PYTHON_ARCH: "64"
+
+
+    - PYTHON: "C:\\Python27"
+      PYTHON_VERSION: "2.7.x"
+      PYTHON_ARCH: "32"
+      CMAKE_GENERATOR: MinGW Makefiles
+
+    - PYTHON: "C:\\Python27-x64"
+      PYTHON_VERSION: "2.7.x"
+      PYTHON_ARCH: "64"
+      CMAKE_GENERATOR: MinGW Makefiles
+
+    - PYTHON: "C:\\Python35"
+      PYTHON_VERSION: "3.5.x"
+      PYTHON_ARCH: "32"
+      CMAKE_GENERATOR: MinGW Makefiles
+
+    - PYTHON: "C:\\Python35-x64"
+      PYTHON_VERSION: "3.5.x"
+      PYTHON_ARCH: "64"
+      CMAKE_GENERATOR: MinGW Makefiles
+
+
+    - PYTHON: "C:\\Python27"
+      PYTHON_VERSION: "2.7.x"
+      PYTHON_ARCH: "32"
+      CMAKE_GENERATOR: Visual Studio 9 2008
+
+    - PYTHON: "C:\\Python27-x64"
+      PYTHON_VERSION: "2.7.x"
+      PYTHON_ARCH: "64"
+      CMAKE_GENERATOR: Visual Studio 9 2008
+
+    - PYTHON: "C:\\Python35"
+      PYTHON_VERSION: "3.5.x"
+      PYTHON_ARCH: "32"
+      CMAKE_GENERATOR: Visual Studio 10
+
+    - PYTHON: "C:\\Python35-x64"
+      PYTHON_VERSION: "3.5.x"
+      PYTHON_ARCH: "64"
+      CMAKE_GENERATOR: Visual Studio 10
+
+install:
+  # If there is a newer build queued for the same PR, cancel this one.
+  # The AppVeyor 'rollout builds' option is supposed to serve the same
+  # purpose but it is problematic because it tends to cancel builds pushed
+  # directly to master instead of just PR builds (or the converse).
+  # credits: JuliaLang developers.
+  - ps: "\
+    if (\
+      $env:APPVEYOR_PULL_REQUEST_NUMBER -and \
+      $env:APPVEYOR_BUILD_NUMBER -ne (\
+        (\
+          Invoke-RestMethod \
+            ` https://ci.appveyor.com/api/projects/\
+                $env:APPVEYOR_ACCOUNT_NAME/\
+                $env:APPVEYOR_PROJECT_SLUG/\
+                history?recordsNumber=50\
+        ).builds | ` Where-Object pullRequestId -eq \
+                                  $env:APPVEYOR_PULL_REQUEST_NUMBER\
+      )[0].buildNumber\
+    ) { ` \
+      throw \"There are newer queued builds \
+              for this pull request, failing early.\" \
+    }"
+  - cmd: ECHO "Filesystem root:"
+  - ps: "ls \"C:/\""
+  - cmd: ECHO "Installed SDKs:"
+  - ps: "ls \"C:/Program Files/Microsoft SDKs/Windows\""
+
+  # Prepend newly installed Python to the PATH of this build (this cannot be
+  # done from inside the powershell script as it would require to restart
+  # the parent CMD process).
+  - cmd: "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
+
+  # Check that we have the expected version and architecture for Python
+  - cmd: ECHO "PYTHON VERSION:"
+  - cmd: "python --version"
+  - cmd: "\
+      python -c \"import struct; \
+                  print('    {}-bit'.format(struct.calcsize('P') * 8))\""
+
+  # Upgrade to the latest version of pip to avoid it displaying warnings
+  # about it being out of date.
+  - cmd: "pip install --disable-pip-version-check --user --upgrade pip"
+  - cmd: "pip install wheel"
+  - cmd: "cinst cmake"
+
+  # Install the build dependencies of the project. If some dependencies contain
+  # compiled extensions and are not provided as pre-built wheel packages,
+  # pip will build them from source using the MSVC compiler matching the
+  # target Python version and architecture
+  - cmd: "%CMD_IN_ENV% pip install -r requirements.txt"
+  - cmd: "%CMD_IN_ENV% pip install -r dev-requirements.txt"
+
+build_script:
+  # Build the compiled extension
+  - cmd: "%CMD_IN_ENV% python setup.py build"
+
+test_script:
+  # workaround for CMake not wanting sh.exe on PATH for MinGW
+  - cmd: "set PATH=%PATH:C:\Program Files\Git\usr\bin;=%"
+  - cmd: "set PATH=%PATH:C:\Program Files (x86)\Git\usr\bin;=%"
+  - cmd: "set PATH=%PATH:C:\Program Files\Git\bin;=%"
+  - cmd: "set PATH=%PATH:C:\Program Files (x86)\Git\bin;=%"
+  - cmd: "set PATH=%PATH:C:\Program Files\Git\cmd;=%"
+  - cmd: "set PATH=%PATH:C:\Program Files (x86)\Git\cmd;=%"
+  - cmd: "%CMD_IN_ENV% python setup.py nosetests -w tests"
+
+after_test:
+  # If tests are successful, create binary packages for the project.
+  - cmd: "%CMD_IN_ENV% python setup.py bdist_wheel"
+  - cmd: "%CMD_IN_ENV% python setup.py bdist_wininst"
+  - cmd: "%CMD_IN_ENV% python setup.py bdist_msi"
+  - ps: "ls dist"
+
+artifacts:
+  # Archive the generated packages in the ci.appveyor.com build report.
+  - path: dist\*
+
+matrix:
+  fast_finish: true
 
 notifications:
   - provider: GitHubPullRequest
@@ -12,66 +161,4 @@ notifications:
       (commit {{commitUrl}} by @{{&commitAuthorUsername}})
 
 shallow_clone: true
-
-environment:
-  matrix:
-    - PYTHON: "C:\\Python27"
-    - PYTHON: "C:\\Python27"
-      CMAKE_GENERATOR: MinGW Makefiles
-    - PYTHON: "C:\\Python27"
-      CMAKE_GENERATOR: Visual Studio 9 2008
-    - PYTHON: "C:\\Python27"
-      CMAKE_GENERATOR: Visual Studio 10
-
-    - PYTHON: "C:\\Python35"
-    - PYTHON: "C:\\Python35"
-      CMAKE_GENERATOR: MinGW Makefiles
-    - PYTHON: "C:\\Python35"
-      CMAKE_GENERATOR: Visual Studio 9 2008
-    - PYTHON: "C:\\Python35"
-      CMAKE_GENERATOR: Visual Studio 10
-
-matrix:
-  fast_finish: true
-
-build: off
-
-install:
-  - cmd: >-
-      %PYTHON%\python.exe -m pip install -U pip
-  - cmd: >-
-      %PYTHON%\python.exe -m pip install wheel
-  - cmd: >-
-      cinst cmake
-
-before_test:
-  - cmd: >-
-      %PYTHON%\python.exe -m pip install -r requirements.txt
-  - cmd: >-
-      %PYTHON%\python.exe -m pip install -r requirements-dev.txt
-
-# workaround for CMake not wanting sh.exe on PATH for MinGW
-test_script:
-  - cmd: >-
-      set PATH=%PATH:C:\Program Files\Git\usr\bin;=%
-  - cmd: >-
-      set PATH=%PATH:C:\Program Files (x86)\Git\usr\bin;=%
-  - cmd: >-
-      set PATH=%PATH:C:\Program Files\Git\bin;=%
-  - cmd: >-
-      set PATH=%PATH:C:\Program Files (x86)\Git\bin;=%
-  - cmd: >-
-      set PATH=%PATH:C:\Program Files\Git\cmd;=%
-  - cmd: >-
-      set PATH=%PATH:C:\Program Files (x86)\Git\cmd;=%
-  - cmd: >-
-      %PYTHON%\python.exe -m nose -w tests
-
-after_test:
-  - cmd: >-
-      %PYTHON%\python.exe setup.py bdist_wheel
-
-artifacts:
-  - path: >-
-      dist\*
 
