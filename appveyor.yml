@@ -6,7 +6,11 @@ version: "0.0.1.{build}"
 
 environment:
   matrix:
-    # Visual Studio (Python 2 & 3, 32 & 64 bit, no fortran)
+    ##################################################
+    # NOTE: For now, Fortran features are not tested #
+    ##################################################
+
+    # Visual Studio (Python 2 & 3, 32 & 64 bit)
     - PYTHON: "C:\\Python27"
       PYTHON_VERSION: "2.7.x"
       PYTHON_ARCH: "32"
@@ -41,15 +45,17 @@ environment:
       PYTHON_ARCH: "64"
       CMAKE_GENERATOR: "MinGW Makefiles"
       CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run-with-mingw.cmd"
+      EXTRA_TEST_ARGS: "--exclude fortran"
 
     - PYTHON: "C:\\Python35"
       PYTHON_VERSION: "3.5.x"
       PYTHON_ARCH: "32"
       CMAKE_GENERATOR: "MinGW Makefiles"
       CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run-with-mingw.cmd"
+      EXTRA_TEST_ARGS: "--exclude fortran"
 
     # Default -- make sure Visual Studio works as the default
-    # (Python 2 & 3, 64 bit only, no fortran)
+    # (Python 2 & 3, 64 bit only)
     - PYTHON: "C:\\Python27-x64"
       PYTHON_VERSION: "2.7.x"
       PYTHON_ARCH: "64"
