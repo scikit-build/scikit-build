@@ -110,7 +110,8 @@ install:
   # the parent CMD process).
   - cmd: "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
 
-  # Check that we have the expected version and architecture for Python
+  # Display version and architecture for Python.
+  # Useful when visually inspecting the log.
   - cmd: "python --version"
   - cmd: "\
       python -c \"import struct; \
