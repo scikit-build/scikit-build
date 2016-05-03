@@ -60,13 +60,76 @@ def setup(*args, **kw):
     CMake-generated output as necessary.
     """
     sys.argv, cmake_args, make_args = parse_args()
+
+    packages = kw.get('packages', [])
+    package_dir = kw.get('package_dir', {})
+    package_data = kw.get('package_data', {}).copy()
+
+    # collect the list of prefixes for all packages
+    #
+    # The list is used to match paths in the install manifest to packages
+    # specified in the setup.py script.
+    #
+    # The list is sorted in decreasing order of prefix length so that paths are
+    # matched with their immediate parent package, instead of any of that
+    # package's ancestors.
+    #
+    # For example, consider the project structure below.  Assume that the
+    # setup call was made with a package list featuring "top" and "top.bar", but
+    # not "top.not_a_subpackage".
+    #
+    # top/                -> top/
+    #   __init__.py       -> top/__init__.py                 (parent: top)
+    #   foo.py            -> top/foo.py                      (parent: top)
+    #   bar/              -> top/bar/                        (parent: top)
+    #     __init__.py     -> top/bar/__init__.py             (parent: top.bar)
+    #
+    #   not_a_subpackage/ -> top/not_a_subpackage/           (parent: top)
+    #     data_0.txt      -> top/not_a_subpackage/data_0.txt (parent: top)
+    #     data_1.txt      -> top/not_a_subpackage/data_1.txt (parent: top)
+    #
+    # The paths in the generated install manifest are matched to packages
+    # according to the parents indicated on the right.  Only packages that are
+    # specified in the setup() call are considered.  Because of the sort order,
+    # the data files on the bottom would have been mapped to
+    # "top.not_a_subpackage" instead of "top", proper -- had such a package been
+    # specified.
+    package_prefixes = list(sorted(
+        (
+            (package_dir[package].replace('.', '/'), package)
+            for package in packages
+        ),
+        key=lambda tup: len(tup[0]),
+        reverse=True
+    ))
+
     cmkr = cmaker.CMaker()
     cmkr.configure(cmake_args)
     cmkr.make(make_args)
-    extra_data_files = cmkr.install()
-    data_files = kw.get('package_data', {})
-    base_path_files = data_files.get("", [])
-    base_path_files.extend(extra_data_files)
-    data_files[""] = base_path_files
-    kw['package_data'] = data_files
+
+    for path in cmkr.install():
+        for prefix, package in package_prefixes:
+            # peel off the 'skbuild' prefix
+            path = os.path.relpath(path, cmaker.PACKAGE_BUILD_DIR)
+
+            if path.startswith(prefix):
+                # peel off the package prefix
+                path = os.path.relpath(path, prefix)
+
+                package_file_list = package_data.get(package, [])
+                package_file_list.append(path)
+                package_data[package] = package_file_list
+                break
+
+            # NOTE(opadron): If control reaches this point, then we have
+            # installed files for which there are no specified packages.  Not
+            # sure what to do about them.  For now, they are silently dropped,
+            # just like with distutils.
+
+    kw['package_data'] = package_data
+    kw['package_dir'] = {
+        package: os.path.join(cmaker.PACKAGE_BUILD_DIR, prefix)
+        for prefix, package in package_prefixes
+    }
+
     return distutils.core.setup(*args, **kw)
