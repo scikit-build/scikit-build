@@ -135,13 +135,6 @@ build_script:
   - cmd: "%CMD_IN_ENV% python setup.py build"
 
 test_script:
-  # workaround for CMake not wanting sh.exe on PATH for MinGW
-  - cmd: "set PATH=%PATH:C:\\Program Files\\Git\\usr\\bin;=%"
-  - cmd: "set PATH=%PATH:C:\\Program Files (x86)\\Git\\usr\\bin;=%"
-  - cmd: "set PATH=%PATH:C:\\Program Files\\Git\\bin;=%"
-  - cmd: "set PATH=%PATH:C:\\Program Files (x86)\\Git\\bin;=%"
-  - cmd: "set PATH=%PATH:C:\\Program Files\\Git\\cmd;=%"
-  - cmd: "set PATH=%PATH:C:\\Program Files (x86)\\Git\\cmd;=%"
   - cmd: "%CMD_IN_ENV% python -m nose -v -w tests %EXTRA_TEST_ARGS%"
 
 after_test:
