@@ -1,4 +1,6 @@
-:: To build extensions for 64 bit Python 3, we need to configure environment
+:: Original Source:
+::   https://github.com/ogrisel/python-appveyor-demo/blob/master/appveyor/run_with_env.cmd
+::
 :: variables to use the MSVC 2010 C++ compilers from GRMSDKX_EN_DVD.iso of:
 :: MS Windows SDK for Windows 7 and .NET Framework 4 (SDK v7.1)
 ::
@@ -13,7 +15,7 @@
 :: cmd interpreter, at least for (SDK v7.0)
 ::
 :: More details at:
-:: https://github.com/cython/cython/wiki/64BitCythonExtensionsOnWindows
+:: https://github.com/cython/cython/wiki/CythonExtensionsOnWindows
 :: http://stackoverflow.com/a/13751649/163740
 ::
 :: Author: Olivier Grisel
