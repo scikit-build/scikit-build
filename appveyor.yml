@@ -77,7 +77,7 @@ init:
            appveyor/ci/master/scripts/enable-rdp.ps1'\
         ))"
   - cmd: "\
-      curl -fsSL -o ci\\appveyor\\run-with-visual-studio.cmd \
+      curl -fsSL -o ci/appveyor/run-with-visual-studio.cmd \
         https://raw.githubusercontent.com/ogrisel/python-appveyor-demo/\
           f54ec3593bcea682098a59b560c1850c19746e10/appveyor/run_with_env.cmd"
 
