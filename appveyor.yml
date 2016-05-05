@@ -72,14 +72,20 @@ init:
   - cmd: "ECHO RDP CONNECTION INFORMATION (IN CASE OF HANGING BUILD)"
   - ps: "\
       iex (\
-        (new-object net.webclient).DownloadString(\
+        (New-Object Net.Webclient).DownloadString(\
           'https://raw.githubusercontent.com/\
            appveyor/ci/master/scripts/enable-rdp.ps1'\
-        ))"
-  - cmd: "\
-      curl -fsSL -o ci/appveyor/run-with-visual-studio.cmd \
-        https://raw.githubusercontent.com/ogrisel/python-appveyor-demo/\
-          f54ec3593bcea682098a59b560c1850c19746e10/appveyor/run_with_env.cmd"
+        )\
+      )"
+  - ps: "\
+      (New-Object Net.WebClient).DownloadFile(\
+        'https://raw.githubusercontent.com/ogrisel/python-appveyor-demo/\
+          f54ec3593bcea682098a59b560c1850c19746e10/appveyor/run_with_env.cmd', \
+        (
+          Get-Item -Path \
+            \".\\ci\\appveyor\\run-with-visual-studio.cmd\" -Verbose
+        ).FullName \
+      )"
 
 install:
   # If there is a newer build queued for the same PR, cancel this one.
