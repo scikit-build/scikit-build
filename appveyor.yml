@@ -77,14 +77,6 @@ init:
            appveyor/ci/master/scripts/enable-rdp.ps1'\
         )\
       )"
-  - ps: "\
-      (New-Object Net.WebClient).DownloadFile(\
-        'https://raw.githubusercontent.com/ogrisel/python-appveyor-demo/\
-          f54ec3593bcea682098a59b560c1850c19746e10/appveyor/run_with_env.cmd', \
-        (
-          Get-Item \".\\ci\\appveyor\\run-with-visual-studio.cmd\" -Verbose\
-        ).FullName\
-      )"
 
 install:
   # If there is a newer build queued for the same PR, cancel this one.
@@ -113,6 +105,17 @@ install:
   - ps: "ls \"C:/\""
   - cmd: ECHO "Installed SDKs:"
   - ps: "ls \"C:/Program Files/Microsoft SDKs/Windows\""
+
+  # Overwrite the visual-studio environment script with the one from
+  # ogrisel/python-appveyor-demo
+  - ps: "\
+      (New-Object Net.WebClient).DownloadFile(\
+        'https://raw.githubusercontent.com/ogrisel/python-appveyor-demo/\
+          f54ec3593bcea682098a59b560c1850c19746e10/appveyor/run_with_env.cmd', \
+        (
+          Get-Item \".\\ci\\appveyor\\run-with-visual-studio.cmd\" -Verbose\
+        ).FullName\
+      )"
 
   # Prepend newly installed Python to the PATH of this build (this cannot be
   # done from inside the powershell script as it would require to restart
