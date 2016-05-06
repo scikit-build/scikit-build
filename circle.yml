@@ -1,7 +1,12 @@
 dependencies:
+  pre:
+    - sudo apt-get install gfortran
+    - sudo apt-get install cmake
+
   override:
-    - "true"
+    - pip install -r requirements.txt
+    - pip install -r requirements-dev.txt
 
 test:
   override:
-    - "true"
+    - nosetests -w tests
