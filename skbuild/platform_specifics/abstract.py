@@ -47,10 +47,12 @@ class CMakePlatform(object):
             If True, cleans up temporary folder used to test generators.  Set to False
             for debugging to see CMake's output files.
         """
-        if generator is not None:
-            generators = [generator, ]
-        else:
-            generators = self.default_generators
+
+        generators = self.default_generators
+        for generator in (generator, os.environ.get('CMAKE_GENERATOR')):
+            if generator is not None:
+                generators = [generator, ]
+                break
 
         cmake_exe_path = self.get_cmake_exe_path()
 
