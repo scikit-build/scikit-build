@@ -44,6 +44,7 @@ docs/_build
 
 # IDE junk
 .idea/*
+*.swp
 
 # build output (testing)
 skbuild/cmake_test_compile/*
