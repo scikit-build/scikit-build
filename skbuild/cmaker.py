@@ -66,9 +66,19 @@ class CMaker(object):
             The string representing the CMake generator to use.  If None, uses defaults for your platform.
         """
 
-        clargs, generator_id = pop_arg('-G', clargs)
-        generator_id = get_platform().get_best_generator(
-            generator_id)
+        # if no provided default generator_id, check environment
+        if generator_id is None:
+            generator_id = os.environ.get("CMAKE_GENERATOR")
+
+        # if generator_id is provided on command line, use it
+        clargs, cli_generator_id = pop_arg('-G', clargs)
+        if cli_generator_id is not None:
+            generator_id = cli_generator_id
+
+        # use the generator_id returned from the platform, with the current
+        # generator_id as a suggestion
+        generator_id = get_platform().get_best_generator(generator_id)
+
         if generator_id is None:
             sys.exit("Could not get working generator for your system."
                      "  Aborting build.")

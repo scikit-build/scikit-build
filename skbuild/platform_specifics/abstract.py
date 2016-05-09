@@ -48,11 +48,10 @@ class CMakePlatform(object):
             for debugging to see CMake's output files.
         """
 
-        generators = self.default_generators
-        for generator in (generator, os.environ.get('CMAKE_GENERATOR')):
-            if generator is not None:
-                generators = [generator, ]
-                break
+        candidate_generators = self.default_generators
+
+        if generator is not None:
+            candidate_generators = [generator]
 
         cmake_exe_path = self.get_cmake_exe_path()
 
@@ -73,7 +72,7 @@ class CMakePlatform(object):
         # gets set to 0.
         status = -1
 
-        for generator in generators:
+        for generator in candidate_generators:
             # clear the cache for each attempted generator type
             if os.path.exists(cache_file):
                 os.remove(cache_file)
@@ -96,6 +95,8 @@ class CMakePlatform(object):
                 break
 
         os.chdir(backup_folder)
+
         if cleanup:
             CMakePlatform.cleanup_test()
+
         return working_generator
