@@ -6,3 +6,53 @@
 
 Tests for `skbuild` module.
 """
+
+import os
+import platform
+import sys
+
+from skbuild.platform_specifics import get_platform
+
+def test_generator_selection():
+    version = sys.version_info
+    env_generator = os.environ.get("CMAKE_GENERATOR")
+    this_platform = platform.system().lower()
+    get_generator = get_platform().get_best_generator
+    arch = platform.architecture()
+
+    if this_platform == "windows":
+        if env_generator:
+            assert(get_generator(env_generator) == env_generator)
+
+        # assert that we are running a supported version of python
+        py_27_33 = (
+            (version.major == 2 and version.minor >= 7) or
+            (version.major == 3 and version.minor <  3)
+        )
+
+        py_33_35 = (
+            version.major == 3 and (
+                version.minor >= 3 and
+                version.minor <  5
+            )
+        )
+
+        py_35 = (
+            version.major == 3 and
+            version.minor >= 5
+        )
+
+        assert(py_27_33 or py_33_35 or py_35)
+
+        generator = (
+            "Visual Studio 9 2008" if py_27_33 else
+            "Visual Studio 10 2010" if py_33_35 else
+            "Visual Studio 14 2015"
+        ) + (
+            "Win64" if arch == "x64" else
+            "ARM" if arch == "ARM" else
+            ""
+        )
+
+        assert(get_generator() == generator)
+
