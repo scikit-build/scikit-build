@@ -17,13 +17,13 @@ def test_generator_selection():
     version = sys.version_info
     env_generator = os.environ.get("CMAKE_GENERATOR")
     this_platform = platform.system().lower()
-    get_generator = get_platform().get_best_generator
+    get_best_generator = get_platform().get_best_generator
     arch = platform.architecture()
 
-    if this_platform == "windows":
-        if env_generator:
-            assert(get_generator(env_generator) == env_generator)
+    if env_generator:
+        assert(get_best_generator(env_generator) == env_generator)
 
+    if this_platform == "windows":
         # assert that we are running a supported version of python
         py_27_33 = (
             (version.major == 2 and version.minor >= 7) or
@@ -54,5 +54,5 @@ def test_generator_selection():
             ""
         )
 
-        assert(get_generator() == generator)
+        assert(get_best_generator() == generator)
 
