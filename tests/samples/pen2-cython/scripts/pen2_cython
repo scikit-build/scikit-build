@@ -1,0 +1,5 @@
+#! /usr/bin/env python
+
+from pen2_cython import main
+main()
+
