@@ -10,6 +10,7 @@ import distutils.core
 
 from . import cmaker
 from .command import build, install, clean
+from .exceptions import SKBuildError
 
 def move_arg(arg, a, b, newarg=None, f=lambda x: x, concatenate_value=False):
     """Moves an argument from a list to b list, possibly giving it a new name
@@ -123,6 +124,15 @@ def setup(*args, **kw):
         found_package = False
         found_module = False
         found_script = False
+
+        # if this installed file is not within the project root, complain and
+        # exit
+        if not path.startswith(cmaker.CMAKE_INSTALL_DIR):
+            raise SKBuildError((
+                "\n  CMake-installed files must be within the project root.\n"
+                "    Project Root  : {}\n"
+                "    Violating File: {}\n").format(
+                    os.path.join(os.getcwd(), cmaker.CMAKE_INSTALL_DIR), path))
 
         # peel off the 'skbuild' prefix
         path = os.path.relpath(path, cmaker.CMAKE_INSTALL_DIR)
