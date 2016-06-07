@@ -1,6 +1,12 @@
+
+import itertools
 import os
 import shutil
+import site
 import subprocess
+import sys
+
+import distutils.sysconfig
 
 test_folder = "cmake_test_compile"
 list_file = "CMakeLists.txt"
@@ -100,3 +106,25 @@ class CMakePlatform(object):
             CMakePlatform.cleanup_test()
 
         return working_generator
+
+    def get_relative_site_packages_dir(self):
+        """Returns the best guess on what the current distribution's
+        site-packages directory is relative to its prefix (e.g.:
+        lib/python2.7/site-packages)"""
+
+        result = None
+
+        candidates = itertools.chain(
+            (distutils.sysconfig.get_python_lib(),), # most likely to work
+            site.getsitepackages(),
+            (site.getusersitepackages,)
+        )
+
+        for candidate in candidates:
+            candidate = os.path.relpath(candidate, sys.prefix)
+            if not candidate.startswith('..'):
+                result = candidate
+                break
+
+        return result
+

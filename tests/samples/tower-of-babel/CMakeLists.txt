@@ -45,29 +45,29 @@ python_extension_module(tbabel_boost_shared)
 python_extension_module(tbabel_boost_module)
 
 
-INSTALL(TARGETS tbabel_cython_static DESTINATION .)
-INSTALL(TARGETS tbabel_cython_shared DESTINATION .)
-INSTALL(TARGETS tbabel_cython_module DESTINATION .)
+INSTALL(TARGETS tbabel_cython_static DESTINATION ${SKBUILD_SITE_PACKAGES_DIR})
+INSTALL(TARGETS tbabel_cython_shared DESTINATION ${SKBUILD_SITE_PACKAGES_DIR})
+INSTALL(TARGETS tbabel_cython_module DESTINATION ${SKBUILD_SITE_PACKAGES_DIR})
 
-INSTALL(TARGETS tbabel_boost_static DESTINATION .)
-INSTALL(TARGETS tbabel_boost_shared DESTINATION .)
-INSTALL(TARGETS tbabel_boost_module DESTINATION .)
-
-
-INSTALL(FILES tbabel_cython_static.pxd DESTINATION .)
-INSTALL(FILES tbabel_cython_shared.pxd DESTINATION .)
-INSTALL(FILES tbabel_cython_module.pxd DESTINATION .)
-
-INSTALL(FILES tbabel_cython_common.pxi DESTINATION .)
+INSTALL(TARGETS tbabel_boost_static DESTINATION ${SKBUILD_SITE_PACKAGES_DIR})
+INSTALL(TARGETS tbabel_boost_shared DESTINATION ${SKBUILD_SITE_PACKAGES_DIR})
+INSTALL(TARGETS tbabel_boost_module DESTINATION ${SKBUILD_SITE_PACKAGES_DIR})
 
 
-INSTALL(FILES tbabel_boost_static.h DESTINATION .)
-INSTALL(FILES tbabel_boost_shared.h DESTINATION .)
-INSTALL(FILES tbabel_boost_module.h DESTINATION .)
+INSTALL(FILES tbabel_cython_static.pxd DESTINATION ${SKBUILD_SITE_PACKAGES_DIR})
+INSTALL(FILES tbabel_cython_shared.pxd DESTINATION ${SKBUILD_SITE_PACKAGES_DIR})
+INSTALL(FILES tbabel_cython_module.pxd DESTINATION ${SKBUILD_SITE_PACKAGES_DIR})
 
-INSTALL(FILES tbabel_boost_common.h DESTINATION .)
+INSTALL(FILES tbabel_cython_common.pxi DESTINATION ${SKBUILD_SITE_PACKAGES_DIR})
 
-INSTALL(FILES tbabel_python.py DESTINATION .)
+
+INSTALL(FILES tbabel_boost_static.h DESTINATION ${SKBUILD_SITE_PACKAGES_DIR})
+INSTALL(FILES tbabel_boost_shared.h DESTINATION ${SKBUILD_SITE_PACKAGES_DIR})
+INSTALL(FILES tbabel_boost_module.h DESTINATION ${SKBUILD_SITE_PACKAGES_DIR})
+
+INSTALL(FILES tbabel_boost_common.h DESTINATION ${SKBUILD_SITE_PACKAGES_DIR})
+
+INSTALL(FILES tbabel_python.py DESTINATION ${SKBUILD_SITE_PACKAGES_DIR})
 
 add_subdirectory(scripts)
 

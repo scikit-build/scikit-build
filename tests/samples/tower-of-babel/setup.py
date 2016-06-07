@@ -17,7 +17,6 @@ setup(
     install_requires=requirements,
     tests_require=dev_requirements,
 
-    py_modules=['tbabel_python'],
     scripts=['scripts/tbabel'],
 )
 

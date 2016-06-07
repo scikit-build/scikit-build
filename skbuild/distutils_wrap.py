@@ -2,16 +2,14 @@
 distutils infrastructure.
 """
 import os
+import os.path
 import sys
 import site
 import argparse
 import distutils.core
 
-import itertools as it
-
 from . import cmaker
 from .command import build, install, clean
-
 
 def move_arg(arg, a, b, newarg=None, f=lambda x: x, concatenate_value=False):
     """Moves an argument from a list to b list, possibly giving it a new name
@@ -70,7 +68,6 @@ def setup(*args, **kw):
     package_data = kw.get('package_data', {}).copy()
 
     py_modules = kw.get('py_modules', [])
-    new_py_modules = { module: False for module in py_modules }
 
     scripts = kw.get('scripts', [])
     new_scripts = { script: False for script in scripts }
@@ -122,18 +119,6 @@ def setup(*args, **kw):
     cmkr.configure(cmake_args)
     cmkr.make(make_args)
 
-    # try to deduce the path for installed python packages relative to the
-    # search prefix.  NOTE(opadron): My google-fu has failed to find any better
-    # ways of doing this:
-    relative_site_packages_dir = None
-    candidate_dirs = it.chain(site.getsitepackages(),
-                              (site.getusersitepackages,))
-    for candidate_dir in candidate_dirs:
-        candidate = os.path.relpath(candidate_dir, sys.prefix)
-        if not candidate.startswith('..'):
-            relative_site_packages_dir = candidate
-            break
-
     for path in cmkr.install():
         found_package = False
         found_module = False
@@ -142,6 +127,7 @@ def setup(*args, **kw):
         # peel off the 'skbuild' prefix
         path = os.path.relpath(path, cmaker.CMAKE_INSTALL_DIR)
 
+        # check to see if path is part of a package
         for prefix, package in package_prefixes:
             if path.startswith(prefix):
                 # peel off the package prefix
@@ -159,10 +145,9 @@ def setup(*args, **kw):
         # If control reaches this point, then this installed file is not part of
         # a package.
 
-        # if the file is a module, mark the corresponding module
+        # check if path is a module
         for module in py_modules:
-            if path.replace("/", ".")  == ".".join((module, "py")):
-                new_py_modules[module] = True
+            if path.replace("/", ".") == ".".join((module, "py")):
                 found_module = True
                 break
 
@@ -186,8 +171,7 @@ def setup(*args, **kw):
         # If control reaches this point, then we have installed files that are
         # not part of a package, not a module, nor a script.  Without any other
         # information, we can only treat it as a generic data file.
-        parent_dir = os.path.join(relative_site_packages_dir,
-                                  os.path.dirname(path))
+        parent_dir = os.path.dirname(path)
         file_set = data_files.get(parent_dir)
         if file_set is None:
             file_set = set()
@@ -200,9 +184,7 @@ def setup(*args, **kw):
         for prefix, package in package_prefixes
     }
 
-    kw['py_modules'] = [
-        module if mask else module for module, mask in new_py_modules.items()
-    ]
+    kw['py_modules'] = py_modules
 
     kw['scripts'] = [
         os.path.join(cmaker.CMAKE_INSTALL_DIR, script) if mask else script
@@ -223,3 +205,4 @@ def setup(*args, **kw):
     kw['cmdclass'] = cmdclass
 
     return distutils.core.setup(*args, **kw)
+
