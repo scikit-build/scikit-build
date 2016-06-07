@@ -9,6 +9,7 @@ import sysconfig
 
 from .platform_specifics import get_platform
 
+
 SKBUILD_DIR = "_skbuild"
 CMAKE_BUILD_DIR = os.path.join(SKBUILD_DIR, "cmake-build")
 CMAKE_INSTALL_DIR = os.path.join(SKBUILD_DIR, "cmake-install")
@@ -59,6 +60,10 @@ class CMaker(object):
             if rtn != 0:
                 sys.exit('CMake is not installed, aborting build.')
 
+        self.platform = get_platform()
+        self.relative_site_packages_dir = (
+            self.platform.get_relative_site_packages_dir())
+
     def configure(self, clargs=(), generator_id=None):
         """Calls cmake to generate the makefile (or VS solution, or XCode project).
 
@@ -79,7 +84,7 @@ class CMaker(object):
 
         # use the generator_id returned from the platform, with the current
         # generator_id as a suggestion
-        generator_id = get_platform().get_best_generator(generator_id)
+        generator_id = self.platform.get_best_generator(generator_id)
 
         if generator_id is None:
             sys.exit("Could not get working generator for your system."
@@ -179,6 +184,7 @@ class CMaker(object):
                '-DPYTHON_VERSION_STRING=' + sys.version.split(' ')[0],
                '-DPYTHON_INCLUDE_DIR=' + python_include_dir,
                '-DPYTHON_LIBRARY=' + python_library,
+               '-DSKBUILD_SITE_PACKAGES_DIR=' + self.relative_site_packages_dir,
                ]
 
         cmd.extend(clargs)
@@ -218,3 +224,4 @@ class CMaker(object):
             return [_remove_cwd_prefix(path) for path in manifest]
 
         return []
+
