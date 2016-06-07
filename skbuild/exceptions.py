@@ -1,0 +1,4 @@
+
+class SKBuildError(Exception):
+    pass
+
