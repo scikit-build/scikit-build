@@ -10,6 +10,7 @@ import distutils.core
 import itertools as it
 
 from . import cmaker
+from .command import build, install, clean
 
 
 def move_arg(arg, a, b, newarg=None, f=lambda x: x, concatenate_value=False):
@@ -215,43 +216,10 @@ def setup(*args, **kw):
 
     # work around https://bugs.python.org/issue1011113
     # (patches provided, but no updates since 2014)
-    from distutils.command import build, install, clean
-    class new_build(build.build):
-        def finalize_options(self):
-            if not self.build_base or self.build_base == 'build':
-                self.build_base = cmaker.DISTUTILS_INSTALL_DIR
-            build.build.finalize_options(self)
-
-    class new_install(install.install):
-        def finalize_options(self):
-            if not self.build_base or self.build_base == 'build':
-                self.build_base = cmaker.DISTUTILS_INSTALL_DIR
-            install.install.finalize_options(self)
-
-    class new_clean(clean.clean):
-        def finalize_options(self):
-            if not self.build_base or self.build_base == 'build':
-                self.build_base = cmaker.DISTUTILS_INSTALL_DIR
-            clean.clean.finalize_options(self)
-
-        # NOTE(opadron): Even if we didn't have a bug that we needed to work
-        # around, we still want to add extra logic to this "clean" command that
-        # will remove the _skbuild directory.
-        def run(self):
-            clean.clean.run(self)
-            from distutils import log
-            if not self.dry_run:
-                from shutil import rmtree
-                for dir_ in (cmaker.CMAKE_INSTALL_DIR,
-                            cmaker.CMAKE_BUILD_DIR,
-                            cmaker.SKBUILD_DIR):
-                    log.info("removing '%s'", dir_)
-                    rmtree(dir_)
-
     cmdclass = kw.get('cmdclass', {})
-    cmdclass['build'] = cmdclass.get('build', new_build)
-    cmdclass['install'] = cmdclass.get('install', new_install)
-    cmdclass['clean'] = cmdclass.get('clean', new_clean)
+    cmdclass['build'] = cmdclass.get('build', build.build)
+    cmdclass['install'] = cmdclass.get('install', install.install)
+    cmdclass['clean'] = cmdclass.get('clean', clean.clean)
     kw['cmdclass'] = cmdclass
 
     return distutils.core.setup(*args, **kw)
