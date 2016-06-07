@@ -1,8 +1,7 @@
 dependencies:
   pre:
     - sudo apt-get update
-    - sudo apt-get upgrade
-    # - sudo apt-get install gfortran
+    - sudo apt-get install gfortran
     - sudo apt-get install cmake
 
   override:
