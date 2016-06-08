@@ -1,12 +1,8 @@
 
-#define CONCAT(X, Y) CONCAT_(X, Y)
-#define CONCAT_(X, Y) X##Y
+#include <cstdlib>
+#include <boost/python.hpp>
 
-#define TOSTR(X) TOSTR_(X)
-#define TOSTR_(X) #X
-
-#define TB_CYCLE CONCAT(CONCAT(tb_, mode), _cycle)
-#define TB_MODULE CONCAT(tbabel_boost_, mode)
+#include <tbabel_boost_common.h>
 
 void TB_CYCLE(unsigned int N, unsigned int i,
            PyObject *_cy_routines,
@@ -16,7 +12,7 @@ void TB_CYCLE(unsigned int N, unsigned int i,
   unsigned int nPy = (unsigned int)PyList_Size(_py_routines);
   unsigned int newI = ((unsigned int)rand())%(nCy + nPy);
 
-  PySys_WriteStdout("Boost " TOSTR(MODE) "\n");
+  PySys_WriteStdout("Boost " TOSTR(TBABEL_MODE) "\n");
 
   if(N)
   {
