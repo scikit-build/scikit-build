@@ -66,7 +66,9 @@
 # build the referenced executable.
 #
 #   python_modules_header(<Name> [HeaderFilename]
-#                         [FORWARD_DECL_MODULES_LIST <ForwardDeclModList>])
+#                         [FORWARD_DECL_MODULES_LIST <ForwardDeclModList>]
+#                         [HEADER_OUTPUT_VAR <HeaderOutputVar>]
+#                         [INCLUDE_DIR_OUTPUT_VAR <IncludeDirOutputVar>])
 #
 # Generate a header file that contains the forward declarations and
 # initialization routines for the given list of Python extension modules.
@@ -114,13 +116,21 @@
 #   List of extension modules for which to generate forward declarations of
 #   their entry points and their initializations.  By default, the global
 #   property ``PY_FORWARD_DECL_MODULES_LIST`` is used.
+
+# ``HEADER_OUTPUT_VAR <HeaderOutputVar>``
+#   Name of the variable to set to the path to the generated header file.  By
+#   default, ``<Name>`` is used.
+#
+# ``INCLUDE_DIR_OUTPUT_VAR <IncludeDirOutputVar>``
+#   Name of the variable to set to the path to the directory containing the
+#   generated header file.  By default, ``<Name>_INCLUDE_DIRS`` is used.
 #
 # Defined variables:
 #
-# ``<Name>``
-#   The path of the generated header file
+# ``<HeaderOutputVar>``
+#   The path to the generated header file
 #
-# ``<Name>_INCLUDE_DIRS``
+# ``<IncludeDirOutputVar>``
 #   Directory containing the generated header file
 #
 # Example usage:
@@ -329,7 +339,9 @@ function(python_standalone_executable _target)
 endfunction()
 
 function(python_modules_header _name)
-  set(one_ops FORWARD_DECL_MODULES_LIST)
+  set(one_ops FORWARD_DECL_MODULES_LIST
+              HEADER_OUTPUT_VAR
+              INCLUDE_DIR_OUTPUT_VAR)
   cmake_parse_arguments(_args "" "${one_ops}" "" "" ${ARGN})
 
   list(GET _args_UNPARSED_ARGUMENTS 0 _arg0)
@@ -452,7 +464,16 @@ function(python_modules_header _name)
                   "${generated_file_tmp}" "${generated_file}"
                   OUTPUT_QUIET ERROR_QUIET)
 
-  set(${_name} ${generated_file} PARENT_SCOPE)
-  set(${_name}_INCLUDE_DIRS ${CMAKE_CURRENT_BINARY_DIR} PARENT_SCOPE)
+  set(_header_output_var ${_name})
+  if(_args_HEADER_OUTPUT_VAR)
+    set(_header_output_var ${_args_HEADER_OUTPUT_VAR})
+  endif()
+  set(${_header_output_var} ${generated_file} PARENT_SCOPE)
+
+  set(_include_dir_var ${_name}_INCLUDE_DIRS)
+  if(_args_INCLUDE_DIR_OUTPUT_VAR)
+    set(_include_dir_var ${_args_INCLUDE_DIR_OUTPUT_VAR})
+  endif()
+  set(${_include_dirs_var} ${CMAKE_CURRENT_BINARY_DIR} PARENT_SCOPE)
 endfunction()
 
