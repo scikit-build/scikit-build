@@ -66,7 +66,7 @@
 # build the referenced executable.
 #
 #   python_modules_header(<Name> [HeaderFilename]
-#                         [FORWARD_DECL_MODULES_VAR <ForwardDeclModVar>])
+#                         [FORWARD_DECL_MODULES_LIST <ForwardDeclModList>])
 #
 # Generate a header file that contains the forward declarations and
 # initialization routines for the given list of Python extension modules.
@@ -110,11 +110,10 @@
 #
 # Options:
 #
-# ``FORWARD_DECL_MODULES_VAR <ForwardDeclModVar>``
-#   Name of the variable referencing the list of extension modules for which to
-#   generate forward declarations of their entry points and their
-#   initializations.  By default, the global property
-#   ``PY_FORWARD_DECL_MODULES_LIST`` is used.
+# ``FORWARD_DECL_MODULES_LIST <ForwardDeclModList>``
+#   List of extension modules for which to generate forward declarations of
+#   their entry points and their initializations.  By default, the global
+#   property ``PY_FORWARD_DECL_MODULES_LIST`` is used.
 #
 # Defined variables:
 #
@@ -178,7 +177,7 @@
 #
 #   # application executable -- generated header file + other source files
 #   python_modules_header(modules
-#                         FORWARD_DECL_MODULES_VAR fdecl_module_list)
+#                         FORWARD_DECL_MODULES_LIST ${fdecl_module_list})
 #   include_directories(${modules_INCLUDE_DIRS})
 #
 #   add_cython_target(mainA)
@@ -330,7 +329,7 @@ function(python_standalone_executable _target)
 endfunction()
 
 function(python_modules_header _name)
-  set(one_ops FORWARD_DECL_MODULES_VAR)
+  set(one_ops FORWARD_DECL_MODULES_LIST)
   cmake_parse_arguments(_args "" "${one_ops}" "" "" ${ARGN})
 
   list(GET _args_UNPARSED_ARGUMENTS 0 _arg0)
@@ -353,8 +352,8 @@ function(python_modules_header _name)
     endif()
   endif()
 
-  if(_args_FORWARD_DECL_MODULES_VAR)
-    set(static_mod_list ${${_args_FORWARD_DECL_MODULES_VAR}})
+  if(_args_FORWARD_DECL_MODULES_LIST)
+    set(static_mod_list ${_args_FORWARD_DECL_MODULES_LIST})
   else()
     get_property(static_mod_list GLOBAL PROPERTY PY_FORWARD_DECL_MODULES_LIST)
   endif()
