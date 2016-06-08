@@ -41,6 +41,7 @@ def _remove_cwd_prefix(path):
         result = result.replace("\\\\", "/")
 
     result = result.replace("\n", "")
+
     return result
 
 def _touch_init(folder):
@@ -60,8 +61,6 @@ class CMaker(object):
                 sys.exit('CMake is not installed, aborting build.')
 
         self.platform = get_platform()
-        self.relative_site_packages_dir = (
-            self.platform.get_relative_site_packages_dir())
 
     def configure(self, clargs=(), generator_id=None):
         """Calls cmake to generate the makefile (or VS solution, or XCode project).
@@ -183,7 +182,6 @@ class CMaker(object):
                '-DPYTHON_VERSION_STRING=' + sys.version.split(' ')[0],
                '-DPYTHON_INCLUDE_DIR=' + python_include_dir,
                '-DPYTHON_LIBRARY=' + python_library,
-               '-DSKBUILD_SITE_PACKAGES_DIR=' + self.relative_site_packages_dir,
                ]
 
         cmd.extend(clargs)
