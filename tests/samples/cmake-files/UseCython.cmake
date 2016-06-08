@@ -21,7 +21,7 @@
 # Create a custom rule to generate the source code for a Python extension module
 # using cython.  ``<Name>`` is the name of the new target, and ``<CythonInput>``
 # is the path to a cython source file.  Note that, despite the name, no new
-# targets are created by this function.  Instead, see ``OUTPUT_VAR`` for the
+# targets are created by this function.  Instead, see ``OUTPUT_VAR`` for
 # retrieving the path to the generated source for subsequent targets.
 #
 # If only ``<Name>`` is provided, and it ends in the ".pyx" extension, then it
