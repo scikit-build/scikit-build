@@ -15,19 +15,20 @@
 #   add_cython_target(<Name> [<CythonInput>]
 #                     [EMBED_MAIN]
 #                     [C | CXX]
-#                     [PY2 | PY3])
+#                     [PY2 | PY3]
+#                     [OUTPUT_VAR <OutputVar>])
 #
 # Create a custom rule to generate the source code for a Python extension module
 # using cython.  ``<Name>`` is the name of the new target, and ``<CythonInput>``
 # is the path to a cython source file.  Note that, despite the name, no new
-# targets are created by this function.  Instead, use ``${<Name>}`` as the path
-# to the generated source for subsequent targets.
+# targets are created by this function.  Instead, see ``OUTPUT_VAR`` for the
+# retrieving the path to the generated source for subsequent targets.
 #
 # If only ``<Name>`` is provided, and it ends in the ".pyx" extension, then it
 # is assumed to be the ``<CythonInput>``.  The name of the input without the
 # extension is used as the target name.  If only ``<Name>`` is provided, and it
 # does not end in the ".pyx" extension, then the ``<CythonInput>`` is assumed to
-# be ${CMAKE_CURRENT_SOURCE_DIR}/<Name>.pyx.
+# be ``<Name>.pyx``.
 #
 # The Cython include search path is amended with any entries found in the
 # ``INCLUDE_DIRECTORIES`` property of the directory containing the
@@ -51,9 +52,14 @@
 #   version of Python found is 2.  Otherwise, Python-3 syntax and sematics are
 #   used.
 #
+# ``OUTPUT_VAR <OutputVar>``
+#   Set the variable ``<OutputVar>`` in the parent scope to the path to the
+#   generated source file.  By default, ``<Name>`` is used as the output
+#   variable name.
+#
 # Defined variables:
 #
-# ``<Name>``
+# ``<OutputVar>``
 #   The path of the generated source file.
 #
 #
@@ -113,7 +119,8 @@ get_property(languages GLOBAL PROPERTY ENABLED_LANGUAGES)
 
 function(add_cython_target _name)
   set(options EMBED_MAIN C CXX PY2 PY3)
-  cmake_parse_arguments(_args "${options}" "" "" ${ARGN})
+  set(options1 OUTPUT_VAR)
+  cmake_parse_arguments(_args "${options}" "${options1}" "" ${ARGN})
 
   list(GET _args_UNPARSED_ARGUMENTS 0 _arg0)
 
@@ -138,10 +145,6 @@ function(add_cython_target _name)
 
   set(_embed_main FALSE)
 
-  # TODO(opadron): Currently, this logic preferentially chooses C output syntax
-  # over C++ syntax, since most uses of Cython involve only C code.  However, if
-  # the C++ syntax works fine, should we not default to it if it's enabled,
-  # since CMake tends to prefer C++ elsewhere?
   if("C" IN_LIST languages)
     set(_output_syntax "C")
   elseif("CXX" IN_LIST languages)
@@ -197,7 +200,13 @@ function(add_cython_target _name)
 
   set(generated_file "${CMAKE_CURRENT_BINARY_DIR}/${_name}.${extension}")
   set_source_files_properties(${generated_file} PROPERTIES GENERATED TRUE)
-  set(${_name} ${generated_file} PARENT_SCOPE)
+
+  set(_output_var ${_name})
+  if(_args_OUTPUT_VAR)
+      set(_output_var ${_args_OUTPUT_VAR})
+  endif()
+  set(${_output_var} ${generated_file} PARENT_SCOPE)
+
   file(RELATIVE_PATH generated_file_relative
       ${CMAKE_BINARY_DIR} ${generated_file})
 

@@ -6,6 +6,17 @@
 #
 #   find_package(PythonExtensions)
 #
+# The following variables are defined:
+# ::
+#
+#   PYTHON_PREFIX                     - absolute path to the current Python
+#                                       distribution's prefix
+#   PYTHON_SITE_PACKAGES_DIR          - absolute path to the current Python
+#                                       distribution's site-packages directory
+#   PYTHON_RELATIVE_SITE_PACKAGES_DIR - path to the current Python
+#                                       distribution's site-packages directory
+#                                       relative to its prefix
+#
 # The following functions are defined:
 #
 #   python_extension_module(<Target>
@@ -193,7 +204,53 @@
 # limitations under the License.
 #=============================================================================
 
+find_package( PythonInterp REQUIRED )
 find_package( PythonLibs REQUIRED )
+
+set(_command "")
+set(_command "${_command}import distutils.sysconfig\n")
+set(_command "${_command}import itertools\n")
+set(_command "${_command}import os.path\n")
+set(_command "${_command}import site\n")
+set(_command "${_command}import sys\n")
+
+set(_command "${_command}result = None\n")
+set(_command "${_command}rel_result = None\n")
+set(_command "${_command}candidates = itertools.chain(\n")
+set(_command "${_command}  (distutils.sysconfig.get_python_lib(),),\n")
+set(_command "${_command}  site.getsitepackages(),\n")
+set(_command "${_command}  (site.getusersitepackages,)\n")
+set(_command "${_command})\n")
+
+set(_command "${_command}for candidate in candidates:\n")
+set(_command "${_command}    rel_candidate = os.path.relpath(\n")
+set(_command "${_command}      candidate, sys.prefix)\n")
+set(_command "${_command}    if not rel_candidate.startswith('..'):\n")
+set(_command "${_command}        result = candidate\n")
+set(_command "${_command}        rel_result = rel_candidate\n")
+set(_command "${_command}        break\n")
+
+set(_command "${_command}sys.stdout.write(\";\".join((\n")
+set(_command "${_command}    sys.prefix,\n")
+set(_command "${_command}    result,\n")
+set(_command "${_command}    rel_result,\n")
+set(_command "${_command})))\n")
+
+execute_process(COMMAND "${PYTHON_EXECUTABLE}" -c "${_command}"
+                OUTPUT_VARIABLE _list
+                RESULT_VARIABLE _result)
+
+list(GET _list 0 _item)
+set(PYTHON_PREFIX "${_item}")
+mark_as_advanced(PYTHON_PREFIX)
+
+list(GET _list 1 _item)
+set(PYTHON_SITE_PACKAGES_DIR "${_item}")
+mark_as_advanced(PYTHON_SITE_PACKAGES_DIR)
+
+list(GET _list 2 _item)
+set(PYTHON_RELATIVE_SITE_PACKAGES_DIR "${_item}")
+mark_as_advanced(PYTHON_RELATIVE_SITE_PACKAGES_DIR)
 
 function(python_extension_module _target)
   set(one_ops LINKED_MODULES_VAR FORWARD_DECL_MODULES_VAR)
