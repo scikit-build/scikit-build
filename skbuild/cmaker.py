@@ -138,6 +138,8 @@ class CMaker(object):
         # determine direct path to libpython
         python_library = sysconfig.get_config_var('LIBRARY')
 
+        print("python_library", python_library)
+
         # if static, try to find a suitable dynamic libpython
         if os.path.splitext(python_library)[1][-2:] == '.a':
             candidate_extensions = ('.so', '.a')
