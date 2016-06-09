@@ -138,10 +138,10 @@ class CMaker(object):
         # determine direct path to libpython
         python_library = sysconfig.get_config_var('LIBRARY')
 
-        print("python_library", python_library)
+        # if static (or nonexistent), try to find a suitable dynamic libpython
+        if (python_library is None or
+            os.path.splitext(python_library)[1][-2:] == '.a'):
 
-        # if static, try to find a suitable dynamic libpython
-        if os.path.splitext(python_library)[1][-2:] == '.a':
             candidate_extensions = ('.so', '.a')
             if sysconfig.get_config_var('WITH_DYLD'):
                 candidate_extensions = ('.dylib',) + candidate_extensions
@@ -180,6 +180,8 @@ class CMaker(object):
                     # we found a (likely alternate) libpython
                     python_library = candidate
                     break
+
+        # TODO(opadron): what happens if we don't find a libpython?
 
         cmd = ['cmake', os.getcwd(), '-G', generator_id,
                '-DCMAKE_INSTALL_PREFIX={0}'.format(
