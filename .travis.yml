@@ -11,7 +11,9 @@ python:
 before_install:
   - sudo apt-get update
   - sudo apt-get install gfortran
-  - sudo apt-get install cmake
+  - wget "https://cmake.org/files/v3.5/cmake-3.5.0-Linux-x86_64.tar.gz"
+  - tar xzf "cmake-3.5.0-Linux-x86_64.tar.gz"
+  - sudo rsync -avz "cmake-3.5.0-Linux-x86_64/" /usr/local
 
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 install:
