@@ -173,13 +173,13 @@ notifications:
 
 shallow_clone: true
 
-# # uncomment to block (for debugging over RDP)
-# on_finish:
-#   - ps: "$blockRdp = $true ; \
-#       iex (\
-#         (New-Object Net.Webclient).DownloadString(\
-#           'https://raw.githubusercontent.com/\
-#            appveyor/ci/master/scripts/enable-rdp.ps1'\
-#         )\
-#       )"
+# uncomment to block (for debugging over RDP)
+on_finish:
+  - ps: "$blockRdp = $true ; \
+      iex (\
+        (New-Object Net.Webclient).DownloadString(\
+          'https://raw.githubusercontent.com/\
+           appveyor/ci/master/scripts/enable-rdp.ps1'\
+        )\
+      )"
 
