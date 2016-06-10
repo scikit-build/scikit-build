@@ -106,16 +106,49 @@ class CMaker(object):
         # determine python include dir
         python_include_dir = sysconfig.get_config_var('INCLUDEPY')
 
-        # if Python.h not found, try to find a suitable include dir
-        if not os.path.exists(os.path.join(python_include_dir, 'Python.h')):
-            candidate_prefixes = tuple(
-                filter(bool, (
-                    os.path.dirname(sysconfig.get_config_var('INCLUDEPY')),
-                    sysconfig.get_config_var('INCLUDEDIR'),
-                    os.path.dirname(sysconfig.get_path('include')),
-                    os.path.dirname(sysconfig.get_path('platinclude'))
-                ))
-            )
+        # if Python.h not found (or python_include_dir is None), try to find a
+        # suitable include dir
+        if (python_include_dir is None or
+            not os.path.exists(os.path.join(python_include_dir, 'Python.h'))):
+            candidate_prefixes = []
+
+            try:
+                candidate_prefixes.append(
+                    os.path.dirname(sysconfig.get_config_var('INCLUDEPY')))
+            except:
+                pass
+
+            try:
+                candidate_prefixes.append(
+                    sysconfig.get_config_var('INCLUDEDIR'))
+            except:
+                pass
+
+            try:
+                candidate_prefixes.append(
+                    os.path.dirname(sysconfig.get_path('include')))
+            except:
+                pass
+
+            try:
+                candidate_prefixes.append(
+                    os.path.dirname(sysconfig.get_path('platinclude')))
+            except:
+                pass
+
+            try:
+                candidate_prefixes.append(
+                    os.path.join(sysconfig.get_python_inc(),
+                                 ".".join(map(str, sys.version_info[:2]))))
+            except:
+                pass
+
+            try:
+                candidate_prefixes.append(sysconfig.get_python_inc())
+            except:
+                pass
+
+            candidate_prefixes = tuple(filter(bool, candidate_prefixes))
 
             candidate_versions = (python_version,)
             if python_version:
@@ -134,6 +167,8 @@ class CMaker(object):
                     # we found an include directory
                     python_include_dir = candidate
                     break
+
+        # TODO(opadron): what happens if we don't find an include directory?
 
         # determine direct path to libpython
         python_library = sysconfig.get_config_var('LIBRARY')
