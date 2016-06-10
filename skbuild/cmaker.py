@@ -102,6 +102,10 @@ class CMaker(object):
             os.makedirs(DISTUTILS_INSTALL_DIR)
 
         python_version = sysconfig.get_config_var('VERSION')
+
+        if not python_version:
+            python_version = sysconfig.get_config_var('py_version_short')
+
         if not python_version:
             python_version = ".".join(map(str, sys.version_info[:2]))
 
@@ -199,6 +203,9 @@ class CMaker(object):
                     if masd.startswith(os.sep):
                         masd = masd[len(os.sep):]
                     libdir = os.path.join(libdir, masd)
+
+            if libdir is None:
+                libdir = sysconfig.get_config_var('LIBDEST')
 
             candidates = (
                 os.path.join(
