@@ -102,6 +102,8 @@ class CMaker(object):
             os.makedirs(DISTUTILS_INSTALL_DIR)
 
         python_version = sysconfig.get_config_var('VERSION')
+        if not python_version:
+            python_version = ".".join(map(str, sys.version_info[:2]))))
 
         # determine python include dir
         python_include_dir = sysconfig.get_config_var('INCLUDEPY')
