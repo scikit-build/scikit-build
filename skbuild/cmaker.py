@@ -103,7 +103,7 @@ class CMaker(object):
 
         python_version = sysconfig.get_config_var('VERSION')
         if not python_version:
-            python_version = ".".join(map(str, sys.version_info[:2]))))
+            python_version = ".".join(map(str, sys.version_info[:2]))
 
         # determine python include dir
         python_include_dir = sysconfig.get_config_var('INCLUDEPY')
