@@ -132,7 +132,16 @@ install:
   # about it being out of date.
   - cmd: "pip install --disable-pip-version-check --user --upgrade pip"
   - cmd: "pip install wheel"
-  - cmd: "cinst cmake"
+  - ps: "\
+      (New-Object Net.WebClient).DownloadFile(\
+        'https://cmake.org/files/v3.5/cmake-3.5.2-win32-x86.zip', \
+        'C:\\\\cmake.zip'\
+      ); \
+      Add-Type -A 'System.IO.Compression.FileSystem'; \
+      [IO.Compression.ZipFile]::ExtractToDirectory(\
+        'C:\\\\cmake.zip', 'C:\\\\cmake'\
+      )"
+  - cmd: "SET PATH=C:\\cmake\\bin;%PATH%"
 
   # Install the build dependencies of the project. If some dependencies contain
   # compiled extensions and are not provided as pre-built wheel packages, pip
