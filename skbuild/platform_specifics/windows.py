@@ -14,7 +14,7 @@ class WindowsPlatform(abstract.CMakePlatform):
         # For Python 2.7 to Python 3.2: VS2008
         if (
             (version.major == 2 and version.minor >= 7) or
-            (version.major == 3 and version.minor <  3)
+            (version.major == 3 and version.minor <= 2)
         ):
             vs_base = "Visual Studio 9 2008"
 
@@ -22,7 +22,7 @@ class WindowsPlatform(abstract.CMakePlatform):
         elif (
             version.major == 3 and (
                 version.minor >= 3 and
-                version.minor <  5
+                version.minor <= 4
             )
         ):
             vs_base = "Visual Studio 10 2010"
