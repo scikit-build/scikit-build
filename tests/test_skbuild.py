@@ -25,15 +25,15 @@ def test_generator_selection():
 
     if this_platform == "windows":
         # assert that we are running a supported version of python
-        py_27_33 = (
+        py_27_32 = (
             (version.major == 2 and version.minor >= 7) or
-            (version.major == 3 and version.minor <  3)
+            (version.major == 3 and version.minor <= 2)
         )
 
-        py_33_35 = (
+        py_33_34 = (
             version.major == 3 and (
                 version.minor >= 3 and
-                version.minor <  5
+                version.minor <= 4
             )
         )
 
@@ -42,11 +42,11 @@ def test_generator_selection():
             version.minor >= 5
         )
 
-        assert(py_27_33 or py_33_35 or py_35)
+        assert(len(tuple(filter(bool, (py_27_32, py_33_34, py_35)))) == 1)
 
         generator = (
-            "Visual Studio 9 2008" if py_27_33 else
-            "Visual Studio 10 2010" if py_33_35 else
+            "Visual Studio 9 2008" if py_27_32 else
+            "Visual Studio 10 2010" if py_33_34 else
             "Visual Studio 14 2015"
         ) + (
             "Win64" if arch == "x64" else
