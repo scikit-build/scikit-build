@@ -1,6 +1,12 @@
+
+import itertools
 import os
 import shutil
+import site
 import subprocess
+import sys
+
+import distutils.sysconfig
 
 test_folder = "cmake_test_compile"
 list_file = "CMakeLists.txt"
@@ -100,3 +106,4 @@ class CMakePlatform(object):
             CMakePlatform.cleanup_test()
 
         return working_generator
+

@@ -9,6 +9,7 @@ python:
   - "pypy"
 
 before_install:
+  - sudo apt-get update
   - sudo apt-get install gfortran
   - sudo apt-get install cmake
 

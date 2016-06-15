@@ -9,8 +9,11 @@ import sysconfig
 
 from .platform_specifics import get_platform
 
-CMAKE_BUILD_DIR = os.path.join("skbuild", "cmake")
-PACKAGE_BUILD_DIR = os.path.join("skbuild", "lib")
+
+SKBUILD_DIR = "_skbuild"
+CMAKE_BUILD_DIR = os.path.join(SKBUILD_DIR, "cmake-build")
+CMAKE_INSTALL_DIR = os.path.join(SKBUILD_DIR, "cmake-install")
+DISTUTILS_INSTALL_DIR = os.path.join(SKBUILD_DIR, "distutils")
 
 def pop_arg(arg, a, default=None):
     """Pops an arg(ument) from an argument list a and returns the new list
@@ -28,18 +31,18 @@ def pop_arg(arg, a, default=None):
 
 
 def _remove_cwd_prefix(path):
-    base_path = os.getcwd()
-    if platform.system() == "Windows":
-        base_path = base_path.replace("\\\\", "/")
-    common_prefix = os.path.commonprefix([base_path, path])
-    # strip off the base path - keep only the relative path
-    relpath = path.replace(common_prefix, "")
-    # get rid of a leading slash
-    path = relpath[1:]
-    # trim newline characters (sometimes at end of filename)
-    path = path.replace("\n", "")
-    return path
+    cwd = os.getcwd()
 
+    result = path
+    if result.startswith(cwd):
+        result = os.path.relpath(result, cwd)
+
+    if platform.system() == "Windows":
+        result = result.replace("\\\\", "/")
+
+    result = result.replace("\n", "")
+
+    return result
 
 def _touch_init(folder):
     init = os.path.join(folder, "__init__.py")
@@ -56,6 +59,8 @@ class CMaker(object):
             rtn = subprocess.call(['which', 'cmake'])
             if rtn != 0:
                 sys.exit('CMake is not installed, aborting build.')
+
+        self.platform = get_platform()
 
     def configure(self, clargs=(), generator_id=None):
         """Calls cmake to generate the makefile (or VS solution, or XCode project).
@@ -77,7 +82,7 @@ class CMaker(object):
 
         # use the generator_id returned from the platform, with the current
         # generator_id as a suggestion
-        generator_id = get_platform().get_best_generator(generator_id)
+        generator_id = self.platform.get_best_generator(generator_id)
 
         if generator_id is None:
             sys.exit("Could not get working generator for your system."
@@ -86,8 +91,11 @@ class CMaker(object):
         if not os.path.exists(CMAKE_BUILD_DIR):
             os.makedirs(CMAKE_BUILD_DIR)
 
-        if not os.path.exists(PACKAGE_BUILD_DIR):
-            os.makedirs(PACKAGE_BUILD_DIR)
+        if not os.path.exists(CMAKE_INSTALL_DIR):
+            os.makedirs(CMAKE_INSTALL_DIR)
+
+        if not os.path.exists(DISTUTILS_INSTALL_DIR):
+            os.makedirs(DISTUTILS_INSTALL_DIR)
 
         python_version = sysconfig.get_config_var('VERSION')
 
@@ -169,7 +177,7 @@ class CMaker(object):
 
         cmd = ['cmake', os.getcwd(), '-G', generator_id,
                '-DCMAKE_INSTALL_PREFIX={0}'.format(
-                    os.path.join(os.getcwd(), PACKAGE_BUILD_DIR)),
+                    os.path.join(os.getcwd(), CMAKE_INSTALL_DIR)),
                '-DPYTHON_EXECUTABLE=' + sys.executable,
                '-DPYTHON_VERSION_STRING=' + sys.version.split(' ')[0],
                '-DPYTHON_INCLUDE_DIR=' + python_include_dir,
@@ -213,3 +221,4 @@ class CMaker(object):
             return [_remove_cwd_prefix(path) for path in manifest]
 
         return []
+
