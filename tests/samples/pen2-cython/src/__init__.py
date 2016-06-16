@@ -14,6 +14,7 @@ DEFAULT_IW1 = 0.0
 # constant, so just use a default at 10X strength.
 DEFAULT_G = 98.1
 DEFAULT_DT = 0.001*int(1000.0/60.0)
+DEFAULT_DURATION = None
 
 def main():
     from argparse import ArgumentParser
@@ -53,6 +54,9 @@ def main():
     parser.add_argument(
         "--time_step", "-dt", type=float, default=DEFAULT_DT, metavar="DT",
         help="Simulation time step size (s).")
+    parser.add_argument(
+        "--duration", "-d", type=float, default=DEFAULT_DURATION, metavar="D",
+        help="Simulation duration (s).")
 
     args = parser.parse_args()
     run_simulation(mass0=args.mass0,
@@ -64,7 +68,8 @@ def main():
                    omega0=args.omega0,
                    omega1=args.omega1,
                    gravity=args.gravity,
-                   time_step=args.time_step)
+                   time_step=args.time_step,
+                   duration=args.duration)
 
 def run_simulation(**kwds):
     from math import pi, sqrt, sin, cos
@@ -90,6 +95,7 @@ def run_simulation(**kwds):
     iW1 = kwds.get("omega1", DEFAULT_IW1)
     G = kwds.get("gravity", DEFAULT_G)
     dt = kwds.get("time_step", DEFAULT_DT)
+    duration = kwds.get("duration", DEFAULT_DURATION)
 
     sim = Pen2Sim(iTH0, iTH1, iW0, iW1, M0, M1, L0, L1, G, dt)
 
@@ -186,6 +192,10 @@ def run_simulation(**kwds):
         sAct0.SetPosition(x0, y0, 0.0)
         sAct1.SetPosition(x1, y1, 0.0)
         renderWindow.Render()
+
+        if duration is not None and t >= duration:
+            interactor.RemoveObserver(timerid)
+            interactor.ExitCallback()
 
     interactor.AddObserver("TimerEvent", callback)
     timerid = interactor.CreateRepeatingTimer(int(1000*dt));

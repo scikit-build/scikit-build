@@ -16,6 +16,12 @@
 #   PYTHON_RELATIVE_SITE_PACKAGES_DIR - path to the current Python
 #                                       distribution's site-packages directory
 #                                       relative to its prefix
+#   PYTHON_SEPARATOR                  - separator string for file path
+#                                       components.  Equivalent to ``os.sep`` in
+#                                       Python.
+#   PYTHON_PATH_SEPARATOR             - separator string for PATH-style
+#                                       environment variables.  Equivalent to
+#                                       ``os.pathsep`` in Python.
 #
 # The following functions are defined:
 #
@@ -219,6 +225,7 @@ find_package( PythonLibs REQUIRED )
 set(_command "")
 set(_command "${_command}import distutils.sysconfig\n")
 set(_command "${_command}import itertools\n")
+set(_command "${_command}import os\n")
 set(_command "${_command}import os.path\n")
 set(_command "${_command}import site\n")
 set(_command "${_command}import sys\n")
@@ -240,6 +247,8 @@ set(_command "${_command}        rel_result = rel_candidate\n")
 set(_command "${_command}        break\n")
 
 set(_command "${_command}sys.stdout.write(\";\".join((\n")
+set(_command "${_command}    os.sep,\n")
+set(_command "${_command}    os.pathsep,\n")
 set(_command "${_command}    sys.prefix,\n")
 set(_command "${_command}    result,\n")
 set(_command "${_command}    rel_result,\n")
@@ -250,14 +259,22 @@ execute_process(COMMAND "${PYTHON_EXECUTABLE}" -c "${_command}"
                 RESULT_VARIABLE _result)
 
 list(GET _list 0 _item)
+set(PYTHON_SEPARATOR "${_item}")
+mark_as_advanced(PYTHON_SEPARATOR)
+
+list(GET _list 1 _item)
+set(PYTHON_PATH_SEPARATOR "${_item}")
+mark_as_advanced(PYTHON_PATH_SEPARATOR)
+
+list(GET _list 2 _item)
 set(PYTHON_PREFIX "${_item}")
 mark_as_advanced(PYTHON_PREFIX)
 
-list(GET _list 1 _item)
+list(GET _list 3 _item)
 set(PYTHON_SITE_PACKAGES_DIR "${_item}")
 mark_as_advanced(PYTHON_SITE_PACKAGES_DIR)
 
-list(GET _list 2 _item)
+list(GET _list 4 _item)
 set(PYTHON_RELATIVE_SITE_PACKAGES_DIR "${_item}")
 mark_as_advanced(PYTHON_RELATIVE_SITE_PACKAGES_DIR)
 

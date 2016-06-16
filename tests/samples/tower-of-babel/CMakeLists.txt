@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.5.0)
 
 project(tower_of_babel)
 
+include(CTest)
+enable_testing()
+
 set(CMAKE_MODULE_PATH
     ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../cmake-files)
 
@@ -46,12 +49,12 @@ python_extension_module(tbabel_boost_module)
 
 set(site_packages "${PYTHON_RELATIVE_SITE_PACKAGES_DIR}")
 
-INSTALL(TARGETS tbabel_cython_static DESTINATION ${site_packages})
-INSTALL(TARGETS tbabel_cython_shared DESTINATION ${site_packages})
+INSTALL(TARGETS tbabel_cython_static DESTINATION lib)
+INSTALL(TARGETS tbabel_cython_shared DESTINATION lib)
 INSTALL(TARGETS tbabel_cython_module DESTINATION ${site_packages})
 
-INSTALL(TARGETS tbabel_boost_static DESTINATION ${site_packages})
-INSTALL(TARGETS tbabel_boost_shared DESTINATION ${site_packages})
+INSTALL(TARGETS tbabel_boost_static DESTINATION lib)
+INSTALL(TARGETS tbabel_boost_shared DESTINATION lib)
 INSTALL(TARGETS tbabel_boost_module DESTINATION ${site_packages})
 
 
@@ -62,11 +65,11 @@ INSTALL(FILES tbabel_cython_module.pxd DESTINATION ${site_packages})
 INSTALL(FILES tbabel_cython_common.pxi DESTINATION ${site_packages})
 
 
-INSTALL(FILES tbabel_boost_static.h DESTINATION ${site_packages})
-INSTALL(FILES tbabel_boost_shared.h DESTINATION ${site_packages})
-INSTALL(FILES tbabel_boost_module.h DESTINATION ${site_packages})
+INSTALL(FILES tbabel_boost_static.h DESTINATION include)
+INSTALL(FILES tbabel_boost_shared.h DESTINATION include)
+INSTALL(FILES tbabel_boost_module.h DESTINATION include)
 
-INSTALL(FILES tbabel_boost_common.h DESTINATION ${site_packages})
+INSTALL(FILES tbabel_boost_common.h DESTINATION include)
 
 INSTALL(FILES tbabel_python.py DESTINATION ${site_packages})
 
