@@ -38,7 +38,15 @@ def parse_args():
     make = []
     argsets = [dutils, cmake, make]
     i = 0
-    for arg in sys.argv:
+
+    argv = list(sys.argv)
+    try:
+        argv.index("--build-type")
+    except ValueError:
+        argv.append("--build-type")
+        argv.append("Release")
+
+    for arg in argv:
         if arg == '--':
             i += 1
         else:
