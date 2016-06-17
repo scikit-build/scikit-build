@@ -16,7 +16,7 @@ test:
     - "export DISPLAY=:99.0"
     - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/xvfb.pid \
         --make-pidfile --background --exec /usr/bin/Xvfb -- \
-          :99-ac -screen 0 1024x768x24"
+          :99 -ac -screen 0 1024x768x24"
     - sleep 10
 
   override:
