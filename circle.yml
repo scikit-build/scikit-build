@@ -20,45 +20,25 @@ test:
     - sleep 10
 
   override:
-    - echo $PYTHONPATH
-    - python -c "import pprint, sys ; pprint.pprint(sys.path)"
-    - "export PYTHONPATH=`python -c \"\
+    - "python -c \"\
         import sys, os, os.path ; \
-        print(\
-            os.pathsep.join(\
-                [\
-                    os.path.join(\
-                        \\\"/usr\\\",\
-                        \\\"lib\\\",\
-                        \\\"pymodules\\\",\
-                        \\\"python\\\" + \\\".\\\".join((\
-                            str(sys.version_info.major),\
-                            str(sys.version_info.minor)\
-                        ))\
-                    )\
-                ] + sys.path\
-            )\
+        os.symlink(
+            os.path.join(\
+                \\\"/usr\\\",\
+                \\\"lib\\\",\
+                \\\"pymodules\\\",\
+                \\\"python\\\" + \\\".\\\".join((\
+                    str(sys.version_info.major),\
+                    str(sys.version_info.minor)\
+                )),\
+                \\\"vtk\\\"\
+            ),\
+            os.path.join(sys.path[0], \\\"vtk\\\"),
         )\
-      \"` ; echo $PYTHONPATH"
+      "
+
     - find /usr/lib/pymodules/python2.7
-    - "export PYTHONPATH=`python -c \"\
-        import sys, os, os.path ; \
-        print(\
-            os.pathsep.join(\
-                [\
-                    os.path.join(\
-                        \\\"/usr\\\",\
-                        \\\"lib\\\",\
-                        \\\"pymodules\\\",\
-                        \\\"python\\\" + \\\".\\\".join((\
-                            str(sys.version_info.major),\
-                            str(sys.version_info.minor)\
-                        ))\
-                    )\
-                ] + sys.path\
-            )\
-        )\
-      \"` ; nosetests -w tests"
+    - nosetests -w tests
 
   post:
     - "/sbin/start-stop-daemon --stop --quiet --pidfile /tmp/xvfb.pid"
