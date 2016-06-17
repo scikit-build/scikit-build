@@ -5,5 +5,5 @@ project(fail_outside_project_root)
 set(CMAKE_MODULE_PATH
     ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../cmake-files)
 
-INSTALL(FILES dummy DESTINATION ..)
+install(FILES dummy DESTINATION ..)
 

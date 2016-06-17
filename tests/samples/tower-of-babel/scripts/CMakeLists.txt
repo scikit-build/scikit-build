@@ -19,5 +19,5 @@ set(_pp "${_pp}${CMAKE_BINARY_DIR}")
 
 set_property(TEST tbabel PROPERTY ENVIRONMENT "PYTHONPATH=${_pp}")
 
-INSTALL(TARGETS tbabel DESTINATION scripts)
+install(TARGETS tbabel DESTINATION scripts)
 

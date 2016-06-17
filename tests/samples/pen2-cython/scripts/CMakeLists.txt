@@ -1,5 +1,5 @@
 
-INSTALL(FILES pen2_cython DESTINATION scripts)
+install(FILES pen2_cython DESTINATION scripts)
 file(COPY pen2_cython DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 add_test(NAME pen2_cython

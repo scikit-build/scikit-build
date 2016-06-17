@@ -49,29 +49,29 @@ python_extension_module(tbabel_boost_module)
 
 set(site_packages "${PYTHON_RELATIVE_SITE_PACKAGES_DIR}")
 
-INSTALL(TARGETS tbabel_cython_static DESTINATION lib)
-INSTALL(TARGETS tbabel_cython_shared DESTINATION lib)
-INSTALL(TARGETS tbabel_cython_module DESTINATION ${site_packages})
+install(TARGETS tbabel_cython_static DESTINATION lib)
+install(TARGETS tbabel_cython_shared DESTINATION lib)
+install(TARGETS tbabel_cython_module DESTINATION ${site_packages})
 
-INSTALL(TARGETS tbabel_boost_static DESTINATION lib)
-INSTALL(TARGETS tbabel_boost_shared DESTINATION lib)
-INSTALL(TARGETS tbabel_boost_module DESTINATION ${site_packages})
-
-
-INSTALL(FILES tbabel_cython_static.pxd DESTINATION ${site_packages})
-INSTALL(FILES tbabel_cython_shared.pxd DESTINATION ${site_packages})
-INSTALL(FILES tbabel_cython_module.pxd DESTINATION ${site_packages})
-
-INSTALL(FILES tbabel_cython_common.pxi DESTINATION ${site_packages})
+install(TARGETS tbabel_boost_static DESTINATION lib)
+install(TARGETS tbabel_boost_shared DESTINATION lib)
+install(TARGETS tbabel_boost_module DESTINATION ${site_packages})
 
 
-INSTALL(FILES tbabel_boost_static.h DESTINATION include)
-INSTALL(FILES tbabel_boost_shared.h DESTINATION include)
-INSTALL(FILES tbabel_boost_module.h DESTINATION include)
+install(FILES tbabel_cython_static.pxd DESTINATION ${site_packages})
+install(FILES tbabel_cython_shared.pxd DESTINATION ${site_packages})
+install(FILES tbabel_cython_module.pxd DESTINATION ${site_packages})
 
-INSTALL(FILES tbabel_boost_common.h DESTINATION include)
+install(FILES tbabel_cython_common.pxi DESTINATION ${site_packages})
 
-INSTALL(FILES tbabel_python.py DESTINATION ${site_packages})
+
+install(FILES tbabel_boost_static.h DESTINATION include)
+install(FILES tbabel_boost_shared.h DESTINATION include)
+install(FILES tbabel_boost_module.h DESTINATION include)
+
+install(FILES tbabel_boost_common.h DESTINATION include)
+
+install(FILES tbabel_python.py DESTINATION ${site_packages})
 
 add_subdirectory(scripts)
 
