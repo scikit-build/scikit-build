@@ -40,6 +40,9 @@ test:
             )\
         )\
       \"`"
+    - echo $PYTHONPATH
+    - python -c "import pprint, sys ; pprint.pprint(sys.path)"
+    - tree /usr/lib/pymodules/python2.7
     - nosetests -w tests
 
   post:
