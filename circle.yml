@@ -32,8 +32,8 @@ test:
                         \\\"lib\\\",\
                         \\\"pymodules\\\",\
                         \\\"python\\\" + \\\".\\\".join((\
-                            sys.version_info.major,\
-                            sys.version_info.minor\
+                            str(sys.version_info.major),\
+                            str(sys.version_info.minor)\
                         ))\
                     )\
                 ] + sys.path\
