@@ -222,37 +222,48 @@
 find_package( PythonInterp REQUIRED )
 find_package( PythonLibs REQUIRED )
 
-set(_command "")
-set(_command "${_command}import distutils.sysconfig\n")
-set(_command "${_command}import itertools\n")
-set(_command "${_command}import os\n")
-set(_command "${_command}import os.path\n")
-set(_command "${_command}import site\n")
-set(_command "${_command}import sys\n")
+set(_command "
+import distutils.sysconfig
+import itertools
+import os
+import os.path
+import site
+import sys
 
-set(_command "${_command}result = None\n")
-set(_command "${_command}rel_result = None\n")
-set(_command "${_command}candidates = itertools.chain(\n")
-set(_command "${_command}  (distutils.sysconfig.get_python_lib(),),\n")
-set(_command "${_command}  site.getsitepackages(),\n")
-set(_command "${_command}  (site.getusersitepackages,)\n")
-set(_command "${_command})\n")
+result = None
+rel_result = None
+candidate_lists = []
 
-set(_command "${_command}for candidate in candidates:\n")
-set(_command "${_command}    rel_candidate = os.path.relpath(\n")
-set(_command "${_command}      candidate, sys.prefix)\n")
-set(_command "${_command}    if not rel_candidate.startswith('..'):\n")
-set(_command "${_command}        result = candidate\n")
-set(_command "${_command}        rel_result = rel_candidate\n")
-set(_command "${_command}        break\n")
+try:
+    candidate_lists.append((distutils.sysconfig.get_python_lib(),))
+except AttributeError: pass
 
-set(_command "${_command}sys.stdout.write(\";\".join((\n")
-set(_command "${_command}    os.sep,\n")
-set(_command "${_command}    os.pathsep,\n")
-set(_command "${_command}    sys.prefix,\n")
-set(_command "${_command}    result,\n")
-set(_command "${_command}    rel_result,\n")
-set(_command "${_command})))\n")
+try:
+    candidate_lists.append(site.getsitepackages())
+except AttributeError: pass
+
+try:
+    candidate_lists.append((site.getusersitepackages,))
+except AttributeError: pass
+
+candidates = itertools.chain.from_iterable(candidate_lists)
+
+for candidate in candidates:
+    rel_candidate = os.path.relpath(
+      candidate, sys.prefix)
+    if not rel_candidate.startswith(\"..\"):
+        result = candidate
+        rel_result = rel_candidate
+        break
+
+sys.stdout.write(\";\".join((
+    os.sep,
+    os.pathsep,
+    sys.prefix,
+    result,
+    rel_result,
+)))
+")
 
 execute_process(COMMAND "${PYTHON_EXECUTABLE}" -c "${_command}"
                 OUTPUT_VARIABLE _list
