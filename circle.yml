@@ -25,7 +25,7 @@ test:
     - "export PYTHONPATH=`python -c \"\
         import sys, os, os.path ; \
         print(\
-            os.pathset.join(\
+            os.pathsep.join(\
                 [\
                     os.path.join(\
                         \\\"/usr\\\",\
@@ -38,6 +38,7 @@ test:
                     )\
                 ] + sys.path\
             )\
+        )\
       \"`"
     - nosetests -w tests
 
