@@ -22,6 +22,23 @@ test:
   override:
     - echo $PYTHONPATH
     - python -c "import pprint, sys ; pprint.pprint(sys.path)"
+    - "export PYTHONPATH=`python -c \"\
+        import sys, os, os.path ; \
+        print(\
+            os.pathset.join(\
+                [\
+                    os.path.join(\
+                        \\\"/usr\\\",\
+                        \\\"lib\\\",\
+                        \\\"pymodules\\\",\
+                        \\\"python\\\" + \\\".\\\".join((\
+                            sys.version_info.major,\
+                            sys.version_info.minor\
+                        ))\
+                    )\
+                ] + sys.path\
+            )\
+      \"`"
     - nosetests -w tests
 
   post:
