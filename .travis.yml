@@ -20,5 +20,10 @@ install:
   - pip install -r requirements.txt
   - pip install -r requirements-dev.txt
 
+before_script:
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
+  - sleep 10
+
 # command to run tests, e.g. python setup.py test
 script: nosetests -w tests
