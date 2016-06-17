@@ -243,7 +243,7 @@ try:
 except AttributeError: pass
 
 try:
-    candidate_lists.append((site.getusersitepackages,))
+    candidate_lists.append((site.getusersitepackages(),))
 except AttributeError: pass
 
 candidates = itertools.chain.from_iterable(candidate_lists)

@@ -21,7 +21,7 @@ test:
 
   override:
     - "python -c \"\
-        import sys, os, os.path ; \
+        import sys, os, os.path, distutils.sysconfig ; \
         print(os.symlink(
             os.path.join(\
                 \\\"/usr\\\",\
@@ -33,7 +33,10 @@ test:
                 )),\
                 \\\"vtk\\\"\
             ),\
-            os.path.join(sys.path[0], \\\"vtk\\\"),
+            os.path.join(\
+                distutils.sysconfig.getusersitepackages(),\
+                \\\"vtk\\\"\
+            ),\
         ))\
       \""
 
