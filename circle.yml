@@ -20,6 +20,8 @@ test:
     - sleep 10
 
   override:
+    - echo $PYTHONPATH
+    - python -c "import pprint, sys ; pprint.pprint(sys.path)"
     - nosetests -w tests
 
   post:
