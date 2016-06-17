@@ -34,7 +34,7 @@ test:
                 \\\"vtk\\\"\
             ),\
             os.path.join(\
-                distutils.sysconfig.getusersitepackages(),\
+                distutils.sysconfig.get_python_lib(),\
                 \\\"vtk\\\"\
             ),\
         ))\
