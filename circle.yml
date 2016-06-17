@@ -22,7 +22,7 @@ test:
   override:
     - "python -c \"\
         import sys, os, os.path ; \
-        os.symlink(
+        print(os.symlink(
             os.path.join(\
                 \\\"/usr\\\",\
                 \\\"lib\\\",\
@@ -34,8 +34,8 @@ test:
                 \\\"vtk\\\"\
             ),\
             os.path.join(sys.path[0], \\\"vtk\\\"),
-        )\
-      "
+        ))\
+      \""
 
     - find /usr/lib/pymodules/python2.7
     - nosetests -w tests
