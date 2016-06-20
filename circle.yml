@@ -1,7 +1,7 @@
 dependencies:
   pre:
     - sudo apt-get update
-    - sudo apt-get install gfortran libboost-python-dev python-vtk
+    - sudo apt-get install gfortran libboost-python-dev
     - "wget --no-check-certificate --progress=dot \
         \"https://cmake.org/files/v3.5/cmake-3.5.0-Linux-x86_64.tar.gz\""
     - tar xzf "cmake-3.5.0-Linux-x86_64.tar.gz"
@@ -12,37 +12,5 @@ dependencies:
     - pip install -r requirements-dev.txt
 
 test:
-  pre:
-    - "export DISPLAY=:99.0"
-    - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/xvfb.pid \
-        --make-pidfile --background --exec /usr/bin/Xvfb -- \
-          :99 -ac -screen 0 1024x768x24"
-    - sleep 10
-
   override:
-    - "python -c \"\
-        import sys, os, os.path, distutils.sysconfig ; \
-        print(os.symlink(
-            os.path.join(\
-                \\\"/usr\\\",\
-                \\\"lib\\\",\
-                \\\"pymodules\\\",\
-                \\\"python\\\" + \\\".\\\".join((\
-                    str(sys.version_info.major),\
-                    str(sys.version_info.minor)\
-                )),\
-                \\\"vtk\\\"\
-            ),\
-            os.path.join(\
-                distutils.sysconfig.get_python_lib(),\
-                \\\"vtk\\\"\
-            ),\
-        ))\
-      \""
-
-    - find /usr/lib/pymodules/python2.7
-    - nosetests -w tests
-
-  post:
-    - "/sbin/start-stop-daemon --stop --quiet --pidfile /tmp/xvfb.pid"
-    - "rm -f /tmp/xvfb.pid"
+    - nosetests -w tests --exclude pen2

@@ -9,7 +9,7 @@ python:
 
 before_install:
   - sudo apt-get update
-  - sudo apt-get install gfortran libboost-python-dev python-vtk
+  - sudo apt-get install gfortran libboost-python-dev
   - "wget --no-check-certificate --progress=dot \
       \"https://cmake.org/files/v3.5/cmake-3.5.0-Linux-x86_64.tar.gz\""
   - tar xzf "cmake-3.5.0-Linux-x86_64.tar.gz"
@@ -20,11 +20,5 @@ install:
   - pip install -r requirements.txt
   - pip install -r requirements-dev.txt
 
-before_script:
-  - "export DISPLAY=:99.0"
-  - "cat /etc/init.d/xvfb"
-  - "sh -e /etc/init.d/xvfb start"
-  - sleep 10
-
 # command to run tests, e.g. python setup.py test
-script: nosetests -w tests
+script: nosetests -w tests --exclude pen2
