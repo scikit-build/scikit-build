@@ -21,7 +21,7 @@ void TB_CYCLE(unsigned int N, unsigned int i,
       PySys_WriteStdout("C  -> ");
 
       PyObject *_addr = PyList_GetItem(_cy_routines, (Py_ssize_t)newI);
-      unsigned long addr = PyInt_AsUnsignedLongMask(_addr);
+      unsigned long addr = PyLong_AsUnsignedLong(_addr);
       ((cy_routine)((*(void **)(&addr))))(
         N - 1, newI, _cy_routines, _py_routines
       );
@@ -32,8 +32,8 @@ void TB_CYCLE(unsigned int N, unsigned int i,
       PyObject *func = PyList_GetItem(_py_routines, (Py_ssize_t)newI - nCy);
       PyObject *args = PyTuple_Pack(
         4,
-        PyInt_FromSize_t((std::size_t)(N - 1)),
-        PyInt_FromSize_t((std::size_t)newI),
+        PyLong_FromSize_t((std::size_t)(N - 1)),
+        PyLong_FromSize_t((std::size_t)newI),
         _cy_routines,
         _py_routines
       );
@@ -54,7 +54,7 @@ static void cycle(unsigned int N, unsigned int i,
 
 static PyObject *get_c_handle()
 {
-    return PyInt_FromSize_t((std::size_t)(TB_CYCLE));
+    return PyLong_FromSize_t((std::size_t)(TB_CYCLE));
 }
 
 BOOST_PYTHON_MODULE(TB_MODULE)
