@@ -12,7 +12,7 @@ find_package(PythonInterp REQUIRED)
 find_package(PythonLibs REQUIRED)
 find_package(PythonExtensions REQUIRED)
 find_package(Cython REQUIRED)
-find_package(Boost COMPONENTS Python)
+find_package(Boost)
 
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
