@@ -7,17 +7,17 @@ matrix:
     - os: linux
       python: "3.4"
       env:
-        - extra_test_args="--exclude pen2 --exclude tbabel"
+        - EXTRA_TEST_ARGS="--exclude pen2 --exclude tbabel"
 
     - os: linux
       python: "3.3"
       env:
-        - extra_test_args="--exclude pen2 --exclude tbabel"
+        - EXTRA_TEST_ARGS="--exclude pen2 --exclude tbabel"
 
     - os: linux
       python: "2.7"
       env:
-        - extra_test_args="--exclude pen2"
+        - EXTRA_TEST_ARGS="--exclude pen2"
 
 before_install:
   - sudo apt-get update
