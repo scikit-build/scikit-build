@@ -2,10 +2,22 @@
 
 language: python
 
-python:
-  - "3.4"
-  - "3.3"
-  - "2.7"
+matrix:
+  include:
+    - os: linux
+      python: "3.4"
+      env:
+        - extra_test_args="--exclude pen2 --exclude tbabel"
+
+    - os: linux
+      python: "3.3"
+      env:
+        - extra_test_args="--exclude pen2 --exclude tbabel"
+
+    - os: linux
+      python: "2.7"
+      env:
+        - extra_test_args="--exclude pen2"
 
 before_install:
   - sudo apt-get update
@@ -21,4 +33,4 @@ install:
   - pip install -r requirements-dev.txt
 
 # command to run tests, e.g. python setup.py test
-script: nosetests -w tests --exclude pen2
+script: nosetests -w tests $EXTRA_TEST_ARGS
