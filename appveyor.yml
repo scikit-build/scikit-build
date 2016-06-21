@@ -30,14 +30,14 @@ environment:
       PYTHON_ARCH: "32"
       CMAKE_GENERATOR: Visual Studio 14 2015
       CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run-with-visual-studio.cmd"
-      EXTRA_TEST_ARGS: "--exclude fortran_compiler --exclude pen2"
+      EXTRA_TEST_ARGS: "--exclude fortran_compiler --exclude pen2 --exclude tbabel"
 
     - PYTHON: "C:\\Python35-x64"
       PYTHON_VERSION: "3.5.x"
       PYTHON_ARCH: "64"
       CMAKE_GENERATOR: Visual Studio 14 2015
       CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run-with-visual-studio.cmd"
-      EXTRA_TEST_ARGS: "--exclude fortran_compiler --exclude pen2"
+      EXTRA_TEST_ARGS: "--exclude fortran_compiler --exclude pen2 --exclude tbabel"
 
     # MinGW (Python 2 & 3, 64 bit only)
     - PYTHON: "C:\\Python27-x64"
@@ -52,7 +52,7 @@ environment:
       PYTHON_ARCH: "32"
       CMAKE_GENERATOR: "MinGW Makefiles"
       CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run-with-mingw.cmd"
-      EXTRA_TEST_ARGS: "--exclude fortran_compiler --exclude pen2"
+      EXTRA_TEST_ARGS: "--exclude fortran_compiler --exclude pen2 --exclude tbabel"
 
     # Default -- make sure Visual Studio works as the default
     # (Python 2 & 3, 64 bit only)
@@ -66,7 +66,7 @@ environment:
       PYTHON_VERSION: "3.5.x"
       PYTHON_ARCH: "64"
       CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run-with-visual-studio.cmd"
-      EXTRA_TEST_ARGS: "--exclude fortran_compiler --exclude pen2"
+      EXTRA_TEST_ARGS: "--exclude fortran_compiler --exclude pen2 --exclude tbabel"
 
 init:
   - cmd: "ECHO RDP CONNECTION INFORMATION (IN CASE OF HANGING BUILD)"
@@ -115,6 +115,8 @@ install:
           Get-Item \".\\ci\\appveyor\\run-with-visual-studio.cmd\" -Verbose\
         ).FullName\
       )"
+
+  - cmd: choco install boost-msvc-12
 
   # Prepend newly installed Python to the PATH of this build (this cannot be
   # done from inside the powershell script as it would require to restart
