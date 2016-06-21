@@ -22,7 +22,7 @@ matrix:
 
 before_script:
   - "\
-    if [\"$START_XVFB\" = '1' ] ; then \
+    if [ \"$START_XVFB\" = '1' ] ; then \
       export DISPLAY=':99.0' ; \
       cat /etc/init.d/xvfb ; \
       sh -e /etc/init.d/xvfb start ; \
