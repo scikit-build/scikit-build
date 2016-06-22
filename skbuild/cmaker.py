@@ -38,12 +38,12 @@ def pop_arg(arg, a, default=None):
 def _remove_cwd_prefix(path):
     cwd = os.getcwd()
 
-    result = path
+    result = path.replace("/", os.sep)
     if result.startswith(cwd):
         result = os.path.relpath(result, cwd)
 
     if platform.system() == "Windows":
-        result = result.replace("\\\\", "/")
+        result = result.replace("\\\\", os.sep)
 
     result = result.replace("\n", "")
 

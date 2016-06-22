@@ -128,6 +128,7 @@ def setup(*args, **kw):
     cmkr.configure(cmake_args)
     cmkr.make(make_args)
 
+    install_root = os.path.join(os.getcwd(), cmaker.CMAKE_INSTALL_DIR)
     for path in cmkr.install():
         found_package = False
         found_module = False
@@ -140,10 +141,7 @@ def setup(*args, **kw):
             raise SKBuildError((
                 "\n  CMake-installed files must be within the project root.\n"
                 "    Project Root  : {}\n"
-                "    Violating File: {}\n").format(
-                    os.path.join(os.getcwd(), cmaker.CMAKE_INSTALL_DIR),
-                    test_path
-                ))
+                "    Violating File: {}\n").format(install_root, test_path))
 
         # peel off the 'skbuild' prefix
         path = os.path.relpath(path, cmaker.CMAKE_INSTALL_DIR)
