@@ -121,6 +121,9 @@ install:
   # the parent CMD process).
   - cmd: "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
 
+  # add python<version>.lib to LIBPATH
+  - cmd: "SET LIBPATH=%LIBPATH%;%PYTHON%\\libs"
+
   # Display version and architecture for Python.
   # Useful when visually inspecting the log.
   - cmd: "python --version"
