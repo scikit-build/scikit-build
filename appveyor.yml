@@ -121,7 +121,7 @@ install:
   # the parent CMD process).
   - cmd: "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
 
-  - cmd: "SKBUILD_CMAKE_CONFIG=Release"
+  - cmd: "SET SKBUILD_CMAKE_CONFIG=Release"
 
   # Display version and architecture for Python.
   # Useful when visually inspecting the log.
