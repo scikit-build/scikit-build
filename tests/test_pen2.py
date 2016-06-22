@@ -36,7 +36,8 @@ def test_pen2_works():
     old_cwd = os.getcwd()
     os.chdir(os.path.join("samples", "pen2-cython", CMAKE_BUILD_DIR))
     try:
-        subprocess.check_call(["ctest", "--build-config Debug", "--output-on-failure"])
+        subprocess.check_call(
+            ["ctest", "--build-config", "Debug", "--output-on-failure"])
     finally:
         os.chdir(old_cwd)
 
