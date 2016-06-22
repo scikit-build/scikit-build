@@ -125,6 +125,7 @@ install:
   - cmd: "SET LIBPATH=%LIBPATH%;%PYTHON%\\libs"
   - cmd: "echo %LIBPATH%"
   - cmd: "dir %LIBPATH%"
+  - cmd: "SET PYTHON_LIB=%PYTHON%\\libs\\python27.lib"
 
   # Display version and architecture for Python.
   # Useful when visually inspecting the log.
@@ -187,12 +188,12 @@ notifications:
 
 shallow_clone: true
 
-# uncomment to block (for debugging over RDP)
-on_finish:
-  - ps: "$blockRdp = $true ; \
-      iex (\
-        (New-Object Net.Webclient).DownloadString(\
-          'https://raw.githubusercontent.com/\
-           appveyor/ci/master/scripts/enable-rdp.ps1'\
-        )\
-      )"
+## # uncomment to block (for debugging over RDP)
+## on_finish:
+##   - ps: "$blockRdp = $true ; \
+##       iex (\
+##         (New-Object Net.Webclient).DownloadString(\
+##           'https://raw.githubusercontent.com/\
+##            appveyor/ci/master/scripts/enable-rdp.ps1'\
+##         )\
+##       )"
