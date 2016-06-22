@@ -125,7 +125,7 @@ install:
   - cmd: "SET LIBPATH=%LIBPATH%;%PYTHON%\\libs"
   - cmd: "echo %LIBPATH%"
   - cmd: "dir %LIBPATH%"
-  - cmd: "SET PYTHON_LIBRARY=%PYTHON%\\libs\\python27.lib"
+  - cmd: "SET SKBUILD_CONFIGURE_OPTIONS=-DPYTHON_LIBRARY=%PYTHON%\\libs\\python27.lib"
 
   # Display version and architecture for Python.
   # Useful when visually inspecting the log.

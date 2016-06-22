@@ -5,6 +5,7 @@ import os.path
 import platform
 import re
 import subprocess
+import shlex
 import sys
 import sysconfig
 
@@ -238,6 +239,12 @@ class CMaker(object):
                ]
 
         cmd.extend(clargs)
+
+        cmd.extend(
+            filter(bool,
+                   shlex.split(os.environ.get("SKBUILD_CONFIGURE_OPTIONS", "")))
+        )
+
         # changes dir to cmake_build and calls cmake's configure step
         # to generate makefile
         rtn = subprocess.check_call(cmd, cwd=CMAKE_BUILD_DIR)
@@ -298,6 +305,11 @@ class CMaker(object):
         cmd = ["cmake", "--build", source_dir,
                "--target", "install", "--config", config]
         cmd.extend(clargs)
+        cmd.extend(
+            filter(bool,
+                   shlex.split(os.environ.get("SKBUILD_BUILD_OPTIONS", "")))
+        )
+
         rtn = subprocess.check_call(cmd, cwd=CMAKE_BUILD_DIR)
         return rtn
 
