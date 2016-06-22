@@ -37,7 +37,9 @@ def test_tbabel_works():
     os.chdir(os.path.join("samples", "tower-of-babel", CMAKE_BUILD_DIR))
     try:
         subprocess.check_call(
-            ["ctest", "--build-config", "Debug", "--output-on-failure"])
+            ["ctest", "--build-config",
+                os.environ.get("SKBUILD_CMAKE_CONFIG", "Debug"),
+                "--output-on-failure"])
     finally:
         os.chdir(old_cwd)
 
