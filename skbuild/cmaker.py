@@ -184,18 +184,22 @@ class CMaker(object):
         if (python_library is None or
             os.path.splitext(python_library)[1][-2:] == '.a'):
 
-            candidate_extensions = ('.so', '.a')
-            if sysconfig.get_config_var('WITH_DYLD'):
-                candidate_extensions = ('.dylib',) + candidate_extensions
+            candidate_lib_prefixes = ['', 'lib']
 
-            candidate_versions = (python_version,)
+            candidate_extensions = ['.lib', '.so', '.a']
+            if sysconfig.get_config_var('WITH_DYLD'):
+                candidate_extensions.insert(0, '.dylib')
+
+            candidate_versions = [python_version]
             if python_version:
-                candidate_versions += ('',)
+                candidate_versions.append('')
+                candidate_versions.insert(
+                    0, "".join(python_version.split(".")[:2]))
 
             abiflags = getattr(sys, 'abiflags', '')
-            candidate_abiflags = (abiflags,)
+            candidate_abiflags = [abiflags]
             if abiflags:
-                candidate_abiflags += ('',)
+                candidate_abiflags.append('')
 
             libdir = sysconfig.get_config_var('LIBDIR')
             if sysconfig.get_config_var('MULTIARCH'):
@@ -212,9 +216,10 @@ class CMaker(object):
             candidates = (
                 os.path.join(
                     libdir,
-                    ''.join(('libpython', ver, abi, ext))
+                    ''.join((pre, 'python', ver, abi, ext))
                 )
-                for (ext, ver, abi) in itertools.product(
+                for (pre, ext, ver, abi) in itertools.product(
+                    candidate_lib_prefixes,
                     candidate_extensions,
                     candidate_versions,
                     candidate_abiflags
