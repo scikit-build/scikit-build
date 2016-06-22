@@ -36,7 +36,7 @@ def test_hello_cython_works():
     old_cwd = os.getcwd()
     os.chdir(os.path.join("samples", "hello-cython", CMAKE_BUILD_DIR))
     try:
-        subprocess.check_call(["ctest", "--output-on-failure"])
+        subprocess.check_call(["ctest", "--build-cfg Debug", "--output-on-failure"])
     finally:
         os.chdir(old_cwd)
 
