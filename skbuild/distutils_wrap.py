@@ -135,7 +135,7 @@ def setup(*args, **kw):
 
         # if this installed file is not within the project root, complain and
         # exit
-        if not path.startswith(cmaker.CMAKE_INSTALL_DIR):
+        if not path.replace("/", os.sep).startswith(cmaker.CMAKE_INSTALL_DIR):
             raise SKBuildError((
                 "\n  CMake-installed files must be within the project root.\n"
                 "    Project Root  : {}\n"
