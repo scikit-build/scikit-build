@@ -135,12 +135,15 @@ def setup(*args, **kw):
 
         # if this installed file is not within the project root, complain and
         # exit
-        if not path.replace("/", os.sep).startswith(cmaker.CMAKE_INSTALL_DIR):
+        test_path = path.replace("/", os.sep)
+        if not test_path.startswith(cmaker.CMAKE_INSTALL_DIR):
             raise SKBuildError((
                 "\n  CMake-installed files must be within the project root.\n"
                 "    Project Root  : {}\n"
                 "    Violating File: {}\n").format(
-                    os.path.join(os.getcwd(), cmaker.CMAKE_INSTALL_DIR), path))
+                    os.path.join(os.getcwd(), cmaker.CMAKE_INSTALL_DIR),
+                    test_path
+                ))
 
         # peel off the 'skbuild' prefix
         path = os.path.relpath(path, cmaker.CMAKE_INSTALL_DIR)
