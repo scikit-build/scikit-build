@@ -20,7 +20,7 @@ def test_pen2_builds():
     old_argv = sys.argv
     old_cwd = os.getcwd()
 
-    sys.argv = ["setup.py", "install"]
+    sys.argv = ["setup.py", "build"]
     os.chdir(os.path.join("samples", "pen2-cython"))
 
     if os.path.exists(SKBUILD_DIR):

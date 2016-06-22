@@ -4,7 +4,7 @@ file(COPY pen2_cython DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 add_test(NAME pen2_cython
          COMMAND ${PYTHON_EXECUTABLE}
-                 "${CMAKE_CURRENT_BINARY_DIR}/pen2_cython" -d 20)
+                 "${CMAKE_INSTALL_PREFIX}/scripts/pen2_cython" -d 2)
 
 set(_pp "")
 set(_pp "${_pp}${CMAKE_SOURCE_DIR}")

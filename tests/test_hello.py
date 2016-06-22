@@ -20,7 +20,7 @@ def test_hello_builds():
     old_argv = sys.argv
     old_cwd = os.getcwd()
 
-    sys.argv = ["setup.py", "install"]
+    sys.argv = ["setup.py", "build"]
     os.chdir(os.path.join("samples", "hello"))
 
     if os.path.exists(SKBUILD_DIR):

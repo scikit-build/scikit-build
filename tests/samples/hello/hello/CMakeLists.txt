@@ -7,7 +7,7 @@ file(COPY __main__.py DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 add_test(NAME hello
          COMMAND ${PYTHON_EXECUTABLE} -m hello
-         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/..)
+         WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX})
 
 install(TARGETS _hello LIBRARY DESTINATION hello)
 install(FILES __init__.py      DESTINATION hello)
