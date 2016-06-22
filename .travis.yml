@@ -17,7 +17,7 @@ matrix:
     - os: linux
       python: "2.7"
       env:
-        - START_XVFB="1"
+        - EXTRA_TEST_ARGS="--exclude pen2 --exclude tbabel"
 
 
 before_script:
@@ -45,4 +45,4 @@ install:
   - pip install -r requirements-dev.txt
 
 # command to run tests, e.g. python setup.py test
-script: "echo $PYTHONPATH ; find /usr/lib/pymodules/python2.7 ; python -m nose -w tests $EXTRA_TEST_ARGS"
+script: "nosetests -v -w tests $EXTRA_TEST_ARGS"
