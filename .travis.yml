@@ -45,4 +45,4 @@ install:
   - pip install -r requirements-dev.txt
 
 # command to run tests, e.g. python setup.py test
-script: "echo $PYTHONPATH ; ls /usr/lib/pymodules/python2.7 ; nosetests -w tests $EXTRA_TEST_ARGS"
+script: "echo $PYTHONPATH ; find /usr/lib/pymodules/python2.7 ; nosetests -w tests $EXTRA_TEST_ARGS"
