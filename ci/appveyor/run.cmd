@@ -1,7 +1,7 @@
 
 @SETLOCAL enableextensions enabledelayedexpansion
 
-@ECHO OFF
+:: @ECHO OFF
 
 IF x%SKIP%==x0 (
     IF NOT x%CMAKE_GENERATOR:Visual Studio=%==x%CMAKE_GENERATOR% (
