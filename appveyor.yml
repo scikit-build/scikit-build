@@ -18,6 +18,7 @@ environment:
       RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
       EXTRA_TEST_ARGS: "--exclude fortran_compiler --exclude pen2 --exclude tbabel"
       SKIP: "0"
+      BLOCK: "1"
 
     - PYTHON: "C:\\Python27-x64"
       PYTHON_VERSION: "2.7.x"
