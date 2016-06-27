@@ -179,6 +179,9 @@ class Driver(object):
 
     def drive_on_finish(self):
         if self.env.get("BLOCK", "0") == "1":
+            local_path = os.path.join("ci", "appveyor", "enable-rdp.ps1")
+            self.check_call(["powershell.exe", "-File", local_path])
+
             lock_file_path = os.path.join(
                 self.env["USERPROFILE"], "Dekstop", "spin-lock.txt")
 
@@ -189,8 +192,6 @@ class Driver(object):
                 time.sleep(5)
 
 if __name__ == "__main__":
-    print("MAIN")
-
     d = Driver()
     stage = sys.argv[1]
 
