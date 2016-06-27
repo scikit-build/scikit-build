@@ -183,7 +183,7 @@ class Driver(object):
             self.check_call(["powershell.exe", "-File", local_path])
 
             lock_file_path = os.path.join(
-                self.env["USERPROFILE"], "Dekstop", "spin-lock.txt")
+                self.env["USERPROFILE"], "Desktop", "spin-lock.txt")
 
             with open(lock_file_path, "w") as f:
                 f.write("")
