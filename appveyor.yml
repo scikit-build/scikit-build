@@ -76,14 +76,12 @@ environment:
       EXTRA_TEST_ARGS: "--exclude fortran_compiler --exclude pen2 --exclude tbabel"
       SKIP: "1"
 
-init:
+install:
   - cmd: "dir %PYTHON%"
   - cmd: "dir %PYTHON%\\Scripts"
   - cmd: "pwd"
   - cmd: "dir ."
   - cmd: "dir ci\\appveyor"
-
-install:
   - cmd: "%RUN% %PYTHON%\\python.exe .\\ci\\appveyor\\driver.py install"
 
 build_script:
