@@ -23,6 +23,10 @@ except ImportError:
 
     from urllib2 import urlopen
 
+def log(s):
+    print(s)
+    sys.stdout.flush()
+
 class DriverContext(object):
     def __init__(self, driver, env_file="env.json"):
         self.driver = driver
@@ -75,7 +79,7 @@ class Driver(object):
         return DriverContext(self, env_file)
 
     def drive_install(self):
-        print("RDP Connection Information (In case of hanging build)")
+        log("RDP Connection Information (In case of hanging build)")
 
         local_path = os.path.join("ci", "appveyor", "enable-rdp.ps1")
         if not os.path.exists(local_path):
@@ -111,10 +115,10 @@ class Driver(object):
             raise Exception("There are newer queued builds for this "
                             "pull request, failing early.")
 
-        print("Filesystem root:")
+        log("Filesystem root:")
         self.check_call(["dir", "C:\\"])
 
-        print("Installed SDKs:")
+        log("Installed SDKs:")
         self.check_call(["dir", "C:\\Program Files\\Microsoft SDKs\\Windows\\"])
 
         local_path = os.path.join(
@@ -134,9 +138,9 @@ class Driver(object):
 
         self.env["SKBUILD_CMAKE_CONFIG"] = "Release"
 
-        print("Python Version:")
-        print(sys.version)
-        print("    {}-bit".format(struct.calcsize("P")*8))
+        log("Python Version:")
+        log(sys.version)
+        log("    {}-bit".format(struct.calcsize("P")*8))
 
         self.check_call([
             "python", "-m", "pip",
@@ -179,17 +183,9 @@ class Driver(object):
 
     def drive_on_finish(self):
         if self.env.get("BLOCK", "0") == "1":
+            log("BLOCKING")
             local_path = os.path.join("ci", "appveyor", "enable-rdp.ps1")
             self.check_call(["powershell.exe", "-File", local_path])
-
-            # lock_file_path = os.path.join(
-            #     self.env["USERPROFILE"], "Desktop", "spin-lock.txt")
-
-            # with open(lock_file_path, "w") as f:
-            #     f.write("")
-
-            # while os.path.exists(lock_file_path):
-            #     time.sleep(5)
 
 if __name__ == "__main__":
     d = Driver()
