@@ -83,10 +83,9 @@ class Driver(object):
             remote_script_url = (
                 "https://raw.githubusercontent.com"
                 "/appveyor/ci/master/scripts/enable-rdp.ps1")
-            with urlopen(remote_script_url) as remote_script:
-
-                with open(local_path, "w") as local_script:
-                    shutil.copyfileobj(remote_script, local_script)
+            remote_script = urlopen(remote_script_url)
+            with open(local_path, "w") as local_script:
+                shutil.copyfileobj(remote_script, local_script)
 
         self.check_call(["powershell.exe", "-File", local_path])
 
@@ -120,12 +119,12 @@ class Driver(object):
 
         local_path = os.path.join(
             "ci", "appveyor", "run-with-visual-studio.cmd")
-        with urlopen("https://raw.githubusercontent.com"
-                     "/ogrisel/python-appveyor-demo"
-                     "/f54ec3593bcea682098a59b560c1850c19746e10"
-                     "/appveyor/run_with_env.cmd'") as remote_script:
-            with open(local_path, "w") as local_script:
-                shutil.copyfileobj(remote_script, local_script)
+        remote_script = urlopen("https://raw.githubusercontent.com"
+                                "/ogrisel/python-appveyor-demo"
+                                "/f54ec3593bcea682098a59b560c1850c19746e10"
+                                "/appveyor/run_with_env.cmd'")
+        with open(local_path, "w") as local_script:
+            shutil.copyfileobj(remote_script, local_script)
 
         ### TODO CONFIGURE VISUAL STUDIO
 
@@ -147,11 +146,11 @@ class Driver(object):
 
         self.check_call(["python", "-m", "pip", "install", "wheel"])
 
-        with urlopen("https://cmake.org"
-                     "/files/v3.5/cmake-3.5.2-win32-x86.zip") as remote_file:
+        remote_file = urlopen(
+            "https://cmake.org/files/v3.5/cmake-3.5.2-win32-x86.zip")
 
-            with zipfile.ZipFile(remote_file) as remote_zip:
-                remote_zip.extractall("C:\\cmake")
+        with zipfile.ZipFile(remote_file) as remote_zip:
+            remote_zip.extractall("C:\\cmake")
 
         self.env_prepend("PATH", "C:\\cmake\bin")
 
