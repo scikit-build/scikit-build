@@ -92,8 +92,9 @@ after_test:
 
 on_finish:
   - ps: "\
-      $blockRdp=True ; \
-      $Env:PYTHON\\python.exe .\\ci\\appveyor\\driver.py on_finish"
+      $blockRdp=True
+      $cmd = \"& '$Env:PYTHON\\python.exe' '.\\ci\\appveyor\\driver.py' 'on_finish'\"
+      invoke-expression $cmd"
 
 artifacts:
   # Archive the generated packages in the ci.appveyor.com build report.
