@@ -172,7 +172,8 @@ after_test:
   - cmd: "%CMD_IN_ENV% python setup.py bdist_wheel"
   - cmd: "%CMD_IN_ENV% python setup.py bdist_wininst"
   - cmd: "%CMD_IN_ENV% python setup.py bdist_msi"
-  - ps: "ls dist"
+  - cmd: "IF NOT EXISTS dist mkdir dist"
+  - cmd: "dir dist"
 
 artifacts:
   # Archive the generated packages in the ci.appveyor.com build report.
