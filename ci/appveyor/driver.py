@@ -67,7 +67,7 @@ class Driver(object):
         self.env[key] = os.pathsep.join(
             values + self.env.get(key, "").split(os.pathsep))
 
-    def check_call(*args, **kwds):
+    def check_call(self, *args, **kwds):
         kwds["env"] = kwds.get("env", self.env)
         return subprocess.check_call(*args, **kwds)
 
