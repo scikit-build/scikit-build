@@ -182,14 +182,14 @@ class Driver(object):
             local_path = os.path.join("ci", "appveyor", "enable-rdp.ps1")
             self.check_call(["powershell.exe", "-File", local_path])
 
-            lock_file_path = os.path.join(
-                self.env["USERPROFILE"], "Desktop", "spin-lock.txt")
+            # lock_file_path = os.path.join(
+            #     self.env["USERPROFILE"], "Desktop", "spin-lock.txt")
 
-            with open(lock_file_path, "w") as f:
-                f.write("")
+            # with open(lock_file_path, "w") as f:
+            #     f.write("")
 
-            while os.path.exists(lock_file_path):
-                time.sleep(5)
+            # while os.path.exists(lock_file_path):
+            #     time.sleep(5)
 
 if __name__ == "__main__":
     d = Driver()
