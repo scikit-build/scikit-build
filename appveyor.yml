@@ -172,7 +172,7 @@ after_test:
   - cmd: "%CMD_IN_ENV% python setup.py bdist_wheel"
   - cmd: "%CMD_IN_ENV% python setup.py bdist_wininst"
   - cmd: "%CMD_IN_ENV% python setup.py bdist_msi"
-  - cmd: "IF NOT EXISTS dist (mkdir dist)"
+  - cmd: "IF NOT EXIST dist (mkdir dist)"
   - cmd: "dir dist"
 
 artifacts:
