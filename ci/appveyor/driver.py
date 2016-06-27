@@ -74,7 +74,7 @@ class Driver(object):
     def env_context(self, env_file="env.json"):
         return DriverContext(self, env_file)
 
-    def drive_init(self):
+    def drive_install(self):
         print("RDP Connection Information (In case of hanging build)")
 
         local_path = os.path.join("ci", "appveyor", "enable-rdp.ps1")
@@ -90,7 +90,6 @@ class Driver(object):
 
         self.check_call(["powershell.exe", "-File", local_path])
 
-    def drive_install(self):
         # query appveyor for the latest builds
         account = self.env["APPVEYOR_ACCOUNT_NAME"]
         slug = self.env["APPVEYOR_PROJECT_SLUG"]
@@ -197,9 +196,7 @@ if __name__ == "__main__":
     stage = sys.argv[1]
 
     with d.env_context():
-        if stage == "init":
-            d.drive_init()
-        elif stage == "install":
+        if stage == "install":
             d.drive_install()
         elif stage == "build":
             d.drive_build()
