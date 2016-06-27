@@ -15,7 +15,7 @@ environment:
       PYTHON_VERSION: "2.7.x"
       PYTHON_ARCH: "32"
       CMAKE_GENERATOR: Visual Studio 9 2008
-      CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
+      RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
       EXTRA_TEST_ARGS: "--exclude fortran_compiler --exclude pen2 --exclude tbabel"
       SKIP: "1"
 
@@ -23,7 +23,7 @@ environment:
       PYTHON_VERSION: "2.7.x"
       PYTHON_ARCH: "64"
       CMAKE_GENERATOR: Visual Studio 9 2008 Win64
-      CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
+      RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
       EXTRA_TEST_ARGS: "--exclude fortran_compiler --exclude pen2 --exclude tbabel"
       SKIP: "1"
 
@@ -31,7 +31,7 @@ environment:
       PYTHON_VERSION: "3.5.x"
       PYTHON_ARCH: "32"
       CMAKE_GENERATOR: Visual Studio 14 2015
-      CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
+      RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
       EXTRA_TEST_ARGS: "--exclude fortran_compiler --exclude pen2 --exclude tbabel"
       SKIP: "1"
 
@@ -39,7 +39,7 @@ environment:
       PYTHON_VERSION: "3.5.x"
       PYTHON_ARCH: "64"
       CMAKE_GENERATOR: Visual Studio 14 2015 Win64
-      CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
+      RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
       EXTRA_TEST_ARGS: "--exclude fortran_compiler --exclude pen2 --exclude tbabel"
       SKIP: "1"
 
@@ -48,7 +48,7 @@ environment:
       PYTHON_VERSION: "2.7.x"
       PYTHON_ARCH: "64"
       CMAKE_GENERATOR: "MinGW Makefiles"
-      CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
+      RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
       EXTRA_TEST_ARGS: "--exclude fortran_compiler --exclude pen2 --exclude tbabel"
       SKIP: "1"
 
@@ -56,7 +56,7 @@ environment:
       PYTHON_VERSION: "3.5.x"
       PYTHON_ARCH: "32"
       CMAKE_GENERATOR: "MinGW Makefiles"
-      CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
+      RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
       EXTRA_TEST_ARGS: "--exclude fortran_compiler --exclude pen2 --exclude tbabel"
       SKIP: "1"
 
@@ -65,115 +65,34 @@ environment:
     - PYTHON: "C:\\Python27-x64"
       PYTHON_VERSION: "2.7.x"
       PYTHON_ARCH: "64"
-      CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
+      RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
       EXTRA_TEST_ARGS: "--exclude fortran_compiler --exclude pen2 --exclude tbabel"
       SKIP: "1"
 
     - PYTHON: "C:\\Python35-x64"
       PYTHON_VERSION: "3.5.x"
       PYTHON_ARCH: "64"
-      CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
+      RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
       EXTRA_TEST_ARGS: "--exclude fortran_compiler --exclude pen2 --exclude tbabel"
       SKIP: "1"
 
 init:
-  - cmd: "ECHO RDP CONNECTION INFORMATION (IN CASE OF HANGING BUILD)"
-  - ps: "\
-      iex (\
-        (New-Object Net.Webclient).DownloadString(\
-          'https://raw.githubusercontent.com/\
-           appveyor/ci/master/scripts/enable-rdp.ps1'\
-        )\
-      )"
+  - cmd: "%RUN% %PYTHON%\\python.exe .\\ci\\appveyor\\driver.py init"
 
 install:
-  # If there is a newer build queued for the same PR, cancel this one.
-  # The AppVeyor 'rollout builds' option is supposed to serve the same
-  # purpose but it is problematic because it tends to cancel builds pushed
-  # directly to master instead of just PR builds (or the converse).
-  # credits: JuliaLang developers.
-  - ps: "\
-    if (\
-      $env:APPVEYOR_PULL_REQUEST_NUMBER -and \
-      $env:APPVEYOR_BUILD_NUMBER -ne (\
-        (\
-          Invoke-RestMethod \
-            ` https://ci.appveyor.com/api/projects/\
-                $env:APPVEYOR_ACCOUNT_NAME/\
-                $env:APPVEYOR_PROJECT_SLUG/\
-                history?recordsNumber=50\
-        ).builds | ` Where-Object pullRequestId -eq \
-                                  $env:APPVEYOR_PULL_REQUEST_NUMBER\
-      )[0].buildNumber\
-    ) { ` \
-      throw \"There are newer queued builds \
-              for this pull request, failing early.\" \
-    }"
-  - cmd: ECHO "Filesystem root:"
-  - ps: "ls \"C:/\""
-  - cmd: ECHO "Installed SDKs:"
-  - ps: "ls \"C:/Program Files/Microsoft SDKs/Windows\""
-
-  # Download visual-studio environment script from ogrisel/python-appveyor-demo
-  - ps: "\
-      (New-Object Net.WebClient).DownloadFile(\
-        'https://raw.githubusercontent.com/ogrisel/python-appveyor-demo/\
-          f54ec3593bcea682098a59b560c1850c19746e10/appveyor/run_with_env.cmd', \
-        (
-          Get-Item \".\\ci\\appveyor\\run-with-visual-studio.cmd\" -Verbose\
-        ).FullName\
-      )"
-
-  # Prepend newly installed Python to the PATH of this build (this cannot be
-  # done from inside the powershell script as it would require to restart
-  # the parent CMD process).
-  - cmd: "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
-
-  - cmd: "SET SKBUILD_CMAKE_CONFIG=Release"
-
-  # Display version and architecture for Python.
-  # Useful when visually inspecting the log.
-  - cmd: "python --version"
-  - cmd: "\
-      python -c \"import struct; \
-                  print('    {}-bit'.format(struct.calcsize('P') * 8))\""
-
-  # Upgrade to the latest version of pip to avoid it displaying warnings
-  # about it being out of date.
-  - cmd: "pip install --disable-pip-version-check --user --upgrade pip"
-  - cmd: "pip install wheel"
-  - ps: "\
-      (New-Object Net.WebClient).DownloadFile(\
-        'https://cmake.org/files/v3.5/cmake-3.5.2-win32-x86.zip', \
-        'C:\\\\cmake.zip'\
-      ); \
-      Add-Type -A 'System.IO.Compression.FileSystem'; \
-      [IO.Compression.ZipFile]::ExtractToDirectory(\
-        'C:\\\\cmake.zip', 'C:\\\\cmake'\
-      )"
-  - cmd: "SET PATH=C:\\cmake\\bin;%PATH%"
-
-  # Install the build dependencies of the project. If some dependencies contain
-  # compiled extensions and are not provided as pre-built wheel packages, pip
-  # will build them from source using the compiler toolchain matching the target
-  # Python version and architecture
-  - cmd: "%CMD_IN_ENV% pip install -r requirements.txt"
-  - cmd: "%CMD_IN_ENV% pip install -r requirements-dev.txt"
+  - cmd: "%RUN% %PYTHON%\\python.exe .\\ci\\appveyor\\driver.py install"
 
 build_script:
-  # Build the compiled extension
-  - cmd: "%CMD_IN_ENV% python setup.py build"
+  - cmd: "%RUN% %PYTHON%\\python.exe .\\ci\\appveyor\\driver.py build"
 
 test_script:
-  - cmd: "%CMD_IN_ENV% python -m nose -v -w tests %EXTRA_TEST_ARGS%"
+  - cmd: "%RUN% %PYTHON%\\python.exe .\\ci\\appveyor\\driver.py test"
 
 after_test:
-  # If tests are successful, create binary packages for the project.
-  - cmd: "%CMD_IN_ENV% python setup.py bdist_wheel"
-  - cmd: "%CMD_IN_ENV% python setup.py bdist_wininst"
-  - cmd: "%CMD_IN_ENV% python setup.py bdist_msi"
-  - cmd: "IF NOT EXIST dist (mkdir dist)"
-  - cmd: "dir dist"
+  - cmd: "%RUN% %PYTHON%\\python.exe .\\ci\\appveyor\\driver.py after_test"
+
+on_finish:
+  - cmd: "%RUN% %PYTHON%\\python.exe .\\ci\\appveyor\\driver.py on_finish"
 
 artifacts:
   # Archive the generated packages in the ci.appveyor.com build report.
@@ -192,13 +111,3 @@ notifications:
       (commit {{commitUrl}} by @{{&commitAuthorUsername}})
 
 shallow_clone: true
-
-## # uncomment to block (for debugging over RDP)
-## on_finish:
-##   - ps: "$blockRdp = $true ; \
-##       iex (\
-##         (New-Object Net.Webclient).DownloadString(\
-##           'https://raw.githubusercontent.com/\
-##            appveyor/ci/master/scripts/enable-rdp.ps1'\
-##         )\
-##       )"
