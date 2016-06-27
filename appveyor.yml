@@ -17,7 +17,7 @@ environment:
       CMAKE_GENERATOR: Visual Studio 9 2008
       RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
       EXTRA_TEST_ARGS: "--exclude fortran_compiler --exclude pen2 --exclude tbabel"
-      SKIP: "1"
+      SKIP: "0"
 
     - PYTHON: "C:\\Python27-x64"
       PYTHON_VERSION: "2.7.x"
@@ -77,12 +77,8 @@ environment:
       SKIP: "1"
 
 install:
-  - cmd: "dir %PYTHON%"
-  - cmd: "dir %PYTHON%\\Scripts"
-  - cmd: "pwd"
-  - cmd: "dir ."
-  - cmd: "dir ci\\appveyor"
   - cmd: "%RUN% %PYTHON%\\python.exe .\\ci\\appveyor\\driver.py install"
+  - cmd: "SET SKIP=1"
 
 build_script:
   - cmd: "%RUN% %PYTHON%\\python.exe .\\ci\\appveyor\\driver.py build"
