@@ -191,6 +191,8 @@ class Driver(object):
                 time.sleep(5)
 
 if __name__ == "__main__":
+    print("MAIN")
+
     d = Driver()
     stage = sys.argv[1]
 
