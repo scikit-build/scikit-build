@@ -77,7 +77,7 @@ environment:
       SKIP: "1"
 
 install:
-  - cmd: "%RUN% %PYTHON%\\python.exe .\\ci\\appveyor\\driver.py install"
+  - cmd: "%PYTHON%\\python.exe .\\ci\\appveyor\\driver.py install"
   - cmd: "SET SKIP=1"
 
 build_script:
