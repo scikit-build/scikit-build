@@ -79,6 +79,7 @@ environment:
 init:
   - cmd: "dir %PYTHON%"
   - cmd: "dir %PYTHON%\\Scripts"
+  - cmd: "dir ."
   - cmd: "dir ci\\appveyor"
   - cmd: "echo %RUN% %PYTHON%\\python.exe .\\ci\\appveyor\\driver.py init"
   - cmd: "%RUN% %PYTHON%\\python.exe .\\ci\\appveyor\\driver.py init"
