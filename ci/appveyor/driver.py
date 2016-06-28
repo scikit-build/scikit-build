@@ -57,7 +57,8 @@ class Driver(object):
         if os.path.exists(self._env_file):
             self.env.update(json.load(open(self._env_file)))
 
-        self.env = {k: str(v) for k,v in self.env.items()}
+        print(set((type(k), type(v)) for k,v in self.env.items()))
+        # self.env = {k: str(v) for k,v in self.env.items()}
 
     def save_env(self, env_file=None):
         if env_file is None:
