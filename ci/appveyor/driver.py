@@ -140,7 +140,7 @@ class Driver(object):
     def drive_build(self):
         log(str(type(self.env)))
         from pprint import pprint as pp
-        pp(self.env)
+        pp({k: type(v) for k,v in self.env.items()})
         self.check_call(["python", "setup.py", "build"])
 
     def drive_test(self):
