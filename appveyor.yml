@@ -77,6 +77,38 @@ environment:
       EXTRA_TEST_ARGS: "--exclude fortran_compiler --exclude pen2 --exclude tbabel"
       SKIP: "1"
 
+init:
+  - ps: "\
+      iex (\
+        (New-Object Net.Webclient).DownloadString(\
+          'https://raw.githubusercontent.com/\
+            appveyor/ci/master/scripts/enable-rdp.ps1'\
+        )\
+      )"
+
+  # If there is a newer build queued for the same PR, cancel this one.
+  # The AppVeyor 'rollout builds' option is supposed to serve the same
+  # purpose but it is problematic because it tends to cancel builds pushed
+  # directly to master instead of just PR builds (or the converse).
+  # credits: JuliaLang developers.
+  - ps: "\
+    if (\
+      $env:APPVEYOR_PULL_REQUEST_NUMBER -and \
+      $env:APPVEYOR_BUILD_NUMBER -ne (\
+        (\
+          Invoke-RestMethod \
+            ` https://ci.appveyor.com/api/projects/\
+                $env:APPVEYOR_ACCOUNT_NAME/\
+                $env:APPVEYOR_PROJECT_SLUG/\
+                history?recordsNumber=50\
+        ).builds | ` Where-Object pullRequestId -eq \
+                                  $env:APPVEYOR_PULL_REQUEST_NUMBER\
+      )[0].buildNumber\
+    ) { ` \
+      throw \"There are newer queued builds \
+              for this pull request, failing early.\" \
+    }"
+
 install:
   - cmd: "%PYTHON%\\python.exe .\\ci\\appveyor\\driver.py install"
   - cmd: "SET SKIP=1"
@@ -91,8 +123,16 @@ after_test:
   - cmd: "%RUN% %PYTHON%\\python.exe .\\ci\\appveyor\\driver.py after_test"
 
 on_finish:
-  # - cmd: "%RUN% %PYTHON%\\python.exe .\\ci\\appveyor\\driver.py on_finish"
-  - cmd: "%PYTHON%\\python.exe .\\ci\\appveyor\\driver.py on_finish"
+  - ps: "\
+      if ($Env:BLOCK -ceq \"1\") {
+        $blockRdp = $true ; \
+        iex (\
+          (New-Object Net.Webclient).DownloadString(\
+            'https://raw.githubusercontent.com/\
+             appveyor/ci/master/scripts/enable-rdp.ps1'\
+          )\
+        )
+      }"
 
 artifacts:
   # Archive the generated packages in the ci.appveyor.com build report.
