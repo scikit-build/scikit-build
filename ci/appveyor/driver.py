@@ -114,15 +114,17 @@ class Driver(object):
 
         self.check_call(["python", "-m", "pip", "install", "wheel"])
 
+        log("Downloading CMake")
         remote_file = urlopen(
             "https://cmake.org/files/v3.5/cmake-3.5.2-win32-x86.zip")
 
         with open("C:\\cmake.zip", "wb") as local_file:
             shutil.copyfileobj(remote_file, local_file)
 
-        with open("C:\\cmake.zip") as local_file:
-            with zipfile.ZipFile(local_file) as remote_zip:
-                remote_zip.extractall("C:\\cmake")
+        log("Unpacking CMake")
+        os.makedirs("C:\\cmake", exist_ok=True)
+        with zipfile.ZipFile("C:\\cmake.zip") as local_zip:
+            local_zip.extractall("C:\\cmake")
 
         self.env_prepend("PATH", "C:\\cmake\bin")
 
