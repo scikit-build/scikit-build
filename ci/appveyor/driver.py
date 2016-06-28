@@ -138,6 +138,7 @@ class Driver(object):
             "python", "-m", "pip", "install", "-r", "requirements-dev.txt"])
 
     def drive_build(self):
+        log(str(type(self.env)))
         self.check_call(["python", "setup.py", "build"])
 
     def drive_test(self):
