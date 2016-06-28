@@ -99,11 +99,10 @@ class Driver(object):
         # Implement workaround for 64-bit Visual Studio 2008
         if self.env["PYTHON_ARCH"] == "64":
             log("Downloading 64-bit Visual Studio Fix")
-            with urlopen(
-                    "https://github.com/menpo/condaci/raw/master"
-                    "/vs2008_patch.zip") as remote_zip:
-                with open("C:\\vs2008_patch.zip", "wb") as local_zip:
-                    shutil.copyfileobj(remote_zip, local_zip)
+            remote_zip = urlopen(
+                "https://github.com/menpo/condaci/raw/master/vs2008_patch.zip")
+            with open("C:\\vs2008_patch.zip", "wb") as local_zip:
+                shutil.copyfileobj(remote_zip, local_zip)
 
             log("Unpacking 64-bit Visual Studio Fix")
             with zipfile.ZipFile("C:\\vs2008_patch.zip") as local_zip:
