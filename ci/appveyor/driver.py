@@ -122,7 +122,10 @@ class Driver(object):
             shutil.copyfileobj(remote_file, local_file)
 
         log("Unpacking CMake")
-        os.makedirs("C:\\cmake", exist_ok=True)
+
+        try: os.mkdir("C:\\cmake")
+        except OSError: pass
+
         with zipfile.ZipFile("C:\\cmake.zip") as local_zip:
             local_zip.extractall("C:\\cmake")
 
