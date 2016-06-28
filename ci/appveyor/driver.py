@@ -90,7 +90,7 @@ class Driver(object):
         remote_script = urlopen("https://raw.githubusercontent.com"
                                 "/ogrisel/python-appveyor-demo"
                                 "/f54ec3593bcea682098a59b560c1850c19746e10"
-                                "/appveyor/run_with_env.cmd'")
+                                "/appveyor/run_with_env.cmd")
         with open(local_path, "w") as local_script:
             shutil.copyfileobj(remote_script, local_script)
 
