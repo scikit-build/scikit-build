@@ -114,10 +114,10 @@ install:
 
 build_script:
   - cmd: "%RUN% %PYTHON%\\python.exe .\\ci\\appveyor\\driver.py build"
-  - cmd: "SET SKIP=1"
 
 test_script:
   - cmd: "%RUN% %PYTHON%\\python.exe .\\ci\\appveyor\\driver.py test"
+  - cmd: "SET SKIP=1"
 
 after_test:
   - cmd: "%RUN% %PYTHON%\\python.exe .\\ci\\appveyor\\driver.py after_test"
