@@ -82,14 +82,21 @@ class Driver(object):
         log("RDP Connection Information (In case of hanging build)")
 
         local_path = os.path.join("ci", "appveyor", "enable-rdp.ps1")
-        if not os.path.exists(local_path):
 
-            remote_script_url = (
-                "https://raw.githubusercontent.com"
-                "/appveyor/ci/master/scripts/enable-rdp.ps1")
-            remote_script = urlopen(remote_script_url)
-            with open(local_path, "w") as local_script:
-                shutil.copyfileobj(remote_script, local_script)
+        remote_script_url = (
+            "https://raw.githubusercontent.com"
+            "/appveyor/ci/master/scripts/enable-rdp.ps1")
+        remote_script = urlopen(remote_script_url)
+        with open(local_path, "w") as local_script:
+            shutil.copyfileobj(remote_script, local_script)
+
+        local_block_path = os.path.join("ci", "appveyor", "block-rdp.ps1")
+        with open(local_path) as local_script:
+            with open(local_block_path, "w") as local_block_script:
+                local_block_script.write("$blockRdp=$true\n")
+                local_block_script.flush()
+
+                shutil.copyfileobj(local_script, local_block_script)
 
         self.check_call(["powershell.exe", "-File", local_path])
 
@@ -184,7 +191,7 @@ class Driver(object):
     def drive_on_finish(self):
         if self.env.get("BLOCK", "0") == "1":
             log("BLOCKING")
-            local_path = os.path.join("ci", "appveyor", "enable-rdp.ps1")
+            local_path = os.path.join("ci", "appveyor", "block-rdp.ps1")
             self.check_call(["powershell.exe", "-File", local_path])
 
 if __name__ == "__main__":
