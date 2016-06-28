@@ -57,6 +57,8 @@ class Driver(object):
         if os.path.exists(self._env_file):
             self.env.update(json.load(open(self._env_file)))
 
+        self.env = {k: str(v) for k,v in self.env.items()}
+
     def save_env(self, env_file=None):
         if env_file is None:
             env_file = self._env_file
@@ -138,9 +140,6 @@ class Driver(object):
             "python", "-m", "pip", "install", "-r", "requirements-dev.txt"])
 
     def drive_build(self):
-        log(str(type(self.env)))
-        from pprint import pprint as pp
-        pp({k: type(v) for k,v in self.env.items()})
         self.check_call(["python", "setup.py", "build"])
 
     def drive_test(self):
