@@ -2,17 +2,25 @@
 @SETLOCAL enableextensions enabledelayedexpansion
 
 IF "x%SKIP%"=="x0" (
-    IF NOT "x%CMAKE_GENERATOR:Visual Studio=%"=="x%CMAKE_GENERATOR%" (
-        echo cmd /E:ON /V:ON /C ci\appveyor\run-with-visual-studio.cmd %*
-        cmd /E:ON /V:ON /C ci\appveyor\run-with-visual-studio.cmd %*
-    )
-
-    IF NOT "x%CMAKE_GENERATOR:MinGW Makefiles=%"=="x%CMAKE_GENERATOR%" (
-        echo cmd /E:ON /V:ON /C ci\appveyor\run-with-mingw.cmd %*
-        cmd /E:ON /V:ON /C ci\appveyor\run-with-mingw.cmd %*
-    )
-) ELSE (
     ECHO SKIPPING: %*
+    GOTO done
 )
+
+IF NOT DEFINED CMAKE_GENERATOR ( GOTO visual_studio )
+IF NOT "x%CMAKE_GENERATOR:MinGW=%"=="x%CMAKE_GENERATOR%" ( GOTO mingw )
+
+visual_studio:
+    SET script=ci\appveyor\run-with-visual-studio.cmd
+    GOTO run
+
+mingw:
+    SET script=ci\appveyor\run-with-mingw.cmd
+    GOTO run
+
+run:
+    echo cmd /E:ON /V:ON /C %script% %*
+    cmd /E:ON /V:ON /C %script% %*
+
+done:
 
 ENDLOCAL

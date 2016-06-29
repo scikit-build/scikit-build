@@ -175,7 +175,7 @@ class Driver(object):
         self.check_call(["python", "setup.py", "bdist_msi"])
 
         if os.path.exists("dist"):
-            self.check_call(["dir", "dist"])
+            self.check_call(["dir", "dist"], shell=True)
 
 if __name__ == "__main__":
     d = Driver()
