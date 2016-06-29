@@ -110,7 +110,13 @@ class Driver(object):
 
             log("Applying 64-bit Visual Studio Fix")
             self.check_call(
-                ["cmd.exe", "C:\\vs2008_patch\\setup_x64.bat"],
+                [
+                    "cmd.exe",
+                    "/E:ON",
+                    "/V:ON",
+                    "/C",
+                    "C:\\vs2008_patch\\setup_x64.bat"
+                ],
                 cwd="C:\\vs2008_patch")
 
         python_root = self.env["PYTHON"]
