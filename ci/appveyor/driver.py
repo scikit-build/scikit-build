@@ -93,7 +93,7 @@ class Driver(object):
                                 "/ogrisel/python-appveyor-demo"
                                 "/f54ec3593bcea682098a59b560c1850c19746e10"
                                 "/appveyor/run_with_env.cmd")
-        with open(local_path, "w") as local_script:
+        with open(local_path, "wb") as local_script:
             shutil.copyfileobj(remote_script, local_script)
 
         # Implement workaround for 64-bit Visual Studio 2008
