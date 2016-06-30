@@ -171,7 +171,7 @@ artifacts:
   - path: dist\*
 
 matrix:
-  fast_finish: true
+  fast_finish: false
 
 notifications:
   - provider: GitHubPullRequest
