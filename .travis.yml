@@ -2,15 +2,42 @@
 
 language: python
 
-python:
-  - "3.4"
-  - "3.3"
-  - "2.7"
-  - "pypy"
+matrix:
+  include:
+    - os: linux
+      python: "3.4"
+      env:
+        - EXTRA_TEST_ARGS="--exclude pen2 --exclude tbabel"
+
+    - os: linux
+      python: "3.3"
+      env:
+        - EXTRA_TEST_ARGS="--exclude pen2 --exclude tbabel"
+
+    - os: linux
+      python: "2.7"
+      env:
+        - EXTRA_TEST_ARGS="--exclude pen2 --exclude tbabel"
+
+
+before_script:
+  - "\
+    if [ \"$START_XVFB\" = '1' ] ; then \
+      export DISPLAY=':99.0' ; \
+      cat /etc/init.d/xvfb ; \
+      sh -e /etc/init.d/xvfb start ; \
+      sleep 10 ; \
+
+      export PYTHONPATH=\"/usr/lib/pymodules/python2.7:$PYTHONPATH\" ; \
+    fi"
 
 before_install:
-  - sudo apt-get install gfortran
-  - sudo apt-get install cmake
+  - sudo apt-get update
+  - sudo apt-get install gfortran libboost-python-dev python-vtk
+  - "wget --no-check-certificate --progress=dot \
+      \"https://cmake.org/files/v3.5/cmake-3.5.0-Linux-x86_64.tar.gz\""
+  - tar xzf "cmake-3.5.0-Linux-x86_64.tar.gz"
+  - sudo rsync -avz "cmake-3.5.0-Linux-x86_64/" /usr/local
 
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 install:
@@ -18,4 +45,4 @@ install:
   - pip install -r requirements-dev.txt
 
 # command to run tests, e.g. python setup.py test
-script: nosetests -w tests
+script: "nosetests -v -w tests $EXTRA_TEST_ARGS"

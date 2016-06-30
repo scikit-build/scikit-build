@@ -1,7 +1,11 @@
 dependencies:
   pre:
-    - sudo apt-get install gfortran
-    - sudo apt-get install cmake
+    - sudo apt-get update
+    - sudo apt-get install gfortran libboost-python-dev
+    - "wget --no-check-certificate --progress=dot \
+        \"https://cmake.org/files/v3.5/cmake-3.5.0-Linux-x86_64.tar.gz\""
+    - tar xzf "cmake-3.5.0-Linux-x86_64.tar.gz"
+    - sudo rsync -avz "cmake-3.5.0-Linux-x86_64/" /usr/local
 
   override:
     - pip install -r requirements.txt
@@ -9,4 +13,4 @@ dependencies:
 
 test:
   override:
-    - nosetests -w tests
+    - nosetests -v -w tests --exclude pen2
