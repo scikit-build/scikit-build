@@ -123,14 +123,21 @@ class Driver(object):
         if self.env.get("CMAKE_GENERATOR", "").lower().startswith("mingw"):
             log("Applying MinGW PATH fix")
 
+            mingw_bin = os.path.normpath(
+                os.path.join("C:\\", "MinGW", "bin"))
+
             self.env["PATH"] = os.pathsep.join(
                 dir for dir in
                 self.env["PATH"].split(os.pathsep)
 
-                if not (
-                       os.path.exists(os.path.join(dir, "sh.exe"))
-                    or os.path.exists(os.path.join(dir, "sh.bat"))
-                    or os.path.exists(os.path.join(dir, "sh"))
+                if (
+                    os.path.normpath(dir) == mingw_bin
+
+                    or not (
+                           os.path.exists(os.path.join(dir, "sh.exe"))
+                        or os.path.exists(os.path.join(dir, "sh.bat"))
+                        or os.path.exists(os.path.join(dir, "sh"))
+                    )
                 )
             )
 
