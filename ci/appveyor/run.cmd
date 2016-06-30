@@ -19,7 +19,7 @@ IF NOT "x%CMAKE_GENERATOR:MinGW=%"=="x%CMAKE_GENERATOR%" ( GOTO mingw )
 
 :run
     echo cmd /E:ON /V:ON /C %script% %*
-    cmd /E:ON /V:ON /C %script% %*
+    cmd /E:ON /V:ON /C %script% %* || EXIT 1
 
 :done
 
