@@ -13,4 +13,4 @@ dependencies:
 
 test:
   override:
-    - nosetests -v -w tests
+    - nosetests -v -w tests --exclude pen2

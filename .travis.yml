@@ -7,17 +7,17 @@ matrix:
     - os: linux
       python: "3.4"
       env:
-        - EXTRA_TEST_ARGS="--exclude tbabel"
+        - EXTRA_TEST_ARGS="--exclude pen2 --exclude tbabel"
 
     - os: linux
       python: "3.3"
       env:
-        - EXTRA_TEST_ARGS="--exclude tbabel"
+        - EXTRA_TEST_ARGS="--exclude pen2 --exclude tbabel"
 
     - os: linux
       python: "2.7"
       env:
-        - EXTRA_TEST_ARGS="--exclude tbabel"
+        - EXTRA_TEST_ARGS="--exclude pen2 --exclude tbabel"
 
 
 before_script:
