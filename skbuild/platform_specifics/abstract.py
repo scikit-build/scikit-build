@@ -1,12 +1,7 @@
 
-import itertools
 import os
 import shutil
-import site
 import subprocess
-import sys
-
-import distutils.sysconfig
 
 test_folder = "cmake_test_compile"
 list_file = "CMakeLists.txt"

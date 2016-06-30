@@ -87,7 +87,7 @@ environment:
       EXTRA_TEST_ARGS: "--exclude fortran_compiler \
                         --exclude pen2 \
                         --exclude tbabel"
-      SKIP: "0"
+      SKIP: "1"
       BLOCK: "0"
 
     - PYTHON: "C:\\Python35-x64"
@@ -97,7 +97,7 @@ environment:
       EXTRA_TEST_ARGS: "--exclude fortran_compiler \
                         --exclude pen2 \
                         --exclude tbabel"
-      SKIP: "0"
+      SKIP: "1"
       BLOCK: "0"
 
 init:
