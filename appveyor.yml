@@ -15,57 +15,69 @@ environment:
       PYTHON_VERSION: "2.7.x"
       PYTHON_ARCH: "32"
       CMAKE_GENERATOR: Visual Studio 9 2008
-      CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run-with-visual-studio.cmd"
+      RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
       EXTRA_TEST_ARGS: "--exclude fortran_compiler"
+      SKIP: "0"
+      BLOCK: "0"
 
     - PYTHON: "C:\\Python27-x64"
       PYTHON_VERSION: "2.7.x"
       PYTHON_ARCH: "64"
-      CMAKE_GENERATOR: Visual Studio 9 2008
-      CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run-with-visual-studio.cmd"
+      CMAKE_GENERATOR: Visual Studio 9 2008 Win64
+      RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
       EXTRA_TEST_ARGS: "--exclude fortran_compiler"
+      SKIP: "0"
+      BLOCK: "0"
 
     - PYTHON: "C:\\Python35"
       PYTHON_VERSION: "3.5.x"
       PYTHON_ARCH: "32"
       CMAKE_GENERATOR: Visual Studio 14 2015
-      CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run-with-visual-studio.cmd"
+      RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
       EXTRA_TEST_ARGS: "--exclude fortran_compiler"
+      SKIP: "0"
+      BLOCK: "0"
 
     - PYTHON: "C:\\Python35-x64"
       PYTHON_VERSION: "3.5.x"
       PYTHON_ARCH: "64"
-      CMAKE_GENERATOR: Visual Studio 14 2015
-      CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run-with-visual-studio.cmd"
+      CMAKE_GENERATOR: Visual Studio 14 2015 Win64
+      RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
       EXTRA_TEST_ARGS: "--exclude fortran_compiler"
+      SKIP: "0"
+      BLOCK: "0"
 
     # MinGW (Python 2 & 3, 64 bit only)
     - PYTHON: "C:\\Python27-x64"
       PYTHON_VERSION: "2.7.x"
       PYTHON_ARCH: "64"
       CMAKE_GENERATOR: "MinGW Makefiles"
-      CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run-with-mingw.cmd"
+      RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
       EXTRA_TEST_ARGS: "--exclude fortran_compiler"
+      SKIP: "1"
+      BLOCK: "0"
 
     - PYTHON: "C:\\Python35"
       PYTHON_VERSION: "3.5.x"
       PYTHON_ARCH: "32"
       CMAKE_GENERATOR: "MinGW Makefiles"
-      CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run-with-mingw.cmd"
+      RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
       EXTRA_TEST_ARGS: "--exclude fortran_compiler"
+      SKIP: "1"
+      BLOCK: "0"
 
     # Default -- make sure Visual Studio works as the default
     # (Python 2 & 3, 64 bit only)
     - PYTHON: "C:\\Python27-x64"
       PYTHON_VERSION: "2.7.x"
       PYTHON_ARCH: "64"
-      CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run-with-visual-studio.cmd"
+      RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
       EXTRA_TEST_ARGS: "--exclude fortran_compiler"
 
     - PYTHON: "C:\\Python35-x64"
       PYTHON_VERSION: "3.5.x"
       PYTHON_ARCH: "64"
-      CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run-with-visual-studio.cmd"
+      RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
       EXTRA_TEST_ARGS: "--exclude fortran_compiler"
 
 init:
@@ -138,21 +150,20 @@ install:
   # compiled extensions and are not provided as pre-built wheel packages, pip
   # will build them from source using the compiler toolchain matching the target
   # Python version and architecture
-  - cmd: "%CMD_IN_ENV% pip install -r requirements.txt"
-  - cmd: "%CMD_IN_ENV% pip install -r requirements-dev.txt"
+  - cmd: "%RUN% pip install -r requirements.txt"
+  - cmd: "%RUN% pip install -r requirements-dev.txt"
 
 build_script:
-  # Build the compiled extension
-  - cmd: "%CMD_IN_ENV% python setup.py build"
+  - cmd: "%RUN% python setup.py build"
 
 test_script:
-  - cmd: "%CMD_IN_ENV% python -m nose -v -w tests %EXTRA_TEST_ARGS%"
+  - cmd: "%RUN% python -m nose -v -w tests %EXTRA_TEST_ARGS%"
 
 after_test:
   # If tests are successful, create binary packages for the project.
-  - cmd: "%CMD_IN_ENV% python setup.py bdist_wheel"
-  - cmd: "%CMD_IN_ENV% python setup.py bdist_wininst"
-  - cmd: "%CMD_IN_ENV% python setup.py bdist_msi"
+  - cmd: "%RUN% python setup.py bdist_wheel"
+  - cmd: "%RUN% python setup.py bdist_wininst"
+  - cmd: "%RUN% python setup.py bdist_msi"
   - ps: "ls dist"
 
 artifacts:
