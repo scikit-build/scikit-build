@@ -16,7 +16,8 @@ environment:
       PYTHON_ARCH: "32"
       CMAKE_GENERATOR: Visual Studio 9 2008
       RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
-      EXTRA_TEST_ARGS: "--exclude fortran_compiler"
+      EXTRA_TEST_ARGS: "--exclude fortran_compiler \
+                        --exclude tbabel"
       SKIP: "0"
       BLOCK: "0"
 
@@ -25,7 +26,8 @@ environment:
       PYTHON_ARCH: "64"
       CMAKE_GENERATOR: Visual Studio 9 2008 Win64
       RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
-      EXTRA_TEST_ARGS: "--exclude fortran_compiler"
+      EXTRA_TEST_ARGS: "--exclude fortran_compiler \
+                        --exclude tbabel"
       SKIP: "0"
       BLOCK: "0"
 
@@ -34,7 +36,8 @@ environment:
       PYTHON_ARCH: "32"
       CMAKE_GENERATOR: Visual Studio 14 2015
       RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
-      EXTRA_TEST_ARGS: "--exclude fortran_compiler"
+      EXTRA_TEST_ARGS: "--exclude fortran_compiler \
+                        --exclude tbabel"
       SKIP: "0"
       BLOCK: "0"
 
@@ -43,7 +46,8 @@ environment:
       PYTHON_ARCH: "64"
       CMAKE_GENERATOR: Visual Studio 14 2015 Win64
       RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
-      EXTRA_TEST_ARGS: "--exclude fortran_compiler"
+      EXTRA_TEST_ARGS: "--exclude fortran_compiler \
+                        --exclude tbabel"
       SKIP: "0"
       BLOCK: "0"
 
@@ -53,7 +57,8 @@ environment:
       PYTHON_ARCH: "64"
       CMAKE_GENERATOR: "MinGW Makefiles"
       RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
-      EXTRA_TEST_ARGS: "--exclude fortran_compiler"
+      EXTRA_TEST_ARGS: "--exclude fortran_compiler \
+                        --exclude tbabel"
       SKIP: "1"
       BLOCK: "0"
 
@@ -62,7 +67,8 @@ environment:
       PYTHON_ARCH: "32"
       CMAKE_GENERATOR: "MinGW Makefiles"
       RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
-      EXTRA_TEST_ARGS: "--exclude fortran_compiler"
+      EXTRA_TEST_ARGS: "--exclude fortran_compiler \
+                        --exclude tbabel"
       SKIP: "1"
       BLOCK: "0"
 
