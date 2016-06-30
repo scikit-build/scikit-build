@@ -119,6 +119,21 @@ class Driver(object):
                 ],
                 cwd="C:\\vs2008_patch")
 
+        # Implement workaround for MinGW on Appveyor
+        if self.env.get("CMAKE_GENERATOR", "").lower().startswith("mingw"):
+            log("Applying MinGW PATH fix")
+
+            self.env["PATH"] = os.pathsep.join(
+                dir for dir in
+                self.env["PATH"].split(os.pathsep)
+
+                if not (
+                       os.path.exists(os.path.join(dir, "sh.exe"))
+                    or os.path.exists(os.path.join(dir, "sh.bat"))
+                    or os.path.exists(os.path.join(dir, "sh"))
+                )
+            )
+
         python_root = self.env["PYTHON"]
         self.env_prepend(
             "PATH", os.path.join(python_root, "Scripts"), python_root)
