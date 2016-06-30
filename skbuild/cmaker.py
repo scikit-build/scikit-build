@@ -60,6 +60,8 @@ class CMaker(object):
             if rtn != 0:
                 sys.exit('CMake is not installed, aborting build.')
 
+        self.platform = get_platform()
+
     def configure(self, clargs=(), generator_id=None):
         """Calls cmake to generate the makefile (or VS solution, or XCode project).
 
@@ -80,7 +82,7 @@ class CMaker(object):
 
         # use the generator_id returned from the platform, with the current
         # generator_id as a suggestion
-        generator_id = get_platform().get_best_generator(generator_id)
+        generator_id = self.platform.get_best_generator(generator_id)
 
         if generator_id is None:
             sys.exit("Could not get working generator for your system."
@@ -97,19 +99,58 @@ class CMaker(object):
 
         python_version = sysconfig.get_config_var('VERSION')
 
+        if not python_version:
+            python_version = sysconfig.get_config_var('py_version_short')
+
+        if not python_version:
+            python_version = ".".join(map(str, sys.version_info[:2]))
+
         # determine python include dir
         python_include_dir = sysconfig.get_config_var('INCLUDEPY')
 
-        # if Python.h not found, try to find a suitable include dir
-        if not os.path.exists(os.path.join(python_include_dir, 'Python.h')):
-            candidate_prefixes = tuple(
-                filter(bool, (
-                    os.path.dirname(sysconfig.get_config_var('INCLUDEPY')),
-                    sysconfig.get_config_var('INCLUDEDIR'),
-                    os.path.dirname(sysconfig.get_path('include')),
-                    os.path.dirname(sysconfig.get_path('platinclude'))
-                ))
-            )
+        # if Python.h not found (or python_include_dir is None), try to find a
+        # suitable include dir
+        if (python_include_dir is None or
+            not os.path.exists(os.path.join(python_include_dir, 'Python.h'))):
+            candidate_prefixes = []
+
+            try:
+                candidate_prefixes.append(
+                    os.path.dirname(sysconfig.get_config_var('INCLUDEPY')))
+            except:
+                pass
+
+            try:
+                candidate_prefixes.append(
+                    sysconfig.get_config_var('INCLUDEDIR'))
+            except:
+                pass
+
+            try:
+                candidate_prefixes.append(
+                    os.path.dirname(sysconfig.get_path('include')))
+            except:
+                pass
+
+            try:
+                candidate_prefixes.append(
+                    os.path.dirname(sysconfig.get_path('platinclude')))
+            except:
+                pass
+
+            try:
+                candidate_prefixes.append(
+                    os.path.join(sysconfig.get_python_inc(),
+                                 ".".join(map(str, sys.version_info[:2]))))
+            except:
+                pass
+
+            try:
+                candidate_prefixes.append(sysconfig.get_python_inc())
+            except:
+                pass
+
+            candidate_prefixes = tuple(filter(bool, candidate_prefixes))
 
             candidate_versions = (python_version,)
             if python_version:
@@ -129,23 +170,31 @@ class CMaker(object):
                     python_include_dir = candidate
                     break
 
+        # TODO(opadron): what happens if we don't find an include directory?
+
         # determine direct path to libpython
         python_library = sysconfig.get_config_var('LIBRARY')
 
-        # if static, try to find a suitable dynamic libpython
-        if os.path.splitext(python_library)[1][-2:] == '.a':
-            candidate_extensions = ('.so', '.a')
-            if sysconfig.get_config_var('WITH_DYLD'):
-                candidate_extensions = ('.dylib',) + candidate_extensions
+        # if static (or nonexistent), try to find a suitable dynamic libpython
+        if (python_library is None or
+            os.path.splitext(python_library)[1][-2:] == '.a'):
 
-            candidate_versions = (python_version,)
+            candidate_lib_prefixes = ['', 'lib']
+
+            candidate_extensions = ['.lib', '.so', '.a']
+            if sysconfig.get_config_var('WITH_DYLD'):
+                candidate_extensions.insert(0, '.dylib')
+
+            candidate_versions = [python_version]
             if python_version:
-                candidate_versions += ('',)
+                candidate_versions.append('')
+                candidate_versions.insert(
+                    0, "".join(python_version.split(".")[:2]))
 
             abiflags = getattr(sys, 'abiflags', '')
-            candidate_abiflags = (abiflags,)
+            candidate_abiflags = [abiflags]
             if abiflags:
-                candidate_abiflags += ('',)
+                candidate_abiflags.append('')
 
             libdir = sysconfig.get_config_var('LIBDIR')
             if sysconfig.get_config_var('MULTIARCH'):
@@ -155,12 +204,17 @@ class CMaker(object):
                         masd = masd[len(os.sep):]
                     libdir = os.path.join(libdir, masd)
 
+            if libdir is None:
+                libdir = os.path.abspath(os.path.join(
+                        sysconfig.get_config_var('LIBDEST'), "..", "libs"))
+
             candidates = (
                 os.path.join(
                     libdir,
-                    ''.join(('libpython', ver, abi, ext))
+                    ''.join((pre, 'python', ver, abi, ext))
                 )
-                for (ext, ver, abi) in itertools.product(
+                for (pre, ext, ver, abi) in itertools.product(
+                    candidate_lib_prefixes,
                     candidate_extensions,
                     candidate_versions,
                     candidate_abiflags
@@ -172,6 +226,8 @@ class CMaker(object):
                     # we found a (likely alternate) libpython
                     python_library = candidate
                     break
+
+        # TODO(opadron): what happens if we don't find a libpython?
 
         cmd = ['cmake', os.getcwd(), '-G', generator_id,
                '-DCMAKE_INSTALL_PREFIX={0}'.format(
