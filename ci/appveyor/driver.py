@@ -124,14 +124,14 @@ class Driver(object):
             log("Applying MinGW PATH fix")
 
             mingw_bin = os.path.normpath(
-                os.path.join("C:\\", "MinGW", "bin"))
+                os.path.join("C:\\", "MinGW", "bin")).lower()
 
             self.env["PATH"] = os.pathsep.join(
                 dir for dir in
                 self.env["PATH"].split(os.pathsep)
 
                 if (
-                    os.path.normpath(dir) == mingw_bin
+                    os.path.normpath(dir).lower() == mingw_bin
 
                     or not (
                            os.path.exists(os.path.join(dir, "sh.exe"))
