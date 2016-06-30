@@ -2,14 +2,27 @@
 
 language: python
 
-python:
-  - "3.4"
-  - "3.3"
-  - "2.7"
-  - "pypy"
+matrix:
+  include:
+    - os: linux
+      python: "3.4"
+      env:
+        - EXTRA_TEST_ARGS=""
+
+    - os: linux
+      python: "3.3"
+      env:
+        - EXTRA_TEST_ARGS=""
+
+    - os: linux
+      python: "2.7"
+      env:
+        - EXTRA_TEST_ARGS=""
+
 
 before_install:
-  - sudo apt-get install gfortran
+  - sudo apt-get update
+  - sudo apt-get install gfortran libboost-python-dev python-vtk
   - sudo apt-get install cmake
 
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
@@ -18,4 +31,4 @@ install:
   - pip install -r requirements-dev.txt
 
 # command to run tests, e.g. python setup.py test
-script: nosetests -w tests
+script: "nosetests -v -w tests $EXTRA_TEST_ARGS"

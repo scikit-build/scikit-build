@@ -9,4 +9,4 @@ dependencies:
 
 test:
   override:
-    - nosetests -w tests
+    - nosetests -v -w tests
