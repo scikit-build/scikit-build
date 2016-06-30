@@ -3,17 +3,22 @@ import itertools
 import os
 import os.path
 import platform
+import re
 import subprocess
 import shlex
 import sys
 import sysconfig
 
 from .platform_specifics import get_platform
+from .exceptions import SKBuildError
 
 SKBUILD_DIR = "_skbuild"
 CMAKE_BUILD_DIR = os.path.join(SKBUILD_DIR, "cmake-build")
 CMAKE_INSTALL_DIR = os.path.join(SKBUILD_DIR, "cmake-install")
 DISTUTILS_INSTALL_DIR = os.path.join(SKBUILD_DIR, "distutils")
+
+RE_FILE_INSTALL = re.compile(
+    r"""[ \t]*file\(INSTALL DESTINATION "([^"]+)".*"([^"]+)"\).*""")
 
 def pop_arg(arg, a, default=None):
     """Pops an arg(ument) from an argument list a and returns the new list
@@ -31,18 +36,18 @@ def pop_arg(arg, a, default=None):
 
 
 def _remove_cwd_prefix(path):
-    base_path = os.getcwd()
-    if platform.system() == "Windows":
-        base_path = base_path.replace("\\\\", "/")
-    common_prefix = os.path.commonprefix([base_path, path])
-    # strip off the base path - keep only the relative path
-    relpath = path.replace(common_prefix, "")
-    # get rid of a leading slash
-    path = relpath[1:]
-    # trim newline characters (sometimes at end of filename)
-    path = path.replace("\n", "")
-    return path
+    cwd = os.getcwd()
 
+    result = path.replace("/", os.sep)
+    if result.startswith(cwd):
+        result = os.path.relpath(result, cwd)
+
+    if platform.system() == "Windows":
+        result = result.replace("\\\\", os.sep)
+
+    result = result.replace("\n", "")
+
+    return result
 
 def _touch_init(folder):
     init = os.path.join(folder, "__init__.py")
@@ -251,6 +256,47 @@ class CMaker(object):
         if rtn != 0:
             raise RuntimeError("Could not successfully configure your project. "
                                "Please see CMake's output for more information.")
+
+        # Try to catch files that are meant to be installed outside the project
+        # root before they are actually installed.  We can not wait for the
+        # manifest, so we try to extract the information from the CMake build
+        # files.
+        bad_installs = []
+        install_dir = os.path.join(os.getcwd(), CMAKE_INSTALL_DIR)
+
+        for root, dir_list, file_list in os.walk(CMAKE_BUILD_DIR):
+            for filename in file_list:
+                if os.path.splitext(filename)[1] != ".cmake":
+                    continue
+
+                for line in open(os.path.join(root, filename)):
+                    match = RE_FILE_INSTALL.match(line)
+                    if match is None:
+                        continue
+
+                    destination = os.path.normpath(
+                        match.group(1).replace("${CMAKE_INSTALL_PREFIX}",
+                                               install_dir))
+
+                    if not destination.startswith(install_dir):
+                        bad_installs.append(
+                            os.path.join(
+                                destination,
+                                os.path.basename(match.group(2))
+                            )
+                        )
+
+        if bad_installs:
+            raise SKBuildError("\n".join((
+                "",
+                "  CMake-installed files must be within the project root.",
+                "    Project Root:",
+                "      " + install_dir,
+                "    Violating Files:",
+                "\n".join(
+                    ("      " + _install) for _install in bad_installs)
+            )))
+
 
     def make(self, clargs=(), config="Release", source_dir="."):
         """Calls the system-specific make program to compile code.
