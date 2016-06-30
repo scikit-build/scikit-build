@@ -20,6 +20,17 @@ matrix:
         - EXTRA_TEST_ARGS=""
 
 
+before_script:
+  - "\
+    if [ \"$START_XVFB\" = '1' ] ; then \
+      export DISPLAY=':99.0' ; \
+      cat /etc/init.d/xvfb ; \
+      sh -e /etc/init.d/xvfb start ; \
+      sleep 10 ; \
+
+      export PYTHONPATH=\"/usr/lib/pymodules/python2.7:$PYTHONPATH\" ; \
+    fi"
+
 before_install:
   - sudo apt-get update
   - sudo apt-get install gfortran libboost-python-dev python-vtk
