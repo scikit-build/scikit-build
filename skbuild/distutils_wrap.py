@@ -21,11 +21,11 @@ def move_arg(arg, a, b, newarg=None, f=lambda x: x, concatenate_value=False):
     ns = tuple(vars(ns).items())
     if len(ns) > 0 and ns[0][1] is not None:
         key, value = ns[0]
+        newargs = [newarg, value]
         if concatenate_value:
-            newarg += "=" + str(f(value))
-        b.append(newarg)
-        if value is not None:
-            b.append(f(value))
+            b.append("=".join(newargs))
+        elif value is not None:
+            b.extend(newargs)
     return a, b
 
 
@@ -35,7 +35,15 @@ def parse_args():
     make = []
     argsets = [dutils, cmake, make]
     i = 0
-    for arg in sys.argv:
+
+    argv = list(sys.argv)
+    try:
+        argv.index("--build-type")
+    except ValueError:
+        argv.append("--build-type")
+        argv.append("Release")
+
+    for arg in argv:
         if arg == '--':
             i += 1
         else:
