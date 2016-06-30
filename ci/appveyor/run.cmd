@@ -1,7 +1,7 @@
 @ECHO OFF
 @SETLOCAL enableextensions enabledelayedexpansion
 
-IF "x%SKIP%"=="x0" (
+IF "x%SKIP%"=="x1" (
     ECHO SKIPPING: %*
     GOTO done
 )
