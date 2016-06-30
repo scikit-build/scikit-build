@@ -223,3 +223,4 @@ def setup(*args, **kw):
     kw['cmdclass'] = cmdclass
 
     return distutils.core.setup(*args, **kw)
+

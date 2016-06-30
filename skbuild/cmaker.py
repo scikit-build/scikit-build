@@ -332,3 +332,4 @@ class CMaker(object):
             return [_remove_cwd_prefix(path) for path in manifest]
 
         return []
+
