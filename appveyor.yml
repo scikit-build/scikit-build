@@ -156,6 +156,9 @@ on_finish:
         )
       }"
 
+on_failure:
+  - ps: "Get-EventLog AppVeyor -newest 10 | Format-List"
+
 artifacts:
   # Archive the generated packages in the ci.appveyor.com build report.
   - path: dist\*
