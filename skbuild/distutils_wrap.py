@@ -2,12 +2,14 @@
 distutils infrastructure.
 """
 import os
+import os.path
 import sys
 import argparse
 import distutils.core
 
 from . import cmaker
-
+from .command import build, install, clean
+from .exceptions import SKBuildError
 
 def move_arg(arg, a, b, newarg=None, f=lambda x: x, concatenate_value=False):
     """Moves an argument from a list to b list, possibly giving it a new name
@@ -21,11 +23,11 @@ def move_arg(arg, a, b, newarg=None, f=lambda x: x, concatenate_value=False):
     ns = tuple(vars(ns).items())
     if len(ns) > 0 and ns[0][1] is not None:
         key, value = ns[0]
+        newargs = [newarg, value]
         if concatenate_value:
-            newarg += "=" + str(f(value))
-        b.append(newarg)
-        if value is not None:
-            b.append(f(value))
+            b.append("=".join(newargs))
+        elif value is not None:
+            b.extend(newargs)
     return a, b
 
 
@@ -35,7 +37,15 @@ def parse_args():
     make = []
     argsets = [dutils, cmake, make]
     i = 0
-    for arg in sys.argv:
+
+    argv = list(sys.argv)
+    try:
+        argv.index("--build-type")
+    except ValueError:
+        argv.append("--build-type")
+        argv.append("Release")
+
+    for arg in argv:
         if arg == '--':
             i += 1
         else:
@@ -64,6 +74,16 @@ def setup(*args, **kw):
     packages = kw.get('packages', [])
     package_dir = kw.get('package_dir', {})
     package_data = kw.get('package_data', {}).copy()
+
+    py_modules = kw.get('py_modules', [])
+
+    scripts = kw.get('scripts', [])
+    new_scripts = { script: False for script in scripts }
+
+    data_files = {
+        (parent_dir or '.'): set(file_list)
+        for parent_dir, file_list in kw.get('data_files', [])
+    }
 
     # collect the list of prefixes for all packages
     #
@@ -107,11 +127,26 @@ def setup(*args, **kw):
     cmkr.configure(cmake_args)
     cmkr.make(make_args)
 
+    install_root = os.path.join(os.getcwd(), cmaker.CMAKE_INSTALL_DIR)
     for path in cmkr.install():
-        for prefix, package in package_prefixes:
-            # peel off the 'skbuild' prefix
-            path = os.path.relpath(path, cmaker.PACKAGE_BUILD_DIR)
+        found_package = False
+        found_module = False
+        found_script = False
 
+        # if this installed file is not within the project root, complain and
+        # exit
+        test_path = path.replace("/", os.sep)
+        if not test_path.startswith(cmaker.CMAKE_INSTALL_DIR):
+            raise SKBuildError((
+                "\n  CMake-installed files must be within the project root.\n"
+                "    Project Root  : {}\n"
+                "    Violating File: {}\n").format(install_root, test_path))
+
+        # peel off the 'skbuild' prefix
+        path = os.path.relpath(path, cmaker.CMAKE_INSTALL_DIR)
+
+        # check to see if path is part of a package
+        for prefix, package in package_prefixes:
             if path.startswith(prefix):
                 # peel off the package prefix
                 path = os.path.relpath(path, prefix)
@@ -119,17 +154,73 @@ def setup(*args, **kw):
                 package_file_list = package_data.get(package, [])
                 package_file_list.append(path)
                 package_data[package] = package_file_list
+
+                found_package = True
                 break
 
-            # NOTE(opadron): If control reaches this point, then we have
-            # installed files for which there are no specified packages.  Not
-            # sure what to do about them.  For now, they are silently dropped,
-            # just like with distutils.
+        if found_package:
+            continue
+        # If control reaches this point, then this installed file is not part of
+        # a package.
+
+        # check if path is a module
+        for module in py_modules:
+            if path.replace("/", ".") == ".".join((module, "py")):
+                found_module = True
+                break
+
+        if found_module:
+            continue
+        # If control reaches this point, then this installed file is not a
+        # module
+
+        # if the file is a script, mark the corresponding script
+        for script in scripts:
+            if path == script:
+                new_scripts[script] = True
+                found_script = True
+                break
+
+        if found_script:
+            continue
+        # If control reaches this point, then this installed file is not a
+        # script
+
+        # If control reaches this point, then we have installed files that are
+        # not part of a package, not a module, nor a script.  Without any other
+        # information, we can only treat it as a generic data file.
+        parent_dir = os.path.dirname(path)
+        file_set = data_files.get(parent_dir)
+        if file_set is None:
+            file_set = set()
+            data_files[parent_dir] = file_set
+        file_set.add(os.path.join(cmaker.CMAKE_INSTALL_DIR, path))
 
     kw['package_data'] = package_data
     kw['package_dir'] = {
-        package: os.path.join(cmaker.PACKAGE_BUILD_DIR, prefix)
+        package: os.path.join(cmaker.CMAKE_INSTALL_DIR, prefix)
         for prefix, package in package_prefixes
     }
 
+    kw['py_modules'] = py_modules
+
+    kw['scripts'] = [
+        os.path.join(cmaker.CMAKE_INSTALL_DIR, script) if mask else script
+        for script, mask in new_scripts.items()
+    ]
+
+    kw['data_files'] = [
+        (parent_dir, list(file_set))
+        for parent_dir, file_set in data_files.items()
+    ]
+
+    # work around https://bugs.python.org/issue1011113
+    # (patches provided, but no updates since 2014)
+    cmdclass = kw.get('cmdclass', {})
+    cmdclass['build'] = cmdclass.get('build', build.build)
+    cmdclass['install'] = cmdclass.get('install', install.install)
+    cmdclass['clean'] = cmdclass.get('clean', clean.clean)
+    kw['cmdclass'] = cmdclass
+
     return distutils.core.setup(*args, **kw)
+

@@ -1,3 +1,4 @@
+
 import os
 import shutil
 import subprocess
@@ -100,3 +101,4 @@ class CMakePlatform(object):
             CMakePlatform.cleanup_test()
 
         return working_generator
+
