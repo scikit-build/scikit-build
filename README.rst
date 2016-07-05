@@ -13,10 +13,10 @@ scikit-build
 
 
 Simplify building Python extensions with CMake.  The scikit-build package is
-fundamentally just glue between distutils and CMake.  It wraps distutils.setup
-so that a CMake build step occurs before calling distutils.setup, and
-automatically appends CMake-built output into the distutils package_data as
-appropriate.
+fundamentally just glue between distutils and CMake.  It wraps
+:code:`distutils.setup()` so that a CMake build step occurs before calling
+:code:`distutils.setup()`, and automatically appends CMake-built output into the
+call arguments as appropriate.
 
 * Free software: MIT license
 * Documentation: http://scikit-build.readthedocs.org.
@@ -24,6 +24,12 @@ appropriate.
 Features
 --------
 
-* (TODO) Wraps distutils so that CMake build step occurs automatically before distutils setup
-* (TODO) Passes command line options through to both CMake and distutils (tries to be smart)
-* (TODO) Creates simple CMakeLists.txt files for source files that you specify, allowing you to leverage CMake's cross-platform build scripting with less effort.
+* Wraps distutils so that a CMake build step occurs automatically before
+  distutils setup.
+
+* Passes command line options through to both CMake and distutils (tries to be
+  smart)
+
+* Uses information extracted from the CMake build to automatically provide most
+  of the arguments to :code:`setup()`.
+
