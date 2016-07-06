@@ -73,5 +73,7 @@ install(FILES tbabel_boost_common.h DESTINATION include)
 
 install(FILES tbabel_python.py DESTINATION ${site_packages})
 
+file(COPY tbabel_python.py DESTINATION ${CMAKE_BINARY_DIR})
+
 add_subdirectory(scripts)
 
