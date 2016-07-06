@@ -35,11 +35,17 @@ def test_tbabel_builds():
 def test_tbabel_works():
     old_cwd = os.getcwd()
     os.chdir(os.path.join("samples", "tower-of-babel", CMAKE_BUILD_DIR))
+
+    env = os.environ
+    if not env.get("PYTHONHOME") and env.get("CONDA_ENV_PATH"):
+        env["PYTHONHOME"] = env["CONDA_ENV_PATH"]
+
     try:
         subprocess.check_call(
             ["ctest", "--build-config",
                 os.environ.get("SKBUILD_CMAKE_CONFIG", "Debug"),
-                "--output-on-failure"])
+                "--output-on-failure"],
+            env=env)
     finally:
         os.chdir(old_cwd)
 
