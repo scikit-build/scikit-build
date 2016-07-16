@@ -11,6 +11,9 @@ scikit-build
 .. image:: https://travis-ci.org/scikit-build/scikit-build.png?branch=master
     :target: https://travis-ci.org/scikit-build/scikit-build
 
+.. image:: https://circleci.com/gh/scikit-build/scikit-build/tree/master.svg?style=svg
+  :target: https://circleci.com/gh/scikit-build/scikit-build/tree/master
+
 .. image:: https://ci.appveyor.com/api/projects/status/github/scikit-build/scikit-build
     :target: https://ci.appveyor.com/api/projects/status/github/scikit-build/scikit-build
 
