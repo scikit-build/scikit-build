@@ -37,8 +37,21 @@ def test_tbabel_works():
     os.chdir(os.path.join("samples", "tower-of-babel", CMAKE_BUILD_DIR))
 
     env = os.environ
-    if not env.get("PYTHONHOME") and env.get("CONDA_ENV_PATH"):
-        env["PYTHONHOME"] = env["CONDA_ENV_PATH"]
+    pp = env.get("PYTHONPATH", [])
+    if(pp):
+        pp = pp.split(os.pathsep)
+
+    pyversion = "python" + ".".join(str(x) for x in sys.version_info[:2])
+    pp.extend((
+        os.path.join(sys.prefix, "lib", pyversion),
+        os.path.join(sys.prefix, "lib", pyversion, "site-packages"),
+        os.path.join(sys.prefix, "lib", pyversion, "lib-dynload"),
+        os.getcwd()
+    ))
+
+    env["PYTHONPATH"] = os.pathsep.join(pp)
+
+    env["PYTHONHOME"] = env.get("PYTHONHOME", sys.prefix)
 
     try:
         subprocess.check_call(
