@@ -219,8 +219,9 @@
 # limitations under the License.
 #=============================================================================
 
-find_package( PythonInterp REQUIRED )
-find_package( PythonLibs REQUIRED )
+find_package(PythonInterp REQUIRED)
+find_package(PythonLibs)
+include(targetLinkLibrariesWithDynamicLookup)
 
 set(_command "
 import distutils.sysconfig
@@ -291,7 +292,7 @@ mark_as_advanced(PYTHON_RELATIVE_SITE_PACKAGES_DIR)
 
 function(python_extension_module _target)
   set(one_ops LINKED_MODULES_VAR FORWARD_DECL_MODULES_VAR)
-  cmake_parse_arguments(_args "" "${one_ops}" "" "" ${ARGN})
+  cmake_parse_arguments(_args "" "${one_ops}" "" ${ARGN})
 
   set(_lib_type "NA")
   if(TARGET ${_target})
@@ -348,16 +349,11 @@ function(python_extension_module _target)
   endif()
 
   if(_is_module_lib OR _is_shared_lib)
-    if(APPLE)
-      set_target_properties(${_target} PROPERTIES
-                            LINK_FLAGS "-undefined dynamic_lookup")
-    else()
-      target_link_libraries(${_target} ${PYTHON_LIBRARIES})
-
-      if(_is_module_lib AND WIN32 AND NOT CYGWIN)
-        set_target_properties(${_target} PROPERTIES SUFFIX ".pyd")
-      endif()
+    if(_is_module_lib AND WIN32 AND NOT CYGWIN)
+      set_target_properties(${_target} PROPERTIES SUFFIX ".pyd")
     endif()
+
+    target_link_libraries_with_dynamic_lookup(${_target} ${PYTHON_LIBRARIES})
   endif()
 endfunction()
 
@@ -370,7 +366,7 @@ function(python_modules_header _name)
   set(one_ops FORWARD_DECL_MODULES_LIST
               HEADER_OUTPUT_VAR
               INCLUDE_DIR_OUTPUT_VAR)
-  cmake_parse_arguments(_args "" "${one_ops}" "" "" ${ARGN})
+  cmake_parse_arguments(_args "" "${one_ops}" "" ${ARGN})
 
   list(GET _args_UNPARSED_ARGUMENTS 0 _arg0)
   # if present, use arg0 as the input file path
