@@ -1,7 +1,7 @@
 #
 # - This module provides the function
 # target_link_libraries_with_dynamic_lookup which can be used to
-# "weakly" link loadable module.
+# "weakly" link a loadable module.
 #
 # Link a library to a target such that the symbols are resolved at
 # run-time not link-time. This should be used when compiling a
@@ -22,257 +22,446 @@
 #
 # The following functions are defined:
 #
-#   has_dynamic_lookup(<ResultVar>)
+#   _get_target_type(<ResultVar> <Target>)
+#
+# **INTERNAL** Shorthand for querying an abbreviated version of the target type
+# of the given ``<Target>``.  ``<ResultVar>`` is set to "STATIC" for a
+# STATIC_LIBRARY, "SHARED" for a SHARED_LIBRARY, "MODULE" for a MODULE_LIBRARY,
+# and "EXE" for an EXECUTABLE.
+#
+# Defined variables:
+#
+# ``<ResultVar>``
+#   The abbreviated version of the ``<Target>``'s type.
+#
+#
+#   _test_weak_link_project(<TargetType>
+#                           <LibType>
+#                           <ResultVar>
+#                           <LinkFlagsVar>)
+#
+# **INTERNAL** Attempt to compile and run a test project where a target of type
+# ``<TargetType>`` is weakly-linked against a dependency of type ``<LibType>``.
+# ``<TargetType>`` can be one of "STATIC", "SHARED", "MODULE", or "EXE".
+# ``<LibType>`` can be one of "STATIC", "SHARED", or "MODULE".
+#
+# Defined variables:
+#
+# ``<ResultVar>``
+#   Whether the current C toolchain can produce a working target binary of type
+#   ``<TargetType>`` that is weakly-linked against a dependency target of type
+#   ``<LibType>``.
+#
+# ``<LinkFlagsVar>``
+#   List of flags to add to the linker command to produce a working target
+#   binary of type ``<TargetType>`` that is weakly-linked against a dependency
+#   target of type ``<LibType>``.
+#
+#
+#   check_dynamic_lookup(<TargetType>
+#                        <LibType>
+#                        <ResultVar>
+#                        <LinkFlagsVar>)
 #
 # Check if the linker requires a command line flag to allow leaving symbols
-# unresolved until runtime.  A test project is built and ran and ``<ResultVar>``
-# is set based on whether the project was built and ran successfully.  The
-# result is cached between invocations and recomputed only when the value of
-# ``CMAKE_SHARED_LINKER_FLAGS`` changes.
+# unresolved when producing a target of type ``<TargetType>`` that is
+# weakly-linked against a dependency of type ``<LibType>``.  ``<TargetType>``
+# can be one of "STATIC", "SHARED", "MODULE", or "EXE".  ``<LibType>`` can be
+# one of "STATIC", "SHARED", or "MODULE".  The result is cached between
+# invocations and recomputed only when the value of CMake's linker flag list
+# changes; ``CMAKE_STATIC_LINKER_FLAGS`` if ``<TargetType>`` is "STATIC", and
+# ``CMAKE_SHARED_LINKER_FLAGS`` otherwise.
+#
 #
 # Defined variables:
 #
 # ``<ResultVar>``
-#   Whether the linker allows undefined symbols for shared libraries.
+#   Whether the current C toolchain supports weak-linking for target binaries of
+#   type ``<TargetType>`` that are weakly-linked against a dependency target of
+#   type ``<LibType>``.
 #
-# ``HAS_DYNAMIC_LOOKUP``
-#   Cached alias.
+# ``<LinkFlagsVar>``
+#   List of flags to add to the linker command to produce a working target
+#   binary of type ``<TargetType>`` that is weakly-linked against a dependency
+#   target of type ``<LibType>``.
+#
+# ``HAS_DYNAMIC_LOOKUP_<TargetType>_<LibType>``
+#   Cached, global alias for ``<ResultVar>``
+#
+# ``DYNAMIC_LOOKUP_FLAGS_<TargetType>_<LibType>``
+#   Cached, global alias for ``<LinkFlagsVar>``
 #
 #
-#   has_symbol_dedupe(<ResultVar>)
+#   target_link_libraries_with_dynamic_lookup(<Target> [<Libraries>])
 #
-# Check if the linker/loader correctly coalesces symbols that have been
-# duplicated across link boundaries.  A test project is built and ran and
-# ``<ResultVar>`` is set based on whether the project was built and ran
-# successfully.  The result is cached between invocations and recomputed only
-# when the value of ``CMAKE_SHARED_LINKER_FLAGS`` changes.
+# Like proper linking, except that the given ``<Libraries>`` are not necessarily
+# linked. Instead, the ``<Target>`` is produced in a manner that allows for
+# symbols unresolved within it to be resolved at runtime, presumably by the
+# given ``<Libraries>``.  If such a target can be produced, the provided
+# ``<Libraries>`` are not actually linked.  On platforms that do not support
+# weak-linking, this function works just like ``target_link_libraries``.
 
-# Defined variables:
-#
-# ``<ResultVar>``
-#   Whether the linker/loader correctly coalesces duplicated symbols
-#
-# ``HAS_SYMBOL_DEDUPE``
-#   Cached alias.
-#
+function(_get_target_type result_var target)
+  get_property(target_type TARGET ${target} PROPERTY TYPE)
 
-function(_test_weak_link_project projectName testName)
-  set(options DYNAMIC_LOOKUP SYMBOL_DEDUPE)
-  cmake_parse_arguments(_args "${options}" "" "" ${ARGN})
+  set(result "STATIC")
 
-  set(test_project_src_dir
-      "${PROJECT_BINARY_DIR}/CMakeTmp/${projectName}/src")
-  set(test_project_bin_dir
-      "${PROJECT_BINARY_DIR}/CMakeTmp/${projectName}/build")
-
-  file(MAKE_DIRECTORY ${test_project_src_dir})
-  file(MAKE_DIRECTORY ${test_project_bin_dir})
-
-  file(WRITE "${test_project_src_dir}/CMakeLists.txt" "
-    cmake_minimum_required(VERSION ${CMAKE_VERSION})
-    project(${projectName} C)
-
-    include_directories(${test_project_src_dir})
-
-    add_library(number SHARED number.c)
-
-    add_library(counter MODULE counter.c)
-    set_target_properties(counter PROPERTIES PREFIX \"\")
-  ")
-
-  if(_args_DYNAMIC_LOOKUP)
-    file(APPEND "${test_project_src_dir}/CMakeLists.txt" "
-    set_target_properties(
-      counter
-      PROPERTIES LINK_FLAGS \"-undefined dynamic_lookup\")
-    ")
-  elseif(_args_SYMBOL_DEDUPE)
-    file(APPEND "${test_project_src_dir}/CMakeLists.txt" "
-    target_link_libraries(counter number)
-    ")
+  if(target_type STREQUAL "STATIC_LIBRARY")
+    set(result "STATIC")
   endif()
 
-  file(APPEND "${test_project_src_dir}/CMakeLists.txt" "
-    add_executable(main main.c)
-    target_link_libraries(main number)
-    target_link_libraries(main ${CMAKE_DL_LIBS})
-  ")
+  if(target_type STREQUAL "SHARED_LIBRARY")
+    set(result "SHARED")
+  endif()
 
-  file(WRITE "${test_project_src_dir}/number.c" "
-    #include <number.h>
+  if(target_type STREQUAL "MODULE_LIBRARY")
+    set(result "MODULE")
+  endif()
 
-    static int _number;
-    void set_number(int number) { _number = number; }
-    int get_number() { return _number; }
-  ")
+  if(target_type STREQUAL "EXECUTABLE")
+    set(result "EXE")
+  endif()
 
-  file(WRITE "${test_project_src_dir}/number.h" "
-    #ifndef _NUMBER_H
-    #define _NUMBER_H
-    extern void set_number(int);
-    extern int get_number(void);
-    #endif
-  ")
-
-  file(WRITE "${test_project_src_dir}/counter.c" "
-    #include <number.h>
-    int count() {
-      int result = get_number();
-      set_number(result + 1);
-      return result;
-    }
-  ")
-
-  file(WRITE "${test_project_src_dir}/counter.h" "
-    #ifndef _COUNTER_H
-    #define _COUNTER_H
-    extern int count(void);
-    #endif
-  ")
-
-  file(WRITE "${test_project_src_dir}/main.c" "
-    #include <stdlib.h>
-    #include <stdio.h>
-    #include <dlfcn.h>
-
-    int my_count() {
-      int result = get_number();
-      set_number(result + 1);
-      return result;
-    }
-
-    int main(int argc, char **argv) {
-      void *counter_module;
-      int (*count)(void);
-      int result;
-
-      counter_module = dlopen(\"./counter.so\", RTLD_LAZY);
-      if(!counter_module) goto error;
-
-      count = dlsym(counter_module, \"count\");
-      if(!count) goto error;
-
-      result = count()    != 0 ? 1 :
-               my_count() != 1 ? 1 :
-               my_count() != 2 ? 1 :
-               count()    != 3 ? 1 :
-               count()    != 4 ? 1 :
-               count()    != 5 ? 1 :
-               my_count() != 6 ? 1 : 0;
+  set(${result_var} ${result} PARENT_SCOPE)
+endfunction()
 
 
-      goto done;
-      error:
-        fprintf(stderr, \"Error occured:\\n    %s\\n\", dlerror());
-        result = 1;
+function(_test_weak_link_project
+         target_type
+         lib_type
+         can_weak_link_var
+         project_name)
 
-      done:
-        if(counter_module) dlclose(counter_module);
+  set(gnu_ld_ignore      "-Wl,--unresolved-symbols=ignore-all")
+  set(osx_dynamic_lookup           "-undefined dynamic_lookup")
+  set(no_flag                                               "")
+
+  foreach(link_flag_spec gnu_ld_ignore osx_dynamic_lookup no_flag)
+    set(link_flag "${${link_flag_spec}}")
+
+    set(test_project_dir "${PROJECT_BINARY_DIR}/CMakeTmp")
+    set(test_project_dir "${test_project_dir}/${project_name}")
+    set(test_project_dir "${test_project_dir}/${link_flag_spec}")
+    set(test_project_dir "${test_project_dir}/${target_type}")
+    set(test_project_dir "${test_project_dir}/${lib_type}")
+
+    set(test_project_src_dir "${test_project_dir}/src")
+    set(test_project_bin_dir "${test_project_dir}/build")
+
+    file(MAKE_DIRECTORY ${test_project_src_dir})
+    file(MAKE_DIRECTORY ${test_project_bin_dir})
+
+    set(mod_type "STATIC")
+    set(link_mod_lib TRUE)
+    set(link_exe_lib TRUE)
+    set(link_exe_mod FALSE)
+
+    if("${target_type}" STREQUAL "EXE")
+      set(link_exe_lib FALSE)
+      set(link_exe_mod TRUE)
+    else()
+      set(mod_type "${target_type}")
+    endif()
+
+    if("${mod_type}" STREQUAL "MODULE")
+      set(link_mod_lib FALSE)
+    endif()
+
+
+    file(WRITE "${test_project_src_dir}/CMakeLists.txt" "
+      cmake_minimum_required(VERSION ${CMAKE_VERSION})
+      project(${project_name} C)
+
+      include_directories(${test_project_src_dir})
+
+      add_library(number ${lib_type} number.c)
+      add_library(counter ${mod_type} counter.c)
+    ")
+
+    if("${mod_type}" STREQUAL "MODULE")
+      file(APPEND "${test_project_src_dir}/CMakeLists.txt" "
+        set_target_properties(counter PROPERTIES PREFIX \"\")
+      ")
+    endif()
+
+    if(link_mod_lib)
+      file(APPEND "${test_project_src_dir}/CMakeLists.txt" "
+        target_link_libraries(counter number)
+      ")
+    elseif(NOT link_flag STREQUAL "")
+      file(APPEND "${test_project_src_dir}/CMakeLists.txt" "
+        set_target_properties(counter PROPERTIES LINK_FLAGS \"${link_flag}\")
+      ")
+    endif()
+
+    file(APPEND "${test_project_src_dir}/CMakeLists.txt" "
+      add_executable(main main.c)
+    ")
+
+    if(link_exe_lib)
+      file(APPEND "${test_project_src_dir}/CMakeLists.txt" "
+        target_link_libraries(main number)
+      ")
+    elseif(NOT link_flag STREQUAL "")
+      file(APPEND "${test_project_src_dir}/CMakeLists.txt" "
+        target_link_libraries(main \"${link_flag}\")
+      ")
+    endif()
+
+    if(link_exe_mod)
+      file(APPEND "${test_project_src_dir}/CMakeLists.txt" "
+        target_link_libraries(main counter)
+      ")
+    else()
+      file(APPEND "${test_project_src_dir}/CMakeLists.txt" "
+        target_link_libraries(main \"${CMAKE_DL_LIBS}\")
+      ")
+    endif()
+
+    file(WRITE "${test_project_src_dir}/number.c" "
+      #include <number.h>
+
+      static int _number;
+      void set_number(int number) { _number = number; }
+      int get_number() { return _number; }
+    ")
+
+    file(WRITE "${test_project_src_dir}/number.h" "
+      #ifndef _NUMBER_H
+      #define _NUMBER_H
+      extern void set_number(int);
+      extern int get_number(void);
+      #endif
+    ")
+
+    file(WRITE "${test_project_src_dir}/counter.c" "
+      #include <number.h>
+      int count() {
+        int result = get_number();
+        set_number(result + 1);
         return result;
-    }
-  ")
+      }
+    ")
 
-  set(_rpath_arg)
-  if(APPLE AND ${CMAKE_VERSION} VERSION_GREATER 2.8.11)
-    set(_rpath_arg "-DCMAKE_MACOSX_RPATH='${CMAKE_MACOSX_RPATH}'")
-  endif()
+    file(WRITE "${test_project_src_dir}/counter.h" "
+      #ifndef _COUNTER_H
+      #define _COUNTER_H
+      extern int count(void);
+      #endif
+    ")
 
-  try_compile(project_compiles
-              "${test_project_bin_dir}"
-              "${test_project_src_dir}"
-              "${projectName}"
-              CMAKE_FLAGS
-                "-DCMAKE_SHARED_LINKER_FLAGS='${CMAKE_SHARED_LINKER_FLAGS}'"
-                ${_rpath_arg}
-              OUTPUT_VARIABLE compile_output)
+    file(WRITE "${test_project_src_dir}/main.c" "
+      #include <stdlib.h>
+      #include <stdio.h>
+      #include <number.h>
+    ")
 
-  set(project_works 1)
-  set(run_output)
+    if(NOT link_exe_mod)
+      file(APPEND "${test_project_src_dir}/main.c" "
+        #include <dlfcn.h>
+      ")
+    endif()
 
-  if(project_compiles)
-    execute_process(COMMAND "${test_project_bin_dir}/main"
-                    WORKING_DIRECTORY "${test_project_bin_dir}"
-                    RESULT_VARIABLE project_works
-                    OUTPUT_VARIABLE run_output
-                    ERROR_VARIABLE run_output)
-  endif()
+    file(APPEND "${test_project_src_dir}/main.c" "
+      int my_count() {
+        int result = get_number();
+        set_number(result + 1);
+        return result;
+      }
 
-  if(project_works EQUAL 0)
-    set(project_works TRUE)
-    message(STATUS "Performing Test ${testName} - Success")
+      int main(int argc, char **argv) {
+        int result;
+    ")
+
+    if(NOT link_exe_mod)
+      file(APPEND "${test_project_src_dir}/main.c" "
+        void *counter_module;
+        int (*count)(void);
+
+        counter_module = dlopen(\"./counter.so\", RTLD_LAZY | RTLD_GLOBAL);
+        if(!counter_module) goto error;
+
+        count = dlsym(counter_module, \"count\");
+        if(!count) goto error;
+      ")
+    endif()
+
+    file(APPEND "${test_project_src_dir}/main.c" "
+        result = count()    != 0 ? 1 :
+                 my_count() != 1 ? 1 :
+                 my_count() != 2 ? 1 :
+                 count()    != 3 ? 1 :
+                 count()    != 4 ? 1 :
+                 count()    != 5 ? 1 :
+                 my_count() != 6 ? 1 : 0;
+    ")
+
+    if(NOT link_exe_mod)
+      file(APPEND "${test_project_src_dir}/main.c" "
+        goto done;
+        error:
+          fprintf(stderr, \"Error occured:\\n    %s\\n\", dlerror());
+          result = 1;
+
+        done:
+          if(counter_module) dlclose(counter_module);
+      ")
+    endif()
+
+    file(APPEND "${test_project_src_dir}/main.c" "
+          return result;
+      }
+    ")
+
+    set(_rpath_arg)
+    if(APPLE AND ${CMAKE_VERSION} VERSION_GREATER 2.8.11)
+      set(_rpath_arg "-DCMAKE_MACOSX_RPATH='${CMAKE_MACOSX_RPATH}'")
+    endif()
+
+    try_compile(project_compiles
+                "${test_project_bin_dir}"
+                "${test_project_src_dir}"
+                "${project_name}"
+                CMAKE_FLAGS
+                  "-DCMAKE_SHARED_LINKER_FLAGS='${CMAKE_SHARED_LINKER_FLAGS}'"
+                  ${_rpath_arg}
+                OUTPUT_VARIABLE compile_output)
+
+    set(project_works 1)
+    set(run_output)
+
+    if(project_compiles)
+      execute_process(COMMAND ${CMAKE_CROSSCOMPILING_EMULATOR}
+                              "${test_project_bin_dir}/main"
+                      WORKING_DIRECTORY "${test_project_bin_dir}"
+                      RESULT_VARIABLE project_works
+                      OUTPUT_VARIABLE run_output
+                      ERROR_VARIABLE run_output)
+    endif()
+
+    set(test_description
+        "Weak Link ${target_type} -> ${lib_type} (${link_flag_spec})")
+
+    if(project_works EQUAL 0)
+      set(project_works TRUE)
+      message(STATUS "Performing Test ${test_description} - Success")
+    else()
+      set(project_works FALSE)
+      message(STATUS "Performing Test ${test_description} - Failed")
+      file(APPEND ${CMAKE_BINARY_DIR}/${CMAKE_FILES_DIRECTORY}/CMakeError.log
+           "Performing Test ${test_description} failed with the "
+           "following output:\n"
+           "BUILD\n-----\n${compile_output}\nRUN\n---\n${run_output}\n")
+    endif()
+
+    set(${can_weak_link_var} ${project_works} PARENT_SCOPE)
+    if(project_works)
+      set(${project_name} ${link_flag} PARENT_SCOPE)
+      break()
+    endif()
+  endforeach()
+endfunction()
+
+
+function(check_dynamic_lookup
+         target_type
+         lib_type
+         has_dynamic_lookup_var
+         link_flags_var)
+
+  # hash the CMAKE_FLAGS passed and check cache to know if we need to rerun
+  if("${target_type}" STREQUAL "STATIC")
+    string(MD5 cmake_flags_hash "${CMAKE_STATIC_LINKER_FLAGS}")
   else()
-    set(project_works FALSE)
-    message(STATUS "Performing Test ${testName} - Failed")
-    file(APPEND ${CMAKE_BINARY_DIR}/${CMAKE_FILES_DIRECTORY}/CMakeError.log
-         "Performing Test ${testName} failed with the following output:\n"
-         "BUILD\n-----\n${compile_output}\nRUN\n---\n${run_output}\n")
+    string(MD5 cmake_flags_hash "${CMAKE_SHARED_LINKER_FLAGS}")
   endif()
 
-  set(${projectName} ${project_works} PARENT_SCOPE)
-endfunction()
+  set(cache_var "HAS_DYNAMIC_LOOKUP_${target_type}_${lib_type}")
+  set(cache_hash_var "HAS_DYNAMIC_LOOKUP_${target_type}_${lib_type}_hash")
+  set(result_var "DYNAMIC_LOOKUP_FLAGS_${target_type}_${lib_type}")
 
-
-function(has_dynamic_lookup resultVar)
-  # hash the CMAKE_FLAGS passed and check cache to know if we need to rerun
-  string(MD5 cmake_flags_hash "${CMAKE_SHARED_LINKER_FLAGS}")
-
-  if(     NOT DEFINED HAS_DYNAMIC_LOOKUP_hash
-       OR NOT "${HAS_DYNAMIC_LOOKUP_hash}" STREQUAL "${cmake_flags_hash}")
-    unset(HAS_DYNAMIC_LOOKUP)
+  if(     NOT DEFINED ${cache_hash_var}
+       OR NOT "${${cache_hash_var}}" STREQUAL "${cmake_flags_hash}")
+    unset(${cache_var} CACHE)
   endif()
 
-  if(NOT DEFINED HAS_DYNAMIC_LOOKUP)
-    _test_weak_link_project(has_dynamic_lookup
-                            HAS_DYNAMIC_LOOKUP
-                            DYNAMIC_LOOKUP)
+  if(NOT DEFINED ${cache_var})
+    if(NOT CMAKE_CROSSCOMPILING OR CMAKE_CROSSCOMPILING_EMULATOR)
+      _test_weak_link_project(${target_type}
+                              ${lib_type}
+                              has_dynamic_lookup
+                              link_flags)
+    else()
+      set(has_dynamic_lookup FALSE)
+      set(link_flags)
+    endif()
 
-    set(HAS_DYNAMIC_LOOKUP ${has_dynamic_lookup}
-        CACHE BOOL "linker requires \"dynamic_lookup\" for undefined symbols")
+    set(caveat " (when linking ${target_type} against ${lib_type})")
 
-    set(HAS_DYNAMIC_LOOKUP_hash "${cmake_flags_hash}"
-        CACHE INTERNAL "hashed flags for HAS_DYNAMIC_LOOKUP check")
+    set(${cache_var} "${has_dynamic_lookup}"
+        CACHE BOOL
+        "linker supports dynamic lookup for undefined symbols${caveat}")
+
+    set(${result_var} "${link_flags}"
+        CACHE BOOL
+        "linker flags for dynamic lookup${caveat}")
+
+    set(${cache_hash_var} "${cmake_flags_hash}"
+        CACHE INTERNAL "hashed flags for ${cache_var} check")
   endif()
 
-  set(${resultVar} "${HAS_DYNAMIC_LOOKUP}" PARENT_SCOPE)
-endfunction()
-
-
-function(has_symbol_dedupe resultVar)
-  # hash the CMAKE_FLAGS passed and check cache to know if we need to rerun
-  string(MD5 cmake_flags_hash "${CMAKE_SHARED_LINKER_FLAGS}")
-
-  if(     NOT DEFINED HAS_SYMBOL_DEDUPE_hash
-       OR NOT "${HAS_SYMBOL_DEDUPE_hash}" STREQUAL "${cmake_flags_hash}")
-    unset(HAS_SYMBOL_DEDUPE)
-  endif()
-
-  if(NOT DEFINED HAS_SYMBOL_DEDUPE)
-    _test_weak_link_project(has_symbol_dedupe
-                            HAS_SYMBOL_DEDUPE
-                            SYMBOL_DEDUPE)
-
-    set(HAS_SYMBOL_DEDUPE ${has_symbol_dedupe}
-        CACHE BOOL "linker/loader can coalesce duplicated symbols")
-
-    set(HAS_SYMBOL_DEDUPE_hash "${cmake_flags_hash}"
-        CACHE INTERNAL "hashed flags for HAS_SYMBOL_DEDUPE check")
-  endif()
-
-  set(${resultVar} "${HAS_SYMBOL_DEDUPE}" PARENT_SCOPE)
+  set(${has_dynamic_lookup_var} "${${cache_var}}" PARENT_SCOPE)
+  set(${link_flags_var} "${${result_var}}" PARENT_SCOPE)
 endfunction()
 
 
 function(target_link_libraries_with_dynamic_lookup target)
-  has_dynamic_lookup(_dlookup)
-  if(_dlookup)
-    set_target_properties(${target}
-                          PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
-  else()
-    has_symbol_dedupe(_dedupe)
-    if(_dedupe)
-      # loader coalesces duplicate symbols, so just link normally
-      target_link_libraries(${target} ${ARGN})
+  _get_target_type(target_type ${target})
+
+  set(link_props)
+  set(link_items)
+  set(link_libs)
+
+  foreach(lib ${ARGN})
+    _get_target_type(lib_type ${lib})
+    check_dynamic_lookup(${target_type}
+                         ${lib_type}
+                         has_dynamic_lookup
+                         dynamic_lookup_flags)
+
+    if(has_dynamic_lookup)
+      if(dynamic_lookup_flags)
+        if("${target_type}" STREQUAL "EXE")
+          list(APPEND link_items "${dynamic_lookup_flags}")
+        else()
+          list(APPEND link_props "${dynamic_lookup_flags}")
+        endif()
+      endif()
+    else()
+      list(APPEND link_libs "${lib}")
     endif()
+  endforeach()
+
+  if(link_props)
+    list(REMOVE_DUPLICATES link_props)
+  endif()
+
+  if(link_items)
+    list(REMOVE_DUPLICATES link_items)
+  endif()
+
+  if(link_libs)
+    list(REMOVE_DUPLICATES link_libs)
+  endif()
+
+  if(link_props)
+    set_target_properties(${target}
+                          PROPERTIES LINK_FLAGS "${link_props}")
+  endif()
+
+  set(links "${link_items}" "${link_libs}")
+  if(links)
+    target_link_libraries(${target} "${links}")
   endif()
 endfunction()
 
