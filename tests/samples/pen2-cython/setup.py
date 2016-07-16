@@ -4,7 +4,7 @@ setup(
     name="pen2_cython",
     version="0.0.1",
     description="double pendulum simulation (cython version)",
-    author="skbuild team",
+    author="the scikit-build team",
     license="MIT",
 
     packages=['pen2_cython'],

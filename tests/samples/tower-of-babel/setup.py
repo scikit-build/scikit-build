@@ -5,7 +5,7 @@ setup(
     version="0.0.1",
     description="integration test of skbuild's support across various python"
                 "module types and code generation technologies",
-    author="skbuild team",
+    author="the scikit-build team",
     license="MIT",
 
     scripts=['scripts/tbabel'],
