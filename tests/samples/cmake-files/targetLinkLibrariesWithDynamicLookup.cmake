@@ -290,13 +290,13 @@ function(_test_weak_link_project
     endif()
 
     file(APPEND "${test_project_src_dir}/main.c" "
-        result = count()    != 0 ? 1 :
-                 my_count() != 1 ? 1 :
-                 my_count() != 2 ? 1 :
-                 count()    != 3 ? 1 :
-                 count()    != 4 ? 1 :
-                 count()    != 5 ? 1 :
-                 my_count() != 6 ? 1 : 0;
+        result = count()    != 0 ? EXIT_FAILURE :
+                 my_count() != 1 ? EXIT_FAILURE :
+                 my_count() != 2 ? EXIT_FAILURE :
+                 count()    != 3 ? EXIT_FAILURE :
+                 count()    != 4 ? EXIT_FAILURE :
+                 count()    != 5 ? EXIT_FAILURE :
+                 my_count() != 6 ? EXIT_FAILURE : EXIT_SUCCESS;
     ")
 
     if(NOT link_exe_mod)
@@ -389,14 +389,22 @@ function(check_dynamic_lookup
   endif()
 
   if(NOT DEFINED ${cache_var})
-    if(NOT CMAKE_CROSSCOMPILING OR CMAKE_CROSSCOMPILING_EMULATOR)
+    set(skip_test FALSE)
+
+    if(NOT CMAKE_CROSSCOMPILING)
+      set(skip_test TRUE)
+    elseif(CMAKE_CROSSCOMPILING AND CMAKE_CROSSCOMPILING_EMULATOR)
+      set(skip_test TRUE)
+    endif()
+
+    if(skip_test)
+      set(has_dynamic_lookup FALSE)
+      set(link_flags)
+    else()
       _test_weak_link_project(${target_type}
                               ${lib_type}
                               has_dynamic_lookup
                               link_flags)
-    else()
-      set(has_dynamic_lookup FALSE)
-      set(link_flags)
     endif()
 
     set(caveat " (when linking ${target_type} against ${lib_type})")
