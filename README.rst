@@ -5,11 +5,14 @@ scikit-build
 .. image:: https://badge.fury.io/py/scikit-build.png
     :target: http://badge.fury.io/py/scikit-build
 
-.. image:: https://travis-ci.org/scikit-build/scikit-build.png?branch=master
-        :target: https://travis-ci.org/scikit-build/scikit-build
-
 .. image:: https://pypip.in/d/scikit-build/badge.png
-        :target: https://pypi.python.org/pypi/scikit-build
+    :target: https://pypi.python.org/pypi/scikit-build
+
+.. image:: https://travis-ci.org/scikit-build/scikit-build.png?branch=master
+    :target: https://travis-ci.org/scikit-build/scikit-build
+
+.. image:: https://ci.appveyor.com/api/projects/status/github/scikit-build/scikit-build
+    :target: https://ci.appveyor.com/api/projects/status/github/scikit-build/scikit-build
 
 
 Simplify building Python extensions with CMake.  The scikit-build package is
