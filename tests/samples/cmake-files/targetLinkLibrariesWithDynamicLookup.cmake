@@ -102,7 +102,10 @@
 # weak-linking, this function works just like ``target_link_libraries``.
 
 function(_get_target_type result_var target)
-  get_property(target_type TARGET ${target} PROPERTY TYPE)
+  set(target_type "SHARED_LIBRARY")
+  if(TARGET ${target})
+    get_property(target_type TARGET ${target} PROPERTY TYPE)
+  endif()
 
   set(result "STATIC")
 
