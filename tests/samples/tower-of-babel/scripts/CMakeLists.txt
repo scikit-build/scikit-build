@@ -14,8 +14,7 @@ python_standalone_executable(tbabel)
 add_test(NAME tbabel COMMAND tbabel
          WORKING_DIRECTORY ${CMAKE_BUILD_DIRECTORY})
 
-set_property(TEST tbabel PROPERTIES
-             ENVIRONMENT
+set_property(TEST tbabel PROPERTY ENVIRONMENT
              "LD_LIBRARY_PATH=${CMAKE_BUILD_DIRECTORY};DYLD_LIBRARY_PATH=${CMAKE_BUILD_DIRECTORY}")
 
 install(TARGETS tbabel DESTINATION scripts)
