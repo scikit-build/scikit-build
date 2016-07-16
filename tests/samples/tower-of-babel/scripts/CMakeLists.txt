@@ -10,8 +10,12 @@ get_property(MODS GLOBAL PROPERTY PY_LINKED_MODULES_LIST)
 add_executable(tbabel ${tbabel})
 target_link_libraries(tbabel ${MODS})
 python_standalone_executable(tbabel)
+
 add_test(NAME tbabel COMMAND tbabel
          WORKING_DIRECTORY ${CMAKE_BUILD_DIRECTORY})
 
-install(TARGETS tbabel DESTINATION scripts)
+set_property(TEST tbabel PROPERTIES
+             ENVIRONMENT
+             "LD_LIBRARY_PATH=${CMAKE_BUILD_DIRECTORY};DYLD_LIBRARY_PATH=${CMAKE_BUILD_DIRECTORY}")
 
+install(TARGETS tbabel DESTINATION scripts)
