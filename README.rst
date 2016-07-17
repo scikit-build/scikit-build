@@ -5,6 +5,9 @@ scikit-build
 .. image:: https://badge.fury.io/py/scikit-build.png
     :target: http://badge.fury.io/py/scikit-build
 
+.. image:: https://img.shields.io/pypi/dm/scikit-build.svg?maxAge=2592000
+    :target: https://pypi.python.org/pypi/scikit-build
+
 .. image:: https://pypip.in/d/scikit-build/badge.png
     :target: https://pypi.python.org/pypi/scikit-build
 
