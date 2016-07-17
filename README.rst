@@ -17,6 +17,9 @@ scikit-build
 .. image:: https://circleci.com/gh/scikit-build/scikit-build/tree/master.svg?style=svg
     :target: https://circleci.com/gh/scikit-build/scikit-build/tree/master
 
+.. image:: https://requires.io/github/scikit-build/scikit-build/requirements.svg?branch=master
+     :target: https://requires.io/github/scikit-build/scikit-build/requirements/?branch=master
+     :alt: Requirements Status
 
 Improved build system generator for CPython C extensions.
 
