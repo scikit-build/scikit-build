@@ -26,7 +26,11 @@ setup(
     author='The scikit-build team',
     author_email='scikit-build@googlegroups.com',
     url='https://github.com/scikit-build/scikit-build',
-    packages=['skbuild', 'skbuild.platform_specifics', 'skbuild.command'],
+    packages=[
+        'skbuild',
+        'skbuild.platform_specifics',
+        'skbuild.command',
+    ],
     package_dir={'skbuild': 'skbuild',
                  'skbuild.platform_specifics': 'skbuild/platform_specifics',
                  'skbuild.command': 'skbuild/command'},
