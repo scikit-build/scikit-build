@@ -1,30 +1,29 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os
-import sys
-
 try:
     from setuptools import setup
 except ImportError:
     from distutils.core import setup
 
 
-readme = open('README.rst').read()
-history = open('HISTORY.rst').read().replace('.. :changelog:', '')
+with open('README.rst', 'r') as fp:
+    readme = fp.read()
+with open('HISTORY.rst', 'r') as fp:
+    history = fp.read().replace('.. :changelog:', '')
 
-requirements = list(filter(bool, (
-    line.strip() for line in open('requirements.txt'))))
+with open('requirements.txt', 'r') as fp:
+    requirements = list(filter(bool, (line.strip() for line in fp)))
 
-dev_requirements = list(filter(bool, (
-    line.strip() for line in open('requirements-dev.txt'))))
+with open('requirements-dev.txt', 'r') as fp:
+    dev_requirements = list(filter(bool, (line.strip() for line in fp)))
 
 setup(
     name='scikit-build',
     version='0.1.0',
-    description='Simplify building Python extensions with CMake',
+    description='Improved build system generator for Python C extensions',
     long_description=readme + '\n\n' + history,
-    author='the scikit-build team',
+    author='The scikit-build team',
     author_email='scikit-build@googlegroups.com',
     url='https://github.com/scikit-build/scikit-build',
     packages=['skbuild', 'skbuild.platform_specifics', 'skbuild.command'],
@@ -46,6 +45,7 @@ setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
     ],
     test_suite='tests',
     tests_require=dev_requirements
