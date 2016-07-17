@@ -21,14 +21,16 @@ def test_outside_project_root_installs():
     old_cwd = os.getcwd()
 
     sys.argv = ["setup.py", "install"]
-    os.chdir(os.path.join("samples", "fail-outside-project-root"))
+    cur_dir = os.path.dirname(os.path.abspath(__file__))
+    os.chdir(os.path.join(cur_dir, "samples", "fail-outside-project-root"))
 
     if os.path.exists(SKBUILD_DIR):
         shutil.rmtree(SKBUILD_DIR)
 
     exception_thrown = False
     try:
-        exec(open("setup.py").read())
+        with open("setup.py", "r") as fp:
+            exec(fp.read())
     except SKBuildError:
         exception_thrown = True
     finally:
