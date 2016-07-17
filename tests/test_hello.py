@@ -21,20 +21,23 @@ def test_hello_builds():
     old_cwd = os.getcwd()
 
     sys.argv = ["setup.py", "build"]
-    os.chdir(os.path.join("samples", "hello"))
+    cur_dir = os.path.dirname(os.path.abspath(__file__))
+    os.chdir(os.path.join(cur_dir, "samples", "hello"))
 
     if os.path.exists(SKBUILD_DIR):
         shutil.rmtree(SKBUILD_DIR)
 
     try:
-        exec(open("setup.py").read())
+        with open("setup.py", "r") as fp:
+            exec(fp.read())
     finally:
         os.chdir(old_cwd)
         sys.argv = old_argv
 
 def test_hello_works():
     old_cwd = os.getcwd()
-    os.chdir(os.path.join("samples", "hello", CMAKE_BUILD_DIR))
+    cur_dir = os.path.dirname(os.path.abspath(__file__))
+    os.chdir(os.path.join(cur_dir, "samples", "hello", CMAKE_BUILD_DIR))
     try:
         subprocess.check_call(
             ["ctest", "--build-config",
