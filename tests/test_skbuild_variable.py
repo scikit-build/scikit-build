@@ -15,7 +15,7 @@ import sys
 
 from skbuild.cmaker import SKBUILD_DIR
 
-def test_outside_project_root_installs():
+def test_fail_unless_skbuild_set_installs():
     old_argv = sys.argv
     old_cwd = os.getcwd()
 
