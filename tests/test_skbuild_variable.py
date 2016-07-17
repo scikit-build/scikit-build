@@ -19,7 +19,7 @@ def test_fail_unless_skbuild_set_installs():
     old_argv = sys.argv
     old_cwd = os.getcwd()
 
-    sys.argv = ["setup.py", "install"]
+    sys.argv = ["setup.py", "build"]
     cur_dir = os.path.dirname(os.path.abspath(__file__))
     os.chdir(os.path.join(cur_dir, "samples", "fail-unless-skbuild-set"))
 
