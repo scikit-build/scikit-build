@@ -2,20 +2,17 @@
 scikit-build
 ===============================
 
-.. image:: https://badge.fury.io/py/scikit-build.png
-    :target: http://badge.fury.io/py/scikit-build
+.. image:: https://img.shields.io/pypi/v/scikit-build.svg?maxAge=2592000
+    :target: https://pypi.python.org/pypi/scikit-build
 
 .. image:: https://img.shields.io/pypi/dm/scikit-build.svg?maxAge=2592000
     :target: https://pypi.python.org/pypi/scikit-build
 
-.. image:: https://pypip.in/d/scikit-build/badge.png
-    :target: https://pypi.python.org/pypi/scikit-build
-
-.. image:: https://travis-ci.org/scikit-build/scikit-build.png?branch=master
+.. image:: https://img.shields.io/travis/scikit-build/scikit-build.svg?maxAge=2592000
     :target: https://travis-ci.org/scikit-build/scikit-build
 
 .. image:: https://circleci.com/gh/scikit-build/scikit-build/tree/master.svg?style=svg
-  :target: https://circleci.com/gh/scikit-build/scikit-build/tree/master
+    :target: https://circleci.com/gh/scikit-build/scikit-build/tree/master
 
 .. image:: https://ci.appveyor.com/api/projects/status/github/scikit-build/scikit-build
     :target: https://ci.appveyor.com/api/projects/status/github/scikit-build/scikit-build
