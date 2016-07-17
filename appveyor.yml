@@ -1,5 +1,9 @@
 ---
 
+branches:
+ only:
+  - master
+
 # borrowed heavily from ogrisel/python-appveyor-demo
 
 version: "0.0.1.{build}"
