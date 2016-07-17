@@ -23,7 +23,7 @@ This documents how a core developer should create a release.
 
 4. Check the `PyPI testing package page <https://testpypi.python.org/pypi/scikit-build/>`_.
 
-6. Tag the release. Requires a GPG with signatures. For version *X.Y.Z*::
+6. Tag the release. Requires a GPG key with signatures. For version *X.Y.Z*::
 
    git tag -s -m "scikit-build X.Y.Z" X.Y.Z upstream/master
 
