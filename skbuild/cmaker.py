@@ -241,6 +241,7 @@ class CMaker(object):
                '-DPYTHON_VERSION_STRING=' + sys.version.split(' ')[0],
                '-DPYTHON_INCLUDE_DIR=' + python_include_dir,
                '-DPYTHON_LIBRARY=' + python_library,
+               '-DSKBUILD:BOOL=TRUE',
                ]
 
         cmd.extend(clargs)
