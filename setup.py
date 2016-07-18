@@ -34,6 +34,7 @@ setup(
     package_dir={'skbuild': 'skbuild',
                  'skbuild.platform_specifics': 'skbuild/platform_specifics',
                  'skbuild.command': 'skbuild/command'},
+    package_data={'skbuild': ['resources/cmake/*.cmake']},
     include_package_data=True,
     install_requires=requirements,
     license="MIT",
