@@ -1,5 +1,5 @@
 
-from _pen2 import *
+from _pen2 import Pen2Sim
 from math import pi
 
 DEFAULT_M0 = 1.0
