@@ -242,6 +242,8 @@ class CMaker(object):
                '-DPYTHON_INCLUDE_DIR:PATH=' + python_include_dir,
                '-DPYTHON_LIBRARY:FILEPATH=' + python_library,
                '-DSKBUILD:BOOL=TRUE',
+               "-DCMAKE_MODULE_PATH:PATH={}".format(
+                   os.path.dirname(__file__) + '/resources/cmake')
                ]
 
         cmd.extend(clargs)

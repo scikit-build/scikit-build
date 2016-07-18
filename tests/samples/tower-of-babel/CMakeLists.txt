@@ -5,9 +5,6 @@ project(tower_of_babel)
 include(CTest)
 enable_testing()
 
-set(CMAKE_MODULE_PATH
-    ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../cmake-files)
-
 find_package(PythonInterp REQUIRED)
 find_package(PythonLibs REQUIRED)
 find_package(PythonExtensions REQUIRED)

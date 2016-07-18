@@ -1,4 +1,4 @@
-.PHONY: clean-pyc clean-build docs clean
+.PHONY: clean-pyc clean-build clean-skbuild docs clean
 
 help:
 	@echo "$(MAKE) [target]"
@@ -15,7 +15,7 @@ help:
 	@echo "    dist        - package"
 	@echo
 
-clean: clean-build clean-pyc
+clean: clean-build clean-pyc clean-skbuild
 	rm -fr htmlcov/
 
 clean-build:
@@ -27,6 +27,9 @@ clean-pyc:
 	find . -name '*.pyc' -exec rm -f {} +
 	find . -name '*.pyo' -exec rm -f {} +
 	find . -name '*~' -exec rm -f {} +
+
+clean-skbuild:
+	find tests/samples/*/_skbuild/ -type d -exec rm -rf {} +
 
 lint:
 	flake8 skbuild tests
