@@ -334,11 +334,7 @@ class CMaker(object):
         return self._parse_manifest()
 
     def _parse_manifest(self):
-        installed_files = {}
         install_manifest_path = os.path.join(CMAKE_BUILD_DIR,
                                              "install_manifest.txt")
         with open(install_manifest_path, "r") as manifest:
             return [_remove_cwd_prefix(path) for path in manifest]
-
-        return []
-
