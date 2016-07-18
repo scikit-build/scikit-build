@@ -13,7 +13,6 @@ import shutil
 import subprocess
 import sys
 
-from skbuild.exceptions import SKBuildError
 from skbuild.cmaker import SKBUILD_DIR, CMAKE_BUILD_DIR
 
 

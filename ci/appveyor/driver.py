@@ -7,20 +7,11 @@ import shutil
 import struct
 import subprocess
 import sys
-import time
 import zipfile
 
 try:
-    from urllib.error import URLError
-    from urllib.error import HTTPError
-    from urllib.error import ContentTooShortError
-
     from urllib.request import urlopen
 except ImportError:
-    from urllib2 import URLError
-    from urllib2 import HTTPError
-    from urllib  import ContentTooShortError
-
     from urllib2 import urlopen
 
 

@@ -74,7 +74,7 @@ def main():
 
 
 def run_simulation(**kwds):
-    from math import pi, sqrt, sin, cos
+    from math import pi, sqrt
     from vtk import (vtkInteractorStyleTerrain,
                      vtkRenderWindowInteractor,
                      vtkRenderWindow,
