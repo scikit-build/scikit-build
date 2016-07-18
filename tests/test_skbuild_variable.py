@@ -19,14 +19,16 @@ def test_fail_unless_skbuild_set_installs():
     old_argv = sys.argv
     old_cwd = os.getcwd()
 
-    sys.argv = ["setup.py", "install"]
-    os.chdir(os.path.join("samples", "fail-unless-skbuild-set"))
+    sys.argv = ["setup.py", "build"]
+    cur_dir = os.path.dirname(os.path.abspath(__file__))
+    os.chdir(os.path.join(cur_dir, "samples", "fail-unless-skbuild-set"))
 
     if os.path.exists(SKBUILD_DIR):
         shutil.rmtree(SKBUILD_DIR)
 
     try:
-        exec(open("setup.py").read())
+        with open("setup.py", "r") as fp:
+            exec(fp.read())
     finally:
         os.chdir(old_cwd)
         sys.argv = old_argv

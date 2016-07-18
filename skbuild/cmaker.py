@@ -235,12 +235,12 @@ class CMaker(object):
         # TODO(opadron): what happens if we don't find a libpython?
 
         cmd = ['cmake', os.getcwd(), '-G', generator_id,
-               '-DCMAKE_INSTALL_PREFIX={0}'.format(
+               '-DCMAKE_INSTALL_PREFIX:PATH={0}'.format(
                     os.path.join(os.getcwd(), CMAKE_INSTALL_DIR)),
-               '-DPYTHON_EXECUTABLE=' + sys.executable,
-               '-DPYTHON_VERSION_STRING=' + sys.version.split(' ')[0],
-               '-DPYTHON_INCLUDE_DIR=' + python_include_dir,
-               '-DPYTHON_LIBRARY=' + python_library,
+               '-DPYTHON_EXECUTABLE:FILEPATH=' + sys.executable,
+               '-DPYTHON_VERSION_STRING:STRING=' + sys.version.split(' ')[0],
+               '-DPYTHON_INCLUDE_DIR:PATH=' + python_include_dir,
+               '-DPYTHON_LIBRARY:FILEPATH=' + python_library,
                '-DSKBUILD:BOOL=TRUE',
                ]
 

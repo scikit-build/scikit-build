@@ -1,6 +1,7 @@
 """This module provides functionality for wrapping key components of the
 distutils infrastructure.
 """
+
 import os
 import os.path
 import sys
@@ -53,7 +54,7 @@ def parse_args():
 
     # handle argument transformations
     dutils, cmake = move_arg('--build-type', dutils, cmake,
-                             newarg='-DCMAKE_BUILD_TYPE',
+                             newarg='-DCMAKE_BUILD_TYPE:STRING',
                              concatenate_value=True)
     dutils, cmake = move_arg('-G', dutils, cmake)
     dutils, make = move_arg('-j', dutils, make)
