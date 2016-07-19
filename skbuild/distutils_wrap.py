@@ -1,17 +1,20 @@
-"""This module provides functionality for wrapping key components of the
-distutils infrastructure.
+"""This module provides functionality for wrapping key infrastructure components
+from distutils and setuptools.
 """
 
 import os
 import os.path
 import sys
 import argparse
-import distutils.core
 
 from . import cmaker
-from .command import build, install, clean
+from .command import build, install, clean, bdist, bdist_wheel
 from .exceptions import SKBuildError
 
+try:
+    from setuptools import setup as upstream_setup
+except ImportError:
+    from distutils.core import setup as upstream_setup
 
 def move_arg(arg, a, b, newarg=None, f=lambda x: x, concatenate_value=False):
     """Moves an argument from a list to b list, possibly giving it a new name
@@ -59,10 +62,12 @@ def parse_args():
                              concatenate_value=True)
     dutils, cmake = move_arg('-G', dutils, cmake)
     dutils, make = move_arg('-j', dutils, make)
-    op = os.path
-
-    def absappend(x):
-        return op.join(op.dirname(op.abspath(sys.argv[0])), x)
+    absappend = (
+        lambda x: os.path.join(
+            os.path.dirname(os.path.abspath(sys.argv[0])),
+            x
+        )
+    )
 
     dutils, dutils = move_arg('--egg-base', dutils, dutils, f=absappend)
 
@@ -70,7 +75,7 @@ def parse_args():
 
 
 def setup(*args, **kw):
-    """This function wraps distutils.core.setup() so that we can run cmake, make,
+    """This function wraps setup() so that we can run cmake, make,
     CMake build, then proceed as usual with a distutils, appending the
     CMake-generated output as necessary.
     """
@@ -226,6 +231,10 @@ def setup(*args, **kw):
     cmdclass['build'] = cmdclass.get('build', build.build)
     cmdclass['install'] = cmdclass.get('install', install.install)
     cmdclass['clean'] = cmdclass.get('clean', clean.clean)
+    cmdclass['bdist'] = cmdclass.get('bdist', bdist.bdist)
+    cmdclass['bdist_wheel'] = cmdclass.get(
+        'bdist_wheel', bdist_wheel.bdist_wheel)
     kw['cmdclass'] = cmdclass
 
-    return distutils.core.setup(*args, **kw)
+    return upstream_setup(*args, **kw)
+

@@ -4,8 +4,8 @@ Usage
 
 To use scikit-build in a project::
 
-	# in your project's setup.py file, instead of from distutils import setup
-	from skbuild.distutils_wrap import setup
+	# in your project's setup.py file, instead of from setuptools import setup
+	from skbuild import setup
 
 TODO (scikit-build developer): need to provide small, self-contained setup
 function calls for (at least) 2 use cases: when a CMakeLists.txt file already

@@ -1,7 +1,11 @@
 
+try:
+    from setuptools.command.clean import clean as _clean
+except ImportError:
+    from distutils.command.clean import clean as _clean
+
 from shutil import rmtree
 
-from distutils.command.clean import clean as _clean
 from distutils import log
 
 from .. import cmaker
@@ -9,8 +13,12 @@ from .. import cmaker
 
 class clean(_clean):
     def finalize_options(self):
-        if not self.build_base or self.build_base == 'build':
-            self.build_base = cmaker.DISTUTILS_INSTALL_DIR
+        try:
+            if not self.build_base or self.build_base == 'build':
+                self.build_base = cmaker.DISTUTILS_INSTALL_DIR
+        except AttributeError:
+            pass
+
         _clean.finalize_options(self)
 
     def run(self):

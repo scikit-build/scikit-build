@@ -20,7 +20,6 @@ DISTUTILS_INSTALL_DIR = os.path.join(SKBUILD_DIR, "distutils")
 RE_FILE_INSTALL = re.compile(
     r"""[ \t]*file\(INSTALL DESTINATION "([^"]+)".*"([^"]+)"\).*""")
 
-
 def pop_arg(arg, a, default=None):
     """Pops an arg(ument) from an argument list a and returns the new list
     and the value of the argument if present and a default otherwise.
@@ -50,7 +49,6 @@ def _remove_cwd_prefix(path):
 
     return result
 
-
 def _touch_init(folder):
     init = os.path.join(folder, "__init__.py")
     if not os.path.exists(init):
@@ -70,8 +68,7 @@ class CMaker(object):
         self.platform = get_platform()
 
     def configure(self, clargs=(), generator_id=None):
-        """Calls cmake to generate the makefile (or VS solution,
-        or XCode project).
+        """Calls cmake to generate the Makefile/VS Solution/XCode project.
 
         Input:
         ------
@@ -110,17 +107,38 @@ class CMaker(object):
         python_include_dir = CMaker.get_python_include_dir(python_version)
         python_library = CMaker.get_python_library(python_version)
 
-        cmd = ['cmake', os.getcwd(), '-G', generator_id,
-               '-DCMAKE_INSTALL_PREFIX:PATH={0}'.format(
-                    os.path.join(os.getcwd(), CMAKE_INSTALL_DIR)),
-               '-DPYTHON_EXECUTABLE:FILEPATH=' + sys.executable,
-               '-DPYTHON_VERSION_STRING:STRING=' + sys.version.split(' ')[0],
-               '-DPYTHON_INCLUDE_DIR:PATH=' + python_include_dir,
-               '-DPYTHON_LIBRARY:FILEPATH=' + python_library,
-               '-DSKBUILD:BOOL=TRUE',
-               "-DCMAKE_MODULE_PATH:PATH={}".format(
-                   os.path.dirname(__file__) + '/resources/cmake')
-               ]
+        cwd = os.getcwd()
+        cmd = ['cmake', cwd, '-G', generator_id]
+        cmd.extend(
+            "=".join((cmake_variable, value)) for cmake_variable, value in (
+                (
+                    "-DCMAKE_INSTALL_PREFIX:PATH",
+                    os.path.join(cwd, CMAKE_INSTALL_DIR)
+                ), (
+                    "-DPYTHON_EXECUTABLE:FILEPATH",
+                    sys.executable
+                ), (
+                    "-DPYTHON_VERSION_STRING:STRING",
+                    sys.version.split(' ')[0]
+                ), (
+                    "-DPYTHON_INCLUDE_DIR:PATH",
+                    python_include_dir
+                ), (
+                    "-DPYTHON_LIBRARY:FILEPATH",
+                    python_library
+                ), (
+                    "-DSKBUILD:BOOL",
+                    "TRUE"
+                ), (
+                    "-DCMAKE_MODULE_PATH:PATH",
+                    os.path.join(
+                        os.path.dirname(__file__),
+                        "resources",
+                        "cmake"
+                    )
+                )
+            )
+        )
 
         cmd.extend(clargs)
 
@@ -158,20 +176,52 @@ class CMaker(object):
 
         # if Python.h not found (or python_include_dir is None), try to find a
         # suitable include dir
-        found_python_h = os.path.exists(
-            os.path.join(python_include_dir, 'Python.h'))
+        found_python_h = (
+            python_include_dir is not None or
+            os.path.exists(os.path.join(python_include_dir, 'Python.h'))
+        )
 
-        if python_include_dir is None or not found_python_h:
+        if not found_python_h:
+            candidate_prefixes = []
 
-            candidate_prefixes = [
-                os.path.dirname(sysconfig.get_config_var('INCLUDEPY')),
-                sysconfig.get_config_var('INCLUDEDIR'),
-                os.path.dirname(sysconfig.get_path('include')),
-                os.path.dirname(sysconfig.get_path('platinclude')),
-                os.path.join(sysconfig.get_python_inc(),
-                             ".".join(map(str, sys.version_info[:2]))),
-                sysconfig.get_python_inc()
-                ]
+            # NOTE(opadron): these possible prefixes must be guarded against
+            # AttributeErrors and KeyErrors because they each can throw on
+            # different platforms or even different builds on the same platform.
+            try:
+                candidate_prefixes.append(
+                    os.path.dirname(sysconfig.get_config_var('INCLUDEPY')))
+            except (AttributeError, KeyError):
+                pass
+
+            try:
+                candidate_prefixes.append(
+                    sysconfig.get_config_var('INCLUDEDIR'))
+            except (AttributeError, KeyError):
+                pass
+
+            try:
+                candidate_prefixes.append(
+                    os.path.dirname(sysconfig.get_path('include')))
+            except (AttributeError, KeyError):
+                pass
+
+            try:
+                candidate_prefixes.append(
+                    os.path.dirname(sysconfig.get_path('platinclude')))
+            except (AttributeError, KeyError):
+                pass
+
+            try:
+                candidate_prefixes.append(
+                    os.path.join(sysconfig.get_python_inc(),
+                                 ".".join(map(str, sys.version_info[:2]))))
+            except (AttributeError, KeyError):
+                pass
+
+            try:
+                candidate_prefixes.append(sysconfig.get_python_inc())
+            except (AttributeError, KeyError):
+                pass
 
             candidate_prefixes = tuple(filter(bool, candidate_prefixes))
 
@@ -204,7 +254,7 @@ class CMaker(object):
 
         # if static (or nonexistent), try to find a suitable dynamic libpython
         if (python_library is None or
-                os.path.splitext(python_library)[1][-2:] == '.a'):
+            os.path.splitext(python_library)[1][-2:] == '.a'):
 
             candidate_lib_prefixes = ['', 'lib']
 
@@ -322,7 +372,7 @@ class CMaker(object):
 
     def install(self):
         """Returns a list of tuples of (install location, file list) to install
-        via distutils that is compatible with the data_files keyword argument.
+        via setuptools that is compatible with the data_files keyword argument.
         """
         return self._parse_manifest()
 
@@ -331,3 +381,6 @@ class CMaker(object):
                                              "install_manifest.txt")
         with open(install_manifest_path, "r") as manifest:
             return [_remove_cwd_prefix(path) for path in manifest]
+
+        return []
+
