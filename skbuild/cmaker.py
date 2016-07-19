@@ -15,7 +15,7 @@ from .exceptions import SKBuildError
 SKBUILD_DIR = "_skbuild"
 CMAKE_BUILD_DIR = os.path.join(SKBUILD_DIR, "cmake-build")
 CMAKE_INSTALL_DIR = os.path.join(SKBUILD_DIR, "cmake-install")
-DISTUTILS_INSTALL_DIR = os.path.join(SKBUILD_DIR, "distutils")
+SETUPTOOLS_INSTALL_DIR = os.path.join(SKBUILD_DIR, "setuptools")
 
 RE_FILE_INSTALL = re.compile(
     r"""[ \t]*file\(INSTALL DESTINATION "([^"]+)".*"([^"]+)"\).*""")
@@ -100,8 +100,8 @@ class CMaker(object):
         if not os.path.exists(CMAKE_INSTALL_DIR):
             os.makedirs(CMAKE_INSTALL_DIR)
 
-        if not os.path.exists(DISTUTILS_INSTALL_DIR):
-            os.makedirs(DISTUTILS_INSTALL_DIR)
+        if not os.path.exists(SETUPTOOLS_INSTALL_DIR):
+            os.makedirs(SETUPTOOLS_INSTALL_DIR)
 
         python_version = CMaker.get_python_version()
         python_include_dir = CMaker.get_python_include_dir(python_version)

@@ -76,7 +76,7 @@ def parse_args():
 
 def setup(*args, **kw):
     """This function wraps setup() so that we can run cmake, make,
-    CMake build, then proceed as usual with a distutils, appending the
+    CMake build, then proceed as usual with setuptools, appending the
     CMake-generated output as necessary.
     """
     sys.argv, cmake_args, make_args = parse_args()
