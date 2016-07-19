@@ -13,7 +13,6 @@ from skbuild.platform_specifics import get_platform
 
 # platform is shared across each test.  It's a platform-specific object
 # that defines default CMake generator strings.
-global platform
 platform = get_platform()
 
 
