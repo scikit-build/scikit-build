@@ -106,6 +106,41 @@ class CMaker(object):
         if not os.path.exists(DISTUTILS_INSTALL_DIR):
             os.makedirs(DISTUTILS_INSTALL_DIR)
 
+        python_version = CMaker.get_python_version()
+        python_include_dir = CMaker.get_python_include_dir(python_version)
+        python_library = CMaker.get_python_library(python_version)
+
+        cmd = ['cmake', os.getcwd(), '-G', generator_id,
+               '-DCMAKE_INSTALL_PREFIX:PATH={0}'.format(
+                    os.path.join(os.getcwd(), CMAKE_INSTALL_DIR)),
+               '-DPYTHON_EXECUTABLE:FILEPATH=' + sys.executable,
+               '-DPYTHON_VERSION_STRING:STRING=' + sys.version.split(' ')[0],
+               '-DPYTHON_INCLUDE_DIR:PATH=' + python_include_dir,
+               '-DPYTHON_LIBRARY:FILEPATH=' + python_library,
+               '-DSKBUILD:BOOL=TRUE',
+               "-DCMAKE_MODULE_PATH:PATH={}".format(
+                   os.path.dirname(__file__) + '/resources/cmake')
+               ]
+
+        cmd.extend(clargs)
+
+        cmd.extend(
+            filter(bool,
+                   shlex.split(os.environ.get("SKBUILD_CONFIGURE_OPTIONS", "")))
+        )
+
+        # changes dir to cmake_build and calls cmake's configure step
+        # to generate makefile
+        rtn = subprocess.check_call(cmd, cwd=CMAKE_BUILD_DIR)
+        if rtn != 0:
+            raise RuntimeError("Could not successfully configure "
+                               "your project. Please see CMake's "
+                               "output for more information.")
+
+        CMaker.check_for_bad_installs()
+
+    @staticmethod
+    def get_python_version():
         python_version = sysconfig.get_config_var('VERSION')
 
         if not python_version:
@@ -114,6 +149,10 @@ class CMaker(object):
         if not python_version:
             python_version = ".".join(map(str, sys.version_info[:2]))
 
+        return python_version
+
+    @staticmethod
+    def get_python_include_dir(python_version):
         # determine python include dir
         python_include_dir = sysconfig.get_config_var('INCLUDEPY')
 
@@ -123,43 +162,16 @@ class CMaker(object):
             os.path.join(python_include_dir, 'Python.h'))
 
         if python_include_dir is None or not found_python_h:
-            candidate_prefixes = []
 
-            try:
-                candidate_prefixes.append(
-                    os.path.dirname(sysconfig.get_config_var('INCLUDEPY')))
-            except:
-                pass
-
-            try:
-                candidate_prefixes.append(
-                    sysconfig.get_config_var('INCLUDEDIR'))
-            except:
-                pass
-
-            try:
-                candidate_prefixes.append(
-                    os.path.dirname(sysconfig.get_path('include')))
-            except:
-                pass
-
-            try:
-                candidate_prefixes.append(
-                    os.path.dirname(sysconfig.get_path('platinclude')))
-            except:
-                pass
-
-            try:
-                candidate_prefixes.append(
-                    os.path.join(sysconfig.get_python_inc(),
-                                 ".".join(map(str, sys.version_info[:2]))))
-            except:
-                pass
-
-            try:
-                candidate_prefixes.append(sysconfig.get_python_inc())
-            except:
-                pass
+            candidate_prefixes = [
+                os.path.dirname(sysconfig.get_config_var('INCLUDEPY')),
+                sysconfig.get_config_var('INCLUDEDIR'),
+                os.path.dirname(sysconfig.get_path('include')),
+                os.path.dirname(sysconfig.get_path('platinclude')),
+                os.path.join(sysconfig.get_python_inc(),
+                             ".".join(map(str, sys.version_info[:2]))),
+                sysconfig.get_python_inc()
+                ]
 
             candidate_prefixes = tuple(filter(bool, candidate_prefixes))
 
@@ -183,6 +195,10 @@ class CMaker(object):
 
         # TODO(opadron): what happens if we don't find an include directory?
 
+        return python_include_dir
+
+    @staticmethod
+    def get_python_library(python_version):
         # determine direct path to libpython
         python_library = sysconfig.get_config_var('LIBRARY')
 
@@ -240,33 +256,10 @@ class CMaker(object):
 
         # TODO(opadron): what happens if we don't find a libpython?
 
-        cmd = ['cmake', os.getcwd(), '-G', generator_id,
-               '-DCMAKE_INSTALL_PREFIX:PATH={0}'.format(
-                    os.path.join(os.getcwd(), CMAKE_INSTALL_DIR)),
-               '-DPYTHON_EXECUTABLE:FILEPATH=' + sys.executable,
-               '-DPYTHON_VERSION_STRING:STRING=' + sys.version.split(' ')[0],
-               '-DPYTHON_INCLUDE_DIR:PATH=' + python_include_dir,
-               '-DPYTHON_LIBRARY:FILEPATH=' + python_library,
-               '-DSKBUILD:BOOL=TRUE',
-               "-DCMAKE_MODULE_PATH:PATH={}".format(
-                   os.path.dirname(__file__) + '/resources/cmake')
-               ]
+        return python_library
 
-        cmd.extend(clargs)
-
-        cmd.extend(
-            filter(bool,
-                   shlex.split(os.environ.get("SKBUILD_CONFIGURE_OPTIONS", "")))
-        )
-
-        # changes dir to cmake_build and calls cmake's configure step
-        # to generate makefile
-        rtn = subprocess.check_call(cmd, cwd=CMAKE_BUILD_DIR)
-        if rtn != 0:
-            raise RuntimeError("Could not successfully configure "
-                               "your project. Please see CMake's "
-                               "output for more information.")
-
+    @staticmethod
+    def check_for_bad_installs():
         # Try to catch files that are meant to be installed outside the project
         # root before they are actually installed.  We can not wait for the
         # manifest, so we try to extract the information from the CMake build
