@@ -12,10 +12,11 @@ from . import cmaker
 from .command import build, install, clean
 from .exceptions import SKBuildError
 
+
 def move_arg(arg, a, b, newarg=None, f=lambda x: x, concatenate_value=False):
     """Moves an argument from a list to b list, possibly giving it a new name
-    and/or performing a transformation on the value. Returns a and b. The arg need
-    not be present in a.
+    and/or performing a transformation on the value. Returns a and b. The arg
+    need not be present in a.
     """
     newarg = newarg or arg
     parser = argparse.ArgumentParser()
@@ -79,7 +80,7 @@ def setup(*args, **kw):
     py_modules = kw.get('py_modules', [])
 
     scripts = kw.get('scripts', [])
-    new_scripts = { script: False for script in scripts }
+    new_scripts = {script: False for script in scripts}
 
     data_files = {
         (parent_dir or '.'): set(file_list)
@@ -224,4 +225,3 @@ def setup(*args, **kw):
     kw['cmdclass'] = cmdclass
 
     return distutils.core.setup(*args, **kw)
-

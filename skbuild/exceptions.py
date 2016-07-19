@@ -1,4 +1,3 @@
 
 class SKBuildError(Exception):
     pass
-

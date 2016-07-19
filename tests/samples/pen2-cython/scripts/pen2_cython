@@ -2,4 +2,3 @@
 
 from pen2_cython import main
 main()
-

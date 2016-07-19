@@ -13,6 +13,7 @@ import sys
 
 from skbuild.platform_specifics import get_platform
 
+
 def test_generator_selection():
     version = sys.version_info
     env_generator = os.environ.get("CMAKE_GENERATOR")
@@ -55,4 +56,3 @@ def test_generator_selection():
         )
 
         assert(get_best_generator() == generator)
-

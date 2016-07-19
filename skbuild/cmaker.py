@@ -20,6 +20,7 @@ DISTUTILS_INSTALL_DIR = os.path.join(SKBUILD_DIR, "distutils")
 RE_FILE_INSTALL = re.compile(
     r"""[ \t]*file\(INSTALL DESTINATION "([^"]+)".*"([^"]+)"\).*""")
 
+
 def pop_arg(arg, a, default=None):
     """Pops an arg(ument) from an argument list a and returns the new list
     and the value of the argument if present and a default otherwise.
@@ -49,6 +50,7 @@ def _remove_cwd_prefix(path):
 
     return result
 
+
 def _touch_init(folder):
     init = os.path.join(folder, "__init__.py")
     if not os.path.exists(init):
@@ -68,12 +70,14 @@ class CMaker(object):
         self.platform = get_platform()
 
     def configure(self, clargs=(), generator_id=None):
-        """Calls cmake to generate the makefile (or VS solution, or XCode project).
+        """Calls cmake to generate the makefile (or VS solution,
+        or XCode project).
 
         Input:
         ------
         generator_id: string
-            The string representing the CMake generator to use.  If None, uses defaults for your platform.
+            The string representing the CMake generator to use.
+            If None, uses defaults for your platform.
         """
 
         # if no provided default generator_id, check environment
@@ -115,8 +119,10 @@ class CMaker(object):
 
         # if Python.h not found (or python_include_dir is None), try to find a
         # suitable include dir
-        if (python_include_dir is None or
-            not os.path.exists(os.path.join(python_include_dir, 'Python.h'))):
+        found_python_h = os.path.exists(
+            os.path.join(python_include_dir, 'Python.h'))
+
+        if python_include_dir is None or not found_python_h:
             candidate_prefixes = []
 
             try:
@@ -182,7 +188,7 @@ class CMaker(object):
 
         # if static (or nonexistent), try to find a suitable dynamic libpython
         if (python_library is None or
-            os.path.splitext(python_library)[1][-2:] == '.a'):
+                os.path.splitext(python_library)[1][-2:] == '.a'):
 
             candidate_lib_prefixes = ['', 'lib']
 
@@ -257,8 +263,9 @@ class CMaker(object):
         # to generate makefile
         rtn = subprocess.check_call(cmd, cwd=CMAKE_BUILD_DIR)
         if rtn != 0:
-            raise RuntimeError("Could not successfully configure your project. "
-                               "Please see CMake's output for more information.")
+            raise RuntimeError("Could not successfully configure "
+                               "your project. Please see CMake's "
+                               "output for more information.")
 
         # Try to catch files that are meant to be installed outside the project
         # root before they are actually installed.  We can not wait for the
@@ -299,7 +306,6 @@ class CMaker(object):
                 "\n".join(
                     ("      " + _install) for _install in bad_installs)
             )))
-
 
     def make(self, clargs=(), config="Release", source_dir="."):
         """Calls the system-specific make program to compile code.

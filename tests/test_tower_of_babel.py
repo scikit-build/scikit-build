@@ -16,6 +16,7 @@ import sys
 from skbuild.exceptions import SKBuildError
 from skbuild.cmaker import SKBUILD_DIR, CMAKE_BUILD_DIR
 
+
 def test_tbabel_builds():
     old_argv = sys.argv
     old_cwd = os.getcwd()
@@ -34,14 +35,16 @@ def test_tbabel_builds():
         os.chdir(old_cwd)
         sys.argv = old_argv
 
+
 def test_tbabel_works():
     old_cwd = os.getcwd()
     cur_dir = os.path.dirname(os.path.abspath(__file__))
-    os.chdir(os.path.join(cur_dir, "samples", "tower-of-babel", CMAKE_BUILD_DIR))
+    os.chdir(
+        os.path.join(cur_dir, "samples", "tower-of-babel", CMAKE_BUILD_DIR))
 
     env = os.environ
     pp = env.get("PYTHONPATH", [])
-    if(pp):
+    if pp:
         pp = pp.split(os.pathsep)
 
     pyversion = "python" + ".".join(str(x) for x in sys.version_info[:2])
@@ -64,4 +67,3 @@ def test_tbabel_works():
             env=env)
     finally:
         os.chdir(old_cwd)
-

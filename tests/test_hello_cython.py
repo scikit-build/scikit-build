@@ -16,6 +16,7 @@ import sys
 from skbuild.exceptions import SKBuildError
 from skbuild.cmaker import SKBUILD_DIR, CMAKE_BUILD_DIR
 
+
 def test_hello_cython_builds():
     old_argv = sys.argv
     old_cwd = os.getcwd()
@@ -34,6 +35,7 @@ def test_hello_cython_builds():
         os.chdir(old_cwd)
         sys.argv = old_argv
 
+
 def test_hello_cython_works():
     old_cwd = os.getcwd()
     cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -45,4 +47,3 @@ def test_hello_cython_works():
                 "--output-on-failure"])
     finally:
         os.chdir(old_cwd)
-

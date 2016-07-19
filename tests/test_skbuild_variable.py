@@ -15,6 +15,7 @@ import sys
 
 from skbuild.cmaker import SKBUILD_DIR
 
+
 def test_fail_unless_skbuild_set_installs():
     old_argv = sys.argv
     old_cwd = os.getcwd()
@@ -32,4 +33,3 @@ def test_fail_unless_skbuild_set_installs():
     finally:
         os.chdir(old_cwd)
         sys.argv = old_argv
-

@@ -10,4 +10,3 @@ setup(
 
     scripts=['scripts/tbabel'],
 )
-
