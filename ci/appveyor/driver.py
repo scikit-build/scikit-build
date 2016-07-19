@@ -39,6 +39,7 @@ class DriverContext(object):
 class Driver(object):
     def __init__(self):
         self.env = None
+        self._env_file = None
 
     def load_env(self, env_file="env.json"):
         if self.env is not None:
@@ -57,7 +58,7 @@ class Driver(object):
         if env_file is None:
             env_file = self._env_file
 
-        with open(self._env_file, "w") as env:
+        with open(env_file, "w") as env:
             json.dump(self.env, env)
 
     def unload_env(self):
