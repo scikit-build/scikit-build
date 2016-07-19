@@ -33,8 +33,7 @@ def test_generator_selection():
 
         py_33_34 = (
             version.major == 3 and (
-                version.minor >= 3 and
-                version.minor <= 4
+                3 <= version.minor <= 4
             )
         )
 
