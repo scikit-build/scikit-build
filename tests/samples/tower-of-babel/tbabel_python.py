@@ -3,17 +3,16 @@ from random import getrandbits
 from sys import stdout
 
 
-def cycle(N, i, cy_routines, py_routines):
-    nCy = len(cy_routines)
-    nPy = len(py_routines)
+def cycle(n, i, cy_routines, py_routines):
+    n_py = len(py_routines)
 
-    newI = getrandbits(32) % nPy
+    new_index = getrandbits(32) % n_py
 
     stdout.write("Python ")
     stdout.write("MODULE")
     stdout.write("\n")
     stdout.flush()
 
-    if N:
+    if n:
         stdout.write("PY -> ")
-        py_routines[newI](N - 1, newI, cy_routines, py_routines)
+        py_routines[new_index](n - 1, new_index, cy_routines, py_routines)
