@@ -197,6 +197,7 @@ def setup(*args, **kw):
             file_set = set()
             data_files[parent_dir] = file_set
         file_set.add(os.path.join(cmaker.CMAKE_INSTALL_DIR, path))
+        del parent_dir, file_set
 
     kw['package_data'] = package_data
     kw['package_dir'] = {
