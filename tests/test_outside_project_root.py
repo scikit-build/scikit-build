@@ -16,6 +16,7 @@ import sys
 from skbuild.exceptions import SKBuildError
 from skbuild.cmaker import SKBUILD_DIR
 
+
 def test_outside_project_root_installs():
     old_argv = sys.argv
     old_cwd = os.getcwd()
@@ -37,5 +38,4 @@ def test_outside_project_root_installs():
         os.chdir(old_cwd)
         sys.argv = old_argv
 
-    assert(exception_thrown)
-
+    assert exception_thrown

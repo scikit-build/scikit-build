@@ -1,2 +1,2 @@
-skbuild
 cython
+skbuild

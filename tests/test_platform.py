@@ -13,7 +13,6 @@ from skbuild.platform_specifics import get_platform
 
 # platform is shared across each test.  It's a platform-specific object
 # that defines default CMake generator strings.
-global platform
 platform = get_platform()
 
 
@@ -37,8 +36,10 @@ def test_write_compiler_test_file():
 
 def test_cxx_compiler():
     generator = platform.get_best_generator(languages=["CXX", "C"])
-    # TODO: this isn't a true unit test.  It depends on the test CMakeLists.txt file having been written correctly.
-    # with the known test file present, this tries to generate a makefile (or solution, or whatever).
+    # TODO: this isn't a true unit test.  It depends on the test CMakeLists.txt
+    #       file having been written correctly.
+    # with the known test file present, this tries to generate a makefile
+    # (or solution, or whatever).
     # This test verifies that a working compiler is present on the system, but
     # doesn't actually compile anything.
     try:
@@ -51,8 +52,10 @@ def test_cxx_compiler():
 
 def test_fortran_compiler():
     generator = platform.get_best_generator(languages=["Fortran"])
-    # TODO: this isn't a true unit test.  It depends on the test CMakeLists.txt file having been written correctly.
-    # with the known test file present, this tries to generate a makefile (or solution, or whatever).
+    # TODO: this isn't a true unit test.  It depends on the test
+    #       CMakeLists.txt file having been written correctly.
+    # with the known test file present, this tries to generate a
+    # makefile (or solution, or whatever).
     # This test verifies that a working compiler is present on the system, but
     # doesn't actually compile anything.
     try:

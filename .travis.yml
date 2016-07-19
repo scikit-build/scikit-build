@@ -49,4 +49,6 @@ install:
   - pip install -r requirements-dev.txt
 
 # command to run tests, e.g. python setup.py test
-script: "nosetests -v -w tests $EXTRA_TEST_ARGS"
+script:
+  - flake8 -v
+  - nosetests -v -w tests $EXTRA_TEST_ARGS

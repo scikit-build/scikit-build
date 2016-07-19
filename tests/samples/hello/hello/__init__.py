@@ -1,3 +1,0 @@
-
-from ._hello import *
-

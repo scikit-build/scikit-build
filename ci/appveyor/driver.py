@@ -7,25 +7,18 @@ import shutil
 import struct
 import subprocess
 import sys
-import time
 import zipfile
 
 try:
-    from urllib.error import URLError
-    from urllib.error import HTTPError
-    from urllib.error import ContentTooShortError
-
     from urllib.request import urlopen
 except ImportError:
-    from urllib2 import URLError
-    from urllib2 import HTTPError
-    from urllib  import ContentTooShortError
-
     from urllib2 import urlopen
+
 
 def log(s):
     print(s)
     sys.stdout.flush()
+
 
 class DriverContext(object):
     def __init__(self, driver, env_file="env.json"):
@@ -42,9 +35,11 @@ class DriverContext(object):
 
         self.driver.unload_env()
 
+
 class Driver(object):
     def __init__(self):
         self.env = None
+        self._env_file = None
 
     def load_env(self, env_file="env.json"):
         if self.env is not None:
@@ -57,13 +52,13 @@ class Driver(object):
         if os.path.exists(self._env_file):
             self.env.update(json.load(open(self._env_file)))
 
-        self.env = {str(k): str(v) for k,v in self.env.items()}
+        self.env = {str(k): str(v) for k, v in self.env.items()}
 
     def save_env(self, env_file=None):
         if env_file is None:
             env_file = self._env_file
 
-        with open(self._env_file, "w") as env:
+        with open(env_file, "w") as env:
             json.dump(self.env, env)
 
     def unload_env(self):
@@ -131,12 +126,11 @@ class Driver(object):
                 self.env["PATH"].split(os.pathsep)
 
                 if (
-                    os.path.normpath(dir).lower() == mingw_bin
-
-                    or not (
-                           os.path.exists(os.path.join(dir, "sh.exe"))
-                        or os.path.exists(os.path.join(dir, "sh.bat"))
-                        or os.path.exists(os.path.join(dir, "sh"))
+                    os.path.normpath(dir).lower() == mingw_bin or
+                    not (
+                        os.path.exists(os.path.join(dir, "sh.exe")) or
+                        os.path.exists(os.path.join(dir, "sh.bat")) or
+                        os.path.exists(os.path.join(dir, "sh"))
                     )
                 )
             )
@@ -168,8 +162,10 @@ class Driver(object):
 
         log("Unpacking CMake")
 
-        try: os.mkdir("C:\\cmake")
-        except OSError: pass
+        try:
+            os.mkdir("C:\\cmake")
+        except OSError:
+            pass
 
         with zipfile.ZipFile("C:\\cmake.zip") as local_zip:
             local_zip.extractall("C:\\cmake")
@@ -188,8 +184,7 @@ class Driver(object):
     def drive_test(self):
         extra_test_args = shlex.split(self.env.get("EXTRA_TEST_ARGS", ""))
         self.check_call(
-            ["python", "-m", "nose", "-v", "-w", "tests"]
-            + extra_test_args)
+            ["python", "-m", "nose", "-v", "-w", "tests"] + extra_test_args)
 
     def drive_after_test(self):
         self.check_call(["python", "setup.py", "bdist_wheel"])
@@ -214,4 +209,3 @@ if __name__ == "__main__":
             d.drive_after_test()
         else:
             raise Exception("invalid stage: {}".format(stage))
-

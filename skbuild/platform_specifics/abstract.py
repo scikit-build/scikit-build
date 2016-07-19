@@ -29,7 +29,8 @@ class CMakePlatform(object):
             shutil.rmtree(test_folder)
 
     def get_cmake_exe_path(self):
-        """Override this method with additional logic where necessary if CMake is not on PATH.
+        """Override this method with additional logic where necessary
+        if CMake is not on PATH.
         """
         return "cmake"
 
@@ -41,12 +42,14 @@ class CMakePlatform(object):
 
         Parameters:
         generator: string or None
-            If provided, uses only provided generator, instead of trying system defaults.
+            If provided, uses only provided generator, instead of trying
+            system defaults.
         languages: tuple
-            the languages you'll need for your project, in terms that CMake recognizes.
+            the languages you'll need for your project, in terms that
+            CMake recognizes.
         cleanup: bool
-            If True, cleans up temporary folder used to test generators.  Set to False
-            for debugging to see CMake's output files.
+            If True, cleans up temporary folder used to test generators.
+            Set to False for debugging to see CMake's output files.
         """
 
         candidate_generators = self.default_generators
@@ -61,7 +64,8 @@ class CMakePlatform(object):
         # back up current folder so we go back to it when done testing
         backup_folder = os.getcwd()
 
-        # cd into the cmake_test_compile folder as working dir (rmtree this later for cleanliness)
+        # cd into the cmake_test_compile folder as working dir (rmtree this
+        # later for cleanliness)
         # TODO: make this more robust in terms of checking where we are, if the
         # folder exists, etc.
         os.chdir(test_folder)
@@ -86,8 +90,8 @@ class CMakePlatform(object):
             except OSError as e:
                 # ignore errors from the OS - just don't report success for
                 # this generator.
-                print(
-                    "Error encountered when attempting to use generator {:s}:".format(generator))
+                print("Error encountered when attempting to use generator {:s}:"
+                      .format(generator))
                 print(e)
             # cmake succeeded, this generator should work
             if status == 0:
@@ -101,4 +105,3 @@ class CMakePlatform(object):
             CMakePlatform.cleanup_test()
 
         return working_generator
-

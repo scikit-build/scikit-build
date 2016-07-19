@@ -12,10 +12,11 @@ from . import cmaker
 from .command import build, install, clean
 from .exceptions import SKBuildError
 
+
 def move_arg(arg, a, b, newarg=None, f=lambda x: x, concatenate_value=False):
     """Moves an argument from a list to b list, possibly giving it a new name
-    and/or performing a transformation on the value. Returns a and b. The arg need
-    not be present in a.
+    and/or performing a transformation on the value. Returns a and b. The arg
+    need not be present in a.
     """
     newarg = newarg or arg
     parser = argparse.ArgumentParser()
@@ -59,7 +60,10 @@ def parse_args():
     dutils, cmake = move_arg('-G', dutils, cmake)
     dutils, make = move_arg('-j', dutils, make)
     op = os.path
-    absappend = lambda x: op.join(op.dirname(op.abspath(sys.argv[0])), x)
+
+    def absappend(x):
+        return op.join(op.dirname(op.abspath(sys.argv[0])), x)
+
     dutils, dutils = move_arg('--egg-base', dutils, dutils, f=absappend)
 
     return dutils, cmake, make
@@ -79,7 +83,7 @@ def setup(*args, **kw):
     py_modules = kw.get('py_modules', [])
 
     scripts = kw.get('scripts', [])
-    new_scripts = { script: False for script in scripts }
+    new_scripts = {script: False for script in scripts}
 
     data_files = {
         (parent_dir or '.'): set(file_list)
@@ -196,6 +200,7 @@ def setup(*args, **kw):
             file_set = set()
             data_files[parent_dir] = file_set
         file_set.add(os.path.join(cmaker.CMAKE_INSTALL_DIR, path))
+        del parent_dir, file_set
 
     kw['package_data'] = package_data
     kw['package_dir'] = {
@@ -224,4 +229,3 @@ def setup(*args, **kw):
     kw['cmdclass'] = cmdclass
 
     return distutils.core.setup(*args, **kw)
-

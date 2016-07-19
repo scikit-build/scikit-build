@@ -32,7 +32,7 @@ clean-skbuild:
 	find tests/samples/*/_skbuild/ -type d -exec rm -rf {} +
 
 lint:
-	flake8 skbuild tests
+	flake8
 
 test:
 	python setup.py test

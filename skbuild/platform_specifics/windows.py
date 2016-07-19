@@ -3,6 +3,7 @@ import platform
 
 from . import abstract
 
+
 class WindowsPlatform(abstract.CMakePlatform):
 
     def __init__(self):
@@ -46,4 +47,3 @@ class WindowsPlatform(abstract.CMakePlatform):
         # string IDs seem to be just the vs_base.
 
         self.default_generators.insert(0, vs_base)
-

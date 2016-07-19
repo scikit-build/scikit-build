@@ -1,5 +1,5 @@
 
-from _pen2 import *
+from _pen2 import Pen2Sim
 from math import pi
 
 DEFAULT_M0 = 1.0
@@ -15,6 +15,7 @@ DEFAULT_IW1 = 0.0
 DEFAULT_G = 98.1
 DEFAULT_DT = 0.001*int(1000.0/60.0)
 DEFAULT_DURATION = None
+
 
 def main():
     from argparse import ArgumentParser
@@ -71,17 +72,18 @@ def main():
                    time_step=args.time_step,
                    duration=args.duration)
 
+
 def run_simulation(**kwds):
-    from math import pi, sqrt, sin, cos
-    from vtk import vtkInteractorStyleTerrain, \
-                    vtkRenderWindowInteractor, \
-                    vtkRenderWindow, \
-                    vtkRenderer, \
-                    vtkActor, \
-                    vtkPolyDataMapper, \
-                    vtkSphereSource, \
-                    vtkCylinderSource, \
-                    vtkTransform
+    from math import pi, sqrt
+    from vtk import (vtkInteractorStyleTerrain,
+                     vtkRenderWindowInteractor,
+                     vtkRenderWindow,
+                     vtkRenderer,
+                     vtkActor,
+                     vtkPolyDataMapper,
+                     vtkSphereSource,
+                     vtkCylinderSource,
+                     vtkTransform)
 
     from vtk.util.colors import red, blue, brown
 
@@ -164,6 +166,7 @@ def run_simulation(**kwds):
     interactor.Initialize()
 
     state = [None]
+
     def callback(*args, **kwds):
         if state[0] is None:
             state[0] = list(sim.initial_state())
@@ -180,8 +183,8 @@ def run_simulation(**kwds):
 
         cTran1.Translate(x0, y0, 0.0)
 
-        cTran0.RotateZ(180.0*(th0      )/pi)
-        cTran1.RotateZ(180.0*(      th1)/pi)
+        cTran0.RotateZ(180.0 * th0 / pi)
+        cTran1.RotateZ(180.0 * th1 / pi)
 
         cTran0.Translate(0.0, -0.5*L0, 0.0)
         cTran1.Translate(0.0, -0.5*L1, 0.0)
@@ -198,7 +201,6 @@ def run_simulation(**kwds):
             interactor.ExitCallback()
 
     interactor.AddObserver("TimerEvent", callback)
-    timerid = interactor.CreateRepeatingTimer(int(1000*dt));
+    timerid = interactor.CreateRepeatingTimer(int(1000*dt))
 
     interactor.Start()
-
