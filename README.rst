@@ -21,6 +21,9 @@ scikit-build
 .. image:: https://circleci.com/gh/scikit-build/scikit-build/tree/master.svg?style=svg
     :target: https://circleci.com/gh/scikit-build/scikit-build/tree/master
 
+.. image:: https://codecov.io/gh/scikit-build/scikit-build/branch/master/graph/badge.svg
+  :target: https://codecov.io/gh/scikit-build/scikit-build
+
 Improved build system generator for CPython C extensions.
 
 Better support is available for additional compilers, build systems, cross

@@ -13,4 +13,7 @@ dependencies:
 
 test:
   override:
-    - nosetests -v -w tests --exclude pen2
+    - nosetests -v -w tests --with-coverage --exclude pen2
+
+  post:
+    - codecov

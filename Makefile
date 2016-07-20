@@ -17,6 +17,7 @@ help:
 
 clean: clean-build clean-pyc clean-skbuild
 	rm -fr htmlcov/
+	rm -f .coverage
 
 clean-build:
 	rm -fr build/
