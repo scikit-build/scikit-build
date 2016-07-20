@@ -29,7 +29,8 @@ clean-pyc:
 	find . -name '*~' -exec rm -f {} +
 
 clean-skbuild:
-	find tests/samples/*/_skbuild/ -type d -exec rm -rf {} +
+	rm -rf _skbuild
+	find tests/samples/*/_skbuild/ -type d -exec rm -rf {} + > /dev/null 2>&1 || true
 
 lint:
 	flake8
