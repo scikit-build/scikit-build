@@ -16,6 +16,7 @@ try:
 except ImportError:
     from distutils.core import setup as upstream_setup
 
+
 def move_arg(arg, a, b, newarg=None, f=lambda x: x, concatenate_value=False):
     """Moves an argument from a list to b list, possibly giving it a new name
     and/or performing a transformation on the value. Returns a and b. The arg
@@ -237,4 +238,3 @@ def setup(*args, **kw):
     kw['cmdclass'] = cmdclass
 
     return upstream_setup(*args, **kw)
-

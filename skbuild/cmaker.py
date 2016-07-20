@@ -20,6 +20,7 @@ SETUPTOOLS_INSTALL_DIR = os.path.join(SKBUILD_DIR, "setuptools")
 RE_FILE_INSTALL = re.compile(
     r"""[ \t]*file\(INSTALL DESTINATION "([^"]+)".*"([^"]+)"\).*""")
 
+
 def pop_arg(arg, a, default=None):
     """Pops an arg(ument) from an argument list a and returns the new list
     and the value of the argument if present and a default otherwise.
@@ -48,6 +49,7 @@ def _remove_cwd_prefix(path):
     result = result.replace("\n", "")
 
     return result
+
 
 def _touch_init(folder):
     init = os.path.join(folder, "__init__.py")
@@ -169,7 +171,9 @@ class CMaker(object):
 
         return python_version
 
-    @staticmethod
+    # NOTE(opadron): The try-excepts raise the cyclomatic complexity, but we
+    # need them for this function.
+    @staticmethod  # noqa: C901: Complexity
     def get_python_include_dir(python_version):
         # determine python include dir
         python_include_dir = sysconfig.get_config_var('INCLUDEPY')
@@ -254,7 +258,7 @@ class CMaker(object):
 
         # if static (or nonexistent), try to find a suitable dynamic libpython
         if (python_library is None or
-            os.path.splitext(python_library)[1][-2:] == '.a'):
+                os.path.splitext(python_library)[1][-2:] == '.a'):
 
             candidate_lib_prefixes = ['', 'lib']
 
@@ -383,4 +387,3 @@ class CMaker(object):
             return [_remove_cwd_prefix(path) for path in manifest]
 
         return []
-

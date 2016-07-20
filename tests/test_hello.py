@@ -7,42 +7,19 @@
 Tries to build and test the `hello` sample project.
 """
 
-import os
-import os.path
-import shutil
-import subprocess
-import sys
-
-from skbuild.cmaker import SKBUILD_DIR, CMAKE_BUILD_DIR
+from . import project_setup_py_test
 
 
+@project_setup_py_test(("samples", "hello"), ["build"], clear_cache=True)
 def test_hello_builds():
-    old_argv = sys.argv
-    old_cwd = os.getcwd()
-
-    sys.argv = ["setup.py", "build"]
-    cur_dir = os.path.dirname(os.path.abspath(__file__))
-    os.chdir(os.path.join(cur_dir, "samples", "hello"))
-
-    if os.path.exists(SKBUILD_DIR):
-        shutil.rmtree(SKBUILD_DIR)
-
-    try:
-        with open("setup.py", "r") as fp:
-            exec(fp.read())
-    finally:
-        os.chdir(old_cwd)
-        sys.argv = old_argv
+    pass
 
 
-def test_hello_works():
-    old_cwd = os.getcwd()
-    cur_dir = os.path.dirname(os.path.abspath(__file__))
-    os.chdir(os.path.join(cur_dir, "samples", "hello", CMAKE_BUILD_DIR))
-    try:
-        subprocess.check_call(
-            ["ctest", "--build-config",
-                os.environ.get("SKBUILD_CMAKE_CONFIG", "Debug"),
-                "--output-on-failure"])
-    finally:
-        os.chdir(old_cwd)
+# @project_setup_py_test(("samples", "hello"), ["test"])
+# def test_hello_works():
+#     pass
+
+
+@project_setup_py_test(("samples", "hello"), ["bdist_wheel"])
+def test_hello_wheel():
+    pass
