@@ -110,37 +110,23 @@ class CMaker(object):
         python_library = CMaker.get_python_library(python_version)
 
         cwd = os.getcwd()
-        cmd = ['cmake', cwd, '-G', generator_id]
-        cmd.extend(
-            "=".join((cmake_variable, value)) for cmake_variable, value in (
-                (
-                    "-DCMAKE_INSTALL_PREFIX:PATH",
-                    os.path.join(cwd, CMAKE_INSTALL_DIR)
-                ), (
-                    "-DPYTHON_EXECUTABLE:FILEPATH",
-                    sys.executable
-                ), (
-                    "-DPYTHON_VERSION_STRING:STRING",
-                    sys.version.split(' ')[0]
-                ), (
-                    "-DPYTHON_INCLUDE_DIR:PATH",
-                    python_include_dir
-                ), (
-                    "-DPYTHON_LIBRARY:FILEPATH",
-                    python_library
-                ), (
-                    "-DSKBUILD:BOOL",
-                    "TRUE"
-                ), (
-                    "-DCMAKE_MODULE_PATH:PATH",
-                    os.path.join(
-                        os.path.dirname(__file__),
-                        "resources",
-                        "cmake"
-                    )
-                )
-            )
-        )
+        cmd = [
+            'cmake', cwd, '-G', generator_id,
+            ("-DCMAKE_INSTALL_PREFIX:PATH=" +
+                os.path.join(cwd, CMAKE_INSTALL_DIR)),
+            ("-DPYTHON_EXECUTABLE:FILEPATH=" +
+                sys.executable),
+            ("-DPYTHON_VERSION_STRING:STRING=" +
+                sys.version.split(' ')[0]),
+            ("-DPYTHON_INCLUDE_DIR:PATH=" +
+                python_include_dir),
+            ("-DPYTHON_LIBRARY:FILEPATH=" +
+                python_library),
+            ("-DSKBUILD:BOOL=" +
+                "TRUE"),
+            ("-DCMAKE_MODULE_PATH:PATH=" +
+                os.path.join(os.path.dirname(__file__), "resources", "cmake"))
+        ]
 
         cmd.extend(clargs)
 
@@ -191,43 +177,46 @@ class CMaker(object):
             # NOTE(opadron): these possible prefixes must be guarded against
             # AttributeErrors and KeyErrors because they each can throw on
             # different platforms or even different builds on the same platform.
+            include_py = sysconfig.get_config_var('INCLUDEPY')
+            include_dir = sysconfig.get_config_var('INCLUDEDIR')
+            include = None
+            plat_include = None
+            python_inc = None
+            python_inc2 = None
+
             try:
-                candidate_prefixes.append(
-                    os.path.dirname(sysconfig.get_config_var('INCLUDEPY')))
+                include = sysconfig.get_path('include')
             except (AttributeError, KeyError):
                 pass
 
             try:
-                candidate_prefixes.append(
-                    sysconfig.get_config_var('INCLUDEDIR'))
+                plat_include = sysconfig.get_path('platinclude')
             except (AttributeError, KeyError):
                 pass
 
             try:
-                candidate_prefixes.append(
-                    os.path.dirname(sysconfig.get_path('include')))
-            except (AttributeError, KeyError):
+                python_inc = sysconfig.get_python_inc()
+            except AttributeError:
                 pass
 
-            try:
-                candidate_prefixes.append(
-                    os.path.dirname(sysconfig.get_path('platinclude')))
-            except (AttributeError, KeyError):
-                pass
+            if include_py is not None:
+                include_py = os.path.dirname(include_py)
+            if include is not None:
+                include = os.path.dirname(include)
+            if plat_include is not None:
+                plat_include = os.path.dirname(plat_include)
+            if python_inc is not None:
+                python_inc2 = os.path.join(
+                    python_inc, ".".join(map(str, sys.version_info[:2])))
 
-            try:
-                candidate_prefixes.append(
-                    os.path.join(sysconfig.get_python_inc(),
-                                 ".".join(map(str, sys.version_info[:2]))))
-            except (AttributeError, KeyError):
-                pass
-
-            try:
-                candidate_prefixes.append(sysconfig.get_python_inc())
-            except (AttributeError, KeyError):
-                pass
-
-            candidate_prefixes = tuple(filter(bool, candidate_prefixes))
+            candidate_prefixes = list(filter(bool, (
+                include_py,
+                include_dir,
+                include,
+                plat_include,
+                python_inc,
+                python_inc2,
+            )))
 
             candidate_versions = (python_version,)
             if python_version:
@@ -248,6 +237,7 @@ class CMaker(object):
                     break
 
         # TODO(opadron): what happens if we don't find an include directory?
+        #                Throw SKBuildError?
 
         return python_include_dir
 
