@@ -184,9 +184,16 @@ class Driver(object):
     def drive_test(self):
         extra_test_args = shlex.split(self.env.get("EXTRA_TEST_ARGS", ""))
         self.check_call(
-            ["python", "-m", "nose", "-v", "-w", "tests"] + extra_test_args)
+            ["python", "-m", "nose", "-v", "-w", "tests",
+             "--with-coverage", "--cover-xml"] + extra_test_args)
 
     def drive_after_test(self):
+
+        script_dir = os.path.join(self.env["PYTHON"], "Scripts")
+        self.check_call([
+            os.path.join(script_dir, "codecov.exe"), "-X", "gcov", "-required",
+            "--file", ".\\tests\\coverage.xml"])
+
         self.check_call(["python", "setup.py", "bdist_wheel"])
         self.check_call(["python", "setup.py", "bdist_wininst"])
         self.check_call(["python", "setup.py", "bdist_msi"])
