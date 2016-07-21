@@ -32,10 +32,12 @@ The project has a few common Python package dependencies. The runtime
 dependencies are:
 
 .. include:: ../requirements.txt
+   :literal:
 
 the build time dependencies (also required for development) are:
 
 .. include:: ../requirements-dev.txt
+   :literal:
 
 Compiler Toolchain
 ^^^^^^^^^^^^^^^^^^
