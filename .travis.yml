@@ -51,4 +51,7 @@ install:
 # command to run tests, e.g. python setup.py test
 script:
   - flake8 -v
-  - nosetests -v -w tests $EXTRA_TEST_ARGS
+  - nosetests -v -w tests --with-coverage $EXTRA_TEST_ARGS
+
+after_success:
+  - codecov
