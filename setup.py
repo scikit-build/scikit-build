@@ -25,10 +25,7 @@ try:
 
         def run_tests(self):
             # Run nose ensuring that argv simulates running nosetests directly
-            nose_args = [
-                'nosetests', '-v', '-w', 'tests',
-                '--with-coverage', '--cover-xml'
-            ]
+            nose_args = ['nosetests']
             nose_args.extend(self.args)
             __import__('nose').run_exit(argv=nose_args)
 
