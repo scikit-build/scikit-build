@@ -39,17 +39,6 @@ matrix:
     - os: linux
       python: "3.3"
 
-before_script:
-  - "\
-    if [ \"$START_XVFB\" = '1' ] ; then \
-      export DISPLAY=':99.0' ; \
-      cat /etc/init.d/xvfb ; \
-      sh -e /etc/init.d/xvfb start ; \
-      sleep 10 ; \
-
-      export PYTHONPATH=\"/usr/lib/pymodules/python2.7:$PYTHONPATH\" ; \
-    fi"
-
 addons:
   apt:
     packages:
@@ -57,15 +46,13 @@ addons:
       - libboost-python-dev
       - python-vtk
 
-# command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 install:
-  - ./ci/travis_install.sh
+  - python ci/appveyor/driver.py travis install
+  - python ci/appveyor/driver.py travis style
 
-# command to run tests, e.g. python setup.py test
 script:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then eval "$(pyenv init -)"; fi
-  - flake8 -v
-  - python setup.py test --addopts "$EXTRA_TEST_ARGS"
+  - python ci/appveyor/driver.py travis build
+  - python ci/appveyor/driver.py travis test
 
 after_success:
-  - codecov -X gcov --required --file tests/coverage.xml
+  - python ci/appveyor/driver.py travis after_test

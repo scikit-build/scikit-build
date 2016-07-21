@@ -6,17 +6,11 @@ import shutil
 import struct
 import subprocess
 import sys
-import zipfile
 
 try:
     from urllib.request import urlopen
 except ImportError:
     from urllib2 import urlopen
-
-
-def log(s):
-    print(s)
-    sys.stdout.flush()
 
 
 class DriverContext(object):
@@ -39,6 +33,13 @@ class Driver(object):
     def __init__(self):
         self.env = None
         self._env_file = None
+
+    def log(self, *s):
+        print(" ".join(s))
+        sys.stdout.flush()
+
+    def urlopen(self, *args, **kwargs):
+        return urlopen(*args, **kwargs)
 
     def load_env(self, env_file="env.json"):
         if self.env is not None:
@@ -75,101 +76,15 @@ class Driver(object):
         return DriverContext(self, env_file)
 
     def drive_install(self):
-        log("Filesystem root:")
-        self.check_call(["dir", "C:\\"])
-
-        log("Installed SDKs:")
-        self.check_call(["dir", "C:\\Program Files\\Microsoft SDKs\\Windows\\"])
-
-        local_path = os.path.join(
-            "ci", "appveyor", "run-with-visual-studio.cmd")
-        remote_script = urlopen("https://raw.githubusercontent.com"
-                                "/ogrisel/python-appveyor-demo"
-                                "/f54ec3593bcea682098a59b560c1850c19746e10"
-                                "/appveyor/run_with_env.cmd")
-        with open(local_path, "wb") as local_script:
-            shutil.copyfileobj(remote_script, local_script)
-
-        # Implement workaround for 64-bit Visual Studio 2008
-        if self.env["PYTHON_ARCH"] == "64":
-            log("Downloading 64-bit Visual Studio Fix")
-            remote_zip = urlopen(
-                "https://github.com/menpo/condaci/raw/master/vs2008_patch.zip")
-            with open("C:\\vs2008_patch.zip", "wb") as local_zip:
-                shutil.copyfileobj(remote_zip, local_zip)
-
-            log("Unpacking 64-bit Visual Studio Fix")
-            with zipfile.ZipFile("C:\\vs2008_patch.zip") as local_zip:
-                local_zip.extractall("C:\\vs2008_patch")
-
-            log("Applying 64-bit Visual Studio Fix")
-            self.check_call(
-                [
-                    "cmd.exe",
-                    "/E:ON",
-                    "/V:ON",
-                    "/C",
-                    "C:\\vs2008_patch\\setup_x64.bat"
-                ],
-                cwd="C:\\vs2008_patch")
-
-        # Implement workaround for MinGW on Appveyor
-        if self.env.get("CMAKE_GENERATOR", "").lower().startswith("mingw"):
-            log("Applying MinGW PATH fix")
-
-            mingw_bin = os.path.normpath(
-                os.path.join("C:\\", "MinGW", "bin")).lower()
-
-            self.env["PATH"] = os.pathsep.join(
-                dir for dir in
-                self.env["PATH"].split(os.pathsep)
-
-                if (
-                    os.path.normpath(dir).lower() == mingw_bin or
-                    not (
-                        os.path.exists(os.path.join(dir, "sh.exe")) or
-                        os.path.exists(os.path.join(dir, "sh.bat")) or
-                        os.path.exists(os.path.join(dir, "sh"))
-                    )
-                )
-            )
-
-        python_root = self.env["PYTHON"]
-        self.env_prepend(
-            "PATH", os.path.join(python_root, "Scripts"), python_root)
-
-        self.env["SKBUILD_CMAKE_CONFIG"] = "Release"
-
-        log("Python Version:")
-        log(sys.version)
-        log("    {}-bit".format(struct.calcsize("P")*8))
+        self.log("Python Version:")
+        self.log(sys.version)
+        self.log("    {}-bit".format(struct.calcsize("P")*8))
 
         self.check_call([
             "python", "-m", "pip",
             "install", "--disable-pip-version-check",
             "--user", "--upgrade", "pip"
         ])
-
-        self.check_call(["python", "-m", "pip", "install", "wheel"])
-
-        log("Downloading CMake")
-        remote_file = urlopen(
-            "https://cmake.org/files/v3.5/cmake-3.5.2-win32-x86.zip")
-
-        with open("C:\\cmake.zip", "wb") as local_file:
-            shutil.copyfileobj(remote_file, local_file)
-
-        log("Unpacking CMake")
-
-        try:
-            os.mkdir("C:\\cmake")
-        except OSError:
-            pass
-
-        with zipfile.ZipFile("C:\\cmake.zip") as local_zip:
-            local_zip.extractall("C:\\cmake")
-
-        self.env_prepend("PATH", "C:\\cmake\bin")
 
         self.check_call([
             "python", "-m", "pip", "install", "-r", "requirements.txt"])
@@ -180,37 +95,48 @@ class Driver(object):
     def drive_build(self):
         self.check_call(["python", "setup.py", "build"])
 
+    def drive_style(self):
+        self.check_call(["python", "-m", "flake8", "-v"])
+
     def drive_test(self):
         extra_test_args = self.env.get("EXTRA_TEST_ARGS", "")
         self.check_call(
             ["python", "setup.py", "test", "--addopts", "%s" % extra_test_args])
 
     def drive_after_test(self):
-
-        script_dir = os.path.join(self.env["PYTHON"], "Scripts")
-        self.check_call([
-            os.path.join(script_dir, "codecov.exe"), "-X", "gcov", "-required",
-            "--file", ".\\tests\\coverage.xml"])
-
         self.check_call(["python", "setup.py", "bdist_wheel"])
         self.check_call(["python", "setup.py", "bdist_wininst"])
         self.check_call(["python", "setup.py", "bdist_msi"])
 
-        if os.path.exists("dist"):
-            self.check_call(["dir", "dist"], shell=True)
-
 if __name__ == "__main__":
-    d = Driver()
-    stage = sys.argv[1]
+    from appveyor_driver import AppveyorDriver
+    from circle_driver import CircleDriver
+    from travis_driver import TravisDriver
 
+    driver_table = {
+        "appveyor": AppveyorDriver,
+        "circle": CircleDriver,
+        "travis": TravisDriver,
+    }
+
+    stage_table = {
+        "install": "drive_install",
+        "build": "drive_build",
+        "style": "drive_style",
+        "test": "drive_test",
+        "after_test": "drive_after_test",
+    }
+
+    class_key, stage_key = sys.argv[1:3]
+    try:
+        DriverClass = driver_table[class_key]
+    except KeyError:
+        raise KeyError("invalid driver implementation: {}".format(class_key))
+    try:
+        stage = stage_table[stage_key]
+    except KeyError:
+        raise KeyError("invalid stage: {}".format(stage_key))
+
+    d = DriverClass()
     with d.env_context():
-        if stage == "install":
-            d.drive_install()
-        elif stage == "build":
-            d.drive_build()
-        elif stage == "test":
-            d.drive_test()
-        elif stage == "after_test":
-            d.drive_after_test()
-        else:
-            raise Exception("invalid stage: {}".format(stage))
+        getattr(d, stage)()
