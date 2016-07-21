@@ -83,7 +83,7 @@ class Driver(object):
         self.check_call([
             "python", "-m", "pip",
             "install", "--disable-pip-version-check",
-            "--user", "--upgrade", "pip"
+            "--upgrade", "pip"
         ])
 
         self.check_call([
