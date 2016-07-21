@@ -23,6 +23,11 @@ matrix:
       env:
         - EXTRA_TEST_ARGS="--exclude pen2 --exclude tbabel"
 
+    - os: osx
+      language: generic
+      env:
+        - EXTRA_TEST_ARGS="--exclude pen2 --exclude tbabel"
+
 
 before_script:
   - "\
@@ -42,21 +47,15 @@ addons:
       - libboost-python-dev
       - python-vtk
 
-before_install:
-  - "wget --no-check-certificate --progress=dot \
-      \"https://cmake.org/files/v3.5/cmake-3.5.0-Linux-x86_64.tar.gz\""
-  - tar xzf "cmake-3.5.0-Linux-x86_64.tar.gz"
-  - sudo rsync -avz "cmake-3.5.0-Linux-x86_64/" /usr/local
-
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 install:
-  - pip install -r requirements.txt
-  - pip install -r requirements-dev.txt
+  - ./ci/travis_install.sh
 
 # command to run tests, e.g. python setup.py test
 script:
-  - flake8 -v
-  - python setup.py test --args="$EXTRA_TEST_ARGS"
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then flake8 -v; fi
+  - ls /usr/local/bin
+  - export PATH=/usr/local/bin:$PATH; python setup.py test --args="$EXTRA_TEST_ARGS"
 
 after_success:
   - codecov -X gcov --required --file tests/coverage.xml
