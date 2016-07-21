@@ -2,7 +2,6 @@
 import json
 import os
 import os.path
-import shutil
 import struct
 import subprocess
 import sys
