@@ -47,12 +47,12 @@ addons:
       - python-vtk
 
 install:
-  - python ci/appveyor/driver.py travis install
-  - python ci/appveyor/driver.py travis style
+  - python ci/driver.py travis install
+  - python ci/driver.py travis style
 
 script:
-  - python ci/appveyor/driver.py travis build
-  - python ci/appveyor/driver.py travis test
+  - python ci/driver.py travis build
+  - python ci/driver.py travis test
 
 after_success:
-  - python ci/appveyor/driver.py travis after_test
+  - python ci/driver.py travis after_test

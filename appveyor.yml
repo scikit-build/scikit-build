@@ -121,18 +121,17 @@ init:
     }"
 
 install:
-  - cmd: "%PYTHON%\\python.exe .\\ci\\appveyor\\driver.py appveyor install"
-  - cmd: "%RUN% %PYTHON%\\python.exe .\\ci\\appveyor\\driver.py appveyor style"
+  - cmd: "%PYTHON%\\python.exe .\\ci\\driver.py appveyor install"
+  - cmd: "%RUN% %PYTHON%\\python.exe .\\ci\\driver.py appveyor style"
 
 build_script:
-  - cmd: "%RUN% %PYTHON%\\python.exe .\\ci\\appveyor\\driver.py appveyor build"
+  - cmd: "%RUN% %PYTHON%\\python.exe .\\ci\\driver.py appveyor build"
 
 test_script:
-  - cmd: "%RUN% %PYTHON%\\python.exe .\\ci\\appveyor\\driver.py appveyor test"
+  - cmd: "%RUN% %PYTHON%\\python.exe .\\ci\\driver.py appveyor test"
 
 after_test:
-  - cmd: "%RUN% %PYTHON%\\python.exe \
-            .\\ci\\appveyor\\driver.py appveyor after_test"
+  - cmd: "%RUN% %PYTHON%\\python.exe .\\ci\\driver.py appveyor after_test"
 
 on_finish:
   - ps: "\

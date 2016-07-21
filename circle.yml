@@ -1,12 +1,12 @@
 dependencies:
   override:
-    - python ci/appveyor/driver.py circle install
-    - python ci/appveyor/driver.py circle style
+    - python ci/driver.py circle install
+    - python ci/driver.py circle style
 
 test:
   override:
-    - python ci/appveyor/driver.py circle build
-    - python ci/appveyor/driver.py circle test
+    - python ci/driver.py circle build
+    - python ci/driver.py circle test
 
   post:
-    - python ci/appveyor/driver.py circle after_test
+    - python ci/driver.py circle after_test
