@@ -2,7 +2,6 @@
 import json
 import os
 import os.path
-import shlex
 import shutil
 import struct
 import subprocess
@@ -182,10 +181,9 @@ class Driver(object):
         self.check_call(["python", "setup.py", "build"])
 
     def drive_test(self):
-        extra_test_args = shlex.split(self.env.get("EXTRA_TEST_ARGS", ""))
+        extra_test_args = self.env.get("EXTRA_TEST_ARGS", "")
         self.check_call(
-            ["python", "-m", "nose", "-v", "-w", "tests",
-             "--with-coverage", "--cover-xml"] + extra_test_args)
+            ["python", "setup.py", "test", "--args", "%s" % extra_test_args])
 
     def drive_after_test(self):
 

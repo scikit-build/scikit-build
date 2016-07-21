@@ -51,7 +51,7 @@ install:
 # command to run tests, e.g. python setup.py test
 script:
   - flake8 -v
-  - nosetests -v -w tests --with-coverage --cover-xml $EXTRA_TEST_ARGS
+  - python setup.py test --args="$EXTRA_TEST_ARGS"
 
 after_success:
   - codecov -X gcov --required --file tests/coverage.xml
