@@ -289,7 +289,7 @@ class CMaker(object):
 
             if libdir is None:
                 libdir = os.path.abspath(os.path.join(
-                        sysconfig.get_config_var('LIBDEST'), "..", "libs"))
+                    sysconfig.get_config_var('LIBDEST'), "..", "libs"))
 
             candidates = (
                 os.path.join(
