@@ -65,10 +65,10 @@ class CMaker(object):
 
     def __init__(self, **defines):
         # verify that CMake is installed
-        if platform.system() != 'Windows':
-            rtn = subprocess.call(['which', 'cmake'])
-            if rtn != 0:
-                raise SKBuildError('CMake is not installed, aborting build.')
+        try:
+            subprocess.check_call(['cmake', '--version'])
+        except (OSError, CalledProcessError):
+            raise SKBuildError('CMake is not installed, aborting build.')
 
         self.platform = get_platform()
 
