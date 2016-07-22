@@ -10,20 +10,23 @@ attempt fails with an SKBuildError exception.
 
 from skbuild.exceptions import SKBuildError
 
-from . import project_setup_py_test
+from . import project_setup_py_test, push_dir
 
 
 def test_outside_project_root_fails():
-    @project_setup_py_test(("samples", "fail-outside-project-root"),
-                           ["install"],
-                           clear_cache=True)
-    def should_fail():
-        pass
 
-    exception_thrown = False
-    try:
-        should_fail()
-    except SKBuildError:
-        exception_thrown = True
+    with push_dir():
 
-    assert exception_thrown
+        @project_setup_py_test(("samples", "fail-outside-project-root"),
+                               ["install"],
+                               clear_cache=True)
+        def should_fail():
+            pass
+
+        exception_thrown = False
+        try:
+            should_fail()
+        except SKBuildError:
+            exception_thrown = True
+
+        assert exception_thrown

@@ -12,9 +12,10 @@ from skbuild.cmaker import SKBUILD_DIR
 
 
 @contextmanager
-def push_dir(directory):
+def push_dir(directory=None):
     old_cwd = os.getcwd()
-    os.chdir(directory)
+    if directory:
+        os.chdir(directory)
     yield
     os.chdir(old_cwd)
 
