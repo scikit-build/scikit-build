@@ -158,29 +158,66 @@ class CMaker(object):
 
         return python_version
 
-    @staticmethod
+    # NOTE(opadron): The try-excepts raise the cyclomatic complexity, but we
+    # need them for this function.
+    @staticmethod  # noqa: C901: Complexity
     def get_python_include_dir(python_version):
         # determine python include dir
         python_include_dir = sysconfig.get_config_var('INCLUDEPY')
 
         # if Python.h not found (or python_include_dir is None), try to find a
         # suitable include dir
-        found_python_h = os.path.exists(
-            os.path.join(python_include_dir, 'Python.h'))
+        found_python_h = (
+            python_include_dir is not None or
+            os.path.exists(os.path.join(python_include_dir, 'Python.h'))
+        )
 
-        if python_include_dir is None or not found_python_h:
+        if not found_python_h:
+            candidate_prefixes = []
 
-            candidate_prefixes = [
-                os.path.dirname(sysconfig.get_config_var('INCLUDEPY')),
-                sysconfig.get_config_var('INCLUDEDIR'),
-                os.path.dirname(sysconfig.get_path('include')),
-                os.path.dirname(sysconfig.get_path('platinclude')),
-                os.path.join(sysconfig.get_python_inc(),
-                             ".".join(map(str, sys.version_info[:2]))),
-                sysconfig.get_python_inc()
-                ]
+            # NOTE(opadron): these possible prefixes must be guarded against
+            # AttributeErrors and KeyErrors because they each can throw on
+            # different platforms or even different builds on the same platform.
+            include_py = sysconfig.get_config_var('INCLUDEPY')
+            include_dir = sysconfig.get_config_var('INCLUDEDIR')
+            include = None
+            plat_include = None
+            python_inc = None
+            python_inc2 = None
 
-            candidate_prefixes = tuple(filter(bool, candidate_prefixes))
+            try:
+                include = sysconfig.get_path('include')
+            except (AttributeError, KeyError):
+                pass
+
+            try:
+                plat_include = sysconfig.get_path('platinclude')
+            except (AttributeError, KeyError):
+                pass
+
+            try:
+                python_inc = sysconfig.get_python_inc()
+            except AttributeError:
+                pass
+
+            if include_py is not None:
+                include_py = os.path.dirname(include_py)
+            if include is not None:
+                include = os.path.dirname(include)
+            if plat_include is not None:
+                plat_include = os.path.dirname(plat_include)
+            if python_inc is not None:
+                python_inc2 = os.path.join(
+                    python_inc, ".".join(map(str, sys.version_info[:2])))
+
+            candidate_prefixes = list(filter(bool, (
+                include_py,
+                include_dir,
+                include,
+                plat_include,
+                python_inc,
+                python_inc2,
+            )))
 
             candidate_versions = (python_version,)
             if python_version:
@@ -201,6 +238,7 @@ class CMaker(object):
                     break
 
         # TODO(opadron): what happens if we don't find an include directory?
+        #                Throw SKBuildError?
 
         return python_include_dir
 
@@ -338,3 +376,5 @@ class CMaker(object):
                                              "install_manifest.txt")
         with open(install_manifest_path, "r") as manifest:
             return [_remove_cwd_prefix(path) for path in manifest]
+
+        return []
