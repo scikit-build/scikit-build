@@ -8,7 +8,7 @@ import sys
 import argparse
 
 from . import cmaker
-from .command import build, install, clean
+from .command import build, install, clean, bdist, bdist_wheel
 from .exceptions import SKBuildError
 
 try:
@@ -229,6 +229,9 @@ def setup(*args, **kw):
     cmdclass['build'] = cmdclass.get('build', build.build)
     cmdclass['install'] = cmdclass.get('install', install.install)
     cmdclass['clean'] = cmdclass.get('clean', clean.clean)
+    cmdclass['bdist'] = cmdclass.get('bdist', bdist.bdist)
+    cmdclass['bdist_wheel'] = cmdclass.get(
+        'bdist_wheel', bdist_wheel.bdist_wheel)
     kw['cmdclass'] = cmdclass
 
     return upstream_setup(*args, **kw)
