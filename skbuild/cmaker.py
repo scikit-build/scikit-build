@@ -110,17 +110,24 @@ class CMaker(object):
         python_include_dir = CMaker.get_python_include_dir(python_version)
         python_library = CMaker.get_python_library(python_version)
 
-        cmd = ['cmake', os.getcwd(), '-G', generator_id,
-               '-DCMAKE_INSTALL_PREFIX:PATH={0}'.format(
-                    os.path.join(os.getcwd(), CMAKE_INSTALL_DIR)),
-               '-DPYTHON_EXECUTABLE:FILEPATH=' + sys.executable,
-               '-DPYTHON_VERSION_STRING:STRING=' + sys.version.split(' ')[0],
-               '-DPYTHON_INCLUDE_DIR:PATH=' + python_include_dir,
-               '-DPYTHON_LIBRARY:FILEPATH=' + python_library,
-               '-DSKBUILD:BOOL=TRUE',
-               "-DCMAKE_MODULE_PATH:PATH={}".format(
-                   os.path.dirname(__file__) + '/resources/cmake')
-               ]
+        cwd = os.getcwd()
+        cmd = [
+            'cmake', cwd, '-G', generator_id,
+            ("-DCMAKE_INSTALL_PREFIX:PATH=" +
+                os.path.join(cwd, CMAKE_INSTALL_DIR)),
+            ("-DPYTHON_EXECUTABLE:FILEPATH=" +
+                sys.executable),
+            ("-DPYTHON_VERSION_STRING:STRING=" +
+                sys.version.split(' ')[0]),
+            ("-DPYTHON_INCLUDE_DIR:PATH=" +
+                python_include_dir),
+            ("-DPYTHON_LIBRARY:FILEPATH=" +
+                python_library),
+            ("-DSKBUILD:BOOL=" +
+                "TRUE"),
+            ("-DCMAKE_MODULE_PATH:PATH=" +
+                os.path.join(os.path.dirname(__file__), "resources", "cmake"))
+        ]
 
         cmd.extend(clargs)
 
