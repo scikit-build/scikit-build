@@ -9,6 +9,8 @@ import shlex
 import sys
 import sysconfig
 
+from subprocess import CalledProcessError
+
 from .platform_specifics import get_platform
 from .exceptions import SKBuildError
 
@@ -62,10 +64,11 @@ def _touch_init(folder):
 class CMaker(object):
 
     def __init__(self, **defines):
+        # verify that CMake is installed
         if platform.system() != 'Windows':
             rtn = subprocess.call(['which', 'cmake'])
             if rtn != 0:
-                sys.exit('CMake is not installed, aborting build.')
+                raise SKBuildError('CMake is not installed, aborting build.')
 
         self.platform = get_platform()
 
@@ -93,8 +96,9 @@ class CMaker(object):
         generator_id = self.platform.get_best_generator(generator_id)
 
         if generator_id is None:
-            sys.exit("Could not get working generator for your system."
-                     "  Aborting build.")
+            raise SKBuildError(
+                "Could not get working generator for your system."
+                "  Aborting build.")
 
         if not os.path.exists(CMAKE_BUILD_DIR):
             os.makedirs(CMAKE_BUILD_DIR)
@@ -335,7 +339,6 @@ class CMaker(object):
 
         if bad_installs:
             raise SKBuildError("\n".join((
-                "",
                 "  CMake-installed files must be within the project root.",
                 "    Project Root:",
                 "      " + install_dir,
@@ -349,7 +352,7 @@ class CMaker(object):
         """
         clargs, config = pop_arg('--config', clargs, config)
         if not os.path.exists(CMAKE_BUILD_DIR):
-            raise RuntimeError(("CMake build folder ({}) does not exist. "
+            raise SKBuildError(("CMake build folder ({}) does not exist. "
                                 "Did you forget to run configure before "
                                 "make?").format(CMAKE_BUILD_DIR))
 

@@ -5,7 +5,8 @@
 ----------------------------------
 
 Tries to build the `fail-outside-project-root` sample project.  Ensures that the
-attempt fails with an SKBuildError exception.
+attempt fails with a SystemExit exception that has an SKBuildError exception as
+its value.
 """
 
 from skbuild.exceptions import SKBuildError
@@ -23,10 +24,10 @@ def test_outside_project_root_fails():
         def should_fail():
             pass
 
-        exception_thrown = False
+        failed = False
         try:
             should_fail()
-        except SKBuildError:
-            exception_thrown = True
+        except SystemExit as e:
+            failed = isinstance(e.code, SKBuildError)
 
-        assert exception_thrown
+        assert failed

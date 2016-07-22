@@ -131,9 +131,16 @@ def setup(*args, **kw):
         reverse=True
     ))
 
-    cmkr = cmaker.CMaker()
-    cmkr.configure(cmake_args)
-    cmkr.make(make_args)
+    try:
+        cmkr = cmaker.CMaker()
+        cmkr.configure(cmake_args)
+        cmkr.make(make_args)
+    except SKBuildError as e:
+        import traceback
+        print("Traceback (most recent call last):")
+        traceback.print_tb(sys.exc_info()[2])
+        print()
+        sys.exit(e)
 
     install_root = os.path.join(os.getcwd(), cmaker.CMAKE_INSTALL_DIR)
     for path in cmkr.install():
