@@ -15,7 +15,7 @@ from .exceptions import SKBuildError
 SKBUILD_DIR = "_skbuild"
 CMAKE_BUILD_DIR = os.path.join(SKBUILD_DIR, "cmake-build")
 CMAKE_INSTALL_DIR = os.path.join(SKBUILD_DIR, "cmake-install")
-DISTUTILS_INSTALL_DIR = os.path.join(SKBUILD_DIR, "distutils")
+SETUPTOOLS_INSTALL_DIR = os.path.join(SKBUILD_DIR, "setuptools")
 
 RE_FILE_INSTALL = re.compile(
     r"""[ \t]*file\(INSTALL DESTINATION "([^"]+)".*"([^"]+)"\).*""")
@@ -70,8 +70,7 @@ class CMaker(object):
         self.platform = get_platform()
 
     def configure(self, clargs=(), generator_id=None):
-        """Calls cmake to generate the makefile (or VS solution,
-        or XCode project).
+        """Calls cmake to generate the Makefile/VS Solution/XCode project.
 
         Input:
         ------
@@ -103,8 +102,8 @@ class CMaker(object):
         if not os.path.exists(CMAKE_INSTALL_DIR):
             os.makedirs(CMAKE_INSTALL_DIR)
 
-        if not os.path.exists(DISTUTILS_INSTALL_DIR):
-            os.makedirs(DISTUTILS_INSTALL_DIR)
+        if not os.path.exists(SETUPTOOLS_INSTALL_DIR):
+            os.makedirs(SETUPTOOLS_INSTALL_DIR)
 
         python_version = CMaker.get_python_version()
         python_include_dir = CMaker.get_python_include_dir(python_version)
@@ -367,7 +366,7 @@ class CMaker(object):
 
     def install(self):
         """Returns a list of tuples of (install location, file list) to install
-        via distutils that is compatible with the data_files keyword argument.
+        via setuptools that is compatible with the data_files keyword argument.
         """
         return self._parse_manifest()
 

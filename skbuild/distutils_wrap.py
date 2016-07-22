@@ -1,16 +1,20 @@
-"""This module provides functionality for wrapping key components of the
-distutils infrastructure.
+"""This module provides functionality for wrapping key infrastructure components
+from distutils and setuptools.
 """
 
 import os
 import os.path
 import sys
 import argparse
-import distutils.core
 
 from . import cmaker
 from .command import build, install, clean
 from .exceptions import SKBuildError
+
+try:
+    from setuptools import setup as upstream_setup
+except ImportError:
+    from distutils.core import setup as upstream_setup
 
 
 def move_arg(arg, a, b, newarg=None, f=lambda x: x, concatenate_value=False):
@@ -69,8 +73,8 @@ def parse_args():
 
 
 def setup(*args, **kw):
-    """This function wraps distutils.core.setup() so that we can run cmake, make,
-    CMake build, then proceed as usual with a distutils, appending the
+    """This function wraps setup() so that we can run cmake, make,
+    CMake build, then proceed as usual with setuptools, appending the
     CMake-generated output as necessary.
     """
     sys.argv, cmake_args, make_args = parse_args()
@@ -227,4 +231,4 @@ def setup(*args, **kw):
     cmdclass['clean'] = cmdclass.get('clean', clean.clean)
     kw['cmdclass'] = cmdclass
 
-    return distutils.core.setup(*args, **kw)
+    return upstream_setup(*args, **kw)
