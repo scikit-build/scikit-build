@@ -59,10 +59,9 @@ def parse_args():
                              concatenate_value=True)
     dutils, cmake = move_arg('-G', dutils, cmake)
     dutils, make = move_arg('-j', dutils, make)
-    op = os.path
 
     def absappend(x):
-        return op.join(op.dirname(op.abspath(sys.argv[0])), x)
+        return os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), x)
 
     dutils, dutils = move_arg('--egg-base', dutils, dutils, f=absappend)
 
