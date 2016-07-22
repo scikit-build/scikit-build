@@ -141,11 +141,20 @@ class CMaker(object):
 
         # changes dir to cmake_build and calls cmake's configure step
         # to generate makefile
-        rtn = subprocess.check_call(cmd, cwd=CMAKE_BUILD_DIR)
+        rtn = subprocess.call(cmd, cwd=CMAKE_BUILD_DIR)
         if rtn != 0:
-            raise RuntimeError("Could not successfully configure "
-                               "your project. Please see CMake's "
-                               "output for more information.")
+            raise SKBuildError(
+                "An error occurred while configuring with CMake.\n"
+                "  Command:\n"
+                "    {}\n"
+                "  Source directory:\n"
+                "    {}\n"
+                "  Working directory:\n"
+                "    {}\n"
+                "Please see CMake's output for more information.".format(
+                    self._formatArgsForDisplay(cmd),
+                    os.path.abspath(cwd),
+                    os.path.abspath(CMAKE_BUILD_DIR)))
 
         CMaker.check_for_bad_installs()
 
@@ -364,8 +373,20 @@ class CMaker(object):
                    shlex.split(os.environ.get("SKBUILD_BUILD_OPTIONS", "")))
         )
 
-        rtn = subprocess.check_call(cmd, cwd=CMAKE_BUILD_DIR)
-        return rtn
+        rtn = subprocess.call(cmd, cwd=CMAKE_BUILD_DIR)
+        if rtn != 0:
+            raise SKBuildError(
+                "An error occurred while building with CMake.\n"
+                "  Command:\n"
+                "    {}\n"
+                "  Source directory:\n"
+                "    {}\n"
+                "  Working directory:\n"
+                "    {}\n"
+                "Please see CMake's output for more information.".format(
+                    self._formatArgsForDisplay(cmd),
+                    os.path.abspath(source_dir),
+                    os.path.abspath(CMAKE_BUILD_DIR)))
 
     def install(self):
         """Returns a list of tuples of (install location, file list) to install
@@ -380,3 +401,14 @@ class CMaker(object):
             return [_remove_cwd_prefix(path) for path in manifest]
 
         return []
+
+    @staticmethod
+    def _formatArgsForDisplay(args):
+        """Format a list of arguments appropriately for display. When formatting
+        a command and its arguments, the user should be able to execute the
+        command by copying and pasting the output directly into a shell.
+
+        Currently, the only formatting is naively surrounding each argument with
+        quotation marks.
+        """
+        return ' '.join("\"{}\"".format(arg) for arg in args)
