@@ -1,31 +1,21 @@
 # -*- coding: utf-8 -*-
 
-import inspect
 import os
 import os.path
 import shutil
+import six
 import sys
 
 from contextlib import contextmanager
-from types import FunctionType
 
 from skbuild.cmaker import SKBUILD_DIR
 
-PYTHON2 = (sys.version_info < (3, 0))
-
-# NOTE(opadron): we need to use separate files for the Python 2 and 3 cases
-# because there's no way to write code that executes a file that parses
-# successfully for both versions.
-if PYTHON2:
-    from .exec_2 import execute
-else:
-    from .exec_3 import execute
-
 
 @contextmanager
-def push_dir(dir):
+def push_dir(directory=None):
     old_cwd = os.getcwd()
-    os.chdir(dir)
+    if directory:
+        os.chdir(directory)
     yield
     os.chdir(old_cwd)
 
@@ -38,50 +28,20 @@ def push_argv(argv):
     sys.argv = old_argv
 
 
-def _noop():
-    pass
+def project_setup_py_test(project, setup_args, clear_cache=False):
 
+    def dec(fun):
 
-class project_test():
-    def __init__(self, project):
-        self.project = project
+        @six.wraps(fun)
+        def wrapped(*iargs, **ikwargs):
 
-    def __call__(self, func=_noop):
-        def result(*args, **kwargs):
-            dir = list(self.project)
+            dir = list(wrapped.project)
             dir.insert(0, os.path.dirname(os.path.abspath(__file__)))
             dir = os.path.join(*dir)
 
-            with push_dir(dir):
-                result2 = func(*args, **kwargs)
+            with push_dir(dir), push_argv(["setup.py"] + wrapped.setup_args):
 
-            return result2
-
-        return FunctionType(
-            result.__code__,
-            result.__globals__,
-            func.__name__,
-            result.__defaults__,
-            result.__closure__
-        )
-
-
-class project_setup_py_test():
-    def __init__(self, project, setup_args, clear_cache=False):
-        self.project = project
-        self.setup_args = setup_args
-        self.clear_cache = clear_cache
-
-        f = inspect.currentframe().f_back
-        self.locals = f.f_locals
-        self.globals = f.f_globals
-
-    def __call__(self, func=_noop):
-        @project_test(self.project)
-        def result(*args, **kwargs):
-            argv = ["setup.py"] + self.setup_args
-            with push_argv(argv):
-                if self.clear_cache and os.path.exists(SKBUILD_DIR):
+                if wrapped.clear_cache and os.path.exists(SKBUILD_DIR):
                     shutil.rmtree(SKBUILD_DIR)
 
                 setup_code = None
@@ -89,16 +49,16 @@ class project_setup_py_test():
                     setup_code = compile(fp.read(), "setup.py", mode="exec")
 
                 if setup_code is not None:
-                    execute(setup_code, self.globals, self.locals)
+                    six.exec_(setup_code)
 
-                result2 = func(*args, **kwargs)
+                result2 = fun(*iargs, **ikwargs)
 
             return result2
 
-        return FunctionType(
-            result.__code__,
-            result.__globals__,
-            func.__name__,
-            result.__defaults__,
-            result.__closure__
-        )
+        wrapped.project = project
+        wrapped.setup_args = setup_args
+        wrapped.clear_cache = clear_cache
+
+        return wrapped
+
+    return dec
