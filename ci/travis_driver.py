@@ -55,7 +55,7 @@ class TravisDriver(Driver):
                     "python -c \""
                         "import sys, struct ; "
                         "print(sys.version) ; "
-                        "print('{}-bit'.format(struct.calcsize('P')*8))"
+                        "print('{}-bit'.format(struct.calcsize('P') * 8))"
                     "\"",
                     "pip install "
                         "--user --disable-pip-version-check --user --upgrade "

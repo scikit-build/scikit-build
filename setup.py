@@ -64,3 +64,4 @@ setup(
     tests_require=dev_requirements,
     setup_requires=setup_requires
 )
+

@@ -12,3 +12,4 @@ class bdist_wheel(_bdist_wheel):
         except AttributeError:
             pass
         _bdist_wheel.finalize_options(self)
+

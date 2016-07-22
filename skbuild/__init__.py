@@ -7,3 +7,4 @@ __email__ = 'scikit-build@googlegroups.com'
 __version__ = '0.3.0'
 
 __all__ = ["setup"]
+

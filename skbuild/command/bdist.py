@@ -15,3 +15,4 @@ class bdist(_bdist):
         except AttributeError:
             pass
         _bdist.finalize_options(self)
+

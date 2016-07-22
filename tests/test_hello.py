@@ -23,3 +23,4 @@ def test_hello_builds():
 @project_setup_py_test(("samples", "hello"), ["bdist_wheel"])
 def test_hello_wheel():
     pass
+

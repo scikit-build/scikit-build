@@ -30,4 +30,5 @@ def test_outside_project_root_fails():
         except SystemExit as e:
             failed = isinstance(e.code, SKBuildError)
 
-        assert failed
+    assert failed
+

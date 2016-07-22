@@ -9,3 +9,4 @@ setup(
     packages=['hello'],
     package_dir={'hello': 'hello'},
 )
+

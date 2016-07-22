@@ -15,3 +15,4 @@ class install(_install):
         except AttributeError:
             pass
         _install.finalize_options(self)
+

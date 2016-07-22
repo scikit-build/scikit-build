@@ -72,3 +72,4 @@ def test_generator_cleanup():
     # TODO: this isn't a true unit test.  It is checking that none of the
     # other tests have left a mess.
     assert(not os.path.exists("cmake_test_compile"))
+

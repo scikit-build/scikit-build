@@ -4,3 +4,4 @@ class SKBuildError(RuntimeError):
     project.
     """
     pass
+

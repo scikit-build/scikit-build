@@ -29,3 +29,4 @@ class clean(_clean):
             log.info("removing '%s'", dir_)
             if not self.dry_run:
                 rmtree(dir_)
+

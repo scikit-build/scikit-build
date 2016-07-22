@@ -8,3 +8,4 @@ setup(
     author="The scikit-build team",
     license="MIT",
 )
+

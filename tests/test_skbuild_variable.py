@@ -26,3 +26,4 @@ def test_skbuild_variable_builds():
 @project_setup_py_test(("samples", "fail-unless-skbuild-set"), ["bdist_wheel"])
 def test_skbuild_variable_wheel():
     pass
+

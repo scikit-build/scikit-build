@@ -55,3 +55,4 @@ def test_generator_selection():
         )
 
         assert(get_best_generator() == generator)
+

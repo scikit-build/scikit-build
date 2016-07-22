@@ -77,7 +77,7 @@ class Driver(object):
     def drive_install(self):
         self.log("Python Version:")
         self.log(sys.version)
-        self.log("    {}-bit".format(struct.calcsize("P")*8))
+        self.log("    {}-bit".format(struct.calcsize("P") * 8))
 
         self.check_call([
             "python", "-m", "pip",
@@ -139,3 +139,4 @@ if __name__ == "__main__":
     d = DriverClass()
     with d.env_context():
         getattr(d, stage)()
+
