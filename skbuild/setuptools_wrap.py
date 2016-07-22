@@ -131,12 +131,56 @@ def setup(*args, **kw):
         reverse=True
     ))
 
-    cmkr = cmaker.CMaker()
-    cmkr.configure(cmake_args)
-    cmkr.make(make_args)
+    try:
+        cmkr = cmaker.CMaker()
+        cmkr.configure(cmake_args)
+        cmkr.make(make_args)
+    except SKBuildError as e:
+        import traceback
+        print("Traceback (most recent call last):")
+        traceback.print_tb(sys.exc_info()[2])
+        print()
+        sys.exit(e)
 
+    _classify_files(cmkr.install(), package_data, package_prefixes, py_modules,
+                    scripts, new_scripts, data_files)
+
+    kw['package_data'] = package_data
+    kw['package_dir'] = {
+        package: os.path.join(cmaker.CMAKE_INSTALL_DIR, prefix)
+        for prefix, package in package_prefixes
+    }
+
+    kw['py_modules'] = py_modules
+
+    kw['scripts'] = [
+        os.path.join(cmaker.CMAKE_INSTALL_DIR, script) if mask else script
+        for script, mask in new_scripts.items()
+    ]
+
+    kw['data_files'] = [
+        (parent_dir, list(file_set))
+        for parent_dir, file_set in data_files.items()
+    ]
+
+    # work around https://bugs.python.org/issue1011113
+    # (patches provided, but no updates since 2014)
+    cmdclass = kw.get('cmdclass', {})
+    cmdclass['build'] = cmdclass.get('build', build.build)
+    cmdclass['install'] = cmdclass.get('install', install.install)
+    cmdclass['clean'] = cmdclass.get('clean', clean.clean)
+    cmdclass['bdist'] = cmdclass.get('bdist', bdist.bdist)
+    cmdclass['bdist_wheel'] = cmdclass.get(
+        'bdist_wheel', bdist_wheel.bdist_wheel)
+    kw['cmdclass'] = cmdclass
+
+    return upstream_setup(*args, **kw)
+
+
+def _classify_files(install_paths, package_data, package_prefixes, py_modules,
+                    scripts, new_scripts, data_files):
     install_root = os.path.join(os.getcwd(), cmaker.CMAKE_INSTALL_DIR)
-    for path in cmkr.install():
+    for path in install_paths:
         found_package = False
         found_module = False
         found_script = False
@@ -204,34 +248,3 @@ def setup(*args, **kw):
             data_files[parent_dir] = file_set
         file_set.add(os.path.join(cmaker.CMAKE_INSTALL_DIR, path))
         del parent_dir, file_set
-
-    kw['package_data'] = package_data
-    kw['package_dir'] = {
-        package: os.path.join(cmaker.CMAKE_INSTALL_DIR, prefix)
-        for prefix, package in package_prefixes
-    }
-
-    kw['py_modules'] = py_modules
-
-    kw['scripts'] = [
-        os.path.join(cmaker.CMAKE_INSTALL_DIR, script) if mask else script
-        for script, mask in new_scripts.items()
-    ]
-
-    kw['data_files'] = [
-        (parent_dir, list(file_set))
-        for parent_dir, file_set in data_files.items()
-    ]
-
-    # work around https://bugs.python.org/issue1011113
-    # (patches provided, but no updates since 2014)
-    cmdclass = kw.get('cmdclass', {})
-    cmdclass['build'] = cmdclass.get('build', build.build)
-    cmdclass['install'] = cmdclass.get('install', install.install)
-    cmdclass['clean'] = cmdclass.get('clean', clean.clean)
-    cmdclass['bdist'] = cmdclass.get('bdist', bdist.bdist)
-    cmdclass['bdist_wheel'] = cmdclass.get(
-        'bdist_wheel', bdist_wheel.bdist_wheel)
-    kw['cmdclass'] = cmdclass
-
-    return upstream_setup(*args, **kw)

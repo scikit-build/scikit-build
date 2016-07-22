@@ -9,6 +9,8 @@ import shlex
 import sys
 import sysconfig
 
+from subprocess import CalledProcessError
+
 from .platform_specifics import get_platform
 from .exceptions import SKBuildError
 
@@ -62,10 +64,11 @@ def _touch_init(folder):
 class CMaker(object):
 
     def __init__(self, **defines):
-        if platform.system() != 'Windows':
-            rtn = subprocess.call(['which', 'cmake'])
-            if rtn != 0:
-                sys.exit('CMake is not installed, aborting build.')
+        # verify that CMake is installed
+        try:
+            subprocess.check_call(['cmake', '--version'])
+        except (OSError, CalledProcessError):
+            raise SKBuildError('CMake is not installed, aborting build.')
 
         self.platform = get_platform()
 
@@ -93,8 +96,9 @@ class CMaker(object):
         generator_id = self.platform.get_best_generator(generator_id)
 
         if generator_id is None:
-            sys.exit("Could not get working generator for your system."
-                     "  Aborting build.")
+            raise SKBuildError(
+                "Could not get working generator for your system."
+                "  Aborting build.")
 
         if not os.path.exists(CMAKE_BUILD_DIR):
             os.makedirs(CMAKE_BUILD_DIR)
@@ -137,11 +141,20 @@ class CMaker(object):
 
         # changes dir to cmake_build and calls cmake's configure step
         # to generate makefile
-        rtn = subprocess.check_call(cmd, cwd=CMAKE_BUILD_DIR)
+        rtn = subprocess.call(cmd, cwd=CMAKE_BUILD_DIR)
         if rtn != 0:
-            raise RuntimeError("Could not successfully configure "
-                               "your project. Please see CMake's "
-                               "output for more information.")
+            raise SKBuildError(
+                "An error occurred while configuring with CMake.\n"
+                "  Command:\n"
+                "    {}\n"
+                "  Source directory:\n"
+                "    {}\n"
+                "  Working directory:\n"
+                "    {}\n"
+                "Please see CMake's output for more information.".format(
+                    self._formatArgsForDisplay(cmd),
+                    os.path.abspath(cwd),
+                    os.path.abspath(CMAKE_BUILD_DIR)))
 
         CMaker.check_for_bad_installs()
 
@@ -335,7 +348,6 @@ class CMaker(object):
 
         if bad_installs:
             raise SKBuildError("\n".join((
-                "",
                 "  CMake-installed files must be within the project root.",
                 "    Project Root:",
                 "      " + install_dir,
@@ -349,7 +361,7 @@ class CMaker(object):
         """
         clargs, config = pop_arg('--config', clargs, config)
         if not os.path.exists(CMAKE_BUILD_DIR):
-            raise RuntimeError(("CMake build folder ({}) does not exist. "
+            raise SKBuildError(("CMake build folder ({}) does not exist. "
                                 "Did you forget to run configure before "
                                 "make?").format(CMAKE_BUILD_DIR))
 
@@ -361,8 +373,20 @@ class CMaker(object):
                    shlex.split(os.environ.get("SKBUILD_BUILD_OPTIONS", "")))
         )
 
-        rtn = subprocess.check_call(cmd, cwd=CMAKE_BUILD_DIR)
-        return rtn
+        rtn = subprocess.call(cmd, cwd=CMAKE_BUILD_DIR)
+        if rtn != 0:
+            raise SKBuildError(
+                "An error occurred while building with CMake.\n"
+                "  Command:\n"
+                "    {}\n"
+                "  Source directory:\n"
+                "    {}\n"
+                "  Working directory:\n"
+                "    {}\n"
+                "Please see CMake's output for more information.".format(
+                    self._formatArgsForDisplay(cmd),
+                    os.path.abspath(source_dir),
+                    os.path.abspath(CMAKE_BUILD_DIR)))
 
     def install(self):
         """Returns a list of tuples of (install location, file list) to install
@@ -377,3 +401,14 @@ class CMaker(object):
             return [_remove_cwd_prefix(path) for path in manifest]
 
         return []
+
+    @staticmethod
+    def _formatArgsForDisplay(args):
+        """Format a list of arguments appropriately for display. When formatting
+        a command and its arguments, the user should be able to execute the
+        command by copying and pasting the output directly into a shell.
+
+        Currently, the only formatting is naively surrounding each argument with
+        quotation marks.
+        """
+        return ' '.join("\"{}\"".format(arg) for arg in args)
