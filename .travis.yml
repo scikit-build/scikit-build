@@ -25,7 +25,23 @@ matrix:
 
     - os: osx
       language: generic
+      python: "3.4"
       env:
+        - PYTHONVERSION=3.4.5
+        - EXTRA_TEST_ARGS="--exclude pen2 --exclude tbabel"
+
+    - os: osx
+      language: generic
+      python: "3.3"
+      env:
+        - PYTHONVERSION=3.3.6
+        - EXTRA_TEST_ARGS="--exclude pen2 --exclude tbabel"
+
+    - os: osx
+      language: generic
+      python: "2.7"
+      env:
+        - PYTHONVERSION=2.7.12
         - EXTRA_TEST_ARGS="--exclude pen2 --exclude tbabel"
 
 
@@ -53,9 +69,9 @@ install:
 
 # command to run tests, e.g. python setup.py test
 script:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then flake8 -v; fi
-  - ls /usr/local/bin
-  - export PATH=/usr/local/bin:$PATH; python setup.py test --args="$EXTRA_TEST_ARGS"
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then eval "$(pyenv init -)"; fi
+  - flake8 -v
+  - python setup.py test --args="$EXTRA_TEST_ARGS"
 
 after_success:
   - codecov -X gcov --required --file tests/coverage.xml

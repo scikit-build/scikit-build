@@ -44,6 +44,14 @@ tar xzf "$CMAKE_PACKAGE"
 
 install_cmake $CMAKE_NAME
 
+if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+  brew update
+  brew outdated pyenv || brew upgrade pyenv
+  eval "$(pyenv init -)"
+  pyenv install $PYTHONVERSION
+  pyenv local $PYTHONVERSION
+fi
+
 pip install -r requirements.txt ${PIP_EXTRA_ARGS}
 
 pip install -r requirements-dev.txt ${PIP_EXTRA_ARGS}
