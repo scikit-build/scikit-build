@@ -172,7 +172,7 @@ class CMaker(object):
 
     # NOTE(opadron): The try-excepts raise the cyclomatic complexity, but we
     # need them for this function.
-    @staticmethod  # noqa: C901: Complexity
+    @staticmethod  # noqa: C901
     def get_python_include_dir(python_version):
         # determine python include dir
         python_include_dir = sysconfig.get_config_var('INCLUDEPY')
