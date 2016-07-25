@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.5.0)
 
 project(tower_of_babel)
 
-include(CTest)
 enable_testing()
 
 find_package(PythonInterp REQUIRED)
