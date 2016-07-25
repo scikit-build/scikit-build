@@ -23,6 +23,27 @@ matrix:
       env:
         - EXTRA_TEST_ARGS="--exclude pen2 --exclude tbabel"
 
+    - os: osx
+      language: generic
+      python: "3.4"
+      env:
+        - PYTHONVERSION=3.4.5
+        - EXTRA_TEST_ARGS="--exclude pen2 --exclude tbabel"
+
+    - os: osx
+      language: generic
+      python: "3.3"
+      env:
+        - PYTHONVERSION=3.3.6
+        - EXTRA_TEST_ARGS="--exclude pen2 --exclude tbabel"
+
+    - os: osx
+      language: generic
+      python: "2.7"
+      env:
+        - PYTHONVERSION=2.7.12
+        - EXTRA_TEST_ARGS="--exclude pen2 --exclude tbabel"
+
 
 before_script:
   - "\
@@ -35,21 +56,20 @@ before_script:
       export PYTHONPATH=\"/usr/lib/pymodules/python2.7:$PYTHONPATH\" ; \
     fi"
 
-before_install:
-  - sudo apt-get update
-  - sudo apt-get install gfortran libboost-python-dev python-vtk
-  - "wget --no-check-certificate --progress=dot \
-      \"https://cmake.org/files/v3.5/cmake-3.5.0-Linux-x86_64.tar.gz\""
-  - tar xzf "cmake-3.5.0-Linux-x86_64.tar.gz"
-  - sudo rsync -avz "cmake-3.5.0-Linux-x86_64/" /usr/local
+addons:
+  apt:
+    packages:
+      - gfortran
+      - libboost-python-dev
+      - python-vtk
 
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 install:
-  - pip install -r requirements.txt
-  - pip install -r requirements-dev.txt
+  - ./ci/travis_install.sh
 
 # command to run tests, e.g. python setup.py test
 script:
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then eval "$(pyenv init -)"; fi
   - flake8 -v
   - python setup.py test --args="$EXTRA_TEST_ARGS"
 
