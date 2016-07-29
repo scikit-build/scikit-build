@@ -13,7 +13,7 @@ dependencies:
 
 test:
   override:
-    - python setup.py test --args="--exclude pen2"
+    - python setup.py test --addopts "--ignore=tests/test_pen2.py"
 
   post:
     - codecov -X gcov --required --file tests/coverage.xml

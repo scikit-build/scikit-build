@@ -183,7 +183,7 @@ class Driver(object):
     def drive_test(self):
         extra_test_args = self.env.get("EXTRA_TEST_ARGS", "")
         self.check_call(
-            ["python", "setup.py", "test", "--args", "%s" % extra_test_args])
+            ["python", "setup.py", "test", "--addopts", "%s" % extra_test_args])
 
     def drive_after_test(self):
 
