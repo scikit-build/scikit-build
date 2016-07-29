@@ -8,6 +8,7 @@ Tests for platforms, to verify that CMake correctly does a test compilation.
 """
 
 import os
+import pytest
 
 from skbuild.platform_specifics import get_platform
 
@@ -50,6 +51,7 @@ def test_cxx_compiler():
         platform.cleanup_test()
 
 
+@pytest.mark.fortran
 def test_fortran_compiler():
     generator = platform.get_best_generator(languages=["Fortran"])
     # TODO: this isn't a true unit test.  It depends on the test

@@ -20,9 +20,9 @@ environment:
       PYTHON_ARCH: "32"
       CMAKE_GENERATOR: Visual Studio 9 2008
       RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
-      EXTRA_TEST_ARGS: "--exclude fortran_compiler \
-                        --exclude pen2 \
-                        --exclude tbabel"
+      EXTRA_TEST_ARGS: "-m \"not fortran\" \
+                        --ignore=tests/test_pen2.py \
+                        --ignore=tests/test_tower_of_babel.py"
       SKIP: "0"
       BLOCK: "0"
 
@@ -31,9 +31,9 @@ environment:
       PYTHON_ARCH: "64"
       CMAKE_GENERATOR: Visual Studio 9 2008 Win64
       RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
-      EXTRA_TEST_ARGS: "--exclude fortran_compiler \
-                        --exclude pen2 \
-                        --exclude tbabel"
+      EXTRA_TEST_ARGS: "-m \"not fortran\" \
+                        --ignore=tests/test_pen2.py \
+                        --ignore=tests/test_tower_of_babel.py"
       SKIP: "0"
       BLOCK: "0"
 
@@ -42,9 +42,9 @@ environment:
       PYTHON_ARCH: "32"
       CMAKE_GENERATOR: Visual Studio 14 2015
       RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
-      EXTRA_TEST_ARGS: "--exclude fortran_compiler \
-                        --exclude pen2 \
-                        --exclude tbabel"
+      EXTRA_TEST_ARGS: "-m \"not fortran\" \
+                        --ignore=tests/test_pen2.py \
+                        --ignore=tests/test_tower_of_babel.py"
       SKIP: "0"
       BLOCK: "0"
 
@@ -53,9 +53,9 @@ environment:
       PYTHON_ARCH: "64"
       CMAKE_GENERATOR: Visual Studio 14 2015 Win64
       RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
-      EXTRA_TEST_ARGS: "--exclude fortran_compiler \
-                        --exclude pen2 \
-                        --exclude tbabel"
+      EXTRA_TEST_ARGS: "-m \"not fortran\" \
+                        --ignore=tests/test_pen2.py \
+                        --ignore=tests/test_tower_of_babel.py"
       SKIP: "0"
       BLOCK: "0"
 
@@ -65,9 +65,9 @@ environment:
       PYTHON_ARCH: "64"
       CMAKE_GENERATOR: "MinGW Makefiles"
       RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
-      EXTRA_TEST_ARGS: "--exclude fortran_compiler \
-                        --exclude pen2 \
-                        --exclude tbabel"
+      EXTRA_TEST_ARGS: "-m \"not fortran\" \
+                        --ignore=tests/test_pen2.py \
+                        --ignore=tests/test_tower_of_babel.py"
       SKIP: "1"
       BLOCK: "0"
 
@@ -76,9 +76,9 @@ environment:
       PYTHON_ARCH: "32"
       CMAKE_GENERATOR: "MinGW Makefiles"
       RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
-      EXTRA_TEST_ARGS: "--exclude fortran_compiler \
-                        --exclude pen2 \
-                        --exclude tbabel"
+      EXTRA_TEST_ARGS: "-m \"not fortran\" \
+                        --ignore=tests/test_pen2.py \
+                        --ignore=tests/test_tower_of_babel.py"
       SKIP: "1"
       BLOCK: "0"
 
@@ -88,9 +88,9 @@ environment:
       PYTHON_VERSION: "2.7.x"
       PYTHON_ARCH: "64"
       RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
-      EXTRA_TEST_ARGS: "--exclude fortran_compiler \
-                        --exclude pen2 \
-                        --exclude tbabel"
+      EXTRA_TEST_ARGS: "-m \"not fortran\" \
+                        --ignore=tests/test_pen2.py \
+                        --ignore=tests/test_tower_of_babel.py"
       SKIP: "1"
       BLOCK: "0"
 
@@ -98,9 +98,9 @@ environment:
       PYTHON_VERSION: "3.5.x"
       PYTHON_ARCH: "64"
       RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
-      EXTRA_TEST_ARGS: "--exclude fortran_compiler \
-                        --exclude pen2 \
-                        --exclude tbabel"
+      EXTRA_TEST_ARGS: "-m \"not fortran\" \
+                        --ignore=tests/test_pen2.py \
+                        --ignore=tests/test_tower_of_babel.py"
       SKIP: "1"
       BLOCK: "0"
 
