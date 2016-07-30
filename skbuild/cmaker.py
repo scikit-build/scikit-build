@@ -63,7 +63,7 @@ def _touch_init(folder):
 
 class CMaker(object):
 
-    def __init__(self, **defines):
+    def __init__(self):
         # verify that CMake is installed
         try:
             subprocess.check_call(['cmake', '--version'])
@@ -185,7 +185,6 @@ class CMaker(object):
         )
 
         if not found_python_h:
-            candidate_prefixes = []
 
             # NOTE(opadron): these possible prefixes must be guarded against
             # AttributeErrors and KeyErrors because they each can throw on
