@@ -125,8 +125,6 @@ class TravisDriver(Driver):
                     "pyenv local " + self.py_version,
                     "codecov -X gcov -required --file .\\tests\\coverage.xml"
                     "python setup.py bdist_wheel",
-                    "python setup.py bdist_wininst",
-                    "python setup.py bdist_msi",
                 ))
             )
         else:

@@ -108,8 +108,6 @@ class Driver(object):
 
     def drive_after_test(self):
         self.check_call(["python", "setup.py", "bdist_wheel"])
-        self.check_call(["python", "setup.py", "bdist_wininst"])
-        self.check_call(["python", "setup.py", "bdist_msi"])
 
 if __name__ == "__main__":
     from appveyor_driver import AppveyorDriver
