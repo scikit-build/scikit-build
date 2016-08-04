@@ -20,7 +20,7 @@ class CircleDriver(Driver):
     def drive_after_test(self):
         self.check_call([
             "codecov", "-X", "gcov", "-required",
-            "--file", ".\\tests\\coverage.xml"
+            "--file", "./tests/coverage.xml"
         ])
 
         Driver.drive_after_test(self)

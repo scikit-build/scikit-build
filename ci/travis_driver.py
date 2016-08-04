@@ -124,13 +124,13 @@ class TravisDriver(Driver):
                 "\n".join((
                     "eval \"$( pyenv init - )\"",
                     "pyenv local " + self.py_version,
-                    "codecov -X gcov -required --file .\\tests\\coverage.xml"
+                    "codecov -X gcov -required --file ./tests/coverage.xml"
                     "python setup.py bdist_wheel",
                 ))
             )
         else:
             self.check_call([
                 "codecov", "-X", "gcov", "-required",
-                "--file", ".\\tests\\coverage.xml"
+                "--file", "./tests/coverage.xml"
             ])
             Driver.drive_after_test(self)
