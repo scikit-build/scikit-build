@@ -27,7 +27,7 @@ def pop_arg(arg, a, default=None):
     """Pops an arg(ument) from an argument list a and returns the new list
     and the value of the argument if present and a default otherwise.
     """
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(add_help=False)
     parser.add_argument(arg)
     ns, a = parser.parse_known_args(a)
     ns = tuple(vars(ns).items())
