@@ -73,7 +73,8 @@ class TravisDriver(Driver):
 
         else:
             self.log("Copying", cmake_name, "to /usr/local")
-            self.check_call(["sudo", "rsync", "-avz", cmake_name, "/usr/local"])
+            self.check_call([
+                "sudo", "rsync", "-avz", cmake_name + "/", "/usr/local"])
 
             Driver.drive_install(self)
 
