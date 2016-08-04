@@ -78,59 +78,9 @@ class TravisDriver(Driver):
 
             Driver.drive_install(self)
 
-    def drive_build(self):
-        if self.is_darwin:
-            self.check_call(
-                "\n".join((
-                    "eval \"$( pyenv init - )\"",
-                    "pyenv local " + self.py_version,
-                    "python setup.py build"
-                ))
-            )
-        else:
-            Driver.drive_build(self)
-
-    def drive_style(self):
-        if self.is_darwin:
-            self.check_call(
-                "\n".join((
-                    "eval \"$( pyenv init - )\"",
-                    "pyenv local " + self.py_version,
-                    "python -m flake8 -v"
-                ))
-            )
-        else:
-            Driver.drive_style(self)
-
-    def drive_test(self):
-        if self.is_darwin:
-            addopts = ""
-            if self.extra_test_args:
-                addopts = " --addopts " + self.extra_test_args
-
-            self.check_call(
-                "\n".join((
-                    "eval \"$( pyenv init - )\"",
-                    "pyenv local " + self.py_version,
-                    "python setup.py test" + addopts
-                ))
-            )
-        else:
-            Driver.drive_test(self)
-
     def drive_after_test(self):
-        if self.is_darwin:
-            self.check_call(
-                "\n".join((
-                    "eval \"$( pyenv init - )\"",
-                    "pyenv local " + self.py_version,
-                    "codecov -X gcov -required --file ./tests/coverage.xml"
-                    "python setup.py bdist_wheel",
-                ))
-            )
-        else:
-            self.check_call([
-                "codecov", "-X", "gcov", "-required",
-                "--file", "./tests/coverage.xml"
-            ])
-            Driver.drive_after_test(self)
+        self.check_call([
+            "codecov", "-X", "gcov", "-required",
+            "--file", "./tests/coverage.xml"
+        ])
+        Driver.drive_after_test(self)

@@ -10,30 +10,39 @@ matrix:
   include:
     - os: linux
       python: "3.4"
+      env:
+        - "RUN="
 
     - os: linux
       python: "3.3"
+      env:
+        - "RUN="
 
     - os: linux
       python: "2.7"
+      env:
+        - "RUN="
 
     - os: osx
       language: generic
       python: "3.4"
       env:
-        - PYTHONVERSION=3.4.5
+        - "PYTHONVERSION=3.4.5"
+        - "RUN=bash ./ci/travis/run.bash"
 
     - os: osx
       language: generic
       python: "3.3"
       env:
-        - PYTHONVERSION=3.3.6
+        - "PYTHONVERSION=3.3.6"
+        - "RUN=bash ./ci/travis/run.bash"
 
     - os: osx
       language: generic
       python: "2.7"
       env:
-        - PYTHONVERSION=2.7.12
+        - "PYTHONVERSION=2.7.12"
+        - "RUN=bash ./ci/travis/run.bash"
 
   allow_failures:
     - os: linux
@@ -48,11 +57,11 @@ addons:
 
 install:
   - python ci/driver.py travis install
-  - python ci/driver.py travis style
+  - $RUN python ci/driver.py travis style
 
 script:
-  - python ci/driver.py travis build
-  - python ci/driver.py travis test
+  - $RUN python ci/driver.py travis build
+  - $RUN python ci/driver.py travis test
 
 after_success:
-  - python ci/driver.py travis after_test
+  - $RUN python ci/driver.py travis after_test
