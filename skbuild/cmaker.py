@@ -365,7 +365,7 @@ class CMaker(object):
                                 "make?").format(CMAKE_BUILD_DIR))
 
         cmd = ["cmake", "--build", source_dir,
-               "--target", "install", "--config", config]
+               "--target", "install", "--config", config, "--"]
         cmd.extend(clargs)
         cmd.extend(
             filter(bool,
