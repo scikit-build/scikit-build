@@ -102,6 +102,9 @@ class AppveyorDriver(Driver):
     def drive_after_test(self):
         Driver.drive_after_test(self)
 
+        self.check_call(["python", "setup.py", "bdist_wininst"])
+        self.check_call(["python", "setup.py", "bdist_msi"])
+
         codecov = os.path.join(self.env["PYTHONSCRIPTS"], "codecov.exe")
         self.check_call([
             codecov, "-X", "gcov", "--required",
