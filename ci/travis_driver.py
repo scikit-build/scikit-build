@@ -78,9 +78,61 @@ class TravisDriver(Driver):
 
             Driver.drive_install(self)
 
+    def drive_build(self):
+        if self.is_darwin:
+            self.check_call(
+                "\n".join((
+                    "eval \"$( pyenv init - )\"",
+                    "python setup.py build"
+                )),
+                shell=True
+            )
+        else:
+            Driver.drive_build(self)
+
+    def drive_style(self):
+        if self.is_darwin:
+            self.check_call(
+                "\n".join((
+                    "eval \"$( pyenv init - )\"",
+                    "python -m flake8 -v"
+                )),
+                shell=True
+            )
+        else:
+            Driver.drive_style(self)
+
+    def drive_test(self):
+        if self.is_darwin:
+            extra_test_args = self.env.get("EXTRA_TEST_ARGS", "")
+            addopts = ""
+            if extra_test_args:
+                addopts = " --addopts " + extra_test_args
+
+            self.check_call(
+                "\n".join((
+                    "eval \"$( pyenv init - )\"",
+                    "python setup.py test" + addopts
+                )),
+                shell=True
+            )
+        else:
+            Driver.drive_test(self)
+
     def drive_after_test(self):
-        self.check_call([
-            "codecov", "-X", "gcov", "-required",
-            "--file", "./tests/coverage.xml"
-        ])
-        Driver.drive_after_test(self)
+        if self.is_darwin:
+            self.check_call(
+                "\n".join((
+                    "eval \"$( pyenv init - )\"",
+                    "codecov -X gcov -required --file ./tests/coverage.xml",
+                    "python setup.py bdist_wheel"
+                )),
+                shell=True
+            )
+        else:
+            self.check_call([
+                "codecov", "-X", "gcov", "-required",
+                "--file", "./tests/coverage.xml"
+            ])
+            Driver.drive_after_test(self)
+
