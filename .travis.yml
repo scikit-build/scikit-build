@@ -57,6 +57,7 @@ addons:
 
 install:
   - python ci/driver.py travis install
+  - echo "RUN: $RUN"
   - $RUN python ci/driver.py travis style
 
 script:

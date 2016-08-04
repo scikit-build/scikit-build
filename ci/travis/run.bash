@@ -7,6 +7,5 @@ if [ "$TRAVIS_OS_NAME" = "osx" ]; then
   pyenv local $PYTHONVERSION
 fi
 
-echo "$@"
-"$@"
+eval "$@"
 
