@@ -3,8 +3,8 @@ from driver import Driver
 
 
 class TravisDriver(Driver):
-    def __init__(self):
-        Driver.__init__(self)
+    def load_env(self, *args, **kwargs):
+        Driver.load_env(self, *args, **kwargs)
         self.is_darwin = (self.env.get("TRAVIS_OS_NAME") == "osx")
         self.py_version = self.env.get("PYTHONVERSION")
         self.extra_test_args = self.env.get("EXTRA_TEST_ARGS", "")
