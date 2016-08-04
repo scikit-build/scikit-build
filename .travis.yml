@@ -11,38 +11,35 @@ matrix:
     - os: linux
       python: "3.4"
       env:
-        - "RUN="
+        - RUN=
 
     - os: linux
       python: "3.3"
       env:
-        - "RUN="
+        - RUN=
 
     - os: linux
-      python: "2.7"
+      python: 2.7
       env:
-        - "RUN="
+        - RUN=
 
     - os: osx
       language: generic
       python: "3.4"
       env:
-        - "PYTHONVERSION=3.4.5"
-        - "RUN=bash ./ci/travis/run.bash"
+        - PYTHONVERSION=3.4.5 RUN=./ci/travis/run.bash
 
     - os: osx
       language: generic
       python: "3.3"
       env:
-        - "PYTHONVERSION=3.3.6"
-        - "RUN=bash ./ci/travis/run.bash"
+        - PYTHONVERSION=3.3.6 RUN=./ci/travis/run.bash
 
     - os: osx
       language: generic
       python: "2.7"
       env:
-        - "PYTHONVERSION=2.7.12"
-        - "RUN=bash ./ci/travis/run.bash"
+        - PYTHONVERSION=2.7.12 RUN=./ci/travis/run.bash
 
   allow_failures:
     - os: linux
@@ -57,7 +54,6 @@ addons:
 
 install:
   - python ci/driver.py travis install
-  - echo "RUN: $RUN"
   - $RUN python ci/driver.py travis style
 
 script:
