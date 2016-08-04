@@ -1,6 +1,7 @@
 
 from driver import Driver
 
+
 class TravisDriver(Driver):
     def __init__(self):
         Driver.__init__(self)
@@ -52,14 +53,18 @@ class TravisDriver(Driver):
                     "pyenv install " + self.py_version,
                     "pyenv local " + self.py_version,
                     "echo 'Python Version:'",
-                    "python -c \""
+                    (
+                        "python -c \""
                         "import sys, struct ; "
                         "print(sys.version) ; "
                         "print('{}-bit'.format(struct.calcsize('P') * 8))"
-                    "\"",
-                    "pip install "
+                        "\""
+                    ),
+                    (
+                        "pip install "
                         "--user --disable-pip-version-check --user --upgrade "
-                        "pip",
+                        "pip"
+                    ),
                     "pip install --user -r requirements.txt",
                     "pip install --user -r requirements-dev.txt",
                 )),
