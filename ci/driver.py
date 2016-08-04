@@ -99,8 +99,12 @@ class Driver(object):
 
     def drive_test(self):
         extra_test_args = self.env.get("EXTRA_TEST_ARGS", "")
+        addopts = []
+        if extra_test_args:
+            addopts.extend(["--addopts", extra_test_args])
+
         self.check_call(
-            ["python", "setup.py", "test", "--addopts", "%s" % extra_test_args])
+            ["python", "setup.py", "test"] + addopts)
 
     def drive_after_test(self):
         self.check_call(["python", "setup.py", "bdist_wheel"])

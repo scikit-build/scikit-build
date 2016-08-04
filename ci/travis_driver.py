@@ -103,11 +103,15 @@ class TravisDriver(Driver):
 
     def drive_test(self):
         if self.is_darwin:
+            addopts = ""
+            if self.extra_test_args:
+                addopts = " --addopts " + self.extra_test_args
+
             self.check_call(
                 "\n".join((
                     "eval \"$( pyenv init - )\"",
                     "pyenv local " + self.py_version,
-                    "python setup.py test --addopts " + self.extra_test_args
+                    "python setup.py test" + addopts
                 ))
             )
         else:
