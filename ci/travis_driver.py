@@ -83,9 +83,9 @@ class TravisDriver(Driver):
             self.check_call(
                 "\n".join((
                     "eval \"$( pyenv init - )\"",
-                    "pyenv local " + self.py_version,
                     "python setup.py build"
-                ))
+                )),
+                shell=True
             )
         else:
             Driver.drive_build(self)
@@ -95,25 +95,26 @@ class TravisDriver(Driver):
             self.check_call(
                 "\n".join((
                     "eval \"$( pyenv init - )\"",
-                    "pyenv local " + self.py_version,
                     "python -m flake8 -v"
-                ))
+                )),
+                shell=True
             )
         else:
             Driver.drive_style(self)
 
     def drive_test(self):
         if self.is_darwin:
+            extra_test_args = self.env.get("EXTRA_TEST_ARGS", "")
             addopts = ""
-            if self.extra_test_args:
-                addopts = " --addopts " + self.extra_test_args
+            if extra_test_args:
+                addopts = " --addopts " + extra_test_args
 
             self.check_call(
                 "\n".join((
                     "eval \"$( pyenv init - )\"",
-                    "pyenv local " + self.py_version,
                     "python setup.py test" + addopts
-                ))
+                )),
+                shell=True
             )
         else:
             Driver.drive_test(self)
