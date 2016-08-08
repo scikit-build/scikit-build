@@ -48,6 +48,7 @@ def parse_skbuild_args(args, cmake_args, build_tool_args):
         cmake_args.extend(['-G', ns.generator])
 
     # Construct build tool argument list
+    build_tool_args.extend(['--config', ns.build_type])
     if ns.jobs is not None:
         build_tool_args.extend(['-j', str(ns.jobs)])
 
