@@ -44,6 +44,10 @@ matrix:
         - PYTHONVERSION=2.7.12
         - EXTRA_TEST_ARGS="--ignore=tests/test_pen2.py --ignore=tests/test_tower_of_babel.py"
 
+  allow_failures:
+    - os: linux
+      python: "3.3"
+
 
 before_script:
   - "\
