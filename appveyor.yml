@@ -78,7 +78,7 @@ environment:
       RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
       EXTRA_TEST_ARGS: "-m \"not fortran\""
       SKIP: "0"
-      BLOCK: "1"
+      BLOCK: "0"
 
     - PYTHON: "C:\\Python35-x64"
       PYTHON_VERSION: "3.5.x"
