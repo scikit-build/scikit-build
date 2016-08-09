@@ -3,6 +3,6 @@ coverage==4.2
 cython==0.24.1
 flake8==3.0.4
 pytest==2.9.2
-pytest-cov==2.3.0
+pytest-cov==2.3.1
 pytest-runner==2.9
 six==1.10.0
