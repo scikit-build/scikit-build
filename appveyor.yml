@@ -122,7 +122,6 @@ init:
 
 install:
   - cmd: "%PYTHON%\\python.exe .\\ci\\driver.py appveyor install"
-  - cmd: "%RUN% %PYTHON%\\python.exe .\\ci\\driver.py appveyor style"
 
 build_script:
   - cmd: "%RUN% %PYTHON%\\python.exe .\\ci\\driver.py appveyor build"
