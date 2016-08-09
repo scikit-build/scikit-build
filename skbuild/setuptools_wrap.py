@@ -8,7 +8,7 @@ import sys
 import argparse
 
 from . import cmaker
-from .command import build, install, clean, bdist, bdist_wheel
+from .command import build, install, clean, bdist, bdist_wheel, egg_info
 from .exceptions import SKBuildError
 
 try:
@@ -17,24 +17,42 @@ except ImportError:
     from distutils.core import setup as upstream_setup
 
 
-def move_arg(arg, a, b, newarg=None, f=lambda x: x, concatenate_value=False):
-    """Moves an argument from a list to b list, possibly giving it a new name
-    and/or performing a transformation on the value. Returns a and b. The arg
-    need not be present in a.
+def create_skbuild_argparser():
+    """Create and return a scikit-build argument parser.
     """
-    newarg = newarg or arg
-    parser = argparse.ArgumentParser()
-    parser.add_argument(arg)
-    ns, a = parser.parse_known_args(a)
-    ns = tuple(vars(ns).items())
-    if len(ns) > 0 and ns[0][1] is not None:
-        key, value = ns[0]
-        newargs = [newarg, value]
-        if concatenate_value:
-            b.append("=".join(newargs))
-        elif value is not None:
-            b.extend(newargs)
-    return a, b
+    parser = argparse.ArgumentParser(add_help=False)
+    parser.add_argument(
+        '--build-type', default='Release', metavar='',
+        help='specify the CMake build type (e.g. Debug or Release)')
+    parser.add_argument(
+        '-G', '--generator', metavar='',
+        help='specify the CMake build system generator')
+    parser.add_argument(
+        '-j', metavar='N', type=int, dest='jobs',
+        help='allow N build jobs at once')
+    return parser
+
+
+def parse_skbuild_args(args, cmake_args, build_tool_args):
+    """
+    Parse arguments in the scikit-build argument set. Convert specified
+    arguments to proper format and append to cmake_args and build_tool_args.
+    Returns remaining arguments.
+    """
+    parser = create_skbuild_argparser()
+    ns, remaining_args = parser.parse_known_args(args)
+
+    # Construct CMake argument list
+    cmake_args.append('-DCMAKE_BUILD_TYPE:STRING=' + ns.build_type)
+    if ns.generator is not None:
+        cmake_args.extend(['-G', ns.generator])
+
+    # Construct build tool argument list
+    build_tool_args.extend(['--config', ns.build_type])
+    if ns.jobs is not None:
+        build_tool_args.extend(['-j', str(ns.jobs)])
+
+    return remaining_args
 
 
 def parse_args():
@@ -43,31 +61,20 @@ def parse_args():
     make = []
     argsets = [dutils, cmake, make]
     i = 0
+    separator = '--'
 
-    argv = list(sys.argv)
-    try:
-        argv.index("--build-type")
-    except ValueError:
-        argv.append("--build-type")
-        argv.append("Release")
-
-    for arg in argv:
-        if arg == '--':
+    for arg in sys.argv:
+        if arg == separator:
             i += 1
+            if i >= len(argsets):
+                sys.exit(
+                    "ERROR: Too many \"{}\" separators provided "
+                    "(expected at most {}).".format(separator,
+                                                    len(argsets) - 1))
         else:
             argsets[i].append(arg)
 
-    # handle argument transformations
-    dutils, cmake = move_arg('--build-type', dutils, cmake,
-                             newarg='-DCMAKE_BUILD_TYPE:STRING',
-                             concatenate_value=True)
-    dutils, cmake = move_arg('-G', dutils, cmake)
-    dutils, make = move_arg('-j', dutils, make)
-
-    def absappend(x):
-        return os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), x)
-
-    dutils, dutils = move_arg('--egg-base', dutils, dutils, f=absappend)
+    dutils = parse_skbuild_args(dutils, cmake, make)
 
     return dutils, cmake, make
 
@@ -78,6 +85,30 @@ def setup(*args, **kw):
     CMake-generated output as necessary.
     """
     sys.argv, cmake_args, make_args = parse_args()
+
+    # Skip running CMake when user requests help
+    help_parser = argparse.ArgumentParser(add_help=False)
+    help_parser.add_argument('-h', '--help', action='store_true')
+    help_parser.add_argument('--help-commands', action='store_true')
+    ns = help_parser.parse_known_args()[0]
+    if ns.help_commands:
+        return upstream_setup(*args, **kw)
+    if ns.help:
+        # Prepend scikit-build help. Generate option descriptions using
+        # argparse.
+        skbuild_parser = create_skbuild_argparser()
+        arg_descriptions = [line
+                            for line in skbuild_parser.format_help().split('\n')
+                            if line.startswith('  ')]
+        print('scikit-build options:')
+        print('\n'.join(arg_descriptions))
+        print()
+        print('Arguments following a "--" are passed directly to CMake '
+              '(e.g. -DMY_VAR:BOOL=TRUE).')
+        print('Arguments following a second "--" are passed directly to the '
+              'build tool.')
+        print()
+        return upstream_setup(*args, **kw)
 
     packages = kw.get('packages', [])
     package_dir = kw.get('package_dir', {})
@@ -172,6 +203,7 @@ def setup(*args, **kw):
     cmdclass['bdist'] = cmdclass.get('bdist', bdist.bdist)
     cmdclass['bdist_wheel'] = cmdclass.get(
         'bdist_wheel', bdist_wheel.bdist_wheel)
+    cmdclass['egg_info'] = cmdclass.get('egg_info', egg_info.egg_info)
     kw['cmdclass'] = cmdclass
 
     return upstream_setup(*args, **kw)
