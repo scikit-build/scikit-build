@@ -47,3 +47,4 @@ class WindowsPlatform(abstract.CMakePlatform):
         # string IDs seem to be just the vs_base.
 
         self.default_generators.insert(0, vs_base)
+

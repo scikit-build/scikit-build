@@ -280,3 +280,4 @@ def _classify_files(install_paths, package_data, package_prefixes, py_modules,
             data_files[parent_dir] = file_set
         file_set.add(os.path.join(cmaker.CMAKE_INSTALL_DIR, path))
         del parent_dir, file_set
+

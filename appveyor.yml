@@ -20,9 +20,7 @@ environment:
       PYTHON_ARCH: "32"
       CMAKE_GENERATOR: Visual Studio 9 2008
       RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
-      EXTRA_TEST_ARGS: "-m \"not fortran\" \
-                        --ignore=tests/test_pen2.py \
-                        --ignore=tests/test_tower_of_babel.py"
+      EXTRA_TEST_ARGS: "-m \"not fortran\""
       SKIP: "0"
       BLOCK: "0"
 
@@ -31,9 +29,7 @@ environment:
       PYTHON_ARCH: "64"
       CMAKE_GENERATOR: Visual Studio 9 2008 Win64
       RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
-      EXTRA_TEST_ARGS: "-m \"not fortran\" \
-                        --ignore=tests/test_pen2.py \
-                        --ignore=tests/test_tower_of_babel.py"
+      EXTRA_TEST_ARGS: "-m \"not fortran\""
       SKIP: "0"
       BLOCK: "0"
 
@@ -42,9 +38,7 @@ environment:
       PYTHON_ARCH: "32"
       CMAKE_GENERATOR: Visual Studio 14 2015
       RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
-      EXTRA_TEST_ARGS: "-m \"not fortran\" \
-                        --ignore=tests/test_pen2.py \
-                        --ignore=tests/test_tower_of_babel.py"
+      EXTRA_TEST_ARGS: "-m \"not fortran\""
       SKIP: "0"
       BLOCK: "0"
 
@@ -53,9 +47,7 @@ environment:
       PYTHON_ARCH: "64"
       CMAKE_GENERATOR: Visual Studio 14 2015 Win64
       RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
-      EXTRA_TEST_ARGS: "-m \"not fortran\" \
-                        --ignore=tests/test_pen2.py \
-                        --ignore=tests/test_tower_of_babel.py"
+      EXTRA_TEST_ARGS: "-m \"not fortran\""
       SKIP: "0"
       BLOCK: "0"
 
@@ -65,9 +57,7 @@ environment:
       PYTHON_ARCH: "64"
       CMAKE_GENERATOR: "MinGW Makefiles"
       RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
-      EXTRA_TEST_ARGS: "-m \"not fortran\" \
-                        --ignore=tests/test_pen2.py \
-                        --ignore=tests/test_tower_of_babel.py"
+      EXTRA_TEST_ARGS: "-m \"not fortran\""
       SKIP: "1"
       BLOCK: "0"
 
@@ -76,9 +66,7 @@ environment:
       PYTHON_ARCH: "32"
       CMAKE_GENERATOR: "MinGW Makefiles"
       RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
-      EXTRA_TEST_ARGS: "-m \"not fortran\" \
-                        --ignore=tests/test_pen2.py \
-                        --ignore=tests/test_tower_of_babel.py"
+      EXTRA_TEST_ARGS: "-m \"not fortran\""
       SKIP: "1"
       BLOCK: "0"
 
@@ -88,9 +76,7 @@ environment:
       PYTHON_VERSION: "2.7.x"
       PYTHON_ARCH: "64"
       RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
-      EXTRA_TEST_ARGS: "-m \"not fortran\" \
-                        --ignore=tests/test_pen2.py \
-                        --ignore=tests/test_tower_of_babel.py"
+      EXTRA_TEST_ARGS: "-m \"not fortran\""
       SKIP: "1"
       BLOCK: "0"
 
@@ -98,9 +84,7 @@ environment:
       PYTHON_VERSION: "3.5.x"
       PYTHON_ARCH: "64"
       RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
-      EXTRA_TEST_ARGS: "-m \"not fortran\" \
-                        --ignore=tests/test_pen2.py \
-                        --ignore=tests/test_tower_of_babel.py"
+      EXTRA_TEST_ARGS: "-m \"not fortran\""
       SKIP: "1"
       BLOCK: "0"
 
@@ -137,16 +121,16 @@ init:
     }"
 
 install:
-  - cmd: "%PYTHON%\\python.exe .\\ci\\appveyor\\driver.py install"
+  - cmd: "%PYTHON%\\python.exe .\\ci\\driver.py appveyor install"
 
 build_script:
-  - cmd: "%RUN% %PYTHON%\\python.exe .\\ci\\appveyor\\driver.py build"
+  - cmd: "%RUN% %PYTHON%\\python.exe .\\ci\\driver.py appveyor build"
 
 test_script:
-  - cmd: "%RUN% %PYTHON%\\python.exe .\\ci\\appveyor\\driver.py test"
+  - cmd: "%RUN% %PYTHON%\\python.exe .\\ci\\driver.py appveyor test"
 
 after_test:
-  - cmd: "%RUN% %PYTHON%\\python.exe .\\ci\\appveyor\\driver.py after_test"
+  - cmd: "%RUN% %PYTHON%\\python.exe .\\ci\\driver.py appveyor after_test"
 
 on_finish:
   - ps: "\

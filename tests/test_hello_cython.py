@@ -23,3 +23,4 @@ def test_hello_cython_builds():
 @project_setup_py_test(("samples", "hello-cython"), ["bdist_wheel"])
 def test_hello_cython_wheel():
     pass
+

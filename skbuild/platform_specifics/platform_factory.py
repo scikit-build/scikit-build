@@ -20,3 +20,4 @@ def get_platform():
     else:
         raise RuntimeError("Unsupported platform: {:s}. Please contact "
                            "the scikit-build team.".format(this_platform))
+
