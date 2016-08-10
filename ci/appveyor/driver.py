@@ -189,7 +189,7 @@ class Driver(object):
 
         script_dir = os.path.join(self.env["PYTHON"], "Scripts")
         self.check_call([
-            os.path.join(script_dir, "codecov.exe"), "-X", "gcov", "-required",
+            os.path.join(script_dir, "codecov.exe"), "-X", "gcov", "--required",
             "--file", ".\\tests\\coverage.xml"])
 
         self.check_call(["python", "setup.py", "bdist_wheel"])
