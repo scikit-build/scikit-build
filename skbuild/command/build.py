@@ -4,14 +4,8 @@ try:
 except ImportError:
     from distutils.command.build import build as _build
 
-from .. import cmaker
+from . import new_style, set_build_base_mixin
 
 
-class build(_build):
-    def finalize_options(self):
-        try:
-            if not self.build_base or self.build_base == 'build':
-                self.build_base = cmaker.SETUPTOOLS_INSTALL_DIR
-        except AttributeError:
-            pass
-        _build.finalize_options(self)
+class build(set_build_base_mixin, new_style(_build)):
+    pass

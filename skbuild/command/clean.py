@@ -8,21 +8,13 @@ from shutil import rmtree
 
 from distutils import log
 
+from . import new_style, set_build_base_mixin
 from .. import cmaker
 
 
-class clean(_clean):
-    def finalize_options(self):
-        try:
-            if not self.build_base or self.build_base == 'build':
-                self.build_base = cmaker.SETUPTOOLS_INSTALL_DIR
-        except AttributeError:
-            pass
-
-        _clean.finalize_options(self)
-
+class clean(set_build_base_mixin, new_style(_clean)):
     def run(self):
-        _clean.run(self)
+        super(clean, self).run()
         for dir_ in (cmaker.CMAKE_INSTALL_DIR,
                      cmaker.CMAKE_BUILD_DIR,
                      cmaker.SKBUILD_DIR):
