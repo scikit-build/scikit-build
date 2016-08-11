@@ -11,10 +11,7 @@ from . import cmaker
 from .command import build, install, clean, bdist, bdist_wheel, egg_info
 from .exceptions import SKBuildError
 
-try:
-    from setuptools import setup as upstream_setup
-except ImportError:
-    from distutils.core import setup as upstream_setup
+from setuptools import setup as upstream_setup
 
 
 def create_skbuild_argparser():
@@ -153,25 +150,70 @@ def setup(*args, **kw):
     # the data files on the bottom would have been mapped to
     # "top.not_a_subpackage" instead of "top", proper -- had such a package been
     # specified.
-    package_prefixes = list(sorted(
-        (
-            (package_dir[package].replace('.', '/'), package)
-            for package in packages
-        ),
-        key=lambda tup: len(tup[0]),
-        reverse=True
-    ))
+    def get_package_prefix(package, package_dir):
+        """Return the directory, relative to the top of the source
+           distribution, where package 'package' should be found
+           (at least according to the 'package_dir' option, if any).
+
+        Modified from Python 2.7.12/3.5.2
+        distutils.command.build_py:get_package_dir"""
+
+        path = package.split('.')
+
+        if not package_dir:
+            if path:
+                return os.path.join(*path)
+            else:
+                return ''
+        else:
+            tail = []
+            while path:
+                try:
+                    pdir = package_dir['.'.join(path)]
+                except KeyError:
+                    tail.insert(0, path[-1])
+                    del path[-1]
+                else:
+                    tail.insert(0, pdir)
+                    return os.path.join(*tail)
+            else:
+                # Oops, got all the way through 'path' without finding a
+                # match in package_dir.  If package_dir defines a directory
+                # for the root (nameless) package, then fallback on it;
+                # otherwise, we might as well have not consulted
+                # package_dir at all, as we just use the directory implied
+                # by 'tail' (which should be the same as the original value
+                # of 'path' at this point).
+                pdir = package_dir.get('')
+                if pdir is not None:
+                    tail.insert(0, pdir)
+
+                if tail:
+                    return os.path.join(*tail)
+                else:
+                    return ''
+
+    package_prefixes = []
+    for package in packages:
+        prefix = (get_package_prefix(package, package_dir), package)
+        package_prefixes.append(prefix)
+    # Add the root (nameless) package
+    prefix = (get_package_prefix('', package_dir), '')
+    package_prefixes.append(prefix)
+    package_prefixes = sorted(package_prefixes,
+                              key=lambda tup: len(tup[0]),
+                              reverse=True)
 
     try:
         cmkr = cmaker.CMaker()
         cmkr.configure(cmake_args)
         cmkr.make(make_args)
-    except SKBuildError as e:
+    except SKBuildError as error:
         import traceback
         print("Traceback (most recent call last):")
         traceback.print_tb(sys.exc_info()[2])
         print()
-        sys.exit(e)
+        sys.exit(error)
 
     _classify_files(cmkr.install(), package_data, package_prefixes, py_modules,
                     scripts, new_scripts, data_files)
@@ -179,7 +221,7 @@ def setup(*args, **kw):
     kw['package_data'] = package_data
     kw['package_dir'] = {
         package: os.path.join(cmaker.CMAKE_INSTALL_DIR, prefix)
-        for prefix, package in package_prefixes
+        for package, prefix in package_dir.items()
     }
 
     kw['py_modules'] = py_modules
@@ -226,7 +268,7 @@ def _classify_files(install_paths, package_data, package_prefixes, py_modules,
                 "    Project Root  : {}\n"
                 "    Violating File: {}\n").format(install_root, test_path))
 
-        # peel off the 'skbuild' prefix
+            # peel off the 'skbuild' prefix
         path = os.path.relpath(path, cmaker.CMAKE_INSTALL_DIR)
 
         # check to see if path is part of a package
