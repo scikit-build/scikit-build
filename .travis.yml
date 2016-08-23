@@ -14,7 +14,7 @@ matrix:
         - RUN=
 
     - os: linux
-      python: "3.3"
+      python: "3.3.5"
       env:
         - RUN=
 
@@ -40,10 +40,6 @@ matrix:
       python: "2.7"
       env:
         - PYTHONVERSION=2.7.12 RUN=./ci/travis/run.bash
-
-  allow_failures:
-    - os: linux
-      python: "3.3"
 
 addons:
   apt:
