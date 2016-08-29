@@ -13,8 +13,10 @@ from .exceptions import SKBuildError
 
 try:
     from setuptools import setup as upstream_setup
+    from setuptools.dist import Distribution as upstream_Distribution
 except ImportError:
     from distutils.core import setup as upstream_setup
+    from distutils.dist import Distribution as upstream_Distribution
 
 
 def create_skbuild_argparser():
@@ -205,6 +207,15 @@ def setup(*args, **kw):
         'bdist_wheel', bdist_wheel.bdist_wheel)
     cmdclass['egg_info'] = cmdclass.get('egg_info', egg_info.egg_info)
     kw['cmdclass'] = cmdclass
+
+    # Adapted from espdev/ITKPythonInstaller/setup.py.in
+    class BinaryDistribution(upstream_Distribution):
+        def is_pure(self):
+            return False
+
+        def has_ext_modules(self):
+            return True
+    kw['distclass'] = BinaryDistribution
 
     return upstream_setup(*args, **kw)
 

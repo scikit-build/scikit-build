@@ -41,8 +41,12 @@ def project_setup_py_test(project, setup_args, clear_cache=False):
 
             with push_dir(dir), push_argv(["setup.py"] + wrapped.setup_args):
 
-                if wrapped.clear_cache and os.path.exists(SKBUILD_DIR):
-                    shutil.rmtree(SKBUILD_DIR)
+                if wrapped.clear_cache:
+                    # XXX We assume dist_dir is not customized
+                    dest_dir = 'dist'
+                    for dir_to_remove in [SKBUILD_DIR, dest_dir]:
+                        if os.path.exists(dir_to_remove):
+                            shutil.rmtree(dir_to_remove)
 
                 setup_code = None
                 with open("setup.py", "r") as fp:

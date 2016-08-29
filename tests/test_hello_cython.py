@@ -7,6 +7,8 @@
 Tries to build and test the `hello-cython` sample project.
 """
 
+import glob
+
 from . import project_setup_py_test
 
 
@@ -22,4 +24,6 @@ def test_hello_cython_builds():
 
 @project_setup_py_test(("samples", "hello-cython"), ["bdist_wheel"])
 def test_hello_cython_wheel():
-    pass
+    whls = glob.glob('dist/*.whl')
+    assert len(whls) == 1
+    assert not whls[0].endswith('-none-any.whl')
