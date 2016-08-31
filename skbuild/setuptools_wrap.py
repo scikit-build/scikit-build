@@ -8,7 +8,7 @@ import sys
 import argparse
 
 from . import cmaker
-from .command import build, install, clean, bdist, bdist_wheel, egg_info
+from .command import build, install, clean, bdist, bdist_wheel, egg_info, sdist
 from .exceptions import SKBuildError
 
 try:
@@ -202,6 +202,7 @@ def setup(*args, **kw):
     cmdclass['build'] = cmdclass.get('build', build.build)
     cmdclass['install'] = cmdclass.get('install', install.install)
     cmdclass['clean'] = cmdclass.get('clean', clean.clean)
+    cmdclass['sdist'] = cmdclass.get('sdist', sdist.sdist)
     cmdclass['bdist'] = cmdclass.get('bdist', bdist.bdist)
     cmdclass['bdist_wheel'] = cmdclass.get(
         'bdist_wheel', bdist_wheel.bdist_wheel)

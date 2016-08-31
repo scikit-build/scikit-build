@@ -21,6 +21,10 @@ def test_hello_cython_builds():
 # def test_hello_cython_works():
 #     pass
 
+@project_setup_py_test(("samples", "hello-cython"), ["sdist"])
+def test_hello_cython_sdist():
+    sdists = glob.glob('dist/*.tar.gz')
+    assert sdists
 
 @project_setup_py_test(("samples", "hello-cython"), ["bdist_wheel"])
 def test_hello_cython_wheel():
