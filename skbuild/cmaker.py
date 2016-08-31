@@ -1,4 +1,5 @@
 import argparse
+import glob
 import itertools
 import os
 import os.path
@@ -388,14 +389,17 @@ class CMaker(object):
                     os.path.abspath(CMAKE_BUILD_DIR)))
 
     def install(self):
-        """Returns a list of tuples of (install location, file list) to install
-        via setuptools that is compatible with the data_files keyword argument.
+        """Returns a list of file paths to install via setuptools that is
+        compatible with the data_files keyword argument.
         """
-        return self._parse_manifest()
+        return self._parse_manifests()
 
-    def _parse_manifest(self):
-        install_manifest_path = os.path.join(CMAKE_BUILD_DIR,
-                                             "install_manifest.txt")
+    def _parse_manifests(self):
+        paths = \
+            glob.glob(os.path.join(CMAKE_BUILD_DIR, "install_manifest*.txt"))
+        return [self._parse_manifest(path) for path in paths][0]
+
+    def _parse_manifest(self, install_manifest_path):
         with open(install_manifest_path, "r") as manifest:
             return [_remove_cwd_prefix(path) for path in manifest]
 
