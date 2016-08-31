@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import glob
+
+
 """test_hello
 ----------------------------------
 
@@ -22,4 +25,6 @@ def test_hello_builds():
 
 @project_setup_py_test(("samples", "hello"), ["bdist_wheel"])
 def test_hello_wheel():
-    pass
+    whls = glob.glob('dist/*.whl')
+    assert len(whls) == 1
+    assert not whls[0].endswith('-none-any.whl')
