@@ -11,6 +11,7 @@ from ..cmaker import SKBUILD_DIR
 
 SKBUILD_MARKER_FILE = os.path.join(SKBUILD_DIR, "_skbuild_MANIFEST")
 
+
 class egg_info(set_build_base_mixin, new_style(_egg_info)):
     def run(self):
         # If neither a MANIFEST, nor a a MANIFEST.in file is provided, and we
@@ -28,7 +29,7 @@ class egg_info(set_build_base_mixin, new_style(_egg_info)):
             not os.path.exists('MANIFEST.in')
 
             # otherwise, we check to see that there is no MANIFEST, ...
-            or not os.path.exists('MANIFEST') # ... or ...
+            or not os.path.exists('MANIFEST')  # ... or ...
 
             # ... (if there is one,) that we created it
             or os.path.exists(SKBUILD_MARKER_FILE)
@@ -53,7 +54,7 @@ class egg_info(set_build_base_mixin, new_style(_egg_info)):
 
                 raise
 
-            with open(SKBUILD_MARKER_FILE, 'w') as file: # touch
+            with open(SKBUILD_MARKER_FILE, 'w') as file:  # touch
                 pass
 
         super(egg_info, self).run()

@@ -28,6 +28,7 @@ def test_hello_sdist():
     sdists = glob.glob('dist/*.tar.gz')
     assert sdists
 
+
 @project_setup_py_test(("samples", "hello"), ["bdist_wheel"])
 def test_hello_wheel():
     whls = glob.glob('dist/*.whl')
