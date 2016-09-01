@@ -164,4 +164,4 @@ notifications:
       [Build {{&projectName}} {{buildVersion}} {{status}}]({{buildUrl}})
       (commit {{commitUrl}} by @{{&commitAuthorUsername}})
 
-shallow_clone: true
+shallow_clone: false
