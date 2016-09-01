@@ -104,12 +104,12 @@ def setup(*args, **kw):
                             if line.startswith('  ')]
         print('scikit-build options:')
         print('\n'.join(arg_descriptions))
-        print()
+        print('')
         print('Arguments following a "--" are passed directly to CMake '
               '(e.g. -DMY_VAR:BOOL=TRUE).')
         print('Arguments following a second "--" are passed directly to the '
               'build tool.')
-        print()
+        print('')
         return upstream_setup(*args, **kw)
 
     packages = kw.get('packages', [])
