@@ -97,14 +97,6 @@ class AppveyorDriver(Driver):
 
         self.env_prepend("PATH", "C:\\cmake\bin")
 
-        # restore git repo information (needed for skbuild source dists)
-        repo_url = "git://github.com/{}".format(self.env["APPVEYOR_REPO_NAME"])
-        commit_hash = self.env["APPVEYOR_REPO_COMMIT"]
-        self.check_call(["git", "init"])
-        self.check_call(["git", "remote", "add", "origin", repo_url])
-        self.check_call(["git", "fetch", "--all", "--prune"])
-        self.check_call(["git", "reset", "--hard", commit_hash])
-
         Driver.drive_install(self)
 
     def drive_after_test(self):
