@@ -45,9 +45,10 @@ class egg_info(set_build_base_mixin, new_style(_egg_info)):
             except subprocess.CalledProcessError:
                 sys.stderr.write(
                     '\n\n'
-                    'scikit-build tried to generate a MANIFEST '
-                    'file, but could not because the files to include could '
-                    'not be inferred.\n\n'
+                    'Since scikit-build could not find MANIFEST.in or '
+                    'MANIFEST, it tried to generate a MANIFEST file '
+                    'automatically, but could not because it could not '
+                    'determine which source files to include.\n\n'
                     'The command used was "git ls-tree --name-only -r HEAD"\n'
                     '\n\n'
                 )
