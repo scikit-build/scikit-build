@@ -37,7 +37,7 @@ class egg_info(set_build_base_mixin, new_style(_egg_info)):
 
         if do_generate:
             try:
-                with open('MANIFEST', 'w') as file:
+                with open('MANIFEST', 'wb') as file:
                     file.write(
                         subprocess.check_output(
                             ['git', 'ls-tree', '--name-only', '-r', 'HEAD'])

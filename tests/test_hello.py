@@ -25,8 +25,9 @@ def test_hello_builds():
 
 @project_setup_py_test(("samples", "hello"), ["sdist"])
 def test_hello_sdist():
-    sdists = glob.glob('dist/*.tar.gz')
-    assert sdists
+    sdists_tar = glob.glob('dist/*.tar.gz')
+    sdists_zip = glob.glob('dist/*.zip')
+    assert sdists_tar or sdists_zip
 
 
 @project_setup_py_test(("samples", "hello"), ["bdist_wheel"])
