@@ -88,12 +88,12 @@ def setup(*args, **kw):
     """
     sys.argv, cmake_args, make_args = parse_args()
 
-    # Skip running CMake when user requests help
+    # Skip running CMake when user requests help or no argument is passed
     help_parser = argparse.ArgumentParser(add_help=False)
     help_parser.add_argument('-h', '--help', action='store_true')
     help_parser.add_argument('--help-commands', action='store_true')
     ns = help_parser.parse_known_args()[0]
-    if ns.help_commands:
+    if ns.help_commands or len(sys.argv) == 1:
         return upstream_setup(*args, **kw)
     if ns.help:
         # Prepend scikit-build help. Generate option descriptions using

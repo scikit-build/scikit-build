@@ -7,6 +7,8 @@
 Tests for various command line functionality.
 """
 
+import os
+
 from . import project_setup_py_test, push_dir
 
 
@@ -22,7 +24,8 @@ def test_help(capsys):
 def test_no_command():
     with push_dir():
 
-        @project_setup_py_test(("samples", "hello"), [""])
+        @project_setup_py_test(("samples", "hello"), [],
+                               clear_cache=True)
         def run():
             pass
 
@@ -30,9 +33,10 @@ def test_no_command():
         try:
             run()
         except SystemExit as e:
-            failed = e.args[0].startswith('invalid command name')
+            failed = 'error: no commands supplied' in e.args[0]
 
         assert failed
+        assert not os.path.exists('_skbuild')
 
 
 def test_too_many_separators():
