@@ -24,10 +24,10 @@ lib64
 pip-log.txt
 
 # Unit test / coverage reports
+.cache
 .coverage
 .tox
 coverage.xml
-nosetests.xml
 htmlcov
 
 # Translations
