@@ -49,3 +49,12 @@ def test_too_many_separators():
             failed = e.args[0].startswith('ERROR: Too many')
 
         assert failed
+
+
+@project_setup_py_test(("samples", "hello"),
+                       ["build", "--", "-DMY_CMAKE_VARIABLE:BOOL=1"],
+                       clear_cache=True)
+def test_cmake_args(capfd):
+    out, err = capfd.readouterr()
+    assert "Manually-specified variables were not used by the project" in err
+    assert "MY_CMAKE_VARIABLE" in err
