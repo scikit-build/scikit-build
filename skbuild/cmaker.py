@@ -54,14 +54,6 @@ def _remove_cwd_prefix(path):
     return result
 
 
-def _touch_init(folder):
-    init = os.path.join(folder, "__init__.py")
-    if not os.path.exists(init):
-        with open(init, "w") as f:
-            f.write("\n")
-    return _remove_cwd_prefix(init)
-
-
 class CMaker(object):
 
     def __init__(self):
