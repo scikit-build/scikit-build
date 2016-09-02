@@ -24,10 +24,10 @@ lib64
 pip-log.txt
 
 # Unit test / coverage reports
+.cache
 .coverage
 .tox
 coverage.xml
-nosetests.xml
 htmlcov
 
 # Translations
@@ -51,4 +51,5 @@ docs/_build
 
 # build output (testing)
 skbuild/cmake_test_compile/*
+tests/samples/*/cmake_test_compile/*
 
