@@ -20,12 +20,8 @@ try:
 except ImportError:
     from io import StringIO
 
-try:
-    from setuptools import setup as upstream_setup
-    from setuptools.dist import Distribution as upstream_Distribution
-except ImportError:
-    from distutils.core import setup as upstream_setup
-    from distutils.dist import Distribution as upstream_Distribution
+from setuptools import setup as upstream_setup
+from setuptools.dist import Distribution as upstream_Distribution
 
 
 def create_skbuild_argparser():
