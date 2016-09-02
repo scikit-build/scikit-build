@@ -10,12 +10,21 @@ import glob
 Tries to build and test the `hello` sample project.
 """
 
-from . import project_setup_py_test
+from . import project_setup_py_test, push_dir
 
 
-@project_setup_py_test(("samples", "hello"), ["build"], clear_cache=True)
 def test_hello_builds():
-    pass
+    with push_dir():
+
+        @project_setup_py_test(("samples", "hello"), ["build"],
+                               clear_cache=True)
+        def run():
+            pass
+
+        # Check that a project can be build twice in a row
+        # See issue scikit-build#120
+        run()
+        run()
 
 
 # @project_setup_py_test(("samples", "hello"), ["test"])

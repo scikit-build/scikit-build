@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import distutils.dir_util
 import os
 import os.path
 import shutil
@@ -34,6 +35,10 @@ def project_setup_py_test(project, setup_args, clear_cache=False):
 
         @six.wraps(fun)
         def wrapped(*iargs, **ikwargs):
+
+            # Clear distutils.dir_util.mkpath() cache
+            # See issue scikit-build#120
+            distutils.dir_util._path_created = {}
 
             dir = list(wrapped.project)
             dir.insert(0, os.path.dirname(os.path.abspath(__file__)))
