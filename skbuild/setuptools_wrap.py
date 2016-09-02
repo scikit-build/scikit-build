@@ -107,11 +107,12 @@ def _parse_setuptools_arguments(setup_attrs):
     """This function instantiates a Distribution object and
     parses the command line arguments.
 
-    It returns a tuple (display_only, help_commands) where
+    It returns a tuple (display_only, help_commands, commands) where
      - display_only is a boolean indicating if an argument like '--help',
      '--help-commands' or '--author' was passed.
-     - help_commands is a boolean indicating it argument '--help-commands'
+     - help_commands is a boolean indicating if argument '--help-commands'
      was passed.
+     - commands contains the list of commands that were passed.
 
     Otherwise it raises DistutilsArgError exception if there are
     any error on the command-line, and it raises DistutilsGetoptError
@@ -138,7 +139,7 @@ def _parse_setuptools_arguments(setup_attrs):
         result = dist.parse_command_line()
         display_only = not result
 
-    return display_only, dist.help_commands
+    return display_only, dist.help_commands, dist.commands
 
 
 def setup(*args, **kw):
@@ -148,17 +149,33 @@ def setup(*args, **kw):
     """
     sys.argv, cmake_args, make_args = parse_args()
 
+    # work around https://bugs.python.org/issue1011113
+    # (patches provided, but no updates since 2014)
+    cmdclass = kw.get('cmdclass', {})
+    cmdclass['build'] = cmdclass.get('build', build.build)
+    cmdclass['install'] = cmdclass.get('install', install.install)
+    cmdclass['clean'] = cmdclass.get('clean', clean.clean)
+    cmdclass['sdist'] = cmdclass.get('sdist', sdist.sdist)
+    cmdclass['bdist'] = cmdclass.get('bdist', bdist.bdist)
+    cmdclass['bdist_wheel'] = cmdclass.get(
+        'bdist_wheel', bdist_wheel.bdist_wheel)
+    cmdclass['egg_info'] = cmdclass.get('egg_info', egg_info.egg_info)
+    kw['cmdclass'] = cmdclass
+
     # Skip running CMake in the following cases:
     # * no command-line arguments or invalid ones are provided
     # * "display only" argument like '--help', '--help-commands'
     #   or '--author' are provided
     display_only = has_invalid_arguments = help_commands = False
+    commands = []
     try:
-        (display_only, help_commands) = _parse_setuptools_arguments(kw)
+        (display_only, help_commands, commands) = \
+            _parse_setuptools_arguments(kw)
     except (DistutilsArgError, DistutilsGetoptError):
         has_invalid_arguments = True
 
-    if display_only or has_invalid_arguments:
+    skip_cmake = (display_only or has_invalid_arguments or 'clean' in commands)
+    if skip_cmake:
         if help_commands:
             # Prepend scikit-build help. Generate option descriptions using
             # argparse.
@@ -260,19 +277,6 @@ def setup(*args, **kw):
         (parent_dir, list(file_set))
         for parent_dir, file_set in data_files.items()
     ]
-
-    # work around https://bugs.python.org/issue1011113
-    # (patches provided, but no updates since 2014)
-    cmdclass = kw.get('cmdclass', {})
-    cmdclass['build'] = cmdclass.get('build', build.build)
-    cmdclass['install'] = cmdclass.get('install', install.install)
-    cmdclass['clean'] = cmdclass.get('clean', clean.clean)
-    cmdclass['sdist'] = cmdclass.get('sdist', sdist.sdist)
-    cmdclass['bdist'] = cmdclass.get('bdist', bdist.bdist)
-    cmdclass['bdist_wheel'] = cmdclass.get(
-        'bdist_wheel', bdist_wheel.bdist_wheel)
-    cmdclass['egg_info'] = cmdclass.get('egg_info', egg_info.egg_info)
-    kw['cmdclass'] = cmdclass
 
     # Adapted from espdev/ITKPythonInstaller/setup.py.in
     class BinaryDistribution(upstream_Distribution):

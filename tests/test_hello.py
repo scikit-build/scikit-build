@@ -2,6 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import glob
+import os
+
+from skbuild.cmaker import SKBUILD_DIR
 
 
 """test_hello
@@ -44,3 +47,35 @@ def test_hello_wheel():
     whls = glob.glob('dist/*.whl')
     assert len(whls) == 1
     assert not whls[0].endswith('-none-any.whl')
+
+
+def test_hello_clean(capfd):
+    with push_dir():
+
+        skbuild_dir = os.path.join("tests", "samples", "hello", SKBUILD_DIR)
+
+        @project_setup_py_test(("samples", "hello"), ["build"],
+                               clear_cache=True)
+        def run_build():
+            pass
+
+        run_build()
+
+        assert os.path.exists(skbuild_dir)
+
+        # XXX Since using capfd.disabled() context manager prevents
+        # the output from being captured atfer it exits, we display
+        # a separator allowing to differentiate the build and clean output.
+        print("<<-->>")
+
+        @project_setup_py_test(("samples", "hello"), ["clean"])
+        def run_clean():
+            pass
+
+        run_clean()
+
+        assert not os.path.exists(skbuild_dir)
+
+        build_out, clean_out = capfd.readouterr()[0].split('<<-->>')
+        assert 'Build files have been written to' in build_out
+        assert 'Build files have been written to' not in clean_out
