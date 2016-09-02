@@ -15,10 +15,28 @@ from . import project_setup_py_test, push_dir
 @project_setup_py_test(("samples", "hello"), ["--help"])
 def test_help(capsys):
     out, err = capsys.readouterr()
-    assert "scikit-build options" in out
-    assert "--build-type" in out
+    assert "scikit-build options" not in out
     assert "Global options:" in out
     assert "usage:" in out
+
+
+@project_setup_py_test(("samples", "hello"), ["--help-commands"])
+def test_help_commands(capsys):
+    out, err = capsys.readouterr()
+    assert "scikit-build options" in out
+    assert "--build-type" in out
+    assert "Global options:" not in out
+    assert "usage:" in out
+
+
+@project_setup_py_test(("samples", "hello"), ["--author", "--name"])
+def test_metadata_display(capsys):
+    out, err = capsys.readouterr()
+    assert "scikit-build options" not in out
+    assert "Global options:" not in out
+    assert "usage:" not in out
+    assert "The scikit-build team" == out.splitlines()[0]
+    assert "hello" == out.splitlines()[1]
 
 
 def test_no_command():

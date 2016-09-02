@@ -107,9 +107,11 @@ def _parse_setuptools_arguments(setup_attrs):
     """This function instantiates a Distribution object and
     parses the command line arguments.
 
-    It returns a tuple (display_only,) where display_only
-    is a boolean indicating if an argument like '--help', '--help-commands'
-    or '--author' was passed.
+    It returns a tuple (display_only, help_commands) where
+     - display_only is a boolean indicating if an argument like '--help',
+     '--help-commands' or '--author' was passed.
+     - help_commands is a boolean indicating it argument '--help-commands'
+     was passed.
 
     Otherwise it raises DistutilsArgError exception if there are
     any error on the command-line, and it raises DistutilsGetoptError
@@ -136,7 +138,7 @@ def _parse_setuptools_arguments(setup_attrs):
         result = dist.parse_command_line()
         display_only = not result
 
-    return display_only,
+    return display_only, dist.help_commands
 
 
 def setup(*args, **kw):
@@ -150,27 +152,29 @@ def setup(*args, **kw):
     # * no command-line arguments or invalid ones are provided
     # * "display only" argument like '--help', '--help-commands'
     #   or '--author' are provided
-    display_only = has_invalid_arguments = False
+    display_only = has_invalid_arguments = help_commands = False
     try:
-        (display_only,) = _parse_setuptools_arguments(kw)
+        (display_only, help_commands) = _parse_setuptools_arguments(kw)
     except (DistutilsArgError, DistutilsGetoptError):
         has_invalid_arguments = True
 
     if display_only or has_invalid_arguments:
-        # Prepend scikit-build help. Generate option descriptions using
-        # argparse.
-        skbuild_parser = create_skbuild_argparser()
-        arg_descriptions = [line
-                            for line in skbuild_parser.format_help().split('\n')
-                            if line.startswith('  ')]
-        print('scikit-build options:')
-        print('\n'.join(arg_descriptions))
-        print('')
-        print('Arguments following a "--" are passed directly to CMake '
-              '(e.g. -DMY_VAR:BOOL=TRUE).')
-        print('Arguments following a second "--" are passed directly to the '
-              'build tool.')
-        print('')
+        if help_commands:
+            # Prepend scikit-build help. Generate option descriptions using
+            # argparse.
+            skbuild_parser = create_skbuild_argparser()
+            arg_descriptions = [
+                line for line in skbuild_parser.format_help().split('\n')
+                if line.startswith('  ')
+                ]
+            print('scikit-build options:')
+            print('\n'.join(arg_descriptions))
+            print('')
+            print('Arguments following a "--" are passed directly to CMake '
+                  '(e.g. -DMY_VAR:BOOL=TRUE).')
+            print('Arguments following a second "--" are passed directly to '
+                  ' the build tool.')
+            print('')
         return upstream_setup(*args, **kw)
 
     packages = kw.get('packages', [])
