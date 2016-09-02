@@ -3,6 +3,7 @@
 
 import glob
 import os
+import pytest
 
 from skbuild.cmaker import SKBUILD_DIR
 
@@ -49,8 +50,11 @@ def test_hello_wheel():
     assert not whls[0].endswith('-none-any.whl')
 
 
-def test_hello_clean(capfd):
+@pytest.mark.parametrize("dry_run", ['with-dry-run', 'without-dry-run'])
+def test_hello_clean(dry_run, capfd):
     with push_dir():
+
+        dry_run = dry_run == 'with-dry-run'
 
         skbuild_dir = os.path.join("tests", "samples", "hello", SKBUILD_DIR)
 
@@ -68,13 +72,20 @@ def test_hello_clean(capfd):
         # a separator allowing to differentiate the build and clean output.
         print("<<-->>")
 
-        @project_setup_py_test(("samples", "hello"), ["clean"])
+        clean_args = ["clean"]
+        if dry_run:
+            clean_args.append("--dry-run")
+
+        @project_setup_py_test(("samples", "hello"), clean_args)
         def run_clean():
             pass
 
         run_clean()
 
-        assert not os.path.exists(skbuild_dir)
+        if not dry_run:
+            assert not os.path.exists(skbuild_dir)
+        else:
+            assert os.path.exists(skbuild_dir)
 
         build_out, clean_out = capfd.readouterr()[0].split('<<-->>')
         assert 'Build files have been written to' in build_out
