@@ -7,9 +7,18 @@ import os.path
 import sys
 import argparse
 
+from contextlib import contextmanager
+from distutils.errors import DistutilsGetoptError, DistutilsArgError
+
 from . import cmaker
 from .command import build, install, clean, bdist, bdist_wheel, egg_info, sdist
 from .exceptions import SKBuildError
+
+# XXX If 'six' becomes a dependency, use 'six.StringIO' instead.
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 
 try:
     from setuptools import setup as upstream_setup
@@ -81,6 +90,55 @@ def parse_args():
     return dutils, cmake, make
 
 
+@contextmanager
+def _capture_output():
+    oldout, olderr = sys.stdout, sys.stderr
+    try:
+        out = [StringIO(), StringIO()]
+        sys.stdout, sys.stderr = out
+        yield out
+    finally:
+        sys.stdout, sys.stderr = oldout, olderr
+        out[0] = out[0].getvalue()
+        out[1] = out[1].getvalue()
+
+
+def _parse_setuptools_arguments(setup_attrs):
+    """This function instantiates a Distribution object and
+    parses the command line arguments.
+
+    It returns a tuple (display_only,) where display_only
+    is a boolean indicating if an argument like '--help', '--help-commands'
+    or '--author' was passed.
+
+    Otherwise it raises DistutilsArgError exception if there are
+    any error on the command-line, and it raises DistutilsGetoptError
+    if there any error in the command 'options' attribute.
+
+    The code has been adapted from the setup() function available
+    in distutils/core.py.
+    """
+    setup_attrs = dict(setup_attrs)
+
+    setup_attrs['script_name'] = os.path.basename(sys.argv[0])
+
+    dist = upstream_Distribution(setup_attrs)
+
+    # Find and parse the config file(s): they will override options from
+    # the setup script, but be overridden by the command line.
+    dist.parse_config_files()
+
+    # Parse the command line and override config files; any
+    # command-line errors are the end user's fault, so turn them into
+    # SystemExit to suppress tracebacks.
+
+    with _capture_output():
+        result = dist.parse_command_line()
+        display_only = not result
+
+    return display_only,
+
+
 def setup(*args, **kw):
     """This function wraps setup() so that we can run cmake, make,
     CMake build, then proceed as usual with setuptools, appending the
@@ -88,14 +146,17 @@ def setup(*args, **kw):
     """
     sys.argv, cmake_args, make_args = parse_args()
 
-    # Skip running CMake when user requests help or no argument is passed
-    help_parser = argparse.ArgumentParser(add_help=False)
-    help_parser.add_argument('-h', '--help', action='store_true')
-    help_parser.add_argument('--help-commands', action='store_true')
-    ns = help_parser.parse_known_args()[0]
-    if ns.help_commands or len(sys.argv) == 1:
-        return upstream_setup(*args, **kw)
-    if ns.help:
+    # Skip running CMake in the following cases:
+    # * no command-line arguments or invalid ones are provided
+    # * "display only" argument like '--help', '--help-commands'
+    #   or '--author' are provided
+    display_only = has_invalid_arguments = False
+    try:
+        (display_only,) = _parse_setuptools_arguments(kw)
+    except (DistutilsArgError, DistutilsGetoptError):
+        has_invalid_arguments = True
+
+    if display_only or has_invalid_arguments:
         # Prepend scikit-build help. Generate option descriptions using
         # argparse.
         skbuild_parser = create_skbuild_argparser()

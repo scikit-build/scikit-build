@@ -39,6 +39,25 @@ def test_no_command():
         assert not os.path.exists('_skbuild')
 
 
+def test_invalid_command():
+
+    with push_dir():
+
+        @project_setup_py_test(("samples", "hello"), ["unknown"],
+                               clear_cache=True)
+        def run():
+            pass
+
+        failed = False
+        try:
+            run()
+        except SystemExit as e:
+            failed = 'error: invalid command' in e.args[0]
+
+        assert failed
+        assert not os.path.exists('_skbuild')
+
+
 def test_too_many_separators():
     with push_dir():
 
