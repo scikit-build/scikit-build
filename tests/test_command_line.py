@@ -7,22 +7,43 @@
 Tests for various command line functionality.
 """
 
+import os
+
 from . import project_setup_py_test, push_dir
 
 
 @project_setup_py_test(("samples", "hello"), ["--help"])
 def test_help(capsys):
     out, err = capsys.readouterr()
-    assert "scikit-build options" in out
-    assert "--build-type" in out
+    assert "scikit-build options" not in out
     assert "Global options:" in out
     assert "usage:" in out
+
+
+@project_setup_py_test(("samples", "hello"), ["--help-commands"])
+def test_help_commands(capsys):
+    out, err = capsys.readouterr()
+    assert "scikit-build options" in out
+    assert "--build-type" in out
+    assert "Global options:" not in out
+    assert "usage:" in out
+
+
+@project_setup_py_test(("samples", "hello"), ["--author", "--name"])
+def test_metadata_display(capsys):
+    out, err = capsys.readouterr()
+    assert "scikit-build options" not in out
+    assert "Global options:" not in out
+    assert "usage:" not in out
+    assert "The scikit-build team" == out.splitlines()[0]
+    assert "hello" == out.splitlines()[1]
 
 
 def test_no_command():
     with push_dir():
 
-        @project_setup_py_test(("samples", "hello"), [""])
+        @project_setup_py_test(("samples", "hello"), [],
+                               clear_cache=True)
         def run():
             pass
 
@@ -30,9 +51,29 @@ def test_no_command():
         try:
             run()
         except SystemExit as e:
-            failed = e.args[0].startswith('invalid command name')
+            failed = 'error: no commands supplied' in e.args[0]
 
         assert failed
+        assert not os.path.exists('_skbuild')
+
+
+def test_invalid_command():
+
+    with push_dir():
+
+        @project_setup_py_test(("samples", "hello"), ["unknown"],
+                               clear_cache=True)
+        def run():
+            pass
+
+        failed = False
+        try:
+            run()
+        except SystemExit as e:
+            failed = 'error: invalid command' in e.args[0]
+
+        assert failed
+        assert not os.path.exists('_skbuild')
 
 
 def test_too_many_separators():
@@ -49,3 +90,12 @@ def test_too_many_separators():
             failed = e.args[0].startswith('ERROR: Too many')
 
         assert failed
+
+
+@project_setup_py_test(("samples", "hello"),
+                       ["build", "--", "-DMY_CMAKE_VARIABLE:BOOL=1"],
+                       clear_cache=True)
+def test_cmake_args(capfd):
+    out, err = capfd.readouterr()
+    assert "Manually-specified variables were not used by the project" in err
+    assert "MY_CMAKE_VARIABLE" in err
