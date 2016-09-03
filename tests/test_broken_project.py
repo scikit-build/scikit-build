@@ -14,12 +14,12 @@ from skbuild.exceptions import SKBuildError
 from . import project_setup_py_test, push_dir
 
 
-def test_cmakelists_with_fatalerror_fails():
+def test_cmakelists_with_fatalerror_fails(capfd):
 
     with push_dir():
 
         @project_setup_py_test(("samples", "fail-with-fatal-error-cmakelists"),
-                               ["install"],
+                               ["build"],
                                clear_cache=True)
         def should_fail():
             pass
@@ -32,13 +32,16 @@ def test_cmakelists_with_fatalerror_fails():
 
     assert failed
 
+    _, err = capfd.readouterr()
+    assert "Invalid CMakeLists.txt" in err
 
-def test_cmakelists_with_syntaxerror_fails():
+
+def test_cmakelists_with_syntaxerror_fails(capfd):
 
     with push_dir():
 
         @project_setup_py_test(("samples", "fail-with-syntax-error-cmakelists"),
-                               ["install"],
+                               ["build"],
                                clear_cache=True)
         def should_fail():
             pass
@@ -51,13 +54,16 @@ def test_cmakelists_with_syntaxerror_fails():
 
     assert failed
 
+    _, err = capfd.readouterr()
+    assert "Parse error.  Function missing ending \")\"" in err
 
-def test_hello_with_compileerror_fails():
+
+def test_hello_with_compileerror_fails(capfd):
 
     with push_dir():
 
         @project_setup_py_test(("samples", "fail-hello-with-compile-error"),
-                               ["install"],
+                               ["build"],
                                clear_cache=True)
         def should_fail():
             pass
@@ -69,3 +75,6 @@ def test_hello_with_compileerror_fails():
             failed = isinstance(e.code, SKBuildError)
 
     assert failed
+
+    out, err = capfd.readouterr()
+    assert "_hello.cxx" in out or "_hello.cxx" in err
