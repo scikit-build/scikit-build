@@ -9,6 +9,10 @@ attempt fails with a SystemExit exception that has an SKBuildError exception as
 its value.
 """
 
+import pytest
+
+from subprocess import CalledProcessError
+
 from skbuild.exceptions import SKBuildError
 
 from . import project_setup_py_test, push_dir
@@ -78,3 +82,33 @@ def test_hello_with_compileerror_fails(capfd):
 
     out, err = capfd.readouterr()
     assert "_hello.cxx" in out or "_hello.cxx" in err
+
+
+@pytest.mark.parametrize("exception", [CalledProcessError, OSError])
+def test_invalid_cmake(exception, mocker, capfd):
+
+    exceptions = {
+        OSError: OSError('Unkown error'),
+        CalledProcessError: CalledProcessError(['cmake', '--version'], 1)
+    }
+
+    mocker.patch('subprocess.check_call',
+                 side_effect=exceptions[exception])
+
+    with push_dir():
+
+        @project_setup_py_test(("samples", "hello"), ["build"],
+                               clear_cache=True)
+        def should_fail():
+            pass
+
+        failed = False
+        try:
+            should_fail()
+        except SystemExit as e:
+            failed = isinstance(e.code, SKBuildError)
+
+    assert failed
+
+    _, err = capfd.readouterr()
+    assert "Problem with the CMake installation, aborting build." in err

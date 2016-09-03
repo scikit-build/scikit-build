@@ -250,7 +250,7 @@ def setup(*args, **kw):
         import traceback
         print("Traceback (most recent call last):")
         traceback.print_tb(sys.exc_info()[2])
-        print()
+        print('')
         sys.exit(e)
 
     _classify_files(cmkr.install(), package_data, package_prefixes, py_modules,
