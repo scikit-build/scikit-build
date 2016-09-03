@@ -72,3 +72,18 @@ def test_generator_cleanup():
     # TODO: this isn't a true unit test.  It is checking that none of the
     # other tests have left a mess.
     assert(not os.path.exists("cmake_test_compile"))
+
+
+def test_unsupported_platform(mocker):
+    mocker.patch('platform.system', return_value='bogus')
+
+    failed = False
+    message = ""
+    try:
+        get_platform()
+    except RuntimeError as e:
+        failed = True
+        message = str(e)
+
+    assert failed
+    assert "Unsupported platform: bogus." in message
