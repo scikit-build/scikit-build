@@ -74,6 +74,20 @@ def test_generator_cleanup():
     assert(not os.path.exists("cmake_test_compile"))
 
 
+@pytest.mark.parametrize("supported_platform",
+                         ['darwin', 'freebsd', 'linux', 'windows'])
+def test_known_platform(supported_platform, mocker):
+    mocker.patch('platform.system', return_value=supported_platform)
+    platforms = {
+        'freebsd': 'BSD',
+        'linux': 'Linux',
+        'darwin': 'OSX',
+        'windows': 'Windows'
+    }
+    expected_platform_classname = "%sPlatform" % platforms[supported_platform]
+    assert get_platform().__class__.__name__ == expected_platform_classname
+
+
 def test_unsupported_platform(mocker):
     mocker.patch('platform.system', return_value='bogus')
 
