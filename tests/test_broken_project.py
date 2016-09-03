@@ -29,15 +29,18 @@ def test_cmakelists_with_fatalerror_fails(capfd):
             pass
 
         failed = False
+        message = ""
         try:
             should_fail()
         except SystemExit as e:
             failed = isinstance(e.code, SKBuildError)
+            message = str(e)
 
     assert failed
 
     _, err = capfd.readouterr()
     assert "Invalid CMakeLists.txt" in err
+    assert "An error occurred while configuring with CMake." in message
 
 
 def test_cmakelists_with_syntaxerror_fails(capfd):
@@ -51,15 +54,18 @@ def test_cmakelists_with_syntaxerror_fails(capfd):
             pass
 
         failed = False
+        message = ""
         try:
             should_fail()
         except SystemExit as e:
             failed = isinstance(e.code, SKBuildError)
+            message = str(e)
 
     assert failed
 
     _, err = capfd.readouterr()
     assert "Parse error.  Function missing ending \")\"" in err
+    assert "An error occurred while configuring with CMake." in message
 
 
 def test_hello_with_compileerror_fails(capfd):
@@ -73,19 +79,22 @@ def test_hello_with_compileerror_fails(capfd):
             pass
 
         failed = False
+        message = ""
         try:
             should_fail()
         except SystemExit as e:
             failed = isinstance(e.code, SKBuildError)
+            message = str(e)
 
     assert failed
 
     out, err = capfd.readouterr()
     assert "_hello.cxx" in out or "_hello.cxx" in err
+    assert "An error occurred while building with CMake." in message
 
 
 @pytest.mark.parametrize("exception", [CalledProcessError, OSError])
-def test_invalid_cmake(exception, mocker, capfd):
+def test_invalid_cmake(exception, mocker):
 
     exceptions = {
         OSError: OSError('Unkown error'),
@@ -103,12 +112,12 @@ def test_invalid_cmake(exception, mocker, capfd):
             pass
 
         failed = False
+        message = ""
         try:
             should_fail()
         except SystemExit as e:
             failed = isinstance(e.code, SKBuildError)
+            message = str(e)
 
     assert failed
-
-    _, err = capfd.readouterr()
-    assert "Problem with the CMake installation, aborting build." in err
+    assert "Problem with the CMake installation, aborting build." in message

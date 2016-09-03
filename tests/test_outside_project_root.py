@@ -25,9 +25,12 @@ def test_outside_project_root_fails():
             pass
 
         failed = False
+        message = ""
         try:
             should_fail()
         except SystemExit as e:
             failed = isinstance(e.code, SKBuildError)
+            message = str(e.message)
 
     assert failed
+    assert "CMake-installed files must be within the project root." in message
