@@ -310,10 +310,17 @@ class CMaker(object):
 
     @staticmethod
     def check_for_bad_installs():
-        # Try to catch files that are meant to be installed outside the project
-        # root before they are actually installed.  We can not wait for the
-        # manifest, so we try to extract the information from the CMake build
-        # files.
+        """This function tries to catch files that are meant to be installed
+        outside the project root before they are actually installed.
+
+        Indeed, we can not wait for the manifest, so we try to extract the
+        information (install destination) from the CMake build files
+        ``*.cmake`` found in ``CMAKE_BUILD_DIR``.
+
+        It raises ``SKBuildError`` if it found install detination outside of
+        ``CMAKE_INSTALL_DIR``.
+        """
+
         bad_installs = []
         install_dir = os.path.join(os.getcwd(), CMAKE_INSTALL_DIR)
 
