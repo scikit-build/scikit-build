@@ -61,7 +61,8 @@ class CMaker(object):
         try:
             subprocess.check_call(['cmake', '--version'])
         except (OSError, CalledProcessError):
-            raise SKBuildError('CMake is not installed, aborting build.')
+            raise SKBuildError(
+                "Problem with the CMake installation, aborting build.")
 
         self.platform = get_platform()
 
