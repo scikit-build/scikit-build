@@ -14,8 +14,9 @@ import pytest
 from subprocess import CalledProcessError
 
 from skbuild.exceptions import SKBuildError
+from skbuild.utils import push_dir
 
-from . import project_setup_py_test, push_dir
+from . import project_setup_py_test
 
 
 def test_cmakelists_with_fatalerror_fails(capfd):

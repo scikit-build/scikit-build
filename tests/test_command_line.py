@@ -9,7 +9,9 @@ Tests for various command line functionality.
 
 import os
 
-from . import project_setup_py_test, push_dir
+from skbuild.utils import push_dir
+
+from . import project_setup_py_test
 
 
 @project_setup_py_test(("samples", "hello"), ["--help"])

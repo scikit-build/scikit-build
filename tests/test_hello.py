@@ -6,7 +6,7 @@ import os
 import pytest
 
 from skbuild.cmaker import SKBUILD_DIR
-
+from skbuild.utils import push_dir
 
 """test_hello
 ----------------------------------
@@ -14,7 +14,7 @@ from skbuild.cmaker import SKBUILD_DIR
 Tries to build and test the `hello` sample project.
 """
 
-from . import project_setup_py_test, push_dir
+from . import project_setup_py_test
 
 
 def test_hello_builds():

@@ -12,8 +12,9 @@ its value.
 import pytest
 
 from skbuild.exceptions import SKBuildError
+from skbuild.utils import push_dir
 
-from . import project_setup_py_test, push_dir
+from . import project_setup_py_test
 
 
 @pytest.mark.parametrize("option", [
