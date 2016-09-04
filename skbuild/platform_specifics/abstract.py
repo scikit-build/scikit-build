@@ -61,6 +61,16 @@ class CMakePlatform(object):
 
         self.write_test_cmakelist(languages)
 
+        working_generator = self.compile_test_cmakelist(
+            cmake_exe_path, candidate_generators)
+
+        if cleanup:
+            CMakePlatform.cleanup_test()
+
+        return working_generator
+
+    @staticmethod
+    def compile_test_cmakelist(cmake_exe_path, candidate_generators):
         # back up current folder so we go back to it when done testing
         backup_folder = os.getcwd()
 
@@ -100,8 +110,5 @@ class CMakePlatform(object):
                 break
 
         os.chdir(backup_folder)
-
-        if cleanup:
-            CMakePlatform.cleanup_test()
 
         return working_generator
