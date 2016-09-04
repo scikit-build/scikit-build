@@ -39,3 +39,26 @@ def test_push_dir():
     with push_dir(directory=os.path.join(os.getcwd(), '..')):
         assert os.path.split(os.getcwd())[-1] == 'scikit-build'
     assert os.path.split(os.getcwd())[-1] == 'tests'
+
+
+def test_push_dir_decorator():
+    assert os.path.split(os.getcwd())[-1] == 'tests'
+
+    from skbuild.utils.decorator import push_dir
+
+    # No directory
+    @push_dir()
+    def test_default():
+        os.chdir(os.path.join(os.getcwd(), '..'))
+        assert os.path.split(os.getcwd())[-1] == 'scikit-build'
+
+    test_default()
+    assert os.path.split(os.getcwd())[-1] == 'tests'
+
+    # With directory
+    @push_dir(directory=os.path.join(os.getcwd(), '..'))
+    def test():
+        assert os.path.split(os.getcwd())[-1] == 'scikit-build'
+
+        test()
+    assert os.path.split(os.getcwd())[-1] == 'tests'
