@@ -10,15 +10,7 @@ import sys
 from contextlib import contextmanager
 
 from skbuild.cmaker import SKBUILD_DIR
-
-
-@contextmanager
-def push_dir(directory=None):
-    old_cwd = os.getcwd()
-    if directory:
-        os.chdir(directory)
-    yield
-    os.chdir(old_cwd)
+from skbuild.utils import push_dir
 
 
 @contextmanager

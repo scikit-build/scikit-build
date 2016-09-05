@@ -3,6 +3,8 @@ import os
 import shutil
 import subprocess
 
+from ..utils.decorator import push_dir
+
 test_folder = "cmake_test_compile"
 list_file = "CMakeLists.txt"
 cache_file = "CMakeCache.txt"
@@ -61,14 +63,17 @@ class CMakePlatform(object):
 
         self.write_test_cmakelist(languages)
 
-        # back up current folder so we go back to it when done testing
-        backup_folder = os.getcwd()
+        working_generator = self.compile_test_cmakelist(
+            cmake_exe_path, candidate_generators)
 
-        # cd into the cmake_test_compile folder as working dir (rmtree this
-        # later for cleanliness)
-        # TODO: make this more robust in terms of checking where we are, if the
-        # folder exists, etc.
-        os.chdir(test_folder)
+        if cleanup:
+            CMakePlatform.cleanup_test()
+
+        return working_generator
+
+    @staticmethod
+    @push_dir(directory=test_folder)
+    def compile_test_cmakelist(cmake_exe_path, candidate_generators):
 
         # working generator is the first generator we find that works.
         working_generator = None
@@ -98,10 +103,5 @@ class CMakePlatform(object):
                 # we have a working generator, don't bother looking for more
                 working_generator = generator
                 break
-
-        os.chdir(backup_folder)
-
-        if cleanup:
-            CMakePlatform.cleanup_test()
 
         return working_generator
