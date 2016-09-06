@@ -5,7 +5,7 @@ import subprocess
 
 from ..utils.decorator import push_dir
 
-test_folder = "cmake_test_compile"
+test_folder = "_cmake_test_compile"
 cache_file = "CMakeCache.txt"
 
 
