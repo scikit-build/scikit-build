@@ -140,8 +140,9 @@ def test_first_invalid_generator(mocker, capfd):
 
         run_build()
 
-    _, err = capfd.readouterr()
-    assert "CMake Error: Could not create named generator Invalid" in err
+    out, err = capfd.readouterr()
+    msg = "CMake Error: Could not create named generator Invalid"
+    assert msg in err or msg in out
 
 
 def test_invalid_generator(mocker, capfd):
@@ -163,9 +164,10 @@ def test_invalid_generator(mocker, capfd):
             failed = isinstance(e.code, SKBuildError)
             message = str(e)
 
-    _, err = capfd.readouterr()
+    out, err = capfd.readouterr()
 
-    assert "CMake Error: Could not create named generator Invalid" in err
+    msg = "CMake Error: Could not create named generator Invalid"
+    assert msg in err or msg in out
     assert failed
     assert "Could not get working generator for your system." \
            "  Aborting build." in message
