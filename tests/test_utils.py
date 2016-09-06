@@ -60,5 +60,5 @@ def test_push_dir_decorator():
     def test():
         assert os.path.split(os.getcwd())[-1] == 'scikit-build'
 
-        test()
+    test()
     assert os.path.split(os.getcwd())[-1] == 'tests'
