@@ -13,7 +13,7 @@ import pytest
 from skbuild.platform_specifics import get_platform
 
 # XXX This should probably be a constant imported from skbuild.constants
-test_folder = "cmake_test_compile"
+test_folder = "_cmake_test_compile"
 
 # platform is shared across each test.  It's a platform-specific object
 # that defines default CMake generator strings.
