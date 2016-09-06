@@ -3,10 +3,10 @@ import os
 import shutil
 import subprocess
 
-from ..utils.decorator import push_dir
+from ..utils import push_dir
+from ..utils.decorator import push_dir as push_dir_decorator
 
 test_folder = "_cmake_test_compile"
-cache_file = "CMakeCache.txt"
 
 
 class CMakePlatform(object):
@@ -79,7 +79,7 @@ class CMakePlatform(object):
         return working_generator
 
     @staticmethod
-    @push_dir(directory=test_folder)
+    @push_dir_decorator(directory=test_folder)
     def compile_test_cmakelist(cmake_exe_path, candidate_generators):
 
         # working generator is the first generator we find that works.
@@ -91,14 +91,15 @@ class CMakePlatform(object):
 
         for generator in candidate_generators:
             # clear the cache for each attempted generator type
-            if os.path.exists(cache_file):
-                os.remove(cache_file)
+            if os.path.isdir('build'):
+                shutil.rmtree('build')
             try:
-                # call cmake to see if the compiler specified by this generator
-                # works for the specified languages
-                cmake_execution_string = '{:s} ./ -G "{:s}"'.format(
-                    cmake_exe_path, generator)
-                status = subprocess.call(cmake_execution_string, shell=True)
+                with push_dir('build', make_directory=True):
+                    # call cmake to see if the compiler specified by this
+                    # generator works for the specified languages
+                    cmake_execution_string = '{:s} ../ -G "{:s}"'.format(
+                        cmake_exe_path, generator)
+                    status = subprocess.call(cmake_execution_string, shell=True)
             except OSError as e:
                 # ignore errors from the OS - just don't report success for
                 # this generator.
