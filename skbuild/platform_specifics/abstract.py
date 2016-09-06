@@ -6,7 +6,6 @@ import subprocess
 from ..utils.decorator import push_dir
 
 test_folder = "cmake_test_compile"
-list_file = "CMakeLists.txt"
 cache_file = "CMakeCache.txt"
 
 
@@ -27,7 +26,7 @@ class CMakePlatform(object):
     def write_test_cmakelist(languages):
         if not os.path.exists(test_folder):
             os.makedirs(test_folder)
-        with open("{:s}/{:s}".format(test_folder, list_file), "w") as f:
+        with open("{:s}/{:s}".format(test_folder, "CMakeLists.txt"), "w") as f:
             f.write("cmake_minimum_required(VERSION 2.8)\n")
             f.write("PROJECT(compiler_test NONE)\n")
             for language in languages:
