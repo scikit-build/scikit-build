@@ -13,7 +13,15 @@ cache_file = "CMakeCache.txt"
 class CMakePlatform(object):
 
     def __init__(self):
-        self.default_generators = list()
+        self._default_generators = list()
+
+    @property
+    def default_generators(self):
+        return self._default_generators
+
+    @default_generators.setter
+    def default_generators(self, generators):
+        self._default_generators = generators
 
     @staticmethod
     def write_test_cmakelist(languages):
