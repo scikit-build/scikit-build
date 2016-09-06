@@ -12,6 +12,9 @@ import pytest
 
 from skbuild.platform_specifics import get_platform
 
+# XXX This should probably be a constant imported from skbuild.constants
+test_folder = "cmake_test_compile"
+
 # platform is shared across each test.  It's a platform-specific object
 # that defines default CMake generator strings.
 platform = get_platform()
@@ -28,7 +31,7 @@ def test_write_compiler_test_file():
     try:
         # verify that the test file exists (it's not valid, because it has no
         # languages)
-        assert(os.path.exists("cmake_test_compile/CMakeLists.txt"))
+        assert(os.path.exists(os.path.join(test_folder, "CMakeLists.txt")))
     except:
         raise
     finally:
@@ -71,7 +74,7 @@ def test_fortran_compiler():
 def test_generator_cleanup():
     # TODO: this isn't a true unit test.  It is checking that none of the
     # other tests have left a mess.
-    assert(not os.path.exists("cmake_test_compile"))
+    assert(not os.path.exists(test_folder))
 
 
 @pytest.mark.parametrize("supported_platform",
