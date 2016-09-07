@@ -50,7 +50,6 @@ def test_generator_selection():
             "Visual Studio 14 2015"
         ) + (
             " Win64" if arch == "64bit" else
-            "ARM" if arch == "ARM" else
             ""
         )
 
