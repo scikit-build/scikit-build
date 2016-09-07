@@ -126,11 +126,14 @@ def test_invalid_cmake(exception, mocker):
 
 
 def test_first_invalid_generator(mocker, capfd):
+    platform = get_platform()
     default_generators = ['Invalid']
-    default_generators.extend(get_platform().default_generators)
-    mocker.patch(
-        'skbuild.platform_specifics.abstract.CMakePlatform.default_generators',
-        new_callable=mocker.PropertyMock, return_value=default_generators)
+    default_generators.extend(platform.default_generators)
+    mocker.patch.object(type(platform), 'default_generators',
+                        new_callable=mocker.PropertyMock,
+                        return_value=default_generators)
+
+    mocker.patch('skbuild.cmaker.get_platform', return_value=platform)
 
     with push_dir():
         @project_setup_py_test(("samples", "hello"), ["build"],
@@ -146,9 +149,11 @@ def test_first_invalid_generator(mocker, capfd):
 
 
 def test_invalid_generator(mocker, capfd):
-    mocker.patch(
-        'skbuild.platform_specifics.abstract.CMakePlatform.default_generators',
-        new_callable=mocker.PropertyMock, return_value=['Invalid'])
+    platform = get_platform()
+    mocker.patch.object(type(platform), 'default_generators',
+                        new_callable=mocker.PropertyMock,
+                        return_value=['Invalid'])
+    mocker.patch('skbuild.cmaker.get_platform', return_value=platform)
 
     with push_dir():
         @project_setup_py_test(("samples", "hello"), ["build"],
