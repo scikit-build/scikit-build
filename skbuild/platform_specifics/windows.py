@@ -38,11 +38,6 @@ class WindowsPlatform(abstract.CMakePlatform):
         if platform.architecture() == "64bit":
             vs_base += " Win64"
 
-        # only VS 11 and above support ARM, but include it here in hopes of
-        # making future work easier.
-        elif platform.architecture() == "ARM":
-            vs_base += " ARM"
-
         # we're implicitly doing nothing for 32-bit builds.  Their generator
         # string IDs seem to be just the vs_base.
 
