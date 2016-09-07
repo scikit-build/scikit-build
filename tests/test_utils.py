@@ -11,6 +11,8 @@ import os
 
 from skbuild.utils import mkdir_p
 
+from . import push_env
+
 saved_cwd = os.getcwd()
 
 
@@ -120,3 +122,32 @@ def test_mkdir_p(tmpdir):
     # Make sure calling function twice does not raise an exception
     mkdir_p(foo_bar_dir)
     assert os.path.isdir(foo_bar_dir)
+
+
+def test_push_env():
+    assert 'SKBUILD_NEW_VAR' not in os.environ
+
+    os.environ['SKBUILD_ANOTHER_VAR'] = 'abcd'
+    assert 'SKBUILD_ANOTHER_VAR' in os.environ
+
+    saved_env = dict(os.environ)
+
+    # Setting and un-setting variables can be done simultaneously
+    with push_env(SKBUILD_NEW_VAR='1234', SKBUILD_ANOTHER_VAR=None):
+        assert 'SKBUILD_NEW_VAR' in os.environ
+        assert 'SKBUILD_ANOTHER_VAR' not in os.environ
+        assert os.getenv('SKBUILD_NEW_VAR') == '1234'
+
+    assert 'SKBUILD_NEW_VAR' not in os.environ
+    assert 'SKBUILD_ANOTHER_VAR' in os.environ
+    assert saved_env == os.environ
+
+    # Trying to unset an unknown variable should be a no-op
+    with push_env(SKBUILD_NOT_SET=None):
+        assert saved_env == os.environ
+    assert saved_env == os.environ
+
+    # Calling without argument should be a no-op
+    with push_env():
+        assert saved_env == os.environ
+    assert saved_env == os.environ
