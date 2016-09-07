@@ -6,6 +6,8 @@ import os
 import pytest
 
 from skbuild.cmaker import SKBUILD_DIR
+from skbuild.exceptions import SKBuildError
+from skbuild.platform_specifics import get_platform
 from skbuild.utils import push_dir
 
 """test_hello
@@ -29,6 +31,40 @@ def test_hello_builds():
         # See issue scikit-build#120
         run()
         run()
+
+
+@pytest.mark.parametrize("generator_args",
+                         [
+                             ["-G", "invalid"],
+                             ["--", "-G", "invalid"],
+                             ["-G", get_platform().default_generators[0]],
+                             ["--", "-G", get_platform().default_generators[0]],
+                         ])
+def test_hello_builds_with_generator(generator_args):
+    with push_dir():
+
+        build_args = ["build"]
+        build_args.extend(generator_args)
+
+        @project_setup_py_test(("samples", "hello"), build_args,
+                               clear_cache=True)
+        def run():
+            pass
+
+        failed = False
+        message = ""
+        try:
+            run()
+        except SystemExit as e:
+            failed = isinstance(e.code, SKBuildError)
+            message = str(e)
+
+        if 'invalid' in generator_args:
+            assert failed
+            assert "Could not get working generator for your system." \
+                   "  Aborting build." in message
+        else:
+            assert not failed
 
 
 # @project_setup_py_test(("samples", "hello"), ["test"])

@@ -3,23 +3,30 @@ import os
 import shutil
 import subprocess
 
-from ..utils.decorator import push_dir
+from ..utils import push_dir
+from ..utils.decorator import push_dir as push_dir_decorator
 
-test_folder = "cmake_test_compile"
-list_file = "CMakeLists.txt"
-cache_file = "CMakeCache.txt"
+test_folder = "_cmake_test_compile"
 
 
 class CMakePlatform(object):
 
     def __init__(self):
-        self.default_generators = list()
+        self._default_generators = list()
+
+    @property
+    def default_generators(self):
+        return self._default_generators
+
+    @default_generators.setter
+    def default_generators(self, generators):
+        self._default_generators = generators
 
     @staticmethod
     def write_test_cmakelist(languages):
         if not os.path.exists(test_folder):
             os.makedirs(test_folder)
-        with open("{:s}/{:s}".format(test_folder, list_file), "w") as f:
+        with open("{:s}/{:s}".format(test_folder, "CMakeLists.txt"), "w") as f:
             f.write("cmake_minimum_required(VERSION 2.8)\n")
             f.write("PROJECT(compiler_test NONE)\n")
             for language in languages:
@@ -72,7 +79,7 @@ class CMakePlatform(object):
         return working_generator
 
     @staticmethod
-    @push_dir(directory=test_folder)
+    @push_dir_decorator(directory=test_folder)
     def compile_test_cmakelist(cmake_exe_path, candidate_generators):
 
         # working generator is the first generator we find that works.
@@ -84,14 +91,15 @@ class CMakePlatform(object):
 
         for generator in candidate_generators:
             # clear the cache for each attempted generator type
-            if os.path.exists(cache_file):
-                os.remove(cache_file)
+            if os.path.isdir('build'):
+                shutil.rmtree('build')
             try:
-                # call cmake to see if the compiler specified by this generator
-                # works for the specified languages
-                cmake_execution_string = '{:s} ./ -G "{:s}"'.format(
-                    cmake_exe_path, generator)
-                status = subprocess.call(cmake_execution_string, shell=True)
+                with push_dir('build', make_directory=True):
+                    # call cmake to see if the compiler specified by this
+                    # generator works for the specified languages
+                    cmake_execution_string = '{:s} ../ -G "{:s}"'.format(
+                        cmake_exe_path, generator)
+                    status = subprocess.call(cmake_execution_string, shell=True)
             except OSError as e:
                 # ignore errors from the OS - just don't report success for
                 # this generator.

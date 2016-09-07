@@ -50,7 +50,7 @@ docs/_build
 *.swp
 
 # build output (testing)
-skbuild/cmake_test_compile/*
-tests/samples/*/cmake_test_compile/*
+skbuild/_cmake_test_compile/*
+tests/samples/*/_cmake_test_compile/*
 tests/samples/*/MANIFEST
 
