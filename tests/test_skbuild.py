@@ -49,7 +49,7 @@ def test_generator_selection():
             "Visual Studio 10 2010" if py_33_34 else
             "Visual Studio 14 2015"
         ) + (
-            "Win64" if arch == "x64" else
+            "Win64" if arch == "64bit" else
             "ARM" if arch == "ARM" else
             ""
         )
