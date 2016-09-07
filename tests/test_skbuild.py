@@ -19,7 +19,7 @@ def test_generator_selection():
     env_generator = os.environ.get("CMAKE_GENERATOR")
     this_platform = platform.system().lower()
     get_best_generator = get_platform().get_best_generator
-    arch = platform.architecture()
+    arch = platform.architecture()[0]
 
     if env_generator:
         assert(get_best_generator(env_generator) == env_generator)
@@ -49,7 +49,7 @@ def test_generator_selection():
             "Visual Studio 10 2010" if py_33_34 else
             "Visual Studio 14 2015"
         ) + (
-            "Win64" if arch == "x64" else
+            " Win64" if arch == "64bit" else
             "ARM" if arch == "ARM" else
             ""
         )

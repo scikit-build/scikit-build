@@ -35,7 +35,7 @@ class WindowsPlatform(abstract.CMakePlatform):
             raise RuntimeError("Only Python >= 2.7 is supported on Windows.")
 
         # Python is Win64, build a Win64 module
-        if platform.architecture() == "x64":
+        if platform.architecture()[0] == "64bit":
             vs_base += " Win64"
 
         # only VS 11 and above support ARM, but include it here in hopes of
