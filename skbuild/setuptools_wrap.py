@@ -276,9 +276,6 @@ def setup(*args, **kw):
 
     # Adapted from espdev/ITKPythonInstaller/setup.py.in
     class BinaryDistribution(upstream_Distribution):
-        def is_pure(self):
-            return False
-
         def has_ext_modules(self):
             return True
     kw['distclass'] = BinaryDistribution
