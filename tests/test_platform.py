@@ -11,6 +11,10 @@ import os
 import pytest
 
 from skbuild.platform_specifics import get_platform
+from skbuild.utils import mkdir_p
+
+# XXX This should probably be a constant imported from skbuild.constants
+test_folder = "_cmake_test_compile"
 
 # platform is shared across each test.  It's a platform-specific object
 # that defines default CMake generator strings.
@@ -28,7 +32,7 @@ def test_write_compiler_test_file():
     try:
         # verify that the test file exists (it's not valid, because it has no
         # languages)
-        assert(os.path.exists("cmake_test_compile/CMakeLists.txt"))
+        assert(os.path.exists(os.path.join(test_folder, "CMakeLists.txt")))
     except:
         raise
     finally:
@@ -36,7 +40,13 @@ def test_write_compiler_test_file():
 
 
 def test_cxx_compiler():
-    generator = platform.get_best_generator(languages=["CXX", "C"])
+
+    # Create a unique subdirectory 'foo' that is expected to be removed.
+    test_build_folder = os.path.join(test_folder, 'build', 'foo')
+    mkdir_p(test_build_folder)
+
+    generator = platform.get_best_generator(languages=["CXX", "C"],
+                                            cleanup=False)
     # TODO: this isn't a true unit test.  It depends on the test CMakeLists.txt
     #       file having been written correctly.
     # with the known test file present, this tries to generate a makefile
@@ -45,6 +55,7 @@ def test_cxx_compiler():
     # doesn't actually compile anything.
     try:
         assert(generator is not None)
+        assert not os.path.exists(test_build_folder)
     except:
         raise
     finally:
@@ -71,7 +82,7 @@ def test_fortran_compiler():
 def test_generator_cleanup():
     # TODO: this isn't a true unit test.  It is checking that none of the
     # other tests have left a mess.
-    assert(not os.path.exists("cmake_test_compile"))
+    assert(not os.path.exists(test_folder))
 
 
 @pytest.mark.parametrize("supported_platform",

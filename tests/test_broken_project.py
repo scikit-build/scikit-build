@@ -14,9 +14,11 @@ import pytest
 from subprocess import CalledProcessError
 
 from skbuild.exceptions import SKBuildError
+from skbuild.platform_specifics import get_platform
 from skbuild.utils import push_dir
 
 from . import project_setup_py_test
+from . import push_env
 
 
 def test_cmakelists_with_fatalerror_fails(capfd):
@@ -98,7 +100,7 @@ def test_hello_with_compileerror_fails(capfd):
 def test_invalid_cmake(exception, mocker):
 
     exceptions = {
-        OSError: OSError('Unkown error'),
+        OSError: OSError('Unknown error'),
         CalledProcessError: CalledProcessError(['cmake', '--version'], 1)
     }
 
@@ -122,3 +124,54 @@ def test_invalid_cmake(exception, mocker):
 
     assert failed
     assert "Problem with the CMake installation, aborting build." in message
+
+
+def test_first_invalid_generator(mocker, capfd):
+    platform = get_platform()
+    default_generators = ['Invalid']
+    default_generators.extend(platform.default_generators)
+    mocker.patch.object(type(platform), 'default_generators',
+                        new_callable=mocker.PropertyMock,
+                        return_value=default_generators)
+
+    mocker.patch('skbuild.cmaker.get_platform', return_value=platform)
+
+    with push_dir(), push_env(CMAKE_GENERATOR=None):
+        @project_setup_py_test(("samples", "hello"), ["build"],
+                               clear_cache=True)
+        def run_build():
+            pass
+
+        run_build()
+
+    _, err = capfd.readouterr()
+    assert "CMake Error: Could not create named generator Invalid" in err
+
+
+def test_invalid_generator(mocker, capfd):
+    platform = get_platform()
+    mocker.patch.object(type(platform), 'default_generators',
+                        new_callable=mocker.PropertyMock,
+                        return_value=['Invalid'])
+    mocker.patch('skbuild.cmaker.get_platform', return_value=platform)
+
+    with push_dir(), push_env(CMAKE_GENERATOR=None):
+        @project_setup_py_test(("samples", "hello"), ["build"],
+                               clear_cache=True)
+        def should_fail():
+            pass
+
+        failed = False
+        message = ""
+        try:
+            should_fail()
+        except SystemExit as e:
+            failed = isinstance(e.code, SKBuildError)
+            message = str(e)
+
+    _, err = capfd.readouterr()
+
+    assert "CMake Error: Could not create named generator Invalid" in err
+    assert failed
+    assert "Could not get working generator for your system." \
+           "  Aborting build." in message

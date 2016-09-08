@@ -77,7 +77,7 @@ environment:
       PYTHON_ARCH: "64"
       RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
       EXTRA_TEST_ARGS: "-m \"not fortran\""
-      SKIP: "1"
+      SKIP: "0"
       BLOCK: "0"
 
     - PYTHON: "C:\\Python35-x64"
@@ -85,7 +85,7 @@ environment:
       PYTHON_ARCH: "64"
       RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
       EXTRA_TEST_ARGS: "-m \"not fortran\""
-      SKIP: "1"
+      SKIP: "0"
       BLOCK: "0"
 
 init:
