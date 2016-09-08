@@ -170,7 +170,14 @@ def setup(*args, **kw):
     except (DistutilsArgError, DistutilsGetoptError):
         has_invalid_arguments = True
 
-    skip_cmake = (display_only or has_invalid_arguments or 'clean' in commands)
+    is_cmake_project = os.path.exists("CMakeLists.txt")
+    if not is_cmake_project:
+        print('skipping skbuild (no CMakeLists.txt found)')
+
+    skip_cmake = (display_only
+                  or has_invalid_arguments
+                  or 'clean' in commands
+                  or not is_cmake_project)
     if skip_cmake:
         if help_commands:
             # Prepend scikit-build help. Generate option descriptions using
