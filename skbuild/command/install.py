@@ -1,8 +1,5 @@
 
-try:
-    from setuptools.command.install import install as _install
-except ImportError:
-    from distutils.command.install import install as _install
+from setuptools.command.install import install as _install
 
 from . import new_style, set_build_base_mixin
 
