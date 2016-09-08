@@ -126,3 +126,38 @@ def test_hello_clean(dry_run, capfd):
         build_out, clean_out = capfd.readouterr()[0].split('<<-->>')
         assert 'Build files have been written to' in build_out
         assert 'Build files have been written to' not in clean_out
+
+
+def test_hello_cleans(capfd):
+    with push_dir():
+
+        @project_setup_py_test(("samples", "hello"), ["build"],
+                               clear_cache=True)
+        def run_build():
+            pass
+
+        @project_setup_py_test(("samples", "hello"), ["clean"])
+        def run_clean():
+            pass
+
+        # Check that a project can be cleaned twice in a row
+        run_build()
+        print("<<-->>")
+        run_clean()
+        print("<<-->>")
+        run_clean()
+
+    _, clean1_out, clean2_out = \
+        capfd.readouterr()[0].split('<<-->>')
+
+    clean1_out = clean1_out.strip()
+    clean2_out = clean2_out.strip()
+
+    assert "running clean" == clean1_out.splitlines()[0]
+    assert "removing '_skbuild{}cmake-install'".format(os.path.sep) \
+           == clean1_out.splitlines()[1]
+    assert "removing '_skbuild{}cmake-build'".format(os.path.sep) \
+           == clean1_out.splitlines()[2]
+    assert "removing '_skbuild'" == clean1_out.splitlines()[3]
+
+    assert "running clean" == clean2_out

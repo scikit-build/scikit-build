@@ -1,4 +1,6 @@
 
+import os
+
 try:
     from setuptools.command.clean import clean as _clean
 except ImportError:
@@ -18,6 +20,7 @@ class clean(set_build_base_mixin, new_style(_clean)):
         for dir_ in (cmaker.CMAKE_INSTALL_DIR,
                      cmaker.CMAKE_BUILD_DIR,
                      cmaker.SKBUILD_DIR):
-            log.info("removing '%s'", dir_)
-            if not self.dry_run:
+            if os.path.exists(dir_):
+                log.info("removing '%s'", dir_)
+            if not self.dry_run and os.path.exists(dir_):
                 rmtree(dir_)
