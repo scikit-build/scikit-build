@@ -9,6 +9,7 @@ Tries to build and test the `hello-pure` sample project.
 
 import glob
 import os
+import tarfile
 
 from skbuild.cmaker import SKBUILD_DIR
 from skbuild.utils import push_dir
@@ -32,6 +33,17 @@ def test_hello_pure_sdist():
     sdists_tar = glob.glob('dist/*.tar.gz')
     sdists_zip = glob.glob('dist/*.zip')
     assert sdists_tar or sdists_zip
+
+    expected_content = [
+        'hello-pure-1.2.3',
+        'hello-pure-1.2.3/hello',
+        'hello-pure-1.2.3/hello/__init__.py',
+        'hello-pure-1.2.3/setup.py',
+        'hello-pure-1.2.3/PKG-INFO'
+    ]
+
+    dist_tgz = tarfile.open('dist/hello-pure-1.2.3.tar.gz')
+    assert expected_content == dist_tgz.getnames()
 
 
 @project_setup_py_test(("samples", "hello-pure"), ["bdist_wheel"])
