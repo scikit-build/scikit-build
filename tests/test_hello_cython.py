@@ -15,7 +15,7 @@ from zipfile import ZipFile
 from . import project_setup_py_test
 
 
-@project_setup_py_test("hello-cython", ["build"], clear_cache=True)
+@project_setup_py_test("hello-cython", ["build"])
 def test_hello_cython_builds():
     pass
 

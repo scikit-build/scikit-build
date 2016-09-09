@@ -44,8 +44,7 @@ def test_metadata_display(capsys):
 def test_no_command():
     with push_dir():
 
-        @project_setup_py_test("hello", [],
-                               clear_cache=True)
+        @project_setup_py_test("hello", [])
         def run():
             pass
 
@@ -63,8 +62,7 @@ def test_invalid_command():
 
     with push_dir():
 
-        @project_setup_py_test("hello", ["unknown"],
-                               clear_cache=True)
+        @project_setup_py_test("hello", ["unknown"])
         def run():
             pass
 
@@ -95,8 +93,7 @@ def test_too_many_separators():
 
 
 @project_setup_py_test("hello",
-                       ["build", "--", "-DMY_CMAKE_VARIABLE:BOOL=1"],
-                       clear_cache=True)
+                       ["build", "--", "-DMY_CMAKE_VARIABLE:BOOL=1"])
 def test_cmake_args(capfd):
     out, err = capfd.readouterr()
     assert "Manually-specified variables were not used by the project" in err
