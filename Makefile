@@ -17,13 +17,16 @@ help:
 
 clean: clean-build clean-pyc clean-skbuild
 	rm -fr htmlcov/
-	rm -f .coverage
-	rm -rf ./tests/coverage.xml
+	find . -name '.coverage' -exec rm -f {} +
+	find . -name 'coverage.xml' -exec rm -f {} +
+	rm -rf .cache
 
 clean-build:
 	rm -fr build/
 	rm -fr dist/
-	rm -fr *.egg-info
+	find . -type d -name '*.egg-info' -exec rm -rf {} +
+	find . -type f -name 'MANIFEST' -exec rm -f {} +
+	find tests/samples/*/dist/ -type d -exec rm -rf {} + > /dev/null 2>&1 || true
 
 clean-pyc:
 	find . -name '*.pyc' -exec rm -f {} +
