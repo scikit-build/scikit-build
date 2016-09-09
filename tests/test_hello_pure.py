@@ -10,6 +10,7 @@ Tries to build and test the `hello-pure` sample project.
 import glob
 import os
 import tarfile
+from zipfile import ZipFile
 
 from skbuild.cmaker import SKBUILD_DIR
 from skbuild.utils import push_dir
@@ -42,8 +43,13 @@ def test_hello_pure_sdist():
         'hello-pure-1.2.3/PKG-INFO'
     ]
 
-    dist_tgz = tarfile.open('dist/hello-pure-1.2.3.tar.gz')
-    assert expected_content == dist_tgz.getnames()
+    member_list = []
+    if sdists_tar:
+        member_list = tarfile.open('dist/hello-pure-1.2.3.tar.gz').getnames()
+    elif sdists_zip:
+        member_list = ZipFile('dist/hello-pure-1.2.3.zip').namelist()
+
+    assert sorted(expected_content) == sorted(member_list)
 
 
 @project_setup_py_test(("samples", "hello-pure"), ["bdist_wheel"])
