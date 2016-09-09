@@ -29,7 +29,7 @@ def test_hello_pure_builds(capsys):
 #     pass
 
 
-@project_setup_py_test(("samples", "hello-pure"), ["sdist"])
+@project_setup_py_test(("samples", "hello-pure"), ["sdist"], clear_cache=True)
 def test_hello_pure_sdist():
     sdists_tar = glob.glob('dist/*.tar.gz')
     sdists_zip = glob.glob('dist/*.zip')
