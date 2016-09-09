@@ -93,19 +93,14 @@ class CMakePlatform(object):
             # clear the cache for each attempted generator type
             if os.path.isdir('build'):
                 shutil.rmtree('build')
-            try:
-                with push_dir('build', make_directory=True):
-                    # call cmake to see if the compiler specified by this
-                    # generator works for the specified languages
-                    cmake_execution_string = '{:s} ../ -G "{:s}"'.format(
-                        cmake_exe_path, generator)
-                    status = subprocess.call(cmake_execution_string, shell=True)
-            except OSError as e:
-                # ignore errors from the OS - just don't report success for
-                # this generator.
-                print("Error encountered when attempting to use generator {:s}:"
-                      .format(generator))
-                print(e)
+
+            with push_dir('build', make_directory=True):
+                # call cmake to see if the compiler specified by this
+                # generator works for the specified languages
+                cmake_execution_string = '{:s} ../ -G "{:s}"'.format(
+                    cmake_exe_path, generator)
+                status = subprocess.call(cmake_execution_string, shell=True)
+
             # cmake succeeded, this generator should work
             if status == 0:
                 # we have a working generator, don't bother looking for more
