@@ -177,6 +177,7 @@ def setup(*args, **kw):
     skip_cmake = (display_only
                   or has_invalid_arguments
                   or 'clean' in commands
+                  or 'sdist' in commands
                   or not is_cmake_project)
     if skip_cmake:
         if help_commands:
