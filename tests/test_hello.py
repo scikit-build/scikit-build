@@ -11,6 +11,8 @@ from skbuild.exceptions import SKBuildError
 from skbuild.platform_specifics import get_platform
 from skbuild.utils import push_dir
 
+from zipfile import ZipFile
+
 """test_hello
 ----------------------------------
 
@@ -91,8 +93,13 @@ def test_hello_sdist():
         'hello-1.2.3/PKG-INFO'
     ]
 
-    dist_tgz = tarfile.open('dist/hello-1.2.3.tar.gz')
-    assert sorted(expected_content) == sorted(dist_tgz.getnames())
+    member_list = []
+    if sdists_tar:
+        member_list = tarfile.open('dist/hello-1.2.3.tar.gz').getnames()
+    elif sdists_zip:
+        member_list = ZipFile('dist/hello-1.2.3.zip').namelist()
+
+    assert sorted(expected_content) == sorted(member_list)
 
 
 @project_setup_py_test(("samples", "hello"), ["bdist_wheel"])
