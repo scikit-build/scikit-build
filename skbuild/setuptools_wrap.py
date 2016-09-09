@@ -211,44 +211,6 @@ def setup(*args, **kw):
         for parent_dir, file_list in kw.get('data_files', [])
     }
 
-    # collect the list of prefixes for all packages
-    #
-    # The list is used to match paths in the install manifest to packages
-    # specified in the setup.py script.
-    #
-    # The list is sorted in decreasing order of prefix length so that paths are
-    # matched with their immediate parent package, instead of any of that
-    # package's ancestors.
-    #
-    # For example, consider the project structure below.  Assume that the
-    # setup call was made with a package list featuring "top" and "top.bar", but
-    # not "top.not_a_subpackage".
-    #
-    # top/                -> top/
-    #   __init__.py       -> top/__init__.py                 (parent: top)
-    #   foo.py            -> top/foo.py                      (parent: top)
-    #   bar/              -> top/bar/                        (parent: top)
-    #     __init__.py     -> top/bar/__init__.py             (parent: top.bar)
-    #
-    #   not_a_subpackage/ -> top/not_a_subpackage/           (parent: top)
-    #     data_0.txt      -> top/not_a_subpackage/data_0.txt (parent: top)
-    #     data_1.txt      -> top/not_a_subpackage/data_1.txt (parent: top)
-    #
-    # The paths in the generated install manifest are matched to packages
-    # according to the parents indicated on the right.  Only packages that are
-    # specified in the setup() call are considered.  Because of the sort order,
-    # the data files on the bottom would have been mapped to
-    # "top.not_a_subpackage" instead of "top", proper -- had such a package been
-    # specified.
-    package_prefixes = list(sorted(
-        (
-            (package_dir[package].replace('.', '/'), package)
-            for package in packages
-        ),
-        key=lambda tup: len(tup[0]),
-        reverse=True
-    ))
-
     try:
         cmkr = cmaker.CMaker()
         cmkr.configure(cmake_args)
@@ -259,6 +221,8 @@ def setup(*args, **kw):
         traceback.print_tb(sys.exc_info()[2])
         print('')
         sys.exit(e)
+
+    package_prefixes = _collect_package_prefixes(package_dir, packages)
 
     _classify_files(cmkr.install(), package_data, package_prefixes, py_modules,
                     scripts, new_scripts, data_files)
@@ -288,6 +252,48 @@ def setup(*args, **kw):
     kw['distclass'] = BinaryDistribution
 
     return upstream_setup(*args, **kw)
+
+
+def _collect_package_prefixes(package_dir, packages):
+    """
+    Collect the list of prefixes for all packages
+
+    The list is used to match paths in the install manifest to packages
+    specified in the setup.py script.
+
+    The list is sorted in decreasing order of prefix length so that paths are
+    matched with their immediate parent package, instead of any of that
+    package's ancestors.
+
+    For example, consider the project structure below.  Assume that the
+    setup call was made with a package list featuring "top" and "top.bar", but
+    not "top.not_a_subpackage".
+
+    top/                -> top/
+      __init__.py       -> top/__init__.py                 (parent: top)
+      foo.py            -> top/foo.py                      (parent: top)
+      bar/              -> top/bar/                        (parent: top)
+        __init__.py     -> top/bar/__init__.py             (parent: top.bar)
+
+      not_a_subpackage/ -> top/not_a_subpackage/           (parent: top)
+        data_0.txt      -> top/not_a_subpackage/data_0.txt (parent: top)
+        data_1.txt      -> top/not_a_subpackage/data_1.txt (parent: top)
+
+    The paths in the generated install manifest are matched to packages
+    according to the parents indicated on the right.  Only packages that are
+    specified in the setup() call are considered.  Because of the sort order,
+    the data files on the bottom would have been mapped to
+    "top.not_a_subpackage" instead of "top", proper -- had such a package been
+    specified.
+    """
+    return list(sorted(
+        (
+            (package_dir[package].replace('.', '/'), package)
+            for package in packages
+        ),
+        key=lambda tup: len(tup[0]),
+        reverse=True
+    ))
 
 
 def _classify_files(install_paths, package_data, package_prefixes, py_modules,
