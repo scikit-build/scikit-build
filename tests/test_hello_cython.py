@@ -25,7 +25,7 @@ def test_hello_cython_builds():
 #     pass
 
 
-@project_setup_py_test(("samples", "hello-cython"), ["sdist"])
+@project_setup_py_test(("samples", "hello-cython"), ["sdist"], clear_cache=True)
 def test_hello_cython_sdist():
     sdists_tar = glob.glob('dist/*.tar.gz')
     sdists_zip = glob.glob('dist/*.zip')

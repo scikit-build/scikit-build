@@ -75,7 +75,7 @@ def test_hello_builds_with_generator(generator_args):
 #     pass
 
 
-@project_setup_py_test(("samples", "hello"), ["sdist"])
+@project_setup_py_test(("samples", "hello"), ["sdist"], clear_cache=True)
 def test_hello_sdist():
     sdists_tar = glob.glob('dist/*.tar.gz')
     sdists_zip = glob.glob('dist/*.zip')
