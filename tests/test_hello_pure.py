@@ -35,20 +35,27 @@ def test_hello_pure_sdist():
     sdists_zip = glob.glob('dist/*.zip')
     assert sdists_tar or sdists_zip
 
-    expected_content = [
-        'hello-pure-1.2.3',
-        'hello-pure-1.2.3/hello',
-        'hello-pure-1.2.3/hello/__init__.py',
-        'hello-pure-1.2.3/setup.py',
-        'hello-pure-1.2.3/PKG-INFO'
-    ]
-
-    member_list = []
+    member_list = None
+    expected_content = None
     if sdists_tar:
+        expected_content = [
+            'hello-pure-1.2.3',
+            'hello-pure-1.2.3/hello',
+            'hello-pure-1.2.3/hello/__init__.py',
+            'hello-pure-1.2.3/setup.py',
+            'hello-pure-1.2.3/PKG-INFO'
+        ]
         member_list = tarfile.open('dist/hello-pure-1.2.3.tar.gz').getnames()
+
     elif sdists_zip:
+        expected_content = [
+            'hello-pure-1.2.3/hello/__init__.py',
+            'hello-pure-1.2.3/setup.py',
+            'hello-pure-1.2.3/PKG-INFO'
+        ]
         member_list = ZipFile('dist/hello-pure-1.2.3.zip').namelist()
 
+    assert expected_content and member_list
     assert sorted(expected_content) == sorted(member_list)
 
 
