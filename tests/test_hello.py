@@ -25,7 +25,7 @@ from . import project_setup_py_test
 def test_hello_builds():
     with push_dir():
 
-        @project_setup_py_test(("samples", "hello"), ["build"],
+        @project_setup_py_test("hello", ["build"],
                                clear_cache=True)
         def run():
             pass
@@ -49,7 +49,7 @@ def test_hello_builds_with_generator(generator_args):
         build_args = ["build"]
         build_args.extend(generator_args)
 
-        @project_setup_py_test(("samples", "hello"), build_args,
+        @project_setup_py_test("hello", build_args,
                                clear_cache=True)
         def run():
             pass
@@ -70,12 +70,12 @@ def test_hello_builds_with_generator(generator_args):
             assert not failed
 
 
-# @project_setup_py_test(("samples", "hello"), ["test"])
+# @project_setup_py_test("hello", ["test"])
 # def test_hello_works():
 #     pass
 
 
-@project_setup_py_test(("samples", "hello"), ["sdist"], clear_cache=True)
+@project_setup_py_test("hello", ["sdist"])
 def test_hello_sdist():
     sdists_tar = glob.glob('dist/*.tar.gz')
     sdists_zip = glob.glob('dist/*.zip')
@@ -113,7 +113,7 @@ def test_hello_sdist():
     assert sorted(expected_content) == sorted(member_list)
 
 
-@project_setup_py_test(("samples", "hello"), ["bdist_wheel"])
+@project_setup_py_test("hello", ["bdist_wheel"])
 def test_hello_wheel():
     whls = glob.glob('dist/*.whl')
     assert len(whls) == 1
@@ -128,7 +128,7 @@ def test_hello_clean(dry_run, capfd):
 
         skbuild_dir = os.path.join("tests", "samples", "hello", SKBUILD_DIR)
 
-        @project_setup_py_test(("samples", "hello"), ["build"],
+        @project_setup_py_test("hello", ["build"],
                                clear_cache=True)
         def run_build():
             pass
@@ -146,7 +146,7 @@ def test_hello_clean(dry_run, capfd):
         if dry_run:
             clean_args.append("--dry-run")
 
-        @project_setup_py_test(("samples", "hello"), clean_args)
+        @project_setup_py_test("hello", clean_args)
         def run_clean():
             pass
 
@@ -165,12 +165,12 @@ def test_hello_clean(dry_run, capfd):
 def test_hello_cleans(capfd):
     with push_dir():
 
-        @project_setup_py_test(("samples", "hello"), ["build"],
+        @project_setup_py_test("hello", ["build"],
                                clear_cache=True)
         def run_build():
             pass
 
-        @project_setup_py_test(("samples", "hello"), ["clean"])
+        @project_setup_py_test("hello", ["clean"])
         def run_clean():
             pass
 

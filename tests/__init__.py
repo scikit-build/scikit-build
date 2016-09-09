@@ -13,6 +13,12 @@ from skbuild.cmaker import SKBUILD_DIR
 from skbuild.utils import push_dir
 
 
+SAMPLES_DIR = os.path.join(
+    os.path.dirname(os.path.realpath(__file__)),
+    'samples',
+    )
+
+
 @contextmanager
 def push_argv(argv):
     old_argv = sys.argv
@@ -48,9 +54,7 @@ def project_setup_py_test(project, setup_args, clear_cache=False):
             # See issue scikit-build#120
             distutils.dir_util._path_created = {}
 
-            dir = list(wrapped.project)
-            dir.insert(0, os.path.dirname(os.path.abspath(__file__)))
-            dir = os.path.join(*dir)
+            dir = os.path.join(SAMPLES_DIR, wrapped.project)
 
             with push_dir(dir), push_argv(["setup.py"] + wrapped.setup_args):
 

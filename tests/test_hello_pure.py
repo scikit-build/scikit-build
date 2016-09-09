@@ -18,18 +18,18 @@ from skbuild.utils import push_dir
 from . import project_setup_py_test
 
 
-@project_setup_py_test(("samples", "hello-pure"), ["build"], clear_cache=True)
+@project_setup_py_test("hello-pure", ["build"], clear_cache=True)
 def test_hello_pure_builds(capsys):
     out, _ = capsys.readouterr()
     assert "skipping skbuild (no CMakeLists.txt found)" in out
 
 
-# @project_setup_py_test(("samples", "hello-pure"), ["test"])
+# @project_setup_py_test("hello-pure", ["test"])
 # def test_hello_cython_works():
 #     pass
 
 
-@project_setup_py_test(("samples", "hello-pure"), ["sdist"], clear_cache=True)
+@project_setup_py_test("hello-pure", ["sdist"])
 def test_hello_pure_sdist():
     sdists_tar = glob.glob('dist/*.tar.gz')
     sdists_zip = glob.glob('dist/*.zip')
@@ -59,7 +59,7 @@ def test_hello_pure_sdist():
     assert sorted(expected_content) == sorted(member_list)
 
 
-@project_setup_py_test(("samples", "hello-pure"), ["bdist_wheel"])
+@project_setup_py_test("hello-pure", ["bdist_wheel"])
 def test_hello_pure_wheel():
     whls = glob.glob('dist/*.whl')
     assert len(whls) == 1
@@ -72,7 +72,7 @@ def test_hello_clean(capfd):
         skbuild_dir = os.path.join(
             "tests", "samples", "hello-pure", SKBUILD_DIR)
 
-        @project_setup_py_test(("samples", "hello-pure"), ["build"],
+        @project_setup_py_test("hello-pure", ["build"],
                                clear_cache=True)
         def run_build():
             pass
@@ -81,7 +81,7 @@ def test_hello_clean(capfd):
 
         assert os.path.exists(skbuild_dir)
 
-        @project_setup_py_test(("samples", "hello-pure"), ["clean"])
+        @project_setup_py_test("hello-pure", ["clean"])
         def run_clean():
             pass
 

@@ -25,7 +25,7 @@ def test_cmakelists_with_fatalerror_fails(capfd):
 
     with push_dir():
 
-        @project_setup_py_test(("samples", "fail-with-fatal-error-cmakelists"),
+        @project_setup_py_test("fail-with-fatal-error-cmakelists",
                                ["build"],
                                clear_cache=True)
         def should_fail():
@@ -50,7 +50,7 @@ def test_cmakelists_with_syntaxerror_fails(capfd):
 
     with push_dir():
 
-        @project_setup_py_test(("samples", "fail-with-syntax-error-cmakelists"),
+        @project_setup_py_test("fail-with-syntax-error-cmakelists",
                                ["build"],
                                clear_cache=True)
         def should_fail():
@@ -75,7 +75,7 @@ def test_hello_with_compileerror_fails(capfd):
 
     with push_dir():
 
-        @project_setup_py_test(("samples", "fail-hello-with-compile-error"),
+        @project_setup_py_test("fail-hello-with-compile-error",
                                ["build"],
                                clear_cache=True)
         def should_fail():
@@ -109,7 +109,7 @@ def test_invalid_cmake(exception, mocker):
 
     with push_dir():
 
-        @project_setup_py_test(("samples", "hello"), ["build"],
+        @project_setup_py_test("hello", ["build"],
                                clear_cache=True)
         def should_fail():
             pass
@@ -137,7 +137,7 @@ def test_first_invalid_generator(mocker, capfd):
     mocker.patch('skbuild.cmaker.get_platform', return_value=platform)
 
     with push_dir(), push_env(CMAKE_GENERATOR=None):
-        @project_setup_py_test(("samples", "hello"), ["build"],
+        @project_setup_py_test("hello", ["build"],
                                clear_cache=True)
         def run_build():
             pass
@@ -156,7 +156,7 @@ def test_invalid_generator(mocker, capfd):
     mocker.patch('skbuild.cmaker.get_platform', return_value=platform)
 
     with push_dir(), push_env(CMAKE_GENERATOR=None):
-        @project_setup_py_test(("samples", "hello"), ["build"],
+        @project_setup_py_test("hello", ["build"],
                                clear_cache=True)
         def should_fail():
             pass

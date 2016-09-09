@@ -15,17 +15,17 @@ from zipfile import ZipFile
 from . import project_setup_py_test
 
 
-@project_setup_py_test(("samples", "hello-cython"), ["build"], clear_cache=True)
+@project_setup_py_test("hello-cython", ["build"], clear_cache=True)
 def test_hello_cython_builds():
     pass
 
 
-# @project_setup_py_test(("samples", "hello-cython"), ["test"])
+# @project_setup_py_test("hello-cython", ["test"])
 # def test_hello_cython_works():
 #     pass
 
 
-@project_setup_py_test(("samples", "hello-cython"), ["sdist"], clear_cache=True)
+@project_setup_py_test("hello-cython", ["sdist"])
 def test_hello_cython_sdist():
     sdists_tar = glob.glob('dist/*.tar.gz')
     sdists_zip = glob.glob('dist/*.zip')
@@ -63,7 +63,7 @@ def test_hello_cython_sdist():
     assert sorted(expected_content) == sorted(member_list)
 
 
-@project_setup_py_test(("samples", "hello-cython"), ["bdist_wheel"])
+@project_setup_py_test("hello-cython", ["bdist_wheel"])
 def test_hello_cython_wheel():
     whls = glob.glob('dist/*.whl')
     assert len(whls) == 1
