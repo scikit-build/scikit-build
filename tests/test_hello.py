@@ -4,11 +4,14 @@
 import glob
 import os
 import pytest
+import tarfile
 
 from skbuild.cmaker import SKBUILD_DIR
 from skbuild.exceptions import SKBuildError
 from skbuild.platform_specifics import get_platform
 from skbuild.utils import push_dir
+
+from zipfile import ZipFile
 
 """test_hello
 ----------------------------------
@@ -72,11 +75,42 @@ def test_hello_builds_with_generator(generator_args):
 #     pass
 
 
-@project_setup_py_test(("samples", "hello"), ["sdist"])
+@project_setup_py_test(("samples", "hello"), ["sdist"], clear_cache=True)
 def test_hello_sdist():
     sdists_tar = glob.glob('dist/*.tar.gz')
     sdists_zip = glob.glob('dist/*.zip')
     assert sdists_tar or sdists_zip
+
+    member_list = None
+    expected_content = None
+    if sdists_tar:
+        expected_content = [
+            'hello-1.2.3',
+            'hello-1.2.3/CMakeLists.txt',
+            'hello-1.2.3/hello',
+            'hello-1.2.3/hello/_hello.cxx',
+            'hello-1.2.3/hello/CMakeLists.txt',
+            'hello-1.2.3/hello/__init__.py',
+            'hello-1.2.3/hello/__main__.py',
+            'hello-1.2.3/setup.py',
+            'hello-1.2.3/PKG-INFO'
+        ]
+        member_list = tarfile.open('dist/hello-1.2.3.tar.gz').getnames()
+
+    elif sdists_zip:
+        expected_content = [
+            'hello-1.2.3/CMakeLists.txt',
+            'hello-1.2.3/hello/_hello.cxx',
+            'hello-1.2.3/hello/CMakeLists.txt',
+            'hello-1.2.3/hello/__init__.py',
+            'hello-1.2.3/hello/__main__.py',
+            'hello-1.2.3/setup.py',
+            'hello-1.2.3/PKG-INFO'
+        ]
+        member_list = ZipFile('dist/hello-1.2.3.zip').namelist()
+
+    assert expected_content and member_list
+    assert sorted(expected_content) == sorted(member_list)
 
 
 @project_setup_py_test(("samples", "hello"), ["bdist_wheel"])

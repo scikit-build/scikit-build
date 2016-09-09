@@ -8,6 +8,9 @@ Tries to build and test the `hello-cython` sample project.
 """
 
 import glob
+import tarfile
+
+from zipfile import ZipFile
 
 from . import project_setup_py_test
 
@@ -22,11 +25,42 @@ def test_hello_cython_builds():
 #     pass
 
 
-@project_setup_py_test(("samples", "hello-cython"), ["sdist"])
+@project_setup_py_test(("samples", "hello-cython"), ["sdist"], clear_cache=True)
 def test_hello_cython_sdist():
     sdists_tar = glob.glob('dist/*.tar.gz')
     sdists_zip = glob.glob('dist/*.zip')
     assert sdists_tar or sdists_zip
+
+    member_list = None
+    expected_content = None
+    if sdists_tar:
+        expected_content = [
+            'hello-cython-1.2.3',
+            'hello-cython-1.2.3/CMakeLists.txt',
+            'hello-cython-1.2.3/hello',
+            'hello-cython-1.2.3/hello/_hello.pyx',
+            'hello-cython-1.2.3/hello/CMakeLists.txt',
+            'hello-cython-1.2.3/hello/__init__.py',
+            'hello-cython-1.2.3/hello/__main__.py',
+            'hello-cython-1.2.3/setup.py',
+            'hello-cython-1.2.3/PKG-INFO'
+        ]
+        member_list = tarfile.open('dist/hello-cython-1.2.3.tar.gz').getnames()
+
+    elif sdists_zip:
+        expected_content = [
+            'hello-cython-1.2.3/CMakeLists.txt',
+            'hello-cython-1.2.3/hello/_hello.pyx',
+            'hello-cython-1.2.3/hello/CMakeLists.txt',
+            'hello-cython-1.2.3/hello/__init__.py',
+            'hello-cython-1.2.3/hello/__main__.py',
+            'hello-cython-1.2.3/setup.py',
+            'hello-cython-1.2.3/PKG-INFO'
+        ]
+        member_list = ZipFile('dist/hello-cython-1.2.3.zip').namelist()
+
+    assert expected_content and member_list
+    assert sorted(expected_content) == sorted(member_list)
 
 
 @project_setup_py_test(("samples", "hello-cython"), ["bdist_wheel"])

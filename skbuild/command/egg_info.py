@@ -22,7 +22,6 @@ class egg_info(set_build_base_mixin, new_style(_egg_info)):
         # we've generated.  distutils already uses a first-line comment to tell
         # if the MANIFEST file was generated from MANIFEST.in, so we use a dummy
         # file, "_skbuild_MANIFEST", to avoid confusing distutils.
-
         do_generate = (
             # If there's a MANIFEST.in file, we assume that we had nothing to do
             # with the project's manifest.
@@ -54,6 +53,9 @@ class egg_info(set_build_base_mixin, new_style(_egg_info)):
                 )
 
                 raise
+
+            if not os.path.exists(SKBUILD_DIR):
+                os.makedirs(SKBUILD_DIR)
 
             with open(SKBUILD_MARKER_FILE, 'w') as file:  # touch
                 pass
