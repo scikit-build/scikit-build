@@ -33,9 +33,7 @@ def test_outside_project_root_fails(option):
             expected_failure = True
             cmd.extend(["--", option])
 
-        @project_setup_py_test(("samples", "fail-outside-project-root"),
-                               cmd,
-                               clear_cache=True)
+        @project_setup_py_test("fail-outside-project-root", cmd)
         def should_fail():
             pass
 

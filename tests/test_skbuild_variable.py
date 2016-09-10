@@ -11,22 +11,20 @@ Tries to build the `fail-unless-skbuild-set` sample project.  The CMake variable
 from . import project_setup_py_test
 
 
-@project_setup_py_test(("samples", "fail-unless-skbuild-set"),
-                       ["build"],
-                       clear_cache=True)
+@project_setup_py_test("fail-unless-skbuild-set", ["build"])
 def test_skbuild_variable_builds():
     pass
 
 
-# @project_setup_py_test(("samples", "fail-unless-skbuild-set"), ["test"])
+# @project_setup_py_test("fail-unless-skbuild-set", ["test"])
 # def test_skbuild_variable_works():
 #     pass
 
-@project_setup_py_test(("samples", "fail-unless-skbuild-set"), ["sdist"])
+@project_setup_py_test("fail-unless-skbuild-set", ["sdist"])
 def test_skbuild_variable_sdist():
     pass
 
 
-@project_setup_py_test(("samples", "fail-unless-skbuild-set"), ["bdist_wheel"])
+@project_setup_py_test("fail-unless-skbuild-set", ["bdist_wheel"])
 def test_skbuild_variable_wheel():
     pass

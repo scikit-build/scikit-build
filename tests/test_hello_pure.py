@@ -8,7 +8,6 @@ Tries to build and test the `hello-pure` sample project.
 """
 
 import glob
-import os
 import tarfile
 from zipfile import ZipFile
 
@@ -18,18 +17,18 @@ from skbuild.utils import push_dir
 from . import project_setup_py_test
 
 
-@project_setup_py_test(("samples", "hello-pure"), ["build"], clear_cache=True)
+@project_setup_py_test("hello-pure", ["build"])
 def test_hello_pure_builds(capsys):
     out, _ = capsys.readouterr()
     assert "skipping skbuild (no CMakeLists.txt found)" in out
 
 
-# @project_setup_py_test(("samples", "hello-pure"), ["test"])
+# @project_setup_py_test("hello-pure", ["test"])
 # def test_hello_cython_works():
 #     pass
 
 
-@project_setup_py_test(("samples", "hello-pure"), ["sdist"], clear_cache=True)
+@project_setup_py_test("hello-pure", ["sdist"])
 def test_hello_pure_sdist():
     sdists_tar = glob.glob('dist/*.tar.gz')
     sdists_zip = glob.glob('dist/*.zip')
@@ -59,7 +58,7 @@ def test_hello_pure_sdist():
     assert sorted(expected_content) == sorted(member_list)
 
 
-@project_setup_py_test(("samples", "hello-pure"), ["bdist_wheel"])
+@project_setup_py_test("hello-pure", ["bdist_wheel"])
 def test_hello_pure_wheel():
     whls = glob.glob('dist/*.whl')
     assert len(whls) == 1
@@ -69,25 +68,21 @@ def test_hello_pure_wheel():
 def test_hello_clean(capfd):
     with push_dir():
 
-        skbuild_dir = os.path.join(
-            "tests", "samples", "hello-pure", SKBUILD_DIR)
-
-        @project_setup_py_test(("samples", "hello-pure"), ["build"],
-                               clear_cache=True)
+        @project_setup_py_test("hello-pure", ["build"])
         def run_build():
             pass
 
-        run_build()
+        tmp_dir = run_build()[0]
 
-        assert os.path.exists(skbuild_dir)
+        assert tmp_dir.join(SKBUILD_DIR).exists()
 
-        @project_setup_py_test(("samples", "hello-pure"), ["clean"])
+        @project_setup_py_test("hello-pure", ["clean"], tmp_dir=tmp_dir)
         def run_clean():
             pass
 
         run_clean()
 
-        assert not os.path.exists(skbuild_dir)
+        assert not tmp_dir.join(SKBUILD_DIR).exists()
 
         out = capfd.readouterr()[0]
         assert 'Build files have been written to' not in out

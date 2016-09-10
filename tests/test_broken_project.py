@@ -11,7 +11,7 @@ its value.
 
 import pytest
 
-from subprocess import CalledProcessError
+from subprocess import (check_call, CalledProcessError)
 
 from skbuild.exceptions import SKBuildError
 from skbuild.platform_specifics import get_platform
@@ -25,9 +25,7 @@ def test_cmakelists_with_fatalerror_fails(capfd):
 
     with push_dir():
 
-        @project_setup_py_test(("samples", "fail-with-fatal-error-cmakelists"),
-                               ["build"],
-                               clear_cache=True)
+        @project_setup_py_test("fail-with-fatal-error-cmakelists", ["build"])
         def should_fail():
             pass
 
@@ -50,9 +48,7 @@ def test_cmakelists_with_syntaxerror_fails(capfd):
 
     with push_dir():
 
-        @project_setup_py_test(("samples", "fail-with-syntax-error-cmakelists"),
-                               ["build"],
-                               clear_cache=True)
+        @project_setup_py_test("fail-with-syntax-error-cmakelists", ["build"])
         def should_fail():
             pass
 
@@ -75,9 +71,7 @@ def test_hello_with_compileerror_fails(capfd):
 
     with push_dir():
 
-        @project_setup_py_test(("samples", "fail-hello-with-compile-error"),
-                               ["build"],
-                               clear_cache=True)
+        @project_setup_py_test("fail-hello-with-compile-error", ["build"])
         def should_fail():
             pass
 
@@ -104,13 +98,19 @@ def test_invalid_cmake(exception, mocker):
         CalledProcessError: CalledProcessError(['cmake', '--version'], 1)
     }
 
-    mocker.patch('subprocess.check_call',
-                 side_effect=exceptions[exception])
+    check_call_original = check_call
+
+    def check_call_mock(*args, **kwargs):
+        if args[0] == ['cmake', '--version']:
+            raise exceptions[exception]
+        check_call_original(*args, **kwargs)
+
+    mocker.patch('skbuild.cmaker.subprocess.check_call',
+                 new=check_call_mock)
 
     with push_dir():
 
-        @project_setup_py_test(("samples", "hello"), ["build"],
-                               clear_cache=True)
+        @project_setup_py_test("hello", ["build"])
         def should_fail():
             pass
 
@@ -137,8 +137,7 @@ def test_first_invalid_generator(mocker, capfd):
     mocker.patch('skbuild.cmaker.get_platform', return_value=platform)
 
     with push_dir(), push_env(CMAKE_GENERATOR=None):
-        @project_setup_py_test(("samples", "hello"), ["build"],
-                               clear_cache=True)
+        @project_setup_py_test("hello", ["build"])
         def run_build():
             pass
 
@@ -156,8 +155,7 @@ def test_invalid_generator(mocker, capfd):
     mocker.patch('skbuild.cmaker.get_platform', return_value=platform)
 
     with push_dir(), push_env(CMAKE_GENERATOR=None):
-        @project_setup_py_test(("samples", "hello"), ["build"],
-                               clear_cache=True)
+        @project_setup_py_test("hello", ["build"])
         def should_fail():
             pass
 

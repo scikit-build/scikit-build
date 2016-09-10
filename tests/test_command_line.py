@@ -14,7 +14,7 @@ from skbuild.utils import push_dir
 from . import project_setup_py_test
 
 
-@project_setup_py_test(("samples", "hello"), ["--help"])
+@project_setup_py_test("hello", ["--help"])
 def test_help(capsys):
     out, err = capsys.readouterr()
     assert "scikit-build options" not in out
@@ -22,7 +22,7 @@ def test_help(capsys):
     assert "usage:" in out
 
 
-@project_setup_py_test(("samples", "hello"), ["--help-commands"])
+@project_setup_py_test("hello", ["--help-commands"])
 def test_help_commands(capsys):
     out, err = capsys.readouterr()
     assert "scikit-build options" in out
@@ -31,7 +31,7 @@ def test_help_commands(capsys):
     assert "usage:" in out
 
 
-@project_setup_py_test(("samples", "hello"), ["--author", "--name"])
+@project_setup_py_test("hello", ["--author", "--name"])
 def test_metadata_display(capsys):
     out, err = capsys.readouterr()
     assert "scikit-build options" not in out
@@ -44,8 +44,7 @@ def test_metadata_display(capsys):
 def test_no_command():
     with push_dir():
 
-        @project_setup_py_test(("samples", "hello"), [],
-                               clear_cache=True)
+        @project_setup_py_test("hello", [])
         def run():
             pass
 
@@ -63,8 +62,7 @@ def test_invalid_command():
 
     with push_dir():
 
-        @project_setup_py_test(("samples", "hello"), ["unknown"],
-                               clear_cache=True)
+        @project_setup_py_test("hello", ["unknown"])
         def run():
             pass
 
@@ -81,7 +79,7 @@ def test_invalid_command():
 def test_too_many_separators():
     with push_dir():
 
-        @project_setup_py_test(("samples", "hello"), ["--"] * 3)
+        @project_setup_py_test("hello", ["--"] * 3)
         def run():
             pass
 
@@ -94,9 +92,8 @@ def test_too_many_separators():
         assert failed
 
 
-@project_setup_py_test(("samples", "hello"),
-                       ["build", "--", "-DMY_CMAKE_VARIABLE:BOOL=1"],
-                       clear_cache=True)
+@project_setup_py_test("hello",
+                       ["build", "--", "-DMY_CMAKE_VARIABLE:BOOL=1"])
 def test_cmake_args(capfd):
     out, err = capfd.readouterr()
     assert "Manually-specified variables were not used by the project" in err
