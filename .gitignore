@@ -51,6 +51,4 @@ docs/_build
 
 # build output (testing)
 skbuild/_cmake_test_compile/*
-tests/samples/*/_cmake_test_compile/*
-tests/samples/*/MANIFEST
 

@@ -11,9 +11,7 @@ Tries to build the `fail-unless-skbuild-set` sample project.  The CMake variable
 from . import project_setup_py_test
 
 
-@project_setup_py_test("fail-unless-skbuild-set",
-                       ["build"],
-                       clear_cache=True)
+@project_setup_py_test("fail-unless-skbuild-set", ["build"])
 def test_skbuild_variable_builds():
     pass
 

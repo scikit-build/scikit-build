@@ -8,7 +8,6 @@ Tries to build and test the `hello-pure` sample project.
 """
 
 import glob
-import os
 import tarfile
 from zipfile import ZipFile
 
@@ -18,7 +17,7 @@ from skbuild.utils import push_dir
 from . import project_setup_py_test
 
 
-@project_setup_py_test("hello-pure", ["build"], clear_cache=True)
+@project_setup_py_test("hello-pure", ["build"])
 def test_hello_pure_builds(capsys):
     out, _ = capsys.readouterr()
     assert "skipping skbuild (no CMakeLists.txt found)" in out
@@ -69,25 +68,21 @@ def test_hello_pure_wheel():
 def test_hello_clean(capfd):
     with push_dir():
 
-        skbuild_dir = os.path.join(
-            "tests", "samples", "hello-pure", SKBUILD_DIR)
-
-        @project_setup_py_test("hello-pure", ["build"],
-                               clear_cache=True)
+        @project_setup_py_test("hello-pure", ["build"])
         def run_build():
             pass
 
-        run_build()
+        tmp_dir = run_build()[0]
 
-        assert os.path.exists(skbuild_dir)
+        assert tmp_dir.join(SKBUILD_DIR).exists()
 
-        @project_setup_py_test("hello-pure", ["clean"])
+        @project_setup_py_test("hello-pure", ["clean"], tmp_dir=tmp_dir)
         def run_clean():
             pass
 
         run_clean()
 
-        assert not os.path.exists(skbuild_dir)
+        assert not tmp_dir.join(SKBUILD_DIR).exists()
 
         out = capfd.readouterr()[0]
         assert 'Build files have been written to' not in out
