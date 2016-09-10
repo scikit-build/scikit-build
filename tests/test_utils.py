@@ -9,7 +9,7 @@ Tests for utils functions.
 
 import os
 
-from skbuild.utils import mkdir_p
+from skbuild.utils import (mkdir_p, push_dir)
 
 from . import push_env
 
@@ -30,8 +30,6 @@ def teardown_module():
 
 def test_push_dir(tmpdir):
     assert os.path.split(os.getcwd())[-1] == 'tests'
-
-    from skbuild.utils import push_dir
 
     # No directory
     with push_dir():
@@ -65,8 +63,6 @@ def test_push_dir(tmpdir):
 
 def test_push_dir_decorator(tmpdir):
     assert os.path.split(os.getcwd())[-1] == 'tests'
-
-    from skbuild.utils.decorator import push_dir
 
     # No directory
     @push_dir()

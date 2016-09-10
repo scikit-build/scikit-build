@@ -4,7 +4,6 @@ import shutil
 import subprocess
 
 from ..utils import push_dir
-from ..utils.decorator import push_dir as push_dir_decorator
 
 test_folder = "_cmake_test_compile"
 
@@ -79,7 +78,7 @@ class CMakePlatform(object):
         return working_generator
 
     @staticmethod
-    @push_dir_decorator(directory=test_folder)
+    @push_dir(directory=test_folder)
     def compile_test_cmakelist(cmake_exe_path, candidate_generators):
 
         # working generator is the first generator we find that works.
