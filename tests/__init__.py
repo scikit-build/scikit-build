@@ -117,6 +117,65 @@ def _copy_dir(target_dir, entry, on_duplicate='exception', keep_top_dir=False):
             # on_duplicate == 'ignore': do nothing with e2
 
 
+def prepare_project(project, tmp_project_dir):
+    """Convenience function setting up the build directory ``tmp_project_dir``
+    for the selected sample ``project``.
+
+    If ``tmp_project_dir`` does not exist, it is created.
+
+    If ``tmp_project_dir`` is empty, the function does the following:
+
+        1. It recursively copies the sample ``project`` into it.
+
+        2. Initialize a new git repository with one commit containing
+        all the directories and files.
+    """
+
+    tmp_project_dir = py.path.local(tmp_project_dir)
+
+    # Create project directory if it does not exist
+    if not tmp_project_dir.exists():
+        tmp_project_dir = _tmpdir(project)
+
+    # If empty, copy project files and initialize git
+    if not tmp_project_dir.listdir():
+        src_project_dir = os.path.join(SAMPLES_DIR, project)
+
+        _copy_dir(tmp_project_dir, src_project_dir)
+
+        # Initialize git
+        with push_dir(str(tmp_project_dir)):
+            for cmd in [
+                ['git', 'init'],
+                ['git', 'config', 'user.name', 'scikit-build'],
+                ['git', 'config', 'user.email', 'test@test'],
+                ['git', 'add', '-A'],
+                ['git', 'commit', '-m', 'Initial commit']
+            ]:
+                subprocess.check_call(cmd)
+
+
+@contextmanager
+def execute_setup_py(project_dir, setup_args):
+    """Context manager executing ``setup.py`` with the given arguments.
+
+    It yields after changing the current working directory
+    to ``project_dir``.
+    """
+
+    with push_dir(str(project_dir)), \
+            push_argv(["setup.py"] + setup_args):
+        setup_code = None
+
+        with open("setup.py", "r") as fp:
+            setup_code = compile(fp.read(), "setup.py", mode="exec")
+
+        if setup_code is not None:
+            six.exec_(setup_code)
+
+        yield
+
+
 def project_setup_py_test(project, setup_args, tmp_dir=None):
 
     def dec(fun):
@@ -124,37 +183,11 @@ def project_setup_py_test(project, setup_args, tmp_dir=None):
         @six.wraps(fun)
         def wrapped(*iargs, **ikwargs):
 
-            # If requested, make temp directory
             if wrapped.tmp_dir is None:
-                project_dir = os.path.join(SAMPLES_DIR, wrapped.project)
-
                 wrapped.tmp_dir = _tmpdir(fun.__name__)
+                prepare_project(wrapped.project, wrapped.tmp_dir)
 
-                # Copy files only if temp directory  was not
-                # explicitly provided.
-                _copy_dir(wrapped.tmp_dir, project_dir)
-
-                # Initialize git
-                with push_dir(str(wrapped.tmp_dir)):
-                    for cmd in [
-                        ['git', 'init'],
-                        ['git', 'config', 'user.name', 'scikit-build'],
-                        ['git', 'config', 'user.email', 'test@test'],
-                        ['git', 'add', '-A'],
-                        ['git', 'commit', '-m', 'Initial commit']
-                    ]:
-                        subprocess.check_call(cmd)
-
-            with push_dir(str(wrapped.tmp_dir)),\
-                    push_argv(["setup.py"] + wrapped.setup_args):
-
-                setup_code = None
-                with open("setup.py", "r") as fp:
-                    setup_code = compile(fp.read(), "setup.py", mode="exec")
-
-                if setup_code is not None:
-                    six.exec_(setup_code)
-
+            with execute_setup_py(wrapped.tmp_dir, wrapped.setup_args):
                 result2 = fun(*iargs, **ikwargs)
 
             return wrapped.tmp_dir, result2

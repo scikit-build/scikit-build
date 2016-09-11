@@ -9,7 +9,7 @@ Tests for utils functions.
 
 import os
 
-from skbuild.utils import (mkdir_p, push_dir)
+from skbuild.utils import (ContextDecorator, mkdir_p, push_dir)
 
 from . import push_env
 
@@ -26,6 +26,12 @@ def teardown_module():
     method.
     """
     os.chdir(saved_cwd)
+
+
+def test_context_decorator():
+    with ContextDecorator(foo=42) as context:
+        assert hasattr(context, 'foo')
+        assert context.foo == 42
 
 
 def test_push_dir(tmpdir):

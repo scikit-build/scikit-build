@@ -108,8 +108,9 @@ class CMaker(object):
         python_library = CMaker.get_python_library(python_version)
 
         cwd = os.getcwd()
+        cmake_src_dir = cwd
         cmd = [
-            'cmake', cwd, '-G', generator_id,
+            'cmake', cmake_src_dir, '-G', generator_id,
             ("-DCMAKE_INSTALL_PREFIX:PATH=" +
                 os.path.join(cwd, CMAKE_INSTALL_DIR)),
             ("-DPYTHON_EXECUTABLE:FILEPATH=" +
@@ -147,7 +148,7 @@ class CMaker(object):
                 "    {}\n"
                 "Please see CMake's output for more information.".format(
                     self._formatArgsForDisplay(cmd),
-                    os.path.abspath(cwd),
+                    os.path.abspath(cmake_src_dir),
                     os.path.abspath(CMAKE_BUILD_DIR)))
 
         CMaker.check_for_bad_installs()
