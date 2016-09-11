@@ -138,6 +138,31 @@ def _parse_setuptools_arguments(setup_attrs):
     return display_only, dist.help_commands, dist.commands
 
 
+def _collect_skbuild_parameters(setup_kw):
+    skbuild_kw = {}
+    default_values = {'cmake_source_dir': os.getcwd()}
+    for param in ['cmake_source_dir']:
+        skbuild_kw[param] = None
+        if param in default_values:
+            skbuild_kw[param] = default_values[param]
+        if param in setup_kw:
+            skbuild_kw[param] = setup_kw[param]
+            del setup_kw[param]  # Update the dictionary passed by reference
+    return skbuild_kw
+
+
+def _check_skbuild_parameters(skbuild_kw):
+    cmake_source_dir = skbuild_kw['cmake_source_dir']
+    if not os.path.exists(cmake_source_dir):
+        raise SKBuildError((
+            "\n  setup parameter 'cmake_source_dir' set to "
+            "a nonexistent directory.\n"
+            "    Project Root  : {}\n"
+            "    CMake Source Directory File: {}\n").format(
+            os.getcwd(), cmake_source_dir
+        ))
+
+
 def setup(*args, **kw):
     """This function wraps setup() so that we can run cmake, make,
     CMake build, then proceed as usual with setuptools, appending the
@@ -158,6 +183,22 @@ def setup(*args, **kw):
     cmdclass['egg_info'] = cmdclass.get('egg_info', egg_info.egg_info)
     kw['cmdclass'] = cmdclass
 
+    # Extract setup keywords specific to scikit-build and remove them from kw.
+    # Removing the keyword from kw need to be done here otherwise, the
+    # following call to _parse_setuptools_arguments would complain about
+    # unknown setup option.
+    skbuild_kw = _collect_skbuild_parameters(kw)
+
+    # ... and validate them
+    try:
+        _check_skbuild_parameters(skbuild_kw)
+    except SKBuildError as e:
+        import traceback
+        print("Traceback (most recent call last):")
+        traceback.print_tb(sys.exc_info()[2])
+        print('')
+        sys.exit(e)
+
     # Skip running CMake in the following cases:
     # * no command-line arguments or invalid ones are provided
     # * "display only" argument like '--help', '--help-commands'
@@ -170,7 +211,14 @@ def setup(*args, **kw):
     except (DistutilsArgError, DistutilsGetoptError):
         has_invalid_arguments = True
 
-    has_cmakelists = os.path.exists("CMakeLists.txt")
+    cmake_source_dir = skbuild_kw['cmake_source_dir']
+    if cmake_source_dir:
+        # TODO(jc) Error out if a CMakeLists.txt is found at the root and
+        #          a CMake source dir is specified.
+        cmake_source_dir = os.path.join(os.getcwd(), cmake_source_dir)
+
+    has_cmakelists = os.path.exists(
+        os.path.join(cmake_source_dir, "CMakeLists.txt"))
     if not has_cmakelists:
         print('skipping skbuild (no CMakeLists.txt found)')
 
@@ -215,7 +263,8 @@ def setup(*args, **kw):
 
     try:
         cmkr = cmaker.CMaker()
-        cmkr.configure(cmake_args)
+        cmkr.configure(cmake_args,
+                       cmake_src_dir=cmake_source_dir)
         cmkr.make(make_args)
     except SKBuildError as e:
         import traceback
