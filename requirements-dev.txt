@@ -7,3 +7,6 @@ pytest-cov==2.3.1
 pytest-mock==1.2
 pytest-runner==2.9
 six==1.10.0
+git+https://github.com/jcfr/pytest-plugins.git@pytest-fixture-config#egg=pytest-fixture-config
+git+https://github.com/jcfr/pytest-plugins.git@pytest-shutil#egg=pytest-shutil
+git+https://github.com/jcfr/pytest-plugins.git@pytest-virtualenv#egg=pytest-virtualenv
