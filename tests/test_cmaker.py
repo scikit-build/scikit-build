@@ -21,3 +21,7 @@ def test_get_python_library():
     python_library = CMaker.get_python_library(CMaker.get_python_version())
     assert python_library
     assert os.path.exists(python_library)
+
+
+def test_get_python_library_with_virtualenv(virtualenv):
+    test_get_python_library()
