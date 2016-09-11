@@ -31,32 +31,25 @@ def test_hello_cython_sdist():
     sdists_zip = glob.glob('dist/*.zip')
     assert sdists_tar or sdists_zip
 
+    expected_content = [
+        'hello-cython-1.2.3/CMakeLists.txt',
+        'hello-cython-1.2.3/hello/_hello.pyx',
+        'hello-cython-1.2.3/hello/CMakeLists.txt',
+        'hello-cython-1.2.3/hello/__init__.py',
+        'hello-cython-1.2.3/hello/__main__.py',
+        'hello-cython-1.2.3/setup.py',
+        'hello-cython-1.2.3/PKG-INFO'
+    ]
+
     member_list = None
-    expected_content = None
     if sdists_tar:
-        expected_content = [
+        expected_content.extend([
             'hello-cython-1.2.3',
-            'hello-cython-1.2.3/CMakeLists.txt',
-            'hello-cython-1.2.3/hello',
-            'hello-cython-1.2.3/hello/_hello.pyx',
-            'hello-cython-1.2.3/hello/CMakeLists.txt',
-            'hello-cython-1.2.3/hello/__init__.py',
-            'hello-cython-1.2.3/hello/__main__.py',
-            'hello-cython-1.2.3/setup.py',
-            'hello-cython-1.2.3/PKG-INFO'
-        ]
+            'hello-cython-1.2.3/hello'
+        ])
         member_list = tarfile.open('dist/hello-cython-1.2.3.tar.gz').getnames()
 
     elif sdists_zip:
-        expected_content = [
-            'hello-cython-1.2.3/CMakeLists.txt',
-            'hello-cython-1.2.3/hello/_hello.pyx',
-            'hello-cython-1.2.3/hello/CMakeLists.txt',
-            'hello-cython-1.2.3/hello/__init__.py',
-            'hello-cython-1.2.3/hello/__main__.py',
-            'hello-cython-1.2.3/setup.py',
-            'hello-cython-1.2.3/PKG-INFO'
-        ]
         member_list = ZipFile('dist/hello-cython-1.2.3.zip').namelist()
 
     assert expected_content and member_list
