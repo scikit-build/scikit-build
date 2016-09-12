@@ -87,6 +87,7 @@ def test_hello_sdist():
 
     expected_content = [
         'hello-1.2.3/CMakeLists.txt',
+        'hello-1.2.3/bonjour/__init__.py',
         'hello-1.2.3/hello/_hello.cxx',
         'hello-1.2.3/hello/CMakeLists.txt',
         'hello-1.2.3/hello/__init__.py',
@@ -99,6 +100,7 @@ def test_hello_sdist():
     if sdists_tar:
         expected_content.extend([
             'hello-1.2.3',
+            'hello-1.2.3/bonjour',
             'hello-1.2.3/hello'
         ])
         member_list = tarfile.open('dist/hello-1.2.3.tar.gz').getnames()

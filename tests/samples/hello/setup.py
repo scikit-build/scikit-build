@@ -6,6 +6,9 @@ setup(
     description="a minimal example package",
     author='The scikit-build team',
     license="MIT",
-    packages=['hello'],
-    package_dir={'hello': 'hello'},
+    packages=['bonjour', 'hello'],
+    package_dir={
+        'bonjour': 'bonjour',
+        'hello': 'hello'
+    },
 )
