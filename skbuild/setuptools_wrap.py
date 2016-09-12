@@ -139,13 +139,23 @@ def _parse_setuptools_arguments(setup_attrs):
 
 
 def _check_skbuild_parameters(skbuild_kw):
+    cmake_install_dir = skbuild_kw['cmake_install_dir']
+    if os.path.isabs(cmake_install_dir):
+        raise SKBuildError((
+            "\n  setup parameter 'cmake_install_dir' is set to "
+            "an absolute path. A relative path is expected.\n"
+            "    Project Root  : {}\n"
+            "    CMake Install Directory: {}\n").format(
+            os.getcwd(), cmake_install_dir
+        ))
+
     cmake_source_dir = skbuild_kw['cmake_source_dir']
     if not os.path.exists(cmake_source_dir):
         raise SKBuildError((
             "\n  setup parameter 'cmake_source_dir' set to "
             "a nonexistent directory.\n"
             "    Project Root  : {}\n"
-            "    CMake Source Directory File: {}\n").format(
+            "    CMake Source Directory: {}\n").format(
             os.getcwd(), cmake_source_dir
         ))
 
@@ -176,6 +186,7 @@ def setup(*args, **kw):
     # unknown setup options.
     parameters = {
         'cmake_args': [],
+        'cmake_install_dir': '',
         'cmake_source_dir': os.getcwd()
     }
     skbuild_kw = {param: kw.pop(param, parameters[param])
@@ -255,7 +266,8 @@ def setup(*args, **kw):
     try:
         cmkr = cmaker.CMaker()
         cmkr.configure(cmake_args,
-                       cmake_src_dir=skbuild_kw['cmake_source_dir'])
+                       cmake_src_dir=skbuild_kw['cmake_source_dir'],
+                       cmake_install_dir=skbuild_kw['cmake_install_dir'])
         cmkr.make(make_args)
     except SKBuildError as e:
         import traceback
