@@ -277,7 +277,10 @@ def setup(*args, **kw):
 
     kw['package_data'] = package_data
     kw['package_dir'] = {
-        package: os.path.join(cmaker.CMAKE_INSTALL_DIR, prefix)
+        package: (
+            os.path.join(cmaker.CMAKE_INSTALL_DIR, prefix)
+            if os.path.exists(os.path.join(cmaker.CMAKE_INSTALL_DIR, prefix))
+            else prefix)
         for prefix, package in package_prefixes
     }
 
