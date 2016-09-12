@@ -196,3 +196,47 @@ def test_cmake_install_dir_keyword(
     else:
         assert "copying {}".format(os.path.join(
             *"_skbuild/cmake-install/banana/__init__.py".split("/"))) in out
+
+
+@pytest.mark.parametrize("distribution_type", ('pure', 'skbuild'))
+def test_script_keyword(distribution_type, capsys):
+    tmp_dir = _tmpdir('script_keyword')
+
+    tmp_dir.join('setup.py').write(textwrap.dedent(
+        """
+        from skbuild import setup
+        setup(
+            name="test_script_keyword",
+            version="1.2.3",
+            description="a package testing use of script keyword",
+            author='The scikit-build team',
+            license="MIT",
+            scripts=['foo.py']
+        )
+        """
+    ))
+
+    if distribution_type == 'skbuild':
+        tmp_dir.join('CMakeLists.txt').write(textwrap.dedent(
+            """
+            cmake_minimum_required(VERSION 3.5.0)
+            project(foo)
+            file(WRITE "${CMAKE_BINARY_DIR}/foo.py" "# foo.py")
+            install(FILES "${CMAKE_BINARY_DIR}/foo.py" DESTINATION ".")
+            """
+        ))
+
+        message = "copying _skbuild/cmake-install/foo.py -> " \
+                  "_skbuild/setuptools/scripts-".replace("/", os.path.sep)
+
+    elif distribution_type == 'pure':
+        tmp_dir.join('foo.py').write("# foo.py")
+
+        message = "copying foo.py -> " \
+                  "_skbuild/setuptools/scripts-".replace("/", os.path.sep)
+
+    with execute_setup_py(tmp_dir, ['build']):
+        pass
+
+    out, _ = capsys.readouterr()
+    assert message in out
