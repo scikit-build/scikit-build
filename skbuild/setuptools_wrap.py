@@ -249,6 +249,7 @@ def setup(*args, **kw):
     package_data = kw.get('package_data', {}).copy()
 
     py_modules = kw.get('py_modules', [])
+    new_py_modules = {py_module: False for py_module in py_modules}
 
     scripts = kw.get('scripts', [])
     new_scripts = {script: False for script in scripts}
@@ -278,8 +279,10 @@ def setup(*args, **kw):
 
     package_prefixes = _collect_package_prefixes(package_dir, packages)
 
-    _classify_files(cmkr.install(), package_data, package_prefixes, py_modules,
-                    scripts, new_scripts, data_files)
+    _classify_files(cmkr.install(), package_data, package_prefixes,
+                    py_modules, new_py_modules,
+                    scripts, new_scripts,
+                    data_files)
 
     kw['package_data'] = package_data
     kw['package_dir'] = {
@@ -290,7 +293,10 @@ def setup(*args, **kw):
         for prefix, package in package_prefixes
     }
 
-    kw['py_modules'] = py_modules
+    kw['py_modules'] = [
+        os.path.join(cmaker.CMAKE_INSTALL_DIR, py_module) if mask else py_module
+        for py_module, mask in new_py_modules.items()
+    ]
 
     kw['scripts'] = [
         os.path.join(cmaker.CMAKE_INSTALL_DIR, script) if mask else script
@@ -353,8 +359,10 @@ def _collect_package_prefixes(package_dir, packages):
     ))
 
 
-def _classify_files(install_paths, package_data, package_prefixes, py_modules,
-                    scripts, new_scripts, data_files):
+def _classify_files(install_paths, package_data, package_prefixes,
+                    py_modules, new_py_modules,
+                    scripts, new_scripts,
+                    data_files):
     install_root = os.path.join(os.getcwd(), cmaker.CMAKE_INSTALL_DIR)
     for path in install_paths:
         found_package = False
@@ -394,6 +402,7 @@ def _classify_files(install_paths, package_data, package_prefixes, py_modules,
         # check if path is a module
         for module in py_modules:
             if path.replace("/", ".") == ".".join((module, "py")):
+                new_py_modules[module] = True
                 found_module = True
                 break
 
