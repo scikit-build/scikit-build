@@ -107,13 +107,11 @@ class CMaker(object):
         python_include_dir = CMaker.get_python_include_dir(python_version)
         python_library = CMaker.get_python_library(python_version)
 
-        cwd = os.getcwd()
-        if not cmake_src_dir:
-            cmake_src_dir = cwd
+        cmake_src_dir = os.path.abspath(cmake_src_dir)
         cmd = [
             'cmake', cmake_src_dir, '-G', generator_id,
             ("-DCMAKE_INSTALL_PREFIX:PATH=" +
-                os.path.join(cwd, CMAKE_INSTALL_DIR)),
+                os.path.abspath(CMAKE_INSTALL_DIR)),
             ("-DPYTHON_EXECUTABLE:FILEPATH=" +
                 sys.executable),
             ("-DPYTHON_VERSION_STRING:STRING=" +
