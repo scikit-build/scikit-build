@@ -203,14 +203,8 @@ def setup(*args, **kw):
     except (DistutilsArgError, DistutilsGetoptError):
         has_invalid_arguments = True
 
-    cmake_source_dir = skbuild_kw['cmake_source_dir']
-    if cmake_source_dir:
-        # TODO(jc) Error out if a CMakeLists.txt is found at the root and
-        #          a CMake source dir is specified.
-        cmake_source_dir = os.path.join(os.getcwd(), cmake_source_dir)
-
     has_cmakelists = os.path.exists(
-        os.path.join(cmake_source_dir, "CMakeLists.txt"))
+        os.path.join(skbuild_kw['cmake_source_dir'], "CMakeLists.txt"))
     if not has_cmakelists:
         print('skipping skbuild (no CMakeLists.txt found)')
 
@@ -261,7 +255,7 @@ def setup(*args, **kw):
     try:
         cmkr = cmaker.CMaker()
         cmkr.configure(cmake_args,
-                       cmake_src_dir=cmake_source_dir)
+                       cmake_src_dir=skbuild_kw['cmake_source_dir'])
         cmkr.make(make_args)
     except SKBuildError as e:
         import traceback
