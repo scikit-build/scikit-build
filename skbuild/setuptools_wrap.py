@@ -175,6 +175,7 @@ def setup(*args, **kw):
     # following call to _parse_setuptools_arguments would complain about
     # unknown setup options.
     parameters = {
+        'cmake_args': [],
         'cmake_source_dir': os.getcwd()
     }
     skbuild_kw = {param: kw.pop(param, parameters[param])
@@ -251,6 +252,11 @@ def setup(*args, **kw):
         (parent_dir or '.'): set(file_list)
         for parent_dir, file_list in kw.get('data_files', [])
     }
+
+    # Since CMake arguments provided through the command line have more
+    # weight and when CMake is given multiple times a argument, only the last
+    # one is considered, let's prepend the one provided in the setup call.
+    cmake_args = skbuild_kw['cmake_args'] + cmake_args
 
     try:
         cmkr = cmaker.CMaker()
