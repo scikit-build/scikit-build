@@ -8,12 +8,14 @@ Tests for `skbuild.setup` function.
 """
 
 import textwrap
+import os
 import pytest
 
 from distutils.core import Distribution as distutils_Distribution
 from setuptools import Distribution as setuptool_Distribution
 
 from skbuild import setup as skbuild_setup
+from skbuild.exceptions import SKBuildError
 from skbuild.utils import push_dir
 
 from . import (_tmpdir, execute_setup_py, push_argv)
@@ -119,3 +121,78 @@ def test_cmake_args_keyword(cmake_args, capfd):
     else:
         assert "VAR[43]" in out
         assert "VAR_WITH_SPACE[Ciao Mondo]" in out
+
+
+@pytest.mark.parametrize(
+    "cmake_install_dir, expected_failed, error_code_type", (
+        (None, True, str),
+        ('', True, str),
+        (os.getcwd(), True, SKBuildError),
+        ('banana', False, str)
+    )
+)
+def test_cmake_install_dir_keyword(
+        cmake_install_dir, expected_failed, error_code_type, capsys):
+
+    tmp_dir = _tmpdir('cmake_install_dir_keyword')
+
+    setup_kwarg = ''
+    if cmake_install_dir is not None:
+        setup_kwarg = 'cmake_install_dir=\'{}\''.format(cmake_install_dir)
+
+    tmp_dir.join('setup.py').write(textwrap.dedent(
+        """
+        from skbuild import setup
+        setup(
+            name="test_cmake_install_dir",
+            version="1.2.3",
+            description="a package testing use of cmake_install_dir",
+            author='The scikit-build team',
+            license="MIT",
+            packages=['apple', 'banana'],
+            package_dir={{
+                'banana': 'banana',
+                'apple': 'apple'
+            }},
+            {setup_kwarg}
+        )
+        """.format(setup_kwarg=setup_kwarg)
+    ))
+
+    # Install location purposely set to "." so that we can test
+    # usage of "cmake_install_dir" skbuild.setup keyword.
+    tmp_dir.join('CMakeLists.txt').write(textwrap.dedent(
+        """
+        cmake_minimum_required(VERSION 3.5.0)
+        project(banana)
+        file(WRITE "${CMAKE_BINARY_DIR}/__init__.py" "")
+        install(FILES "${CMAKE_BINARY_DIR}/__init__.py" DESTINATION ".")
+        """
+    ))
+
+    tmp_dir.ensure('apple', '__init__.py')
+
+    failed = False
+    message = ""
+    try:
+        with execute_setup_py(tmp_dir, ['build']):
+            pass
+    except SystemExit as e:
+        # Error is not of type SKBuildError, it is expected to be
+        # raised by distutils.core.setup
+        failed = isinstance(e.code, error_code_type)
+        message = str(e)
+
+    out, _ = capsys.readouterr()
+
+    assert failed == expected_failed
+    if failed:
+        if error_code_type == str:
+            assert message == "error: package directory 'banana' does not exist"
+        else:
+            assert message.strip().startswith(
+                "setup parameter 'cmake_install_dir' "
+                "is set to an absolute path.")
+    else:
+        assert "copying {}".format(os.path.join(
+            *"_skbuild/cmake-install/banana/__init__.py".split("/"))) in out
