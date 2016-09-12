@@ -138,19 +138,6 @@ def _parse_setuptools_arguments(setup_attrs):
     return display_only, dist.help_commands, dist.commands
 
 
-def _collect_skbuild_parameters(setup_kw):
-    skbuild_kw = {}
-    default_values = {'cmake_source_dir': os.getcwd()}
-    for param in ['cmake_source_dir']:
-        skbuild_kw[param] = None
-        if param in default_values:
-            skbuild_kw[param] = default_values[param]
-        if param in setup_kw:
-            skbuild_kw[param] = setup_kw[param]
-            del setup_kw[param]  # Update the dictionary passed by reference
-    return skbuild_kw
-
-
 def _check_skbuild_parameters(skbuild_kw):
     cmake_source_dir = skbuild_kw['cmake_source_dir']
     if not os.path.exists(cmake_source_dir):
@@ -186,8 +173,12 @@ def setup(*args, **kw):
     # Extract setup keywords specific to scikit-build and remove them from kw.
     # Removing the keyword from kw need to be done here otherwise, the
     # following call to _parse_setuptools_arguments would complain about
-    # unknown setup option.
-    skbuild_kw = _collect_skbuild_parameters(kw)
+    # unknown setup options.
+    parameters = {
+        'cmake_source_dir': os.getcwd()
+    }
+    skbuild_kw = {param: kw.pop(param, parameters[param])
+                  for param in parameters}
 
     # ... and validate them
     try:
