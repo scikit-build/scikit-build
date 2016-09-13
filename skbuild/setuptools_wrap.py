@@ -151,7 +151,7 @@ def _check_skbuild_parameters(skbuild_kw):
         ))
 
     cmake_source_dir = skbuild_kw['cmake_source_dir']
-    if not os.path.exists(cmake_source_dir):
+    if not os.path.exists(os.path.abspath(cmake_source_dir)):
         raise SKBuildError((
             "\n  setup parameter 'cmake_source_dir' set to "
             "a nonexistent directory.\n"
