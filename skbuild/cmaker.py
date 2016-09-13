@@ -12,13 +12,11 @@ import sysconfig
 
 from subprocess import CalledProcessError
 
+from .constants import (CMAKE_BUILD_DIR,
+                        CMAKE_INSTALL_DIR,
+                        SETUPTOOLS_INSTALL_DIR)
 from .platform_specifics import get_platform
 from .exceptions import SKBuildError
-
-SKBUILD_DIR = "_skbuild"
-CMAKE_BUILD_DIR = os.path.join(SKBUILD_DIR, "cmake-build")
-CMAKE_INSTALL_DIR = os.path.join(SKBUILD_DIR, "cmake-install")
-SETUPTOOLS_INSTALL_DIR = os.path.join(SKBUILD_DIR, "setuptools")
 
 RE_FILE_INSTALL = re.compile(
     r"""[ \t]*file\(INSTALL DESTINATION "([^"]+)".*"([^"]+)"\).*""")

@@ -12,6 +12,7 @@ from distutils.errors import DistutilsGetoptError, DistutilsArgError
 
 from . import cmaker
 from .command import build, install, clean, bdist, bdist_wheel, egg_info, sdist
+from .constants import CMAKE_INSTALL_DIR
 from .exceptions import SKBuildError
 
 # XXX If 'six' becomes a dependency, use 'six.StringIO' instead.
@@ -287,19 +288,19 @@ def setup(*args, **kw):
     kw['package_data'] = package_data
     kw['package_dir'] = {
         package: (
-            os.path.join(cmaker.CMAKE_INSTALL_DIR, prefix)
-            if os.path.exists(os.path.join(cmaker.CMAKE_INSTALL_DIR, prefix))
+            os.path.join(CMAKE_INSTALL_DIR, prefix)
+            if os.path.exists(os.path.join(CMAKE_INSTALL_DIR, prefix))
             else prefix)
         for prefix, package in package_prefixes
     }
 
     kw['py_modules'] = [
-        os.path.join(cmaker.CMAKE_INSTALL_DIR, py_module) if mask else py_module
+        os.path.join(CMAKE_INSTALL_DIR, py_module) if mask else py_module
         for py_module, mask in new_py_modules.items()
     ]
 
     kw['scripts'] = [
-        os.path.join(cmaker.CMAKE_INSTALL_DIR, script) if mask else script
+        os.path.join(CMAKE_INSTALL_DIR, script) if mask else script
         for script, mask in new_scripts.items()
     ]
 
@@ -363,7 +364,7 @@ def _classify_files(install_paths, package_data, package_prefixes,
                     py_modules, new_py_modules,
                     scripts, new_scripts,
                     data_files):
-    install_root = os.path.join(os.getcwd(), cmaker.CMAKE_INSTALL_DIR)
+    install_root = os.path.join(os.getcwd(), CMAKE_INSTALL_DIR)
     for path in install_paths:
         found_package = False
         found_module = False
@@ -372,14 +373,14 @@ def _classify_files(install_paths, package_data, package_prefixes,
         # if this installed file is not within the project root, complain and
         # exit
         test_path = path.replace("/", os.sep)
-        if not test_path.startswith(cmaker.CMAKE_INSTALL_DIR):
+        if not test_path.startswith(CMAKE_INSTALL_DIR):
             raise SKBuildError((
                 "\n  CMake-installed files must be within the project root.\n"
                 "    Project Root  : {}\n"
                 "    Violating File: {}\n").format(install_root, test_path))
 
         # peel off the 'skbuild' prefix
-        path = os.path.relpath(path, cmaker.CMAKE_INSTALL_DIR)
+        path = os.path.relpath(path, CMAKE_INSTALL_DIR)
 
         # check to see if path is part of a package
         for prefix, package in package_prefixes:
@@ -431,5 +432,5 @@ def _classify_files(install_paths, package_data, package_prefixes,
         if file_set is None:
             file_set = set()
             data_files[parent_dir] = file_set
-        file_set.add(os.path.join(cmaker.CMAKE_INSTALL_DIR, path))
+        file_set.add(os.path.join(CMAKE_INSTALL_DIR, path))
         del parent_dir, file_set
