@@ -9,9 +9,10 @@ Tests for utils functions.
 
 import os
 
-from skbuild.utils import (ContextDecorator, mkdir_p, push_dir)
+from skbuild.utils import (ContextDecorator, mkdir_p,
+                           PythonModuleFinder, push_dir)
 
-from . import push_env
+from . import (push_env, SAMPLES_DIR)
 
 saved_cwd = os.getcwd()
 
@@ -153,3 +154,13 @@ def test_push_env():
     with push_env():
         assert saved_env == os.environ
     assert saved_env == os.environ
+
+
+def test_python_module_finder():
+    modules = PythonModuleFinder(['bonjour', 'hello'], {}, []).find_all_modules(
+        os.path.join(SAMPLES_DIR, 'hello')
+    )
+    assert modules == [
+        ('bonjour', '__init__', 'bonjour/__init__.py'),
+        ('hello', '__init__', 'hello/__init__.py'),
+        ('hello', '__main__', 'hello/__main__.py')]
