@@ -10,6 +10,7 @@ keyword works.
 """
 
 import glob
+import pytest
 import tarfile
 import textwrap
 
@@ -27,8 +28,12 @@ def test_build(capsys):
     assert (dist_warning not in err and dist_warning not in out)
 
 
-def test_invalid_cmake_source_dir():
-    tmp_dir = _tmpdir('invalid_cmake_source_dir')
+@pytest.mark.parametrize("cmake_source_dir, expected_failed", (
+        ("invalid", True),
+        ("", False)
+))
+def test_cmake_source_dir(cmake_source_dir, expected_failed):
+    tmp_dir = _tmpdir('test_cmake_source_dir')
 
     tmp_dir.join('setup.py').write(textwrap.dedent(
         """
@@ -39,9 +44,9 @@ def test_invalid_cmake_source_dir():
             description="a minimal example package",
             author='The scikit-build team',
             license="MIT",
-            cmake_source_dir="invalid"
+            cmake_source_dir="{cmake_source_dir}"
         )
-        """
+        """.format(cmake_source_dir=cmake_source_dir)
     ))
     failed = False
     message = ""
@@ -52,8 +57,9 @@ def test_invalid_cmake_source_dir():
         failed = isinstance(e.code, SKBuildError)
         message = str(e)
 
-    assert failed
-    assert "'cmake_source_dir' set to a nonexistent directory." in message
+    assert failed == expected_failed
+    if failed:
+        assert "'cmake_source_dir' set to a nonexistent directory." in message
 
 
 @project_setup_py_test("cmakelists-not-in-top-level-dir", ["sdist"])
