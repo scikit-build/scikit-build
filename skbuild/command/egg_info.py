@@ -7,7 +7,7 @@ import sys
 from setuptools.command.egg_info import egg_info as _egg_info
 
 from . import set_build_base_mixin
-from ..cmaker import SKBUILD_DIR
+from ..constants import SKBUILD_DIR
 from ..utils import new_style
 
 SKBUILD_MARKER_FILE = os.path.join(SKBUILD_DIR, "_skbuild_MANIFEST")

@@ -11,7 +11,7 @@ import glob
 import tarfile
 from zipfile import ZipFile
 
-from skbuild.cmaker import SKBUILD_DIR
+from skbuild.constants import SKBUILD_DIR
 from skbuild.utils import push_dir
 
 from . import project_setup_py_test
