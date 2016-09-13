@@ -10,8 +10,9 @@ from shutil import rmtree
 
 from distutils import log
 
-from . import new_style, set_build_base_mixin
+from . import set_build_base_mixin
 from .. import cmaker
+from ..utils import new_style
 
 
 class clean(set_build_base_mixin, new_style(_clean)):
