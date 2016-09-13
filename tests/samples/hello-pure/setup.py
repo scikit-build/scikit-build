@@ -7,5 +7,4 @@ setup(
     author='The scikit-build team',
     license="MIT",
     packages=['hello'],
-    package_dir={'hello': 'hello'},
 )

@@ -170,10 +170,6 @@ def test_cmake_install_dir_keyword(
             author='The scikit-build team',
             license="MIT",
             packages=['apple', 'banana'],
-            package_dir={{
-                'banana': 'banana',
-                'apple': 'apple'
-            }},
             {setup_kwarg}
         )
         """.format(setup_kwarg=setup_kwarg)
