@@ -63,3 +63,15 @@ class push_dir(ContextDecorator):
 
     def __exit__(self, typ, val, traceback):
         os.chdir(self.old_cwd)
+
+
+def new_style(klass):
+    """distutils/setuptools command classes are old-style classes, which
+    won't work with mixins.
+
+    To work around this limitation, we dynamically convert them to new style
+    classes by creating a new class that inherits from them and also <object>.
+    This ensures that <object> is always at the end of the MRO, even after
+    being mixed in with other classes.
+    """
+    return type("NewStyleClass<{}>".format(klass.__name__), (klass, object), {})
