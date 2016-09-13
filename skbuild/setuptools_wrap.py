@@ -278,6 +278,11 @@ def setup(*args, **kw):
         print('')
         sys.exit(e)
 
+    # If needed, set reasonable defaults for package_dir
+    for package in packages:
+        if package not in package_dir:
+            package_dir[package] = package.replace(".", os.path.sep)
+
     package_prefixes = _collect_package_prefixes(package_dir, packages)
 
     _classify_files(cmkr.install(), package_data, package_prefixes,
