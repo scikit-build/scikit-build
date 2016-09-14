@@ -30,7 +30,8 @@ def test_build(capsys):
 
 @pytest.mark.parametrize("cmake_source_dir, expected_failed", (
         ("invalid", True),
-        ("", False)
+        ("", False),
+        (".", False),
 ))
 def test_cmake_source_dir(cmake_source_dir, expected_failed):
     tmp_dir = _tmpdir('test_cmake_source_dir')
