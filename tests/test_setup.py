@@ -734,10 +734,13 @@ def test_setup_inputs(
         assert sorted(setup_kw['data_files']) == sorted([])
 
 
-def test_cmake_install_into_pure_package(capsys):
+@pytest.mark.parametrize("with_cmake_source_dir", [0, 1])
+def test_cmake_install_into_pure_package(with_cmake_source_dir, capsys):
 
     # -------------------------------------------------------------------------
     # "SOURCE" tree layout:
+    #
+    # (1) with_cmake_source_dir == 0
     #
     # ROOT/
     #
@@ -746,6 +749,20 @@ def test_cmake_install_into_pure_package(capsys):
     #
     #     fruits/
     #         __init__.py
+    #
+    #
+    # (2) with_cmake_source_dir == 1
+    #
+    # ROOT/
+    #
+    #     setup.py
+    #
+    #     fruits/
+    #         __init__.py
+    #
+    #     src/
+    #
+    #         CMakeLists.txt
     #
     # -------------------------------------------------------------------------
     # "BINARY" distribution layout:
@@ -766,6 +783,8 @@ def test_cmake_install_into_pure_package(capsys):
 
     tmp_dir = _tmpdir('cmake_install_into_pure_package')
 
+    cmake_source_dir = 'src' if with_cmake_source_dir else ''
+
     tmp_dir.join('setup.py').write(textwrap.dedent(
         """
         from skbuild import setup
@@ -776,12 +795,14 @@ def test_cmake_install_into_pure_package(capsys):
             author='The scikit-build team',
             license="MIT",
             packages=['fruits'],
-            cmake_install_dir='fruits'
+            cmake_install_dir='fruits',
+            cmake_source_dir='{cmake_source_dir}',
         )
-        """
+        """.format(cmake_source_dir=cmake_source_dir)
     ))
 
-    tmp_dir.join('CMakeLists.txt').write(textwrap.dedent(
+    cmake_src_dir = tmp_dir.ensure(cmake_source_dir, dir=1)
+    cmake_src_dir.join('CMakeLists.txt').write(textwrap.dedent(
         """
         cmake_minimum_required(VERSION 3.5.0)
         project(test)

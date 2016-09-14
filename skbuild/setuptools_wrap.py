@@ -509,11 +509,15 @@ def _classify_files(install_paths, package_data, package_prefixes,
         path = os.path.relpath(path, CMAKE_INSTALL_DIR)
 
         # If the CMake project lives in a sub-directory (e.g src), its
-        # include rules are relative to it. We need to prepend
+        # include rules are relative to it. If the project is not already
+        # installed in a directory, we need to prepend
         # the source directory so that the remaining of the logic
         # can successfully check if the path belongs to a package or
         # if it is a module.
-        if (cmake_source_dir
+        # TODO(jc) Instead of blindly checking if cmake_install_dir is set
+        #          or not, a more elaborated check should be done.
+        if (not cmake_install_dir
+            and cmake_source_dir
                 and not path.startswith(cmake_source_dir)):
             path = os.path.join(cmake_source_dir, path)
 
