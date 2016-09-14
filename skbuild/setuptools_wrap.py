@@ -211,7 +211,7 @@ def _package_data_contain_module(module, package_data):
     return False
 
 
-def setup(*args, **kw):
+def setup(*args, **kw):  # noqa: C901
     """This function wraps setup() so that we can run cmake, make,
     CMake build, then proceed as usual with setuptools, appending the
     CMake-generated output as necessary.
@@ -349,61 +349,8 @@ def setup(*args, **kw):
                     data_files,
                     cmake_source_dir, skbuild_kw['cmake_install_dir'])
 
-    # Duplicate the dictionary to prevent its update while iterating
-    # over the modules.
-    cmake_package_data = dict(package_data)
-
-    try:
-        # Search for python modules in both the current directory
-        # and cmake install tree.
-        modules = PythonModuleFinder(
-            packages, package_dir, py_modules,
-            alternative_build_base=CMAKE_INSTALL_DIR
-        ).find_all_modules()
-    except DistutilsError as msg:
-        raise SystemExit("error: {}".format(str(msg)))
-
-    print("")
-
-    for entry in modules:
-
-        # Check if module file should be copied into the CMake install tree.
-        if not _package_data_contain_module(entry, cmake_package_data):
-            continue
-
-        (package, _, src_module_file) = entry
-
-        # Copy missing module file
-        dest_module_file = os.path.join(CMAKE_INSTALL_DIR, src_module_file)
-
-        # Create directory if needed
-        dest_module_dir = os.path.dirname(dest_module_file)
-        if not os.path.exists(dest_module_dir):
-            print("creating directory {}".format(dest_module_dir))
-            mkdir_p(dest_module_dir)
-
-        # Copy file
-        print("copying {} -> {}".format(src_module_file, dest_module_file))
-        copyfile(src_module_file, dest_module_file)
-
-        # Since the mapping in package_data expects the package to be associated
-        # with a list of files relative to the directory containing the package,
-        # the following section makes sure to strip the redundant part of the
-        # module file path.
-        # The redundant part should be stripped for both cmake_source_dir and
-        # the package.
-        package_parts = []
-        if cmake_source_dir:
-            package_parts = cmake_source_dir.split(os.path.sep)
-        package_parts += package.split(".")
-
-        stripped_module_file = strip_package(package_parts, src_module_file)
-
-        # Update list of files associated with the corresponding package
-        try:
-            package_data[package].append(stripped_module_file)
-        except KeyError:
-            package_data[package] = [stripped_module_file]
+    _fixup_cmake_install(cmake_source_dir,
+                         packages, package_dir, py_modules, package_data)
 
     kw['package_data'] = package_data
     kw['package_dir'] = {
@@ -573,3 +520,64 @@ def _classify_files(install_paths, package_data, package_prefixes,
             data_files[parent_dir] = file_set
         file_set.add(os.path.join(CMAKE_INSTALL_DIR, path))
         del parent_dir, file_set
+
+
+def _fixup_cmake_install(
+        cmake_source_dir, packages, package_dir, py_modules, package_data):
+    """This function ...."""
+
+    # Duplicate the dictionary to prevent its update while iterating
+    # over the modules.
+    cmake_package_data = dict(package_data)
+
+    try:
+        # Search for python modules in both the current directory
+        # and cmake install tree.
+        modules = PythonModuleFinder(
+            packages, package_dir, py_modules,
+            alternative_build_base=CMAKE_INSTALL_DIR
+        ).find_all_modules()
+    except DistutilsError as msg:
+        raise SystemExit("error: {}".format(str(msg)))
+
+    print("")
+
+    for entry in modules:
+
+        # Check if module file should be copied into the CMake install tree.
+        if not _package_data_contain_module(entry, cmake_package_data):
+            continue
+
+        (package, _, src_module_file) = entry
+
+        # Copy missing module file
+        dest_module_file = os.path.join(CMAKE_INSTALL_DIR, src_module_file)
+
+        # Create directory if needed
+        dest_module_dir = os.path.dirname(dest_module_file)
+        if not os.path.exists(dest_module_dir):
+            print("creating directory {}".format(dest_module_dir))
+            mkdir_p(dest_module_dir)
+
+        # Copy file
+        print("copying {} -> {}".format(src_module_file, dest_module_file))
+        copyfile(src_module_file, dest_module_file)
+
+        # Since the mapping in package_data expects the package to be associated
+        # with a list of files relative to the directory containing the package,
+        # the following section makes sure to strip the redundant part of the
+        # module file path.
+        # The redundant part should be stripped for both cmake_source_dir and
+        # the package.
+        package_parts = []
+        if cmake_source_dir:
+            package_parts = cmake_source_dir.split(os.path.sep)
+        package_parts += package.split(".")
+
+        stripped_module_file = strip_package(package_parts, src_module_file)
+
+        # Update list of files associated with the corresponding package
+        try:
+            package_data[package].append(stripped_module_file)
+        except KeyError:
+            package_data[package] = [stripped_module_file]
