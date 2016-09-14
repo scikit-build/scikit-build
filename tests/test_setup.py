@@ -134,6 +134,26 @@ def test_cmake_args_keyword(cmake_args, capfd):
 def test_cmake_install_dir_keyword(
         cmake_install_dir, expected_failed, error_code_type, capsys):
 
+    # -------------------------------------------------------------------------
+    # "SOURCE" tree layout:
+    #
+    # ROOT/
+    #
+    #     CMakeLists.txt
+    #     setup.py
+    #
+    #     apple/
+    #         __init__.py
+    #
+    # -------------------------------------------------------------------------
+    # "BINARY" distribution layout
+    #
+    # ROOT/
+    #
+    #     apple/
+    #         __init__.py
+    #
+
     tmp_dir = _tmpdir('cmake_install_dir_keyword')
 
     setup_kwarg = ''
@@ -200,6 +220,30 @@ def test_cmake_install_dir_keyword(
 
 @pytest.mark.parametrize("distribution_type", ('pure', 'skbuild'))
 def test_script_keyword(distribution_type, capsys):
+
+    # -------------------------------------------------------------------------
+    #
+    # "SOURCE" tree layout for "pure" distribution:
+    #
+    # ROOT/
+    #     setup.py
+    #     foo.py
+    #     bar.py
+    #
+    # "SOURCE" tree layout for "pure" distribution:
+    #
+    # ROOT/
+    #     setup.py
+    #     CMakeLists.txt
+    #
+    # -------------------------------------------------------------------------
+    # "BINARY" distribution layout is identical for both
+    #
+    # ROOT/
+    #     foo.py
+    #     bar.py
+    #
+
     tmp_dir = _tmpdir('script_keyword')
 
     tmp_dir.join('setup.py').write(textwrap.dedent(
@@ -258,6 +302,30 @@ def test_script_keyword(distribution_type, capsys):
 
 @pytest.mark.parametrize("distribution_type", ('pure', 'skbuild'))
 def test_py_modules_keyword(distribution_type, capsys):
+
+    # -------------------------------------------------------------------------
+    #
+    # "SOURCE" tree layout for "pure" distribution:
+    #
+    # ROOT/
+    #     setup.py
+    #     foo.py
+    #     bar.py
+    #
+    # "SOURCE" tree layout for "pure" distribution:
+    #
+    # ROOT/
+    #     setup.py
+    #     CMakeLists.txt
+    #
+    # -------------------------------------------------------------------------
+    # "BINARY" distribution layout is identical for both
+    #
+    # ROOT/
+    #     foo.py
+    #     bar.py
+    #
+
     tmp_dir = _tmpdir('py_modules_keyword')
 
     tmp_dir.join('setup.py').write(textwrap.dedent(
