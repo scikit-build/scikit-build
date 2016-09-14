@@ -188,7 +188,7 @@ def setup(*args, **kw):
     parameters = {
         'cmake_args': [],
         'cmake_install_dir': '',
-        'cmake_source_dir': os.getcwd()
+        'cmake_source_dir': ''
     }
     skbuild_kw = {param: kw.pop(param, parameters[param])
                   for param in parameters}
@@ -203,6 +203,14 @@ def setup(*args, **kw):
         print('')
         sys.exit(e)
 
+    # Convert source dir to a path relative to the root
+    # of the project
+    cmake_source_dir = skbuild_kw['cmake_source_dir']
+    if cmake_source_dir == ".":
+        cmake_source_dir = ""
+    if os.path.isabs(cmake_source_dir):
+        cmake_source_dir = os.path.relpath(cmake_source_dir)
+
     # Skip running CMake in the following cases:
     # * no command-line arguments or invalid ones are provided
     # * "display only" argument like '--help', '--help-commands'
@@ -216,7 +224,7 @@ def setup(*args, **kw):
         has_invalid_arguments = True
 
     has_cmakelists = os.path.exists(
-        os.path.join(skbuild_kw['cmake_source_dir'], "CMakeLists.txt"))
+        os.path.join(cmake_source_dir, "CMakeLists.txt"))
     if not has_cmakelists:
         print('skipping skbuild (no CMakeLists.txt found)')
 
@@ -268,7 +276,7 @@ def setup(*args, **kw):
     try:
         cmkr = cmaker.CMaker()
         cmkr.configure(cmake_args,
-                       cmake_src_dir=skbuild_kw['cmake_source_dir'],
+                       cmake_src_dir=cmake_source_dir,
                        cmake_install_dir=skbuild_kw['cmake_install_dir'])
         cmkr.make(make_args)
     except SKBuildError as e:
