@@ -732,3 +732,96 @@ def test_setup_inputs(
         assert sorted(setup_kw['py_modules']) == sorted(expected_py_modules)
         assert sorted(setup_kw['scripts']) == sorted([])
         assert sorted(setup_kw['data_files']) == sorted([])
+
+
+def test_cmake_install_into_pure_package(capsys):
+
+    # -------------------------------------------------------------------------
+    # "SOURCE" tree layout:
+    #
+    # ROOT/
+    #
+    #     CMakeLists.txt
+    #     setup.py
+    #
+    #     fruits/
+    #         __init__.py
+    #
+    # -------------------------------------------------------------------------
+    # "BINARY" distribution layout:
+    #
+    # ROOT/
+    #
+    #     fruits/
+    #
+    #         __init__.py
+    #         apple.py
+    #         banana.py
+    #
+    #             data/
+    #
+    #                 apple.dat
+    #                 banana.dat
+    #
+
+    tmp_dir = _tmpdir('cmake_install_into_pure_package')
+
+    tmp_dir.join('setup.py').write(textwrap.dedent(
+        """
+        from skbuild import setup
+        setup(
+            name="test_py_modules_keyword",
+            version="1.2.3",
+            description="a package testing use of py_modules keyword",
+            author='The scikit-build team',
+            license="MIT",
+            packages=['fruits'],
+            cmake_install_dir='fruits'
+        )
+        """
+    ))
+
+    tmp_dir.join('CMakeLists.txt').write(textwrap.dedent(
+        """
+        cmake_minimum_required(VERSION 3.5.0)
+        project(test)
+        file(WRITE "${CMAKE_BINARY_DIR}/apple.py" "# apple.py")
+        file(WRITE "${CMAKE_BINARY_DIR}/banana.py" "# banana.py")
+        install(
+            FILES
+                "${CMAKE_BINARY_DIR}/apple.py"
+                "${CMAKE_BINARY_DIR}/banana.py"
+            DESTINATION "."
+            )
+        file(WRITE "${CMAKE_BINARY_DIR}/apple.dat" "# apple.dat")
+        file(WRITE "${CMAKE_BINARY_DIR}/banana.dat" "# banana.dat")
+        install(
+            FILES
+                "${CMAKE_BINARY_DIR}/apple.dat"
+                "${CMAKE_BINARY_DIR}/banana.dat"
+            DESTINATION "data"
+            )
+        """
+    ))
+
+    tmp_dir.ensure('fruits/__init__.py')
+
+    with execute_setup_py(tmp_dir, ['build']):
+        pass
+
+    messages = [
+        "copying _skbuild/cmake-install/{} -> "
+        "_skbuild/setuptools/lib".format(module)
+        for module in [
+            'fruits/__init__.py',
+            'fruits/apple.py',
+            'fruits/banana.py',
+            'fruits/data/apple.dat',
+            'fruits/data/banana.dat',
+        ]]
+
+    messages = [message.replace("/", os.path.sep) for message in messages]
+
+    out, _ = capsys.readouterr()
+    for message in messages:
+        assert message in out
