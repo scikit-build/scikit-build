@@ -429,6 +429,10 @@ def _collect_package_prefixes(package_dir, packages):
     ))
 
 
+def _unix_path(path):
+    return path.replace(os.sep, "/")
+
+
 def _classify_files(install_paths, package_data, package_prefixes,
                     py_modules, new_py_modules,
                     scripts, new_scripts,
@@ -436,6 +440,8 @@ def _classify_files(install_paths, package_data, package_prefixes,
                     cmake_source_dir, cmake_install_dir):
     assert not os.path.isabs(cmake_source_dir)
     assert cmake_source_dir != "."
+
+    cmake_source_dir = _unix_path(cmake_source_dir)
 
     install_root = os.path.join(os.getcwd(), CMAKE_INSTALL_DIR)
     for path in install_paths:
@@ -453,7 +459,7 @@ def _classify_files(install_paths, package_data, package_prefixes,
                 "    Violating File: {}\n").format(install_root, test_path))
 
         # peel off the 'skbuild' prefix
-        path = os.path.relpath(path, CMAKE_INSTALL_DIR)
+        path = _unix_path(os.path.relpath(path, CMAKE_INSTALL_DIR))
 
         # If the CMake project lives in a sub-directory (e.g src), its
         # include rules are relative to it. If the project is not already
@@ -466,7 +472,7 @@ def _classify_files(install_paths, package_data, package_prefixes,
         if (not cmake_install_dir
             and cmake_source_dir
                 and not path.startswith(cmake_source_dir)):
-            path = os.path.join(cmake_source_dir, path)
+            path = _unix_path(os.path.join(cmake_source_dir, path))
 
         # check to see if path is part of a package
         for prefix, package in package_prefixes:
