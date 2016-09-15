@@ -276,7 +276,7 @@ def setup(*args, **kw):
     try:
         cmkr = cmaker.CMaker()
         cmkr.configure(cmake_args,
-                       cmake_src_dir=cmake_source_dir,
+                       cmake_source_dir=cmake_source_dir,
                        cmake_install_dir=skbuild_kw['cmake_install_dir'])
         cmkr.make(make_args)
     except SKBuildError as e:

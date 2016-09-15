@@ -65,7 +65,7 @@ class CMaker(object):
         self.platform = get_platform()
 
     def configure(self, clargs=(), generator_id=None,
-                  cmake_src_dir='.', cmake_install_dir=''):
+                  cmake_source_dir='.', cmake_install_dir=''):
         """Calls cmake to generate the Makefile/VS Solution/XCode project.
 
         Input:
@@ -106,9 +106,9 @@ class CMaker(object):
         python_include_dir = CMaker.get_python_include_dir(python_version)
         python_library = CMaker.get_python_library(python_version)
 
-        cmake_src_dir = os.path.abspath(cmake_src_dir)
+        cmake_source_dir = os.path.abspath(cmake_source_dir)
         cmd = [
-            'cmake', cmake_src_dir, '-G', generator_id,
+            'cmake', cmake_source_dir, '-G', generator_id,
             ("-DCMAKE_INSTALL_PREFIX:PATH=" +
                 os.path.abspath(
                     os.path.join(CMAKE_INSTALL_DIR, cmake_install_dir))),
@@ -147,7 +147,7 @@ class CMaker(object):
                 "    {}\n"
                 "Please see CMake's output for more information.".format(
                     self._formatArgsForDisplay(cmd),
-                    os.path.abspath(cmake_src_dir),
+                    os.path.abspath(cmake_source_dir),
                     os.path.abspath(CMAKE_BUILD_DIR)))
 
         CMaker.check_for_bad_installs()

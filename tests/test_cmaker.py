@@ -71,7 +71,7 @@ def test_make(has_config_src_dir, capfd):
             cmkr = CMaker()
             config_kwargs = {}
             if has_config_src_dir:
-                config_kwargs['cmake_src_dir'] = str(src_dir)
+                config_kwargs['cmake_source_dir'] = str(src_dir)
             cmkr.configure(**config_kwargs)
             cmkr.make()
 
