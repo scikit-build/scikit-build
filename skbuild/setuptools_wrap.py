@@ -211,7 +211,7 @@ def _package_data_contain_module(module, package_data):
     return False
 
 
-def setup(*args, **kw):
+def setup(*args, **kw):  # noqa: C901
     """This function wraps setup() so that we can run cmake, make,
     CMake build, then proceed as usual with setuptools, appending the
     CMake-generated output as necessary.
@@ -349,61 +349,8 @@ def setup(*args, **kw):
                     data_files,
                     cmake_source_dir, skbuild_kw['cmake_install_dir'])
 
-    # Duplicate the dictionary to prevent its update while iterating
-    # over the modules.
-    cmake_package_data = dict(package_data)
-
-    try:
-        # Search for python modules in both the current directory
-        # and cmake install tree.
-        modules = PythonModuleFinder(
-            packages, package_dir, py_modules,
-            alternative_build_base=CMAKE_INSTALL_DIR
-        ).find_all_modules()
-    except DistutilsError as msg:
-        raise SystemExit("error: {}".format(str(msg)))
-
-    print("")
-
-    for entry in modules:
-
-        # Check if module file should be copied into the CMake install tree.
-        if not _package_data_contain_module(entry, cmake_package_data):
-            continue
-
-        (package, _, src_module_file) = entry
-
-        # Copy missing module file
-        dest_module_file = os.path.join(CMAKE_INSTALL_DIR, src_module_file)
-
-        # Create directory if needed
-        dest_module_dir = os.path.dirname(dest_module_file)
-        if not os.path.exists(dest_module_dir):
-            print("creating directory {}".format(dest_module_dir))
-            mkdir_p(dest_module_dir)
-
-        # Copy file
-        print("copying {} -> {}".format(src_module_file, dest_module_file))
-        copyfile(src_module_file, dest_module_file)
-
-        # Since the mapping in package_data expects the package to be associated
-        # with a list of files relative to the directory containing the package,
-        # the following section makes sure to strip the redundant part of the
-        # module file path.
-        # The redundant part should be stripped for both cmake_source_dir and
-        # the package.
-        package_parts = []
-        if cmake_source_dir:
-            package_parts = cmake_source_dir.split(os.path.sep)
-        package_parts += package.split(".")
-
-        stripped_module_file = strip_package(package_parts, src_module_file)
-
-        # Update list of files associated with the corresponding package
-        try:
-            package_data[package].append(stripped_module_file)
-        except KeyError:
-            package_data[package] = [stripped_module_file]
+    _consolidate(cmake_source_dir,
+                 packages, package_dir, py_modules, package_data)
 
     kw['package_data'] = package_data
     kw['package_dir'] = {
@@ -573,3 +520,82 @@ def _classify_files(install_paths, package_data, package_prefixes,
             data_files[parent_dir] = file_set
         file_set.add(os.path.join(CMAKE_INSTALL_DIR, path))
         del parent_dir, file_set
+
+
+def _consolidate(
+        cmake_source_dir, packages, package_dir, py_modules, package_data):
+    """This function consolidates packages having modules located in
+    both the source tree and the CMake install tree into one location.
+
+    The one location is the CMake install tree
+    (see data::`.constants.CMAKE_INSTALL_DIR`).
+
+    Why ? This is a necessary evil because ``Setuptools`` keeps track of
+    packages and modules files to install using a dictionary of lists where
+    the key are package names (e.g ``foo.bar``) and the values are lists of
+    module files (e.g ``['__init__.py', 'baz.py']``. Since this doesn't allow
+    to "split" files associated with a given module in multiple location, one
+    location is selected, and files are copied over.
+
+    How? It currently searches for modules across both locations using
+    the :class:`.utils.PythonModuleFinder`. then with the help
+    of :func:`_package_data_contain_module`, it identifies which
+    one are either already included or missing from the distribution.
+
+    Once a module has been identified as ``missing``, it is both copied
+    into the data::`.constants.CMAKE_INSTALL_DIR` and added to the
+    ``package_data`` dictionary so that it can be considered by
+    the upstream setup function.
+    """
+
+    try:
+        # Search for python modules in both the current directory
+        # and cmake install tree.
+        modules = PythonModuleFinder(
+            packages, package_dir, py_modules,
+            alternative_build_base=CMAKE_INSTALL_DIR
+        ).find_all_modules()
+    except DistutilsError as msg:
+        raise SystemExit("error: {}".format(str(msg)))
+
+    print("")
+
+    for entry in modules:
+
+        # Check if module file should be copied into the CMake install tree.
+        if not _package_data_contain_module(entry, package_data):
+            continue
+
+        (package, _, src_module_file) = entry
+
+        # Copy missing module file
+        dest_module_file = os.path.join(CMAKE_INSTALL_DIR, src_module_file)
+
+        # Create directory if needed
+        dest_module_dir = os.path.dirname(dest_module_file)
+        if not os.path.exists(dest_module_dir):
+            print("creating directory {}".format(dest_module_dir))
+            mkdir_p(dest_module_dir)
+
+        # Copy file
+        print("copying {} -> {}".format(src_module_file, dest_module_file))
+        copyfile(src_module_file, dest_module_file)
+
+        # Since the mapping in package_data expects the package to be associated
+        # with a list of files relative to the directory containing the package,
+        # the following section makes sure to strip the redundant part of the
+        # module file path.
+        # The redundant part should be stripped for both cmake_source_dir and
+        # the package.
+        package_parts = []
+        if cmake_source_dir:
+            package_parts = cmake_source_dir.split(os.path.sep)
+        package_parts += package.split(".")
+
+        stripped_module_file = strip_package(package_parts, src_module_file)
+
+        # Update list of files associated with the corresponding package
+        try:
+            package_data[package].append(stripped_module_file)
+        except KeyError:
+            package_data[package] = [stripped_module_file]
