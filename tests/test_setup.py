@@ -19,7 +19,7 @@ from skbuild import setup as skbuild_setup
 from skbuild.cmaker import CMAKE_INSTALL_DIR
 from skbuild.exceptions import SKBuildError
 from skbuild.setuptools_wrap import strip_package
-from skbuild.utils import push_dir
+from skbuild.utils import (push_dir, to_platform_path)
 
 from . import (_tmpdir, execute_setup_py, push_argv)
 
@@ -279,8 +279,7 @@ def test_script_keyword(distribution_type, capsys):
 
         messages = [
             "copying _skbuild/cmake-install/{}.py -> "
-            "_skbuild/setuptools/scripts-".replace("/", os.path.sep).
-            format(module)
+            "_skbuild/setuptools/scripts-".format(module)
             for module in ['foo', 'bar']]
 
     elif distribution_type == 'pure':
@@ -289,8 +288,7 @@ def test_script_keyword(distribution_type, capsys):
 
         messages = [
             "copying {}.py -> "
-            "_skbuild/setuptools/scripts-".replace("/", os.path.sep).
-            format(module)
+            "_skbuild/setuptools/scripts-".format(module)
             for module in ['foo', 'bar']]
 
     with execute_setup_py(tmp_dir, ['build']):
@@ -298,7 +296,7 @@ def test_script_keyword(distribution_type, capsys):
 
     out, _ = capsys.readouterr()
     for message in messages:
-        assert message in out
+        assert to_platform_path(message) in out
 
 
 @pytest.mark.parametrize("distribution_type", ('pure', 'skbuild'))
@@ -361,7 +359,7 @@ def test_py_modules_keyword(distribution_type, capsys):
 
         messages = [
             "copying _skbuild/cmake-install/{}.py -> "
-            "_skbuild/setuptools/lib".replace("/", os.path.sep).format(module)
+            "_skbuild/setuptools/lib".format(module)
             for module in ['foo', 'bar']]
 
     elif distribution_type == 'pure':
@@ -370,7 +368,7 @@ def test_py_modules_keyword(distribution_type, capsys):
 
         messages = [
             "copying {}.py -> "
-            "_skbuild/setuptools/lib".replace("/", os.path.sep).format(module)
+            "_skbuild/setuptools/lib".format(module)
             for module in ['foo', 'bar']]
 
     with execute_setup_py(tmp_dir, ['build']):
@@ -378,7 +376,7 @@ def test_py_modules_keyword(distribution_type, capsys):
 
     out, _ = capsys.readouterr()
     for message in messages:
-        assert message in out
+        assert to_platform_path(message) in out
 
 
 @pytest.mark.parametrize("package_parts, module_file, expected", [
@@ -841,8 +839,6 @@ def test_cmake_install_into_pure_package(with_cmake_source_dir, capsys):
             'fruits/data/banana.dat',
         ]]
 
-    messages = [message.replace("/", os.path.sep) for message in messages]
-
     out, _ = capsys.readouterr()
     for message in messages:
-        assert message in out
+        assert to_platform_path(message) in out

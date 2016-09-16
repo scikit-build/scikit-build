@@ -17,7 +17,7 @@ from . import cmaker
 from .command import build, install, clean, bdist, bdist_wheel, egg_info, sdist
 from .constants import CMAKE_INSTALL_DIR
 from .exceptions import SKBuildError
-from .utils import (mkdir_p, PythonModuleFinder, to_unix_path)
+from .utils import (mkdir_p, PythonModuleFinder, to_platform_path, to_unix_path)
 
 # XXX If 'six' becomes a dependency, use 'six.StringIO' instead.
 try:
@@ -447,12 +447,12 @@ def _classify_files(install_paths, package_data, package_prefixes,
 
         # if this installed file is not within the project root, complain and
         # exit
-        test_path = path.replace("/", os.sep)
-        if not test_path.startswith(CMAKE_INSTALL_DIR):
+        if not to_platform_path(path).startswith(CMAKE_INSTALL_DIR):
             raise SKBuildError((
                 "\n  CMake-installed files must be within the project root.\n"
                 "    Project Root  : {}\n"
-                "    Violating File: {}\n").format(install_root, test_path))
+                "    Violating File: {}\n").format(
+                    install_root, to_platform_path(path)))
 
         # peel off the 'skbuild' prefix
         path = to_unix_path(os.path.relpath(path, CMAKE_INSTALL_DIR))

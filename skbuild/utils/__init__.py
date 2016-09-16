@@ -140,6 +140,12 @@ class PythonModuleFinder(new_style(distutils_build_py)):
         return map(_strip_directory, modules)
 
 
+def to_platform_path(path):
+    """Return a version of ``path`` where all separator are :attr:`os.sep` """
+    return (path.replace("/", os.sep).replace("\\", os.sep)
+            if path is not None else None)
+
+
 def to_unix_path(path):
     """Return a version of ``path`` where all separator are ``/``"""
     return path.replace("\\", "/") if path is not None else None
