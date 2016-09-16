@@ -8,10 +8,13 @@ Tests for utils functions.
 """
 
 import os
+import pytest
 
-from skbuild.utils import (ContextDecorator, mkdir_p, push_dir)
+from skbuild.utils import (ContextDecorator, mkdir_p,
+                           PythonModuleFinder, push_dir,
+                           to_platform_path, to_unix_path)
 
-from . import push_env
+from . import (push_env, SAMPLES_DIR)
 
 saved_cwd = os.getcwd()
 
@@ -153,3 +156,39 @@ def test_push_env():
     with push_env():
         assert saved_env == os.environ
     assert saved_env == os.environ
+
+
+def test_python_module_finder():
+    modules = PythonModuleFinder(['bonjour', 'hello'], {}, []).find_all_modules(
+        os.path.join(SAMPLES_DIR, 'hello')
+    )
+    assert sorted(modules) == sorted([
+        ('bonjour', '__init__', to_platform_path('bonjour/__init__.py')),
+        ('hello', '__init__', to_platform_path('hello/__init__.py')),
+        ('hello', '__main__', to_platform_path('hello/__main__.py'))])
+
+
+@pytest.mark.parametrize(
+    "input_path, expected_path", (
+        (None, None),
+        ('', ''),
+        ('/bar/foo/baz', '{s}bar{s}foo{s}baz'.format(s=os.sep)),
+        ('C:\\bar\\foo\\baz', 'C:{s}bar{s}foo{s}baz'.format(s=os.sep)),
+        ('C:\\bar/foo\\baz/', 'C:{s}bar{s}foo{s}baz{s}'.format(s=os.sep)),
+    )
+)
+def test_to_platform_path(input_path, expected_path):
+    assert to_platform_path(input_path) == expected_path
+
+
+@pytest.mark.parametrize(
+    "input_path, expected_path", (
+        (None, None),
+        ('', ''),
+        ('/bar/foo/baz', '/bar/foo/baz'),
+        ('C:\\bar\\foo\\baz', 'C:/bar/foo/baz'),
+        ('C:\\bar/foo\\baz/', 'C:/bar/foo/baz/'),
+    )
+)
+def test_to_unix_path(input_path, expected_path):
+    assert to_unix_path(input_path) == expected_path

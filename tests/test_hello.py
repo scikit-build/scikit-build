@@ -12,7 +12,7 @@ import os
 import pytest
 import tarfile
 
-from skbuild.cmaker import SKBUILD_DIR
+from skbuild.constants import SKBUILD_DIR
 from skbuild.exceptions import SKBuildError
 from skbuild.platform_specifics import get_platform
 from skbuild.utils import push_dir

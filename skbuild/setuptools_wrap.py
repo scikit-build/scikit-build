@@ -8,11 +8,16 @@ import sys
 import argparse
 
 from contextlib import contextmanager
-from distutils.errors import DistutilsGetoptError, DistutilsArgError
+from distutils.errors import (DistutilsArgError,
+                              DistutilsError,
+                              DistutilsGetoptError)
+from shutil import copyfile
 
 from . import cmaker
 from .command import build, install, clean, bdist, bdist_wheel, egg_info, sdist
+from .constants import CMAKE_INSTALL_DIR
 from .exceptions import SKBuildError
+from .utils import (mkdir_p, PythonModuleFinder, to_platform_path, to_unix_path)
 
 # XXX If 'six' becomes a dependency, use 'six.StringIO' instead.
 try:
@@ -150,7 +155,7 @@ def _check_skbuild_parameters(skbuild_kw):
         ))
 
     cmake_source_dir = skbuild_kw['cmake_source_dir']
-    if not os.path.exists(cmake_source_dir):
+    if not os.path.exists(os.path.abspath(cmake_source_dir)):
         raise SKBuildError((
             "\n  setup parameter 'cmake_source_dir' set to "
             "a nonexistent directory.\n"
@@ -160,7 +165,53 @@ def _check_skbuild_parameters(skbuild_kw):
         ))
 
 
-def setup(*args, **kw):
+def strip_package(package_parts, module_file):
+    """Given ``package_parts`` (e.g. ``['foo', 'bar']``) and a
+    ``module_file`` (e.g. ``foo/bar/jaz/rock/roll.py``), starting
+    from the left, this function will strip the parts of the path
+    matching the package parts and return a new string
+    (e.g ``jaz/rock/roll.py``).
+
+    The function will work as expected for either Windows or Unix-style
+    ``module_file`` and this independently of the platform.
+    """
+    if not package_parts or os.path.isabs(module_file):
+        return module_file
+
+    package = "/".join(package_parts)
+    module_dir = os.path.dirname(module_file.replace("\\", "/"))
+
+    module_dir = module_dir[:len(package)]
+
+    return module_file[len(package) + 1:] if module_dir.startswith(
+        package) else module_file
+
+
+def _package_data_contain_module(module, package_data):
+    """Return True if the ``module`` is contained
+    in the ``package_data``.
+
+    ``module`` is a tuple of the form
+    ``(package, modulename, module_file)``.
+    """
+    (package, _, module_file) = module
+    if package not in package_data:
+        return True
+    # We need to strip the package because a module entry
+    # usually looks like this:
+    #
+    #   ('foo.bar', 'module', 'foo/bar/module.py')
+    #
+    # and the entry in package_data would look like this:
+    #
+    #   {'foo.bar' : ['module.py']}
+    if (strip_package(package.split("."), module_file)
+            not in package_data[package]):
+        return True
+    return False
+
+
+def setup(*args, **kw):  # noqa: C901
     """This function wraps setup() so that we can run cmake, make,
     CMake build, then proceed as usual with setuptools, appending the
     CMake-generated output as necessary.
@@ -187,7 +238,7 @@ def setup(*args, **kw):
     parameters = {
         'cmake_args': [],
         'cmake_install_dir': '',
-        'cmake_source_dir': os.getcwd()
+        'cmake_source_dir': ''
     }
     skbuild_kw = {param: kw.pop(param, parameters[param])
                   for param in parameters}
@@ -202,6 +253,14 @@ def setup(*args, **kw):
         print('')
         sys.exit(e)
 
+    # Convert source dir to a path relative to the root
+    # of the project
+    cmake_source_dir = skbuild_kw['cmake_source_dir']
+    if cmake_source_dir == ".":
+        cmake_source_dir = ""
+    if os.path.isabs(cmake_source_dir):
+        cmake_source_dir = os.path.relpath(cmake_source_dir)
+
     # Skip running CMake in the following cases:
     # * no command-line arguments or invalid ones are provided
     # * "display only" argument like '--help', '--help-commands'
@@ -215,7 +274,7 @@ def setup(*args, **kw):
         has_invalid_arguments = True
 
     has_cmakelists = os.path.exists(
-        os.path.join(skbuild_kw['cmake_source_dir'], "CMakeLists.txt"))
+        os.path.join(cmake_source_dir, "CMakeLists.txt"))
     if not has_cmakelists:
         print('skipping skbuild (no CMakeLists.txt found)')
 
@@ -267,7 +326,7 @@ def setup(*args, **kw):
     try:
         cmkr = cmaker.CMaker()
         cmkr.configure(cmake_args,
-                       cmake_src_dir=skbuild_kw['cmake_source_dir'],
+                       cmake_source_dir=cmake_source_dir,
                        cmake_install_dir=skbuild_kw['cmake_install_dir'])
         cmkr.make(make_args)
     except SKBuildError as e:
@@ -277,29 +336,38 @@ def setup(*args, **kw):
         print('')
         sys.exit(e)
 
+    # If needed, set reasonable defaults for package_dir
+    for package in packages:
+        if package not in package_dir:
+            package_dir[package] = package.replace(".", os.path.sep)
+
     package_prefixes = _collect_package_prefixes(package_dir, packages)
 
     _classify_files(cmkr.install(), package_data, package_prefixes,
                     py_modules, new_py_modules,
                     scripts, new_scripts,
-                    data_files)
+                    data_files,
+                    cmake_source_dir, skbuild_kw['cmake_install_dir'])
+
+    _consolidate(cmake_source_dir,
+                 packages, package_dir, py_modules, package_data)
 
     kw['package_data'] = package_data
     kw['package_dir'] = {
         package: (
-            os.path.join(cmaker.CMAKE_INSTALL_DIR, prefix)
-            if os.path.exists(os.path.join(cmaker.CMAKE_INSTALL_DIR, prefix))
+            os.path.join(CMAKE_INSTALL_DIR, prefix)
+            if os.path.exists(os.path.join(CMAKE_INSTALL_DIR, prefix))
             else prefix)
         for prefix, package in package_prefixes
     }
 
     kw['py_modules'] = [
-        os.path.join(cmaker.CMAKE_INSTALL_DIR, py_module) if mask else py_module
+        os.path.join(CMAKE_INSTALL_DIR, py_module) if mask else py_module
         for py_module, mask in new_py_modules.items()
     ]
 
     kw['scripts'] = [
-        os.path.join(cmaker.CMAKE_INSTALL_DIR, script) if mask else script
+        os.path.join(CMAKE_INSTALL_DIR, script) if mask else script
         for script, mask in new_scripts.items()
     ]
 
@@ -313,6 +381,8 @@ def setup(*args, **kw):
         def has_ext_modules(self):
             return True
     kw['distclass'] = BinaryDistribution
+
+    print("")
 
     return upstream_setup(*args, **kw)
 
@@ -362,8 +432,14 @@ def _collect_package_prefixes(package_dir, packages):
 def _classify_files(install_paths, package_data, package_prefixes,
                     py_modules, new_py_modules,
                     scripts, new_scripts,
-                    data_files):
-    install_root = os.path.join(os.getcwd(), cmaker.CMAKE_INSTALL_DIR)
+                    data_files,
+                    cmake_source_dir, cmake_install_dir):
+    assert not os.path.isabs(cmake_source_dir)
+    assert cmake_source_dir != "."
+
+    cmake_source_dir = to_unix_path(cmake_source_dir)
+
+    install_root = os.path.join(os.getcwd(), CMAKE_INSTALL_DIR)
     for path in install_paths:
         found_package = False
         found_module = False
@@ -371,15 +447,28 @@ def _classify_files(install_paths, package_data, package_prefixes,
 
         # if this installed file is not within the project root, complain and
         # exit
-        test_path = path.replace("/", os.sep)
-        if not test_path.startswith(cmaker.CMAKE_INSTALL_DIR):
+        if not to_platform_path(path).startswith(CMAKE_INSTALL_DIR):
             raise SKBuildError((
                 "\n  CMake-installed files must be within the project root.\n"
                 "    Project Root  : {}\n"
-                "    Violating File: {}\n").format(install_root, test_path))
+                "    Violating File: {}\n").format(
+                    install_root, to_platform_path(path)))
 
         # peel off the 'skbuild' prefix
-        path = os.path.relpath(path, cmaker.CMAKE_INSTALL_DIR)
+        path = to_unix_path(os.path.relpath(path, CMAKE_INSTALL_DIR))
+
+        # If the CMake project lives in a sub-directory (e.g src), its
+        # include rules are relative to it. If the project is not already
+        # installed in a directory, we need to prepend
+        # the source directory so that the remaining of the logic
+        # can successfully check if the path belongs to a package or
+        # if it is a module.
+        # TODO(jc) Instead of blindly checking if cmake_install_dir is set
+        #          or not, a more elaborated check should be done.
+        if (not cmake_install_dir
+            and cmake_source_dir
+                and not path.startswith(cmake_source_dir)):
+            path = to_unix_path(os.path.join(cmake_source_dir, path))
 
         # check to see if path is part of a package
         for prefix, package in package_prefixes:
@@ -431,5 +520,84 @@ def _classify_files(install_paths, package_data, package_prefixes,
         if file_set is None:
             file_set = set()
             data_files[parent_dir] = file_set
-        file_set.add(os.path.join(cmaker.CMAKE_INSTALL_DIR, path))
+        file_set.add(os.path.join(CMAKE_INSTALL_DIR, path))
         del parent_dir, file_set
+
+
+def _consolidate(
+        cmake_source_dir, packages, package_dir, py_modules, package_data):
+    """This function consolidates packages having modules located in
+    both the source tree and the CMake install tree into one location.
+
+    The one location is the CMake install tree
+    (see data::`.constants.CMAKE_INSTALL_DIR`).
+
+    Why ? This is a necessary evil because ``Setuptools`` keeps track of
+    packages and modules files to install using a dictionary of lists where
+    the key are package names (e.g ``foo.bar``) and the values are lists of
+    module files (e.g ``['__init__.py', 'baz.py']``. Since this doesn't allow
+    to "split" files associated with a given module in multiple location, one
+    location is selected, and files are copied over.
+
+    How? It currently searches for modules across both locations using
+    the :class:`.utils.PythonModuleFinder`. then with the help
+    of :func:`_package_data_contain_module`, it identifies which
+    one are either already included or missing from the distribution.
+
+    Once a module has been identified as ``missing``, it is both copied
+    into the data::`.constants.CMAKE_INSTALL_DIR` and added to the
+    ``package_data`` dictionary so that it can be considered by
+    the upstream setup function.
+    """
+
+    try:
+        # Search for python modules in both the current directory
+        # and cmake install tree.
+        modules = PythonModuleFinder(
+            packages, package_dir, py_modules,
+            alternative_build_base=CMAKE_INSTALL_DIR
+        ).find_all_modules()
+    except DistutilsError as msg:
+        raise SystemExit("error: {}".format(str(msg)))
+
+    print("")
+
+    for entry in modules:
+
+        # Check if module file should be copied into the CMake install tree.
+        if not _package_data_contain_module(entry, package_data):
+            continue
+
+        (package, _, src_module_file) = entry
+
+        # Copy missing module file
+        dest_module_file = os.path.join(CMAKE_INSTALL_DIR, src_module_file)
+
+        # Create directory if needed
+        dest_module_dir = os.path.dirname(dest_module_file)
+        if not os.path.exists(dest_module_dir):
+            print("creating directory {}".format(dest_module_dir))
+            mkdir_p(dest_module_dir)
+
+        # Copy file
+        print("copying {} -> {}".format(src_module_file, dest_module_file))
+        copyfile(src_module_file, dest_module_file)
+
+        # Since the mapping in package_data expects the package to be associated
+        # with a list of files relative to the directory containing the package,
+        # the following section makes sure to strip the redundant part of the
+        # module file path.
+        # The redundant part should be stripped for both cmake_source_dir and
+        # the package.
+        package_parts = []
+        if cmake_source_dir:
+            package_parts = cmake_source_dir.split(os.path.sep)
+        package_parts += package.split(".")
+
+        stripped_module_file = strip_package(package_parts, src_module_file)
+
+        # Update list of files associated with the corresponding package
+        try:
+            package_data[package].append(stripped_module_file)
+        except KeyError:
+            package_data[package] = [stripped_module_file]

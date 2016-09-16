@@ -2,6 +2,8 @@
 import errno
 import os
 
+from collections import namedtuple
+from distutils.command.build_py import build_py as distutils_build_py
 from functools import wraps
 
 
@@ -63,3 +65,87 @@ class push_dir(ContextDecorator):
 
     def __exit__(self, typ, val, traceback):
         os.chdir(self.old_cwd)
+
+
+def new_style(klass):
+    """distutils/setuptools command classes are old-style classes, which
+    won't work with mixins.
+
+    To work around this limitation, we dynamically convert them to new style
+    classes by creating a new class that inherits from them and also <object>.
+    This ensures that <object> is always at the end of the MRO, even after
+    being mixed in with other classes.
+    """
+    return type("NewStyleClass<{}>".format(klass.__name__), (klass, object), {})
+
+
+class PythonModuleFinder(new_style(distutils_build_py)):
+    """Convenience class to search for python modules.
+
+    This class is based on ``distutils.command.build_py.build_by`` and
+    provides a specialized version of ``find_all_modules()``.
+    """
+
+    def __init__(self, packages, package_dir, py_modules,
+                 alternative_build_base=None):
+        """
+        :param packages: List of packages to search.
+        :param package_dir: Dictionary mapping ``package`` with ``directory``.
+        :param py_modules: List of python modules.
+        :param alternative_build_base: Additional directory to search in.
+        """
+        self.distribution = namedtuple('Distribution', 'script_name')
+        self.distribution.script_name = 'setup.py'
+        self.packages = packages
+        self.package_dir = package_dir
+        self.py_modules = py_modules
+        self.alternative_build_base = alternative_build_base
+
+    def find_all_modules(self, project_dir=None):
+        """Compute the list of all modules that would be built by
+        project located in current directory, whether they are
+        specified one-module-at-a-time ``py_modules`` or by whole
+        packages ``packages``.
+
+        By default, the function will search for modules in the current
+        directory. Specifying ``project_dir`` parameter allow to change
+        this.
+
+        Return a list of tuples ``(package, module, module_file)``.
+        """
+        with push_dir(project_dir):
+            return super(PythonModuleFinder, self).find_all_modules()
+
+    def find_package_modules(self, package, package_dir):
+        """Temporally prepend the ``alternative_build_base`` to ``module_file``.
+        Doing so will ensure modules can also be found in other location
+        (e.g ``skbuild.constants.CMAKE_INSTALL_DIR``).
+        """
+        if (package_dir != ""
+            and not os.path.exists(package_dir)
+                and self.alternative_build_base is not None):
+            package_dir = os.path.join(self.alternative_build_base, package_dir)
+
+        modules = super(PythonModuleFinder, self).find_package_modules(
+            package, package_dir)
+
+        # Strip the alternative base from module_file
+        def _strip_directory(entry):
+            module_file = entry[2]
+            if (self.alternative_build_base is not None
+                    and module_file.startswith(self.alternative_build_base)):
+                module_file = module_file[len(self.alternative_build_base) + 1:]
+            return entry[0], entry[1], module_file
+
+        return map(_strip_directory, modules)
+
+
+def to_platform_path(path):
+    """Return a version of ``path`` where all separator are :attr:`os.sep` """
+    return (path.replace("/", os.sep).replace("\\", os.sep)
+            if path is not None else None)
+
+
+def to_unix_path(path):
+    """Return a version of ``path`` where all separator are ``/``"""
+    return path.replace("\\", "/") if path is not None else None
