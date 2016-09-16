@@ -138,3 +138,8 @@ class PythonModuleFinder(new_style(distutils_build_py)):
             return entry[0], entry[1], module_file
 
         return map(_strip_directory, modules)
+
+
+def to_unix_path(path):
+    """Return a version of ``path`` where all separator are ``/``"""
+    return path.replace("\\", "/") if path is not None else None

@@ -8,9 +8,11 @@ Tests for utils functions.
 """
 
 import os
+import pytest
 
 from skbuild.utils import (ContextDecorator, mkdir_p,
-                           PythonModuleFinder, push_dir)
+                           PythonModuleFinder, push_dir,
+                           to_unix_path)
 
 from . import (push_env, SAMPLES_DIR)
 
@@ -164,3 +166,16 @@ def test_python_module_finder():
         ('bonjour', '__init__', 'bonjour/__init__.py'),
         ('hello', '__init__', 'hello/__init__.py'),
         ('hello', '__main__', 'hello/__main__.py')])
+
+
+@pytest.mark.parametrize(
+    "input_path, expected_path", (
+        (None, None),
+        ('', ''),
+        ('/bar/foo/baz', '/bar/foo/baz'),
+        ('C:\\bar\\foo\\baz', 'C:/bar/foo/baz'),
+        ('C:\\bar/foo\\baz/', 'C:/bar/foo/baz/'),
+    )
+)
+def test_to_unix_path(input_path, expected_path):
+    assert to_unix_path(input_path) == expected_path
