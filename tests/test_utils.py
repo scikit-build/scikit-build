@@ -163,9 +163,9 @@ def test_python_module_finder():
         os.path.join(SAMPLES_DIR, 'hello')
     )
     assert sorted(modules) == sorted([
-        ('bonjour', '__init__', 'bonjour/__init__.py'),
-        ('hello', '__init__', 'hello/__init__.py'),
-        ('hello', '__main__', 'hello/__main__.py')])
+        ('bonjour', '__init__', to_platform_path('bonjour/__init__.py')),
+        ('hello', '__init__', to_platform_path('hello/__init__.py')),
+        ('hello', '__main__', to_platform_path('hello/__main__.py'))])
 
 
 @pytest.mark.parametrize(
