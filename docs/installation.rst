@@ -2,11 +2,17 @@
 Installation
 ============
 
-With pip::
+Install package with pip
+------------------------
+
+To install with pip::
 
     $ pip install scikit-build
 
-To install the latest from source, first obtain the source code::
+Install from source
+-------------------
+
+To install scikit-build from the latest source, first obtain the source code::
 
     $ git clone https://github.com/scikit-build/scikit-build
     $ cd scikit-build
@@ -34,7 +40,7 @@ dependencies are:
 .. include:: ../requirements.txt
    :literal:
 
-the build time dependencies (also required for development) are:
+The build time dependencies (also required for development) are:
 
 .. include:: ../requirements-dev.txt
    :literal:
@@ -42,9 +48,12 @@ the build time dependencies (also required for development) are:
 Compiler Toolchain
 ^^^^^^^^^^^^^^^^^^
 
-The `same compiler toolchain used to build the CPython interpreter
-<https://docs.python.org/devguide/setup.html#build-dependencies>`_ should also
-be available. For example, on *Ubuntu Linux*, this can be installed with::
+The same compiler toolchain used to build the CPython interpreter should also
+be available. Refer to the
+`CPython Developer's Guide <https://docs.python.org/devguide/setup.html#build-dependencies>`_
+for details about the compiler toolchain for your operating system.
+
+For example, on *Ubuntu Linux*, install with::
 
     $ sudo apt-get install build-essential
 
@@ -57,5 +66,6 @@ version of CPython <https://docs.python.org/devguide/setup.html#windows>`_
 CMake
 ^^^^^
 
-`Download standard CMake binaries <https://cmake.org/download>`_ for your platform or build from source
-with a C++ compiler if binaries are not available.
+`Download standard CMake binaries <https://cmake.org/download>`_ for your
+platform. Alternatively, build CMake from source with a C++ compiler if
+binaries are not available for your operating system.
