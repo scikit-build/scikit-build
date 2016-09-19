@@ -12,6 +12,8 @@
 #   True if NumPy was found.
 # ``NumPy_INCLUDE_DIR``
 #   The include directories needed to use NumpPy.
+# ``NumPy_VERSION``
+#   The version of NumPy found.
 #
 #
 # The module will also explicitly define one cache variable:
@@ -27,6 +29,12 @@ if(NOT NumPy_FOUND)
     execute_process(COMMAND "${PYTHON_EXECUTABLE}"
       -c "import numpy; print(numpy.get_include())"
       OUTPUT_VARIABLE _numpy_include_dir
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+      ERROR_QUIET
+      )
+    execute_process(COMMAND "${PYTHON_EXECUTABLE}"
+      -c "import numpy; print(numpy.__version__)"
+      OUTPUT_VARIABLE NumPy_VERSION
       OUTPUT_STRIP_TRAILING_WHITESPACE
       ERROR_QUIET
       )
@@ -46,6 +54,7 @@ set(NumPy_INCLUDE_DIRS ${NumPy_INCLUDE_DIR})
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(NumPy
                                   REQUIRED_VARS NumPy_INCLUDE_DIR
+                                  VERSION_VAR NumPy_VERSION
                                   )
 
 mark_as_advanced(NumPy_INCLUDE_DIR)
