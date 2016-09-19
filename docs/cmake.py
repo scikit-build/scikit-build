@@ -131,7 +131,7 @@ class _cmake_index_entry:
         self.desc = desc
 
     def __call__(self, title, targetid, main = 'main'):
-        return ('pair', u'%s ; %s' % (self.desc, title), targetid, main)
+        return ('pair', u'%s ; %s' % (self.desc, title), targetid, main, None)
 
 _cmake_index_objs = {
     'command':    _cmake_index_entry('command'),
