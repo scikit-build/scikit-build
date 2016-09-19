@@ -8,15 +8,12 @@
 #
 # This module sets the following variables:
 #
-# ``NUMPY_FOUND``
-# True, if the system has NumPy.
-# ``NUMPY_INCLUDE_DIR``
+# ``NumPy_FOUND``
+#   True if NumPy was found.
+# ``NumPy_INCLUDE_DIR``
 # The directory with numpy/arrayobject.h
 
-# handle the QUIETLY and REQUIRED arguments and set NUMPY_FOUND to TRUE if
-# all listed variables are TRUE
-
-if(NOT NUMPY_FOUND)
+if(NOT NumPy_FOUND)
   find_package(PythonInterp)
   find_package(PythonLibs)
 
@@ -30,15 +27,17 @@ if(NOT NUMPY_FOUND)
   endif()
 endif()
 
-find_path(NUMPY_INCLUDE_DIR
+find_path(NumPy_INCLUDE_DIR
   numpy/arrayobject.h
   PATHS "${_numpy_include_dir}" "${PYTHON_INCLUDE_DIR}"
   PATH_SUFFIXES numpy/core/include
   )
 
+# handle the QUIETLY and REQUIRED arguments and set NumPy_FOUND to TRUE if
+# all listed variables are TRUE
 include(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(NUMPY
-                                  REQUIRED_VARS NUMPY_INCLUDE_DIR
+find_package_handle_standard_args(NumPy
+                                  REQUIRED_VARS NumPy_INCLUDE_DIR
                                   )
 
-mark_as_advanced(NUMPY_INCLUDE_DIR)
+mark_as_advanced(NumPy_INCLUDE_DIR)
