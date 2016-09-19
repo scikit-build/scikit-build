@@ -68,8 +68,6 @@ class CMaker(object):
                   cmake_source_dir='.', cmake_install_dir=''):
         """Calls cmake to generate the Makefile/VS Solution/XCode project.
 
-        Input:
-        ------
         generator_id: string
             The string representing the CMake generator to use.
             If None, uses defaults for your platform.
