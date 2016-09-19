@@ -37,6 +37,9 @@ Alternatively, you can drive CMake more directly yourself using scikit-build::
 
     maker.make()
 
+.. autoclass:: skbuild.cmaker.CMaker
+   :members: configure, make
+
 Examples for scikit-build developers
 ------------------------------------
 
