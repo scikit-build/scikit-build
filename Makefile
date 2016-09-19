@@ -55,7 +55,6 @@ coverage:
 docs:
 	rm -f docs/skbuild rst
 	rm -f docs/modules.rst
-	sphinx-apidoc -o docs/ skbuild
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
 	open docs/_build/html/index.html || xdg-open docs/_build/html/index.html
