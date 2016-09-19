@@ -24,6 +24,7 @@ developing pyproject.toml build system specification
 
    installation
    usage
+   cmake-modules
    contributing
    authors
    history
