@@ -22,8 +22,15 @@
 #
 
 if(NOT NumPy_FOUND)
-  find_package(PythonInterp)
-  find_package(PythonLibs)
+  set(_find_extra_args)
+  if(NumPy_FIND_REQUIRED)
+    list(APPEND _find_extra_args REQUIRED)
+  endif()
+  if(NumPy_FIND_QUIET)
+    list(APPEND _find_extra_args QUIET)
+  endif()
+  find_package(PythonInterp ${_find_extra_args})
+  find_package(PythonLibs ${_find_extra_args})
 
   if(PYTHON_EXECUTABLE)
     execute_process(COMMAND "${PYTHON_EXECUTABLE}"
