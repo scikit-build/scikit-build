@@ -24,6 +24,10 @@ scikit-build
 .. image:: https://codecov.io/gh/scikit-build/scikit-build/branch/master/graph/badge.svg
   :target: https://codecov.io/gh/scikit-build/scikit-build
 
+.. image:: https://landscape.io/github/scikit-build/scikit-build/document-api/landscape.svg?style=flat
+   :target: https://landscape.io/github/scikit-build/scikit-build/document-api
+   :alt: Code Health
+
 Improved build system generator for CPython C extensions.
 
 Better support is available for additional compilers, build systems, cross
