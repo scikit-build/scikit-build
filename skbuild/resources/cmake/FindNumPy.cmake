@@ -1,10 +1,6 @@
 #.rst:
-# FindNumPy
 #
 # Find the include directory for numpy/arrayobject.h
-#
-# Result Variables
-# ^^^^^^^^^^^^^^^^
 #
 # This module sets the following variables:
 #
