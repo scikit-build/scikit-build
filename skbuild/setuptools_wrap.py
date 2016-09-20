@@ -70,6 +70,9 @@ def parse_skbuild_args(args, cmake_args, build_tool_args):
 
 
 def parse_args():
+    """This function parses the command-line arguments ``sys.argv`` and returns
+    the tuple ``(setuptools_args, cmake_args, build_tool_args)`` where each
+    element corresponds to a set of arguments separated by ``--``."""
     dutils = []
     cmake = []
     make = []

@@ -1,3 +1,7 @@
+"""
+This module provides an interface for invoking CMake executable.
+"""
+
 import argparse
 import glob
 import itertools
@@ -51,6 +55,7 @@ def _remove_cwd_prefix(path):
 
 
 class CMaker(object):
+    """Interface to CMake executable."""
 
     def __init__(self):
         # verify that CMake is installed
@@ -150,6 +155,7 @@ class CMaker(object):
 
     @staticmethod
     def get_python_version():
+        """Get version associated with the current python interpreter."""
         python_version = sysconfig.get_config_var('VERSION')
 
         if not python_version:
@@ -164,6 +170,8 @@ class CMaker(object):
     # need them for this function.
     @staticmethod  # noqa: C901
     def get_python_include_dir(python_version):
+        """Get include directory associated with the current python
+        interpreter."""
         # determine python include dir
         python_include_dir = sysconfig.get_config_var('INCLUDEPY')
 
@@ -245,6 +253,8 @@ class CMaker(object):
 
     @staticmethod
     def get_python_library(python_version):
+        """Get path to the python library associated with the current python
+        interpreter."""
         # determine direct path to libpython
         python_library = sysconfig.get_config_var('LIBRARY')
 
