@@ -1,3 +1,4 @@
+"""This module defines custom implementation of ``clean`` setuptools command."""
 
 import os
 
@@ -18,7 +19,10 @@ from ..utils import new_style
 
 
 class clean(set_build_base_mixin, new_style(_clean)):
+    """Custom implementation of ``clean`` setuptools command."""
     def run(self):
+        """After calling the super class implementation, this function removes
+        the directories specific to scikit-build."""
         super(clean, self).run()
         for dir_ in (CMAKE_INSTALL_DIR,
                      CMAKE_BUILD_DIR,

@@ -1,3 +1,5 @@
+"""This module defines object specific to Windows platform."""
+
 import sys
 import platform
 
@@ -5,6 +7,7 @@ from . import abstract
 
 
 class WindowsPlatform(abstract.CMakePlatform):
+    """Windows implementation of :class:`.abstract.CMakePlatform`."""
 
     def __init__(self):
         super(WindowsPlatform, self).__init__()

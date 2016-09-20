@@ -1,3 +1,5 @@
+"""This module defines objects useful to discover which CMake generator is
+supported on the current platform."""
 
 import os
 import shutil
@@ -9,12 +11,17 @@ test_folder = "_cmake_test_compile"
 
 
 class CMakePlatform(object):
+    """This class encapsulates the logic allowing to get the identifier of a
+    working CMake generator.
 
+    Derived class should at least set :attr:`default_generators`.
+    """
     def __init__(self):
         self._default_generators = list()
 
     @property
     def default_generators(self):
+        """List of generators considered by :func:`get_best_generator()`."""
         return self._default_generators
 
     @default_generators.setter
@@ -23,6 +30,8 @@ class CMakePlatform(object):
 
     @staticmethod
     def write_test_cmakelist(languages):
+        """Write a minimal ``CMakeLists.txt`` useful to check if the
+        requested ``languages`` are supported."""
         if not os.path.exists(test_folder):
             os.makedirs(test_folder)
         with open("{:s}/{:s}".format(test_folder, "CMakeLists.txt"), "w") as f:
@@ -33,6 +42,7 @@ class CMakePlatform(object):
 
     @staticmethod
     def cleanup_test():
+        """Delete test project directory."""
         if os.path.exists(test_folder):
             shutil.rmtree(test_folder)
 
@@ -48,16 +58,21 @@ class CMakePlatform(object):
             self, generator=None, languages=("CXX", "C"), cleanup=True):
         """Loop over generators to find one that works.
 
-        Parameters:
-        generator: string or None
-            If provided, uses only provided generator, instead of trying
-            system defaults.
-        languages: tuple
-            the languages you'll need for your project, in terms that
-            CMake recognizes.
-        cleanup: bool
-            If True, cleans up temporary folder used to test generators.
-            Set to False for debugging to see CMake's output files.
+        :param generator: If provided, uses only provided generator, instead \
+        of trying :attr:`default_generators`.
+        :type generator: string or None
+
+        :param languages: The languages you'll need for your project, in terms \
+        that CMake recognizes.
+        :type languages: tuple
+
+        :param cleanup: If True, cleans up temporary folder used to test \
+        generators. Set to False for debugging to see CMake's output files.
+        :type cleanup: bool
+
+        :return: CMake Generator identifier
+        :rtype: string or None
+
         """
 
         candidate_generators = self.default_generators
@@ -80,7 +95,11 @@ class CMakePlatform(object):
     @staticmethod
     @push_dir(directory=test_folder)
     def compile_test_cmakelist(cmake_exe_path, candidate_generators):
+        """Attempt to configure the test project with
+        each ``candidate_generators``.
 
+        The function returns the first generator allowing to successfully
+        configure the test project using ``cmake_exe_path``."""
         # working generator is the first generator we find that works.
         working_generator = None
 
