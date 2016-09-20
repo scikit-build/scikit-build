@@ -2,6 +2,8 @@
 from distutils and setuptools.
 """
 
+from __future__ import print_function
+
 import os
 import os.path
 import sys
@@ -13,12 +15,6 @@ from distutils.errors import (DistutilsArgError,
                               DistutilsGetoptError)
 from shutil import copyfile
 
-from . import cmaker
-from .command import build, install, clean, bdist, bdist_wheel, egg_info, sdist
-from .constants import CMAKE_INSTALL_DIR
-from .exceptions import SKBuildError
-from .utils import (mkdir_p, PythonModuleFinder, to_platform_path, to_unix_path)
-
 # XXX If 'six' becomes a dependency, use 'six.StringIO' instead.
 try:
     from StringIO import StringIO
@@ -27,6 +23,12 @@ except ImportError:
 
 from setuptools import setup as upstream_setup
 from setuptools.dist import Distribution as upstream_Distribution
+
+from . import cmaker
+from .command import build, install, clean, bdist, bdist_wheel, egg_info, sdist
+from .constants import CMAKE_INSTALL_DIR
+from .exceptions import SKBuildError
+from .utils import (mkdir_p, PythonModuleFinder, to_platform_path, to_unix_path)
 
 
 def create_skbuild_argparser():
@@ -52,22 +54,25 @@ def parse_skbuild_args(args, cmake_args, build_tool_args):
     Returns remaining arguments.
     """
     parser = create_skbuild_argparser()
-    ns, remaining_args = parser.parse_known_args(args)
+    namespace, remaining_args = parser.parse_known_args(args)
 
     # Construct CMake argument list
-    cmake_args.append('-DCMAKE_BUILD_TYPE:STRING=' + ns.build_type)
-    if ns.generator is not None:
-        cmake_args.extend(['-G', ns.generator])
+    cmake_args.append('-DCMAKE_BUILD_TYPE:STRING=' + namespace.build_type)
+    if namespace.generator is not None:
+        cmake_args.extend(['-G', namespace.generator])
 
     # Construct build tool argument list
-    build_tool_args.extend(['--config', ns.build_type])
-    if ns.jobs is not None:
-        build_tool_args.extend(['-j', str(ns.jobs)])
+    build_tool_args.extend(['--config', namespace.build_type])
+    if namespace.jobs is not None:
+        build_tool_args.extend(['-j', str(namespace.jobs)])
 
     return remaining_args
 
 
 def parse_args():
+    """This function parses the command-line arguments ``sys.argv`` and returns
+    the tuple ``(setuptools_args, cmake_args, build_tool_args)`` where each
+    element corresponds to a set of arguments separated by ``--``."""
     dutils = []
     cmake = []
     make = []
@@ -151,8 +156,8 @@ def _check_skbuild_parameters(skbuild_kw):
             "an absolute path. A relative path is expected.\n"
             "    Project Root  : {}\n"
             "    CMake Install Directory: {}\n").format(
-            os.getcwd(), cmake_install_dir
-        ))
+                os.getcwd(), cmake_install_dir
+            ))
 
     cmake_source_dir = skbuild_kw['cmake_source_dir']
     if not os.path.exists(os.path.abspath(cmake_source_dir)):
@@ -161,8 +166,8 @@ def _check_skbuild_parameters(skbuild_kw):
             "a nonexistent directory.\n"
             "    Project Root  : {}\n"
             "    CMake Source Directory: {}\n").format(
-            os.getcwd(), cmake_source_dir
-        ))
+                os.getcwd(), cmake_source_dir
+            ))
 
 
 def strip_package(package_parts, module_file):
@@ -211,6 +216,7 @@ def _package_data_contain_module(module, package_data):
     return False
 
 
+# pylint:disable=too-many-locals
 def setup(*args, **kw):  # noqa: C901
     """This function wraps setup() so that we can run cmake, make,
     CMake build, then proceed as usual with setuptools, appending the
@@ -246,12 +252,12 @@ def setup(*args, **kw):  # noqa: C901
     # ... and validate them
     try:
         _check_skbuild_parameters(skbuild_kw)
-    except SKBuildError as e:
+    except SKBuildError as ex:
         import traceback
         print("Traceback (most recent call last):")
         traceback.print_tb(sys.exc_info()[2])
         print('')
-        sys.exit(e)
+        sys.exit(ex)
 
     # Convert source dir to a path relative to the root
     # of the project
@@ -329,12 +335,12 @@ def setup(*args, **kw):  # noqa: C901
                        cmake_source_dir=cmake_source_dir,
                        cmake_install_dir=skbuild_kw['cmake_install_dir'])
         cmkr.make(make_args)
-    except SKBuildError as e:
+    except SKBuildError as ex:
         import traceback
         print("Traceback (most recent call last):")
         traceback.print_tb(sys.exc_info()[2])
         print('')
-        sys.exit(e)
+        sys.exit(ex)
 
     # If needed, set reasonable defaults for package_dir
     for package in packages:
@@ -377,8 +383,9 @@ def setup(*args, **kw):  # noqa: C901
     ]
 
     # Adapted from espdev/ITKPythonInstaller/setup.py.in
+    # pylint: disable=missing-docstring
     class BinaryDistribution(upstream_Distribution):
-        def has_ext_modules(self):
+        def has_ext_modules(self):  # pylint: disable=no-self-use
             return True
     kw['distclass'] = BinaryDistribution
 
@@ -429,6 +436,7 @@ def _collect_package_prefixes(package_dir, packages):
     ))
 
 
+# pylint:disable=too-many-arguments, too-many-branches
 def _classify_files(install_paths, package_data, package_prefixes,
                     py_modules, new_py_modules,
                     scripts, new_scripts,
@@ -466,7 +474,7 @@ def _classify_files(install_paths, package_data, package_prefixes,
         # TODO(jc) Instead of blindly checking if cmake_install_dir is set
         #          or not, a more elaborated check should be done.
         if (not cmake_install_dir
-            and cmake_source_dir
+                and cmake_source_dir
                 and not path.startswith(cmake_source_dir)):
             path = to_unix_path(os.path.join(cmake_source_dir, path))
 

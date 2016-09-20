@@ -1,3 +1,4 @@
+"""This module defines functions generally useful in scikit-build."""
 
 import errno
 import os
@@ -23,14 +24,18 @@ class ContextDecorator(object):
 
     def __call__(self, func):
         @wraps(func)
-        def inner(*args, **kwds):
+        def inner(*args, **kwds):  # pylint:disable=missing-docstring
             with self:
                 return func(*args, **kwds)
         return inner
 
 
 def mkdir_p(path):
-    # Adapted from http://stackoverflow.com/a/600612/1539918
+    """Ensure directory ``path`` exists. If needed, parent directories
+    are created.
+
+    Adapted from http://stackoverflow.com/a/600612/1539918
+    """
     try:
         os.makedirs(path)
     except OSError as exc:  # Python >2.5
@@ -52,6 +57,9 @@ class push_dir(ContextDecorator):
         :param make_directory:
           If True, ``directory`` is created.
         """
+        self.directory = None
+        self.make_directory = None
+        self.old_cwd = None
         super(push_dir, self).__init__(
             directory=directory, make_directory=make_directory)
 

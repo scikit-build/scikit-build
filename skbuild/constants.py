@@ -1,3 +1,7 @@
+"""
+This module defines constants commonly used in scikit-build.
+"""
+
 import os
 
 SKBUILD_DIR = "_skbuild"

@@ -1,3 +1,5 @@
+"""This module defines custom implementation of ``egg_info`` setuptools
+command."""
 
 import os
 import os.path
@@ -14,15 +16,19 @@ SKBUILD_MARKER_FILE = os.path.join(SKBUILD_DIR, "_skbuild_MANIFEST")
 
 
 class egg_info(set_build_base_mixin, new_style(_egg_info)):
+    """Custom implementation of ``egg_info`` setuptools command generating
+    a `MANIFEST` file if not already provided."""
     def run(self):
-        # If neither a MANIFEST, nor a a MANIFEST.in file is provided, and we
-        # are in a git repo, try to create a MANIFEST file from the output of
-        # `git ls-tree --name-only -r HEAD`.
-        #
-        # We need a reliable way to tell if an existing MANIFEST file is one
-        # we've generated.  distutils already uses a first-line comment to tell
-        # if the MANIFEST file was generated from MANIFEST.in, so we use a dummy
-        # file, "_skbuild_MANIFEST", to avoid confusing distutils.
+        """
+        If neither a `MANIFEST`, nor a `MANIFEST.in` file is provided, and
+        we are in a git repo, try to create a `MANIFEST` file from the output of
+        `git ls-tree --name-only -r HEAD`.
+
+        We need a reliable way to tell if an existing `MANIFEST` file is one
+        we've generated.  distutils already uses a first-line comment to tell
+        if the `MANIFEST` file was generated from `MANIFEST.in`, so we use a
+        dummy file, `_skbuild_MANIFEST`, to avoid confusing distutils.
+        """
         do_generate = (
             # If there's a MANIFEST.in file, we assume that we had nothing to do
             # with the project's manifest.
@@ -37,8 +43,8 @@ class egg_info(set_build_base_mixin, new_style(_egg_info)):
 
         if do_generate:
             try:
-                with open('MANIFEST', 'wb') as file:
-                    file.write(
+                with open('MANIFEST', 'wb') as manifest_file:
+                    manifest_file.write(
                         subprocess.check_output(
                             ['git', 'ls-tree', '--name-only', '-r', 'HEAD'])
                     )
@@ -58,7 +64,7 @@ class egg_info(set_build_base_mixin, new_style(_egg_info)):
             if not os.path.exists(SKBUILD_DIR):
                 os.makedirs(SKBUILD_DIR)
 
-            with open(SKBUILD_MARKER_FILE, 'w') as file:  # touch
+            with open(SKBUILD_MARKER_FILE, 'w'):  # touch
                 pass
 
         super(egg_info, self).run()
