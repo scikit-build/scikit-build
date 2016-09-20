@@ -37,8 +37,9 @@ setup(
     url='https://github.com/scikit-build/scikit-build',
     packages=[
         'skbuild',
-        'skbuild.platform_specifics',
         'skbuild.command',
+        'skbuild.platform_specifics',
+        'skbuild.utils'
     ],
     package_dir={'skbuild': 'skbuild',
                  'skbuild.platform_specifics': 'skbuild/platform_specifics',
