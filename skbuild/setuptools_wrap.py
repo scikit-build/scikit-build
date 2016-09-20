@@ -213,6 +213,7 @@ def _package_data_contain_module(module, package_data):
     return False
 
 
+# pylint:disable=too-many-locals
 def setup(*args, **kw):  # noqa: C901
     """This function wraps setup() so that we can run cmake, make,
     CMake build, then proceed as usual with setuptools, appending the
@@ -379,8 +380,9 @@ def setup(*args, **kw):  # noqa: C901
     ]
 
     # Adapted from espdev/ITKPythonInstaller/setup.py.in
+    # pylint: disable=missing-docstring
     class BinaryDistribution(upstream_Distribution):
-        def has_ext_modules(self):
+        def has_ext_modules(self):  # pylint: disable=no-self-use
             return True
     kw['distclass'] = BinaryDistribution
 
@@ -431,6 +433,7 @@ def _collect_package_prefixes(package_dir, packages):
     ))
 
 
+# pylint:disable=too-many-arguments, too-many-branches
 def _classify_files(install_paths, package_data, package_prefixes,
                     py_modules, new_py_modules,
                     scripts, new_scripts,
