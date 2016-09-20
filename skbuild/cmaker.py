@@ -10,8 +10,6 @@ import shlex
 import sys
 import sysconfig
 
-from subprocess import CalledProcessError
-
 from .constants import (CMAKE_BUILD_DIR,
                         CMAKE_INSTALL_DIR,
                         SETUPTOOLS_INSTALL_DIR)
@@ -22,19 +20,19 @@ RE_FILE_INSTALL = re.compile(
     r"""[ \t]*file\(INSTALL DESTINATION "([^"]+)".*"([^"]+)"\).*""")
 
 
-def pop_arg(arg, a, default=None):
-    """Pops an arg(ument) from an argument list a and returns the new list
-    and the value of the argument if present and a default otherwise.
+def pop_arg(arg, args, default=None):
+    """Pops an argument ``arg`` from an argument list ``args`` and returns the
+    new list and the value of the argument if present and a default otherwise.
     """
     parser = argparse.ArgumentParser(add_help=False)
     parser.add_argument(arg)
-    ns, a = parser.parse_known_args(a)
-    ns = tuple(vars(ns).items())
-    if len(ns) > 0 and ns[0][1] is not None:
-        val = ns[0][1]
+    namespace, args = parser.parse_known_args(args)
+    namespace = tuple(vars(namespace).items())
+    if len(namespace) > 0 and namespace[0][1] is not None:
+        val = namespace[0][1]
     else:
         val = default
-    return a, val
+    return args, val
 
 
 def _remove_cwd_prefix(path):
@@ -58,7 +56,7 @@ class CMaker(object):
         # verify that CMake is installed
         try:
             subprocess.check_call(['cmake', '--version'])
-        except (OSError, CalledProcessError):
+        except (OSError, subprocess.CalledProcessError):
             raise SKBuildError(
                 "Problem with the CMake installation, aborting build.")
 
@@ -322,7 +320,7 @@ class CMaker(object):
         bad_installs = []
         install_dir = os.path.join(os.getcwd(), CMAKE_INSTALL_DIR)
 
-        for root, dir_list, file_list in os.walk(CMAKE_BUILD_DIR):
+        for root, _, file_list in os.walk(CMAKE_BUILD_DIR):
             for filename in file_list:
                 if os.path.splitext(filename)[1] != ".cmake":
                     continue
@@ -397,7 +395,8 @@ class CMaker(object):
             glob.glob(os.path.join(CMAKE_BUILD_DIR, "install_manifest*.txt"))
         return [self._parse_manifest(path) for path in paths][0]
 
-    def _parse_manifest(self, install_manifest_path):
+    @staticmethod
+    def _parse_manifest(install_manifest_path):
         with open(install_manifest_path, "r") as manifest:
             return [_remove_cwd_prefix(path) for path in manifest]
 

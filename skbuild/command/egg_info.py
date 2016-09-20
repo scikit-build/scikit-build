@@ -37,8 +37,8 @@ class egg_info(set_build_base_mixin, new_style(_egg_info)):
 
         if do_generate:
             try:
-                with open('MANIFEST', 'wb') as file:
-                    file.write(
+                with open('MANIFEST', 'wb') as manifest_file:
+                    manifest_file.write(
                         subprocess.check_output(
                             ['git', 'ls-tree', '--name-only', '-r', 'HEAD'])
                     )
@@ -58,7 +58,7 @@ class egg_info(set_build_base_mixin, new_style(_egg_info)):
             if not os.path.exists(SKBUILD_DIR):
                 os.makedirs(SKBUILD_DIR)
 
-            with open(SKBUILD_MARKER_FILE, 'w') as file:  # touch
+            with open(SKBUILD_MARKER_FILE, 'w'):  # touch
                 pass
 
         super(egg_info, self).run()

@@ -6,9 +6,9 @@ try:
 except ImportError:
     from distutils.command.clean import clean as _clean
 
-from shutil import rmtree
-
 from distutils import log
+
+from shutil import rmtree
 
 from . import set_build_base_mixin
 from ..constants import (CMAKE_BUILD_DIR,
