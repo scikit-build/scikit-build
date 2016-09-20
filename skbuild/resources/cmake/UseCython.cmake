@@ -1,16 +1,11 @@
-#.rst
-# Define a function to create Cython modules.
-#
-# For more information on the Cython project, see http://cython.org/.
-# "Cython is a language that makes writing C extensions for the Python language
-# as easy as Python itself."
-#
-# This file defines a CMake function to build a Cython Python module.
-# To use it, first include this file.
-#
-#   include(UseCython)
+#.rst:
 #
 # The following functions are defined:
+#
+# .. cmake:command:: add_cython_target
+#
+# Create a custom rule to generate the source code for a Python extension module
+# using cython.
 #
 #   add_cython_target(<Name> [<CythonInput>]
 #                     [EMBED_MAIN]
@@ -18,8 +13,7 @@
 #                     [PY2 | PY3]
 #                     [OUTPUT_VAR <OutputVar>])
 #
-# Create a custom rule to generate the source code for a Python extension module
-# using cython.  ``<Name>`` is the name of the new target, and ``<CythonInput>``
+# ``<Name>`` is the name of the new target, and ``<CythonInput>``
 # is the path to a cython source file.  Note that, despite the name, no new
 # targets are created by this function.  Instead, see ``OUTPUT_VAR`` for
 # retrieving the path to the generated source for subsequent targets.
@@ -62,8 +56,16 @@
 # ``<OutputVar>``
 #   The path of the generated source file.
 #
+# Cache variables that effect the behavior include:
 #
-# Example usage:
+# ``CYTHON_ANNOTATE``
+#   whether to create an annotated .html file when compiling
+#
+# ``CYTHON_FLAGS``
+#   additional flags to pass to the Cython compiler
+#
+# Example usage
+# ^^^^^^^^^^^^^
 #
 # .. code-block:: cmake
 #
@@ -75,16 +77,6 @@
 #
 #   add_library(cy_code MODULE ${cy_code})
 #   target_link_libraries(cy_code ...)
-#
-# Cache variables that effect the behavior include:
-#
-# ``CYTHON_ANNOTATE``
-#   whether to create an annotated .html file when compiling
-#
-# ``CYTHON_FLAGS``
-#   additional flags to pass to the Cython compiler
-#
-# See also FindCython.cmake
 #
 #=============================================================================
 # Copyright 2011 Kitware, Inc.
