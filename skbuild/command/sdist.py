@@ -10,5 +10,5 @@ class sdist(set_build_base_mixin, new_style(_sdist)):
     """Custom implementation of ``sdist`` setuptools command."""
     def run(self, *args, **kwargs):
         """Force :class:`.egg_info.egg_info` command to run."""
-        self.run_command('egg_info')
+        self.run_command('generate_source_manifest')
         super(sdist, self).run(*args, **kwargs)

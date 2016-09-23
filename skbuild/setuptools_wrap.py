@@ -25,7 +25,8 @@ from setuptools import setup as upstream_setup
 from setuptools.dist import Distribution as upstream_Distribution
 
 from . import cmaker
-from .command import build, install, clean, bdist, bdist_wheel, egg_info, sdist
+from .command import (build, install, clean, bdist, bdist_wheel, egg_info,
+                      sdist, generate_source_manifest)
 from .constants import CMAKE_INSTALL_DIR
 from .exceptions import SKBuildError
 from .utils import (mkdir_p, PythonModuleFinder, to_platform_path, to_unix_path)
@@ -235,6 +236,9 @@ def setup(*args, **kw):  # noqa: C901
     cmdclass['bdist_wheel'] = cmdclass.get(
         'bdist_wheel', bdist_wheel.bdist_wheel)
     cmdclass['egg_info'] = cmdclass.get('egg_info', egg_info.egg_info)
+    cmdclass['generate_source_manifest'] = cmdclass.get(
+        'generate_source_manifest',
+        generate_source_manifest.generate_source_manifest)
     kw['cmdclass'] = cmdclass
 
     # Extract setup keywords specific to scikit-build and remove them from kw.
