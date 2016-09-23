@@ -46,8 +46,8 @@ def test_make_without_configure_fails(capfd):
     assert "Error: could not load cache" in err
 
 
-@pytest.mark.parametrize("has_config_src_dir", (True, False))
-def test_make(has_config_src_dir, capfd):
+@pytest.mark.parametrize("configure_with_cmake_source_dir", (True, False))
+def test_make(configure_with_cmake_source_dir, capfd):
     tmp_dir = _tmpdir('test_make')
     with push_dir(str(tmp_dir)):
 
@@ -66,18 +66,18 @@ def test_make(has_config_src_dir, capfd):
         src_dir.ensure(CMAKE_BUILD_DIR, dir=1)
 
         with push_dir(str(src_dir)
-                      if not has_config_src_dir
+                      if not configure_with_cmake_source_dir
                       else str(tmp_dir.ensure('BUILD', dir=1))):
             cmkr = CMaker()
             config_kwargs = {}
-            if has_config_src_dir:
+            if configure_with_cmake_source_dir:
                 config_kwargs['cmake_source_dir'] = str(src_dir)
             cmkr.configure(**config_kwargs)
             cmkr.make()
 
         messages = ["Project has been installed"]
 
-        if has_config_src_dir:
+        if configure_with_cmake_source_dir:
             messages += ["/SRC",
                          "/BUILD/_skbuild/cmake-build",
                          "/BUILD/_skbuild/cmake-install/./foo.txt"]
