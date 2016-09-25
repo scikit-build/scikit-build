@@ -8,6 +8,7 @@ Tries to build and test the `hello-cython` sample project.
 """
 
 import glob
+import sysconfig
 import tarfile
 
 from zipfile import ZipFile
@@ -69,7 +70,7 @@ def test_hello_cython_wheel():
         'hello_cython-1.2.3.dist-info/RECORD',
         'hello_cython-1.2.3.dist-info/metadata.json',
         'hello_cython-1.2.3.dist-info/METADATA',
-        'hello_cython/_hello.so',
+        'hello_cython/_hello%s' % (sysconfig.get_config_var('SO')),
         'hello_cython/__init__.py',
         'hello_cython/__main__.py'
     ]

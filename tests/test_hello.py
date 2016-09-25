@@ -10,6 +10,7 @@ Tries to build and test the `hello` sample project.
 import glob
 import os
 import pytest
+import sysconfig
 import tarfile
 
 from skbuild.constants import SKBUILD_DIR
@@ -125,7 +126,7 @@ def test_hello_wheel():
         'hello-1.2.3.dist-info/RECORD',
         'hello-1.2.3.dist-info/metadata.json',
         'hello-1.2.3.dist-info/METADATA',
-        'hello/_hello.so',
+        'hello/_hello%s' % (sysconfig.get_config_var('SO')),
         'hello/__init__.py',
         'hello/__main__.py',
         'bonjour/__init__.py'
