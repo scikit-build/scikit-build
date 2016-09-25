@@ -327,6 +327,7 @@ function(_test_weak_link_project
                 "${project_name}"
                 CMAKE_FLAGS
                   "-DCMAKE_SHARED_LINKER_FLAGS='${CMAKE_SHARED_LINKER_FLAGS}'"
+                  "-DCMAKE_ENABLE_EXPORTS=ON"
                   ${_rpath_arg}
                 OUTPUT_VARIABLE compile_output)
 
@@ -391,9 +392,7 @@ function(check_dynamic_lookup
   if(NOT DEFINED ${cache_var})
     set(skip_test FALSE)
 
-    if(NOT CMAKE_CROSSCOMPILING)
-      set(skip_test TRUE)
-    elseif(CMAKE_CROSSCOMPILING AND CMAKE_CROSSCOMPILING_EMULATOR)
+   if(CMAKE_CROSSCOMPILING AND NOT CMAKE_CROSSCOMPILING_EMULATOR)
       set(skip_test TRUE)
     endif()
 
