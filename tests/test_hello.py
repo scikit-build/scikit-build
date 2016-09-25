@@ -10,6 +10,7 @@ Tries to build and test the `hello` sample project.
 import glob
 import os
 import pytest
+import sysconfig
 import tarfile
 
 from skbuild.constants import SKBUILD_DIR
@@ -117,6 +118,22 @@ def test_hello_wheel():
     whls = glob.glob('dist/*.whl')
     assert len(whls) == 1
     assert not whls[0].endswith('-none-any.whl')
+
+    expected_content = [
+        'hello-1.2.3.dist-info/top_level.txt',
+        'hello-1.2.3.dist-info/DESCRIPTION.rst',
+        'hello-1.2.3.dist-info/WHEEL',
+        'hello-1.2.3.dist-info/RECORD',
+        'hello-1.2.3.dist-info/metadata.json',
+        'hello-1.2.3.dist-info/METADATA',
+        'hello/_hello%s' % (sysconfig.get_config_var('SO')),
+        'hello/__init__.py',
+        'hello/__main__.py',
+        'bonjour/__init__.py'
+    ]
+
+    member_list = ZipFile(whls[0]).namelist()
+    assert sorted(expected_content) == sorted(member_list)
 
 
 @pytest.mark.parametrize("dry_run", ['with-dry-run', 'without-dry-run'])
