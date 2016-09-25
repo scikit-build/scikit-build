@@ -118,6 +118,22 @@ def test_hello_wheel():
     assert len(whls) == 1
     assert not whls[0].endswith('-none-any.whl')
 
+    expected_content = [
+        'hello-1.2.3.dist-info/top_level.txt',
+        'hello-1.2.3.dist-info/DESCRIPTION.rst',
+        'hello-1.2.3.dist-info/WHEEL',
+        'hello-1.2.3.dist-info/RECORD',
+        'hello-1.2.3.dist-info/metadata.json',
+        'hello-1.2.3.dist-info/METADATA',
+        'hello/_hello.so',
+        'hello/__init__.py',
+        'hello/__main__.py',
+        'bonjour/__init__.py'
+    ]
+
+    member_list = ZipFile(whls[0]).namelist()
+    assert sorted(expected_content) == sorted(member_list)
+
 
 @pytest.mark.parametrize("dry_run", ['with-dry-run', 'without-dry-run'])
 def test_hello_clean(dry_run, capfd):

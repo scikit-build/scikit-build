@@ -390,7 +390,7 @@ def setup(*args, **kw):  # noqa: C901
     # pylint: disable=missing-docstring
     class BinaryDistribution(upstream_Distribution):
         def has_ext_modules(self):  # pylint: disable=no-self-use
-            return True
+            return has_cmakelists
     kw['distclass'] = BinaryDistribution
 
     print("")
