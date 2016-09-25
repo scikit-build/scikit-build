@@ -32,7 +32,8 @@
 #
 #   python_extension_module(<Target>
 #                           [LINKED_MODULES_VAR <LinkedModVar>]
-#                           [FORWARD_DECL_MODULES_VAR <ForwardDeclModVar>])
+#                           [FORWARD_DECL_MODULES_VAR <ForwardDeclModVar>]
+#                           [MODULE_SUFFIX <ModuleSuffix>])
 #
 # Only extension modules that are configured to be built as MODULE libraries can
 # be runtime-loaded through the standard Python import mechanism.  All other
@@ -61,6 +62,14 @@
 #   points must be forward declared and called by any stand-alone applications
 #   that use them.  By default, the global property
 #   ``PY_FORWARD_DECL_MODULES_LIST`` is used.
+#
+# ``MODULE_SUFFIX <ModuleSuffix>``
+#   Suffix appended to the python extension module file. The default suffix
+#   is retrieved using ``sysconfig.get_config_var("SO")"``, if not available,
+#   the default is then```.so`` on unix and ``.pyd`` on windows.
+#   Setting the variable ``PYTHON_EXTENSION_MODULE_SUFFIX`` in the caller
+#   scope defines the value used for all extensions not having a suffix
+#   explicitly specified using ``MODULE_SUFFIX`` parameter.
 #
 #
 # .. cmake:command:: python_standalone_executable
@@ -237,6 +246,7 @@ import os
 import os.path
 import site
 import sys
+import sysconfig
 
 result = None
 rel_result = None
@@ -270,6 +280,7 @@ sys.stdout.write(\";\".join((
     sys.prefix,
     result,
     rel_result,
+    sysconfig.get_config_var('SO')
 )))
 ")
 
@@ -297,8 +308,13 @@ list(GET _list 4 _item)
 set(PYTHON_RELATIVE_SITE_PACKAGES_DIR "${_item}")
 mark_as_advanced(PYTHON_RELATIVE_SITE_PACKAGES_DIR)
 
+if(NOT DEFINED PYTHON_EXTENSION_MODULE_SUFFIX)
+  list(GET _list 5 _item)
+  set(PYTHON_EXTENSION_MODULE_SUFFIX "${_item}")
+endif()
+
 function(python_extension_module _target)
-  set(one_ops LINKED_MODULES_VAR FORWARD_DECL_MODULES_VAR)
+  set(one_ops LINKED_MODULES_VAR FORWARD_DECL_MODULES_VAR MODULE_SUFFIX)
   cmake_parse_arguments(_args "" "${one_ops}" "" ${ARGN})
 
   set(_lib_type "NA")
@@ -356,8 +372,20 @@ function(python_extension_module _target)
   endif()
 
   if(_is_module_lib OR _is_shared_lib)
-    if(_is_module_lib AND WIN32 AND NOT CYGWIN)
-      set_target_properties(${_target} PROPERTIES SUFFIX ".pyd")
+    if(_is_module_lib)
+
+      if(NOT _args_MODULE_SUFFIX)
+        set(_args_MODULE_SUFFIX "${PYTHON_EXTENSION_MODULE_SUFFIX}")
+      endif()
+
+      if(_args_MODULE_SUFFIX STREQUAL "" AND WIN32 AND NOT CYGWIN)
+        set(_args_MODULE_SUFFIX ".pyd")
+      endif()
+
+      if(NOT _args_MODULE_SUFFIX STREQUAL "")
+        set_target_properties(${_target}
+          PROPERTIES SUFFIX ${_args_MODULE_SUFFIX})
+      endif()
     endif()
 
     target_link_libraries_with_dynamic_lookup(${_target} ${PYTHON_LIBRARIES})
