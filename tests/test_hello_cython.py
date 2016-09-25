@@ -8,6 +8,7 @@ Tries to build and test the `hello-cython` sample project.
 """
 
 import glob
+import sysconfig
 import tarfile
 
 from zipfile import ZipFile
@@ -61,3 +62,18 @@ def test_hello_cython_wheel():
     whls = glob.glob('dist/*.whl')
     assert len(whls) == 1
     assert not whls[0].endswith('-none-any.whl')
+
+    expected_content = [
+        'hello_cython-1.2.3.dist-info/top_level.txt',
+        'hello_cython-1.2.3.dist-info/DESCRIPTION.rst',
+        'hello_cython-1.2.3.dist-info/WHEEL',
+        'hello_cython-1.2.3.dist-info/RECORD',
+        'hello_cython-1.2.3.dist-info/metadata.json',
+        'hello_cython-1.2.3.dist-info/METADATA',
+        'hello_cython/_hello%s' % (sysconfig.get_config_var('SO')),
+        'hello_cython/__init__.py',
+        'hello_cython/__main__.py'
+    ]
+
+    member_list = ZipFile(whls[0]).namelist()
+    assert sorted(expected_content) == sorted(member_list)

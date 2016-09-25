@@ -64,6 +64,19 @@ def test_hello_pure_wheel():
     assert len(whls) == 1
     assert whls[0].endswith('-none-any.whl')
 
+    expected_content = [
+        'hello_pure-1.2.3.dist-info/top_level.txt',
+        'hello_pure-1.2.3.dist-info/DESCRIPTION.rst',
+        'hello_pure-1.2.3.dist-info/WHEEL',
+        'hello_pure-1.2.3.dist-info/RECORD',
+        'hello_pure-1.2.3.dist-info/metadata.json',
+        'hello_pure-1.2.3.dist-info/METADATA',
+        'hello/__init__.py'
+    ]
+
+    member_list = ZipFile(whls[0]).namelist()
+    assert sorted(expected_content) == sorted(member_list)
+
 
 def test_hello_clean(capfd):
     with push_dir():
