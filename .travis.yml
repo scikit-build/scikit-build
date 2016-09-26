@@ -50,7 +50,7 @@ addons:
 
 install:
   - |
-    git clone git://github.com/scikit-build/scikit-ci
+    git clone git://github.com/scikit-build/scikit-ci -b split-custom-step-into-reusable-module
     mv scikit-ci/ci ci
   - python ci/driver.py travis install
   - $RUN python ci/driver.py travis style
