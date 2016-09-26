@@ -121,6 +121,9 @@ init:
     }"
 
 install:
+  - |
+    git clone git://github.com/scikit-build/scikit-ci
+    mv scikit-ci/ci ci
   - cmd: "%PYTHON%\\python.exe .\\ci\\driver.py appveyor install"
   - cmd: "%RUN% %PYTHON%\\python.exe .\\ci\\driver.py appveyor style"
 

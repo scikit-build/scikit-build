@@ -1,4 +1,9 @@
 dependencies:
+  pre:
+    - |
+      git clone git://github.com/scikit-build/scikit-ci
+      mv scikit-ci/ci ci
+
   override:
     - python ci/driver.py circle install
     - python ci/driver.py circle style

@@ -49,6 +49,9 @@ addons:
       - python-vtk
 
 install:
+  - |
+    git clone git://github.com/scikit-build/scikit-ci
+    mv scikit-ci/ci ci
   - python ci/driver.py travis install
   - $RUN python ci/driver.py travis style
 
