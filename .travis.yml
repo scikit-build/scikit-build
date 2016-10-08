@@ -10,36 +10,27 @@ matrix:
   include:
     - os: linux
       python: "3.4"
-      env:
-        - RUN=
 
     - os: linux
       python: "3.3.5"
-      env:
-        - RUN=
 
     - os: linux
-      python: 2.7
-      env:
-        - RUN=
-
-    - os: osx
-      language: generic
-      python: "3.4"
-      env:
-        - PYTHONVERSION=3.4.5 RUN=./ci/travis/run.bash
-
-    - os: osx
-      language: generic
-      python: "3.3"
-      env:
-        - PYTHONVERSION=3.3.6 RUN=./ci/travis/run.bash
-
-    - os: osx
-      language: generic
       python: "2.7"
+
+    - os: osx
+      language: generic
       env:
-        - PYTHONVERSION=2.7.12 RUN=./ci/travis/run.bash
+        - PYTHONVERSION=3.4.5
+
+    - os: osx
+      language: generic
+      env:
+        - PYTHONVERSION=3.3.6
+
+    - os: osx
+      language: generic
+      env:
+        - PYTHONVERSION=2.7.12
 
 addons:
   apt:
@@ -48,13 +39,22 @@ addons:
       - libboost-python-dev
       - python-vtk
 
+before_install:
+  - |
+    git clone git://github.com/scikit-build/scikit-ci ../scikit-ci
+    pip install -r ../scikit-ci/requirements.txt
+    mv ../scikit-ci/ci ../ci
+
 install:
-  - python ci/driver.py travis install
-  - $RUN python ci/driver.py travis style
+  - python ../ci/driver.py before_install
+  - python ../ci/driver.py install
+
+before_script:
+  - python ../ci/driver.py before_build
 
 script:
-  - $RUN python ci/driver.py travis build
-  - $RUN python ci/driver.py travis test
+  - python ../ci/driver.py build
+  - python ../ci/driver.py test
 
 after_success:
-  - $RUN python ci/driver.py travis after_test
+  - python ../ci/driver.py after_test

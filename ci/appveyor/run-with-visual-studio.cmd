@@ -1,3 +1,0 @@
-# To be downloaded from
-#   https://raw.githubusercontent.com/ogrisel/python-appveyor-demo/ ...
-#     ... f54ec3593bcea682098a59b560c1850c19746e10/appveyor/run_with_env.cmd

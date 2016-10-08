@@ -1,12 +1,31 @@
-dependencies:
-  override:
-    - python ci/driver.py circle install
-    - python ci/driver.py circle style
-
-test:
-  override:
-    - python ci/driver.py circle build
-    - python ci/driver.py circle test
+machine:
+  python:
+    version: 2.7.11
 
   post:
-    - python ci/driver.py circle after_test
+    - |
+      git clone git://github.com/scikit-build/scikit-ci
+      mv scikit-ci/ci ci
+
+dependencies:
+  pre:
+    - pip install -r ../scikit-ci/requirements.txt
+    - python ../ci/driver.py before_install
+  override:
+    - python ../ci/driver.py install
+
+test:
+  pre:
+    - python ../ci/driver.py before_build
+
+  override:
+    - python ../ci/driver.py build
+
+  post:
+    - python ../ci/driver.py test
+
+deployment:
+  master:
+    branch: master
+    commands:
+      - python ../ci/driver.py after_test
