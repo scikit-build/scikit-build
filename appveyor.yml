@@ -10,81 +10,62 @@ version: "0.0.1.{build}"
 
 environment:
   matrix:
-    ##################################################
-    # NOTE: For now, Fortran features are not tested #
-    ##################################################
 
     # Visual Studio (Python 2 & 3, 32 & 64 bit)
-    - PYTHON: "C:\\Python27"
+    - PYTHON_DIR: "C:\\Python27"
       PYTHON_VERSION: "2.7.x"
       PYTHON_ARCH: "32"
       CMAKE_GENERATOR: Visual Studio 9 2008
-      RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
-      EXTRA_TEST_ARGS: "-m \"not fortran\""
       SKIP: "0"
       BLOCK: "0"
 
-    - PYTHON: "C:\\Python27-x64"
+    - PYTHON_DIR: "C:\\Python27-x64"
       PYTHON_VERSION: "2.7.x"
       PYTHON_ARCH: "64"
       CMAKE_GENERATOR: Visual Studio 9 2008 Win64
-      RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
-      EXTRA_TEST_ARGS: "-m \"not fortran\""
       SKIP: "0"
       BLOCK: "0"
 
-    - PYTHON: "C:\\Python35"
+    - PYTHON_DIR: "C:\\Python35"
       PYTHON_VERSION: "3.5.x"
       PYTHON_ARCH: "32"
       CMAKE_GENERATOR: Visual Studio 14 2015
-      RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
-      EXTRA_TEST_ARGS: "-m \"not fortran\""
       SKIP: "0"
       BLOCK: "0"
 
-    - PYTHON: "C:\\Python35-x64"
+    - PYTHON_DIR: "C:\\Python35-x64"
       PYTHON_VERSION: "3.5.x"
       PYTHON_ARCH: "64"
       CMAKE_GENERATOR: Visual Studio 14 2015 Win64
-      RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
-      EXTRA_TEST_ARGS: "-m \"not fortran\""
       SKIP: "0"
       BLOCK: "0"
 
     # MinGW (Python 2 & 3, 64 bit only)
-    - PYTHON: "C:\\Python27-x64"
-      PYTHON_VERSION: "2.7.x"
-      PYTHON_ARCH: "64"
-      CMAKE_GENERATOR: "MinGW Makefiles"
-      RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
-      EXTRA_TEST_ARGS: "-m \"not fortran\""
-      SKIP: "1"
-      BLOCK: "0"
-
-    - PYTHON: "C:\\Python35"
-      PYTHON_VERSION: "3.5.x"
-      PYTHON_ARCH: "32"
-      CMAKE_GENERATOR: "MinGW Makefiles"
-      RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
-      EXTRA_TEST_ARGS: "-m \"not fortran\""
-      SKIP: "1"
-      BLOCK: "0"
+#    - PYTHON_DIR: "C:\\Python27-x64"
+#      PYTHON_VERSION: "2.7.x"
+#      PYTHON_ARCH: "64"
+#      CMAKE_GENERATOR: "MinGW Makefiles"
+#      SKIP: "1"
+#      BLOCK: "0"
+#
+#    - PYTHON_DIR: "C:\\Python35"
+#      PYTHON_VERSION: "3.5.x"
+#      PYTHON_ARCH: "32"
+#      CMAKE_GENERATOR: "MinGW Makefiles"
+#      SKIP: "1"
+#      BLOCK: "0"
 
     # Default -- make sure Visual Studio works as the default
     # (Python 2 & 3, 64 bit only)
-    - PYTHON: "C:\\Python27-x64"
+    - PYTHON_DIR: "C:\\Python27-x64"
       PYTHON_VERSION: "2.7.x"
       PYTHON_ARCH: "64"
-      RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
-      EXTRA_TEST_ARGS: "-m \"not fortran\""
       SKIP: "0"
       BLOCK: "0"
 
-    - PYTHON: "C:\\Python35-x64"
+    - PYTHON_DIR: "C:\\Python35-x64"
       PYTHON_VERSION: "3.5.x"
       PYTHON_ARCH: "64"
-      RUN: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\run.cmd"
-      EXTRA_TEST_ARGS: "-m \"not fortran\""
       SKIP: "0"
       BLOCK: "0"
 
@@ -120,21 +101,24 @@ init:
               for this pull request, failing early.\" \
     }"
 
-install:
   - |
-    git clone git://github.com/scikit-build/scikit-ci -b split-custom-step-into-reusable-module
-    mv scikit-ci/ci ci
-  - cmd: "%PYTHON%\\python.exe .\\ci\\driver.py appveyor install"
-  - cmd: "%RUN% %PYTHON%\\python.exe .\\ci\\driver.py appveyor style"
+    git clone git://github.com/scikit-build/scikit-ci ../scikit-ci
+    python.exe -m pip install -r ../scikit-ci/requirements.txt
+    mv ../scikit-ci/ci ../ci
+
+install:
+  - python ../ci/driver.py before_install
+  - python ../ci/driver.py install
 
 build_script:
-  - cmd: "%RUN% %PYTHON%\\python.exe .\\ci\\driver.py appveyor build"
+  - python ../ci/driver.py before_build
+  - python ../ci/driver.py build"
 
 test_script:
-  - cmd: "%RUN% %PYTHON%\\python.exe .\\ci\\driver.py appveyor test"
+  - python ../ci/driver.py test"
 
 after_test:
-  - cmd: "%RUN% %PYTHON%\\python.exe .\\ci\\driver.py appveyor after_test"
+  - python ../ci/driver.py after_test"
 
 on_finish:
   - ps: "\
