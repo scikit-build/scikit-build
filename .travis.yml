@@ -37,6 +37,7 @@ cache:
     - $HOME/.pyenv/versions/3.4.5
     - $HOME/.pyenv/versions/3.3.6
     - $HOME/.pyenv/versions/2.7.12
+    - $HOME/downloads
 
 addons:
   apt:
