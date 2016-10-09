@@ -32,6 +32,13 @@ matrix:
       env:
         - PYTHONVERSION=2.7.12
 
+cache:
+  directories:
+    - $HOME/.pyenv/versions/3.4.5
+    - $HOME/.pyenv/versions/3.3.6
+    - $HOME/.pyenv/versions/2.7.12
+    - $HOME/downloads
+
 addons:
   apt:
     packages:
@@ -41,20 +48,20 @@ addons:
 
 before_install:
   - |
-    git clone git://github.com/scikit-build/scikit-ci ../scikit-ci
-    pip install -r ../scikit-ci/requirements.txt
-    mv ../scikit-ci/ci ../ci
+    git clone git://github.com/scikit-build/scikit-ci ../bootstrap-scikit-ci
+    pip install ../bootstrap-scikit-ci/
+    mv ../bootstrap-scikit-ci/ci ../ci
 
 install:
-  - python ../ci/driver.py before_install
-  - python ../ci/driver.py install
+  - ci before_install
+  - ci install
 
 before_script:
-  - python ../ci/driver.py before_build
+  - ci before_build
 
 script:
-  - python ../ci/driver.py build
-  - python ../ci/driver.py test
+  - ci build
+  - ci test
 
 after_success:
-  - python ../ci/driver.py after_test
+  - ci after_test
