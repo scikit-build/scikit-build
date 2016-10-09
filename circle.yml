@@ -3,29 +3,30 @@ machine:
     version: 2.7.11
 
   post:
-    - |
-      git clone git://github.com/scikit-build/scikit-ci
-      mv scikit-ci/ci ci
+    - git clone git://github.com/scikit-build/scikit-ci bootstrap-scikit-ci
+
 
 dependencies:
   pre:
-    - pip install -r ../scikit-ci/requirements.txt
-    - python ../ci/driver.py before_install
+    - |
+      pip install ../bootstrap-scikit-ci/
+      mv ../bootstrap-scikit-ci/ci ../ci
+    - ci before_install
   override:
-    - python ../ci/driver.py install
+    - ci install
 
 test:
   pre:
-    - python ../ci/driver.py before_build
+    - ci before_build
 
   override:
-    - python ../ci/driver.py build
+    - ci build
 
   post:
-    - python ../ci/driver.py test
+    - ci test
 
 deployment:
   master:
     branch: master
     commands:
-      - python ../ci/driver.py after_test
+      - ci after_test

@@ -102,23 +102,23 @@ init:
     }"
 
   - |
-    git clone git://github.com/scikit-build/scikit-ci ../scikit-ci
-    python.exe -m pip install -r ../scikit-ci/requirements.txt
-    mv ../scikit-ci/ci ../ci
+    git clone git://github.com/scikit-build/scikit-ci ../bootstrap-scikit-ci
+    python.exe -m pip install ../bootstrap-scikit-ci
+    mv ../bootstrap-scikit-ci/ci ../ci
 
 install:
-  - python ../ci/driver.py before_install
-  - python ../ci/driver.py install
+  - python -m ci before_install
+  - python -m ci install
 
 build_script:
-  - python ../ci/driver.py before_build
-  - python ../ci/driver.py build"
+  - python -m ci before_build
+  - python -m ci build"
 
 test_script:
-  - python ../ci/driver.py test"
+  - python -m ci test"
 
 after_test:
-  - python ../ci/driver.py after_test"
+  - python -m ci after_test"
 
 on_finish:
   - ps: "\
