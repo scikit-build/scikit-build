@@ -48,9 +48,8 @@ addons:
 
 before_install:
   - |
-    git clone git://github.com/scikit-build/scikit-ci ../bootstrap-scikit-ci
-    pip install ../bootstrap-scikit-ci/
-    mv ../bootstrap-scikit-ci/ci ../ci
+    pip install scikit-ci
+    git clone git://github.com/scikit-build/scikit-ci-addons ../ci
 
 install:
   - ci before_install

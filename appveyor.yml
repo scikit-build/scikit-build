@@ -105,9 +105,8 @@ init:
     }"
 
   - |
-    git clone git://github.com/scikit-build/scikit-ci ../bootstrap-scikit-ci
-    python.exe -m pip install ../bootstrap-scikit-ci
-    mv ../bootstrap-scikit-ci/ci ../ci
+    python.exe -m pip install scikit-ci
+    git clone git://github.com/scikit-build/scikit-ci-addons ../ci
 
 install:
   - python -m ci before_install
