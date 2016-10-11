@@ -27,7 +27,7 @@ before_install:
 install:
 
   commands:
-    - python ../ci/install_cmake.py 3.6.2
+    - python ../ci/$<CI_NAME>/install_cmake.py 3.6.2
     - $<RUN_ENV> $<PYTHON> -m pip install --disable-pip-version-check --upgrade pip
     - $<RUN_ENV> $<PYTHON> -m pip install -r requirements.txt
     - $<RUN_ENV> $<PYTHON> -m pip install -r requirements-dev.txt
