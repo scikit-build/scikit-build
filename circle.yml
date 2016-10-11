@@ -3,13 +3,12 @@ machine:
     version: 2.7.11
 
   post:
-    - git clone git://github.com/scikit-build/scikit-ci bootstrap-scikit-ci
     - git clone git://github.com/scikit-build/scikit-ci-addons ci
 
 
 dependencies:
   pre:
-    - pip install ../bootstrap-scikit-ci/
+    - pip install scikit-ci
     - ci before_install
   override:
     - ci install
