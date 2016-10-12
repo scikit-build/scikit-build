@@ -53,10 +53,8 @@ install:
   - ci before_install
   - ci install
 
-before_script:
-  - ci before_build
-
 script:
+  - ci before_build
   - ci build
   - ci test
 
