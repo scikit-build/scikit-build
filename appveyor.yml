@@ -112,13 +112,13 @@ install:
 
 build_script:
   - python -m ci before_build
-  - python -m ci build"
+  - python -m ci build
 
 test_script:
-  - python -m ci test"
+  - python -m ci test
 
 after_test:
-  - python -m ci after_test"
+  - python -m ci after_test
 
 on_finish:
   - ps: "\
