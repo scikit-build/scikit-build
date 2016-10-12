@@ -4,7 +4,7 @@ machine:
 
 dependencies:
   override:
-    - pip install -U scikit-ci==0.5.0
+    - pip install -U --force-reinstall scikit-ci==0.5.0
     - ci before_install
     - ci install
 
