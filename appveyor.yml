@@ -104,9 +104,7 @@ init:
               for this pull request, failing early.\" \
     }"
 
-  - |
-    python.exe -m pip install scikit-ci
-    git clone git://github.com/scikit-build/scikit-ci-addons ../ci
+  - python -m pip install scikit-ci
 
 install:
   - python -m ci before_install

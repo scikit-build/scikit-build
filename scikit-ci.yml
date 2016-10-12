@@ -6,6 +6,9 @@ before_install:
     PYTHON: python
     RUN_ENV: ""
 
+  commands:
+    - git clone git://github.com/scikit-build/scikit-ci-addons ../ci
+
   appveyor:
     environment:
       PYTEST_ADDOPTS: "-m \"not fortran\""

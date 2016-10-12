@@ -47,18 +47,14 @@ addons:
       - python-vtk
 
 before_install:
-  - |
-    pip install scikit-ci
-    git clone git://github.com/scikit-build/scikit-ci-addons ../ci
+  - pip install scikit-ci
 
 install:
   - ci before_install
   - ci install
 
-before_script:
-  - ci before_build
-
 script:
+  - ci before_build
   - ci build
   - ci test
 
