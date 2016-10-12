@@ -104,7 +104,7 @@ init:
               for this pull request, failing early.\" \
     }"
 
-  - python -m pip install scikit-ci
+  - python -m pip install -U scikit-ci==0.5.0
 
 install:
   - python -m ci before_install

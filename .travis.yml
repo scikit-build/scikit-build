@@ -47,7 +47,7 @@ addons:
       - python-vtk
 
 before_install:
-  - pip install scikit-ci
+  - pip install -U scikit-ci==0.5.0
 
 install:
   - ci before_install
