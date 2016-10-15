@@ -7,7 +7,7 @@ before_install:
     RUN_ENV: ""
 
   commands:
-    - git clone git://github.com/scikit-build/scikit-ci-addons ../ci
+    - git clone -b 0.1.0 git://github.com/scikit-build/scikit-ci-addons ../ci
 
   appveyor:
     environment:
@@ -16,7 +16,6 @@ before_install:
       RUN_ENV: .\\..\\ci\\appveyor\\run-with-visual-studio.cmd
     commands:
       - python ../ci/appveyor/patch_vs2008.py
-      - python ../ci/appveyor/install_visual_studio_wrapper.py
       - python ../ci/appveyor/tweak_environment.py
 
   travis:
