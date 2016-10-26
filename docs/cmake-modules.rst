@@ -12,3 +12,15 @@ CMake modules:
    cmake-modules/Cython
    cmake-modules/NumPy
    cmake-modules/PythonExtensions
+
+
+They can be included using ``find_package``:
+
+.. code-block:: cmake
+
+    find_package(Cython REQUIRED)
+    find_package(NumPy REQUIRED)
+    find_package(PythonExtensions REQUIRED)
+
+
+For more details, see the respective documentation of each modules.
