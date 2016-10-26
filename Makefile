@@ -52,11 +52,13 @@ coverage:
 	coverage html
 	open htmlcov/index.html
 
-docs:
+docs-only:
 	rm -f docs/skbuild rst
 	rm -f docs/modules.rst
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
+
+docs: docs-only
 	open docs/_build/html/index.html || xdg-open docs/_build/html/index.html
 
 release: clean
