@@ -57,8 +57,3 @@ after_test:
   commands:
     - $<RUN_ENV> codecov -X gcov --required --file ./tests/coverage.xml
     - $<RUN_ENV> $<PYTHON> setup.py bdist_wheel
-
-  appveyor:
-    commands:
-      - $<RUN_ENV> $<PYTHON> setup.py bdist_wininst
-      - $<RUN_ENV> $<PYTHON> setup.py bdist_msi
