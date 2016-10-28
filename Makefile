@@ -46,11 +46,9 @@ test:
 test-all:
 	tox
 
-coverage:
-	coverage run --source skbuild setup.py test
-	coverage report -m
+coverage: test
 	coverage html
-	open htmlcov/index.html
+	open htmlcov/index.html || xdg-open htmlcov/index.html
 
 docs-only:
 	rm -f docs/skbuild rst
