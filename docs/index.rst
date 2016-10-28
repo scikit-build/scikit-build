@@ -24,8 +24,10 @@ developing pyproject.toml build system specification
 
    installation
    usage
+   extension_build_system
    cmake-modules
    contributing
+   hacking
    authors
    history
 
