@@ -73,45 +73,15 @@ cache:
   - C:\\cmake-3.6.2
 
 init:
-  - ps: "\
-      iex (\
-        (New-Object Net.Webclient).DownloadString(\
-          'https://raw.githubusercontent.com/\
-            appveyor/ci/master/scripts/enable-rdp.ps1'\
-        )\
-      )"
+  - python -m pip install scikit-ci==0.7.0 scikit-ci-addons==0.3.0
+  - python -m ci_addons --install ../addons
 
-  # If there is a newer build queued for the same PR, cancel this one.
-  # The AppVeyor 'rollout builds' option is supposed to serve the same
-  # purpose but it is problematic because it tends to cancel builds pushed
-  # directly to master instead of just PR builds (or the converse).
-  # credits: JuliaLang developers.
-  - ps: "\
-    if (\
-      $env:APPVEYOR_PULL_REQUEST_NUMBER -and \
-      $env:APPVEYOR_BUILD_NUMBER -ne (\
-        (\
-          Invoke-RestMethod \
-            ` https://ci.appveyor.com/api/projects/\
-                $env:APPVEYOR_ACCOUNT_NAME/\
-                $env:APPVEYOR_PROJECT_SLUG/\
-                history?recordsNumber=50\
-        ).builds | ` Where-Object pullRequestId -eq \
-                                  $env:APPVEYOR_PULL_REQUEST_NUMBER\
-      )[0].buildNumber\
-    ) { ` \
-      throw \"There are newer queued builds \
-              for this pull request, failing early.\" \
-    }"
-
-  - python -m pip install -U scikit-ci==0.5.0
+  - ps: ../addons/appveyor/rolling-build.ps1
 
 install:
-  - python -m ci before_install
   - python -m ci install
 
 build_script:
-  - python -m ci before_build
   - python -m ci build
 
 test_script:
@@ -121,16 +91,7 @@ after_test:
   - python -m ci after_test
 
 on_finish:
-  - ps: "\
-      if ($Env:BLOCK -ceq \"1\") {
-        $blockRdp = $true ; \
-        iex (\
-          (New-Object Net.Webclient).DownloadString(\
-            'https://raw.githubusercontent.com/\
-             appveyor/ci/master/scripts/enable-rdp.ps1'\
-          )\
-        )
-      }"
+  - ps: ../addons/appveyor/enable-worker-remote-access.ps1 -check_for_block
 
 on_failure:
   - ps: "Get-EventLog AppVeyor -newest 10 | Format-List"

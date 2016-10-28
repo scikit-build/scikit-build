@@ -47,15 +47,13 @@ addons:
       - python-vtk
 
 before_install:
-  - pip install -U scikit-ci==0.5.0
+  - pip install scikit-ci==0.7.0 scikit-ci-addons==0.3.0
+  - ci_addons --install ../addons
 
 install:
-  - ci before_install
   - ci install
 
 script:
-  - ci before_build
-  - ci build
   - ci test
 
 after_success:

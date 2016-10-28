@@ -6,30 +6,26 @@ before_install:
     PYTHON: python
     RUN_ENV: ""
 
-  commands:
-    - git clone -b 0.1.0 git://github.com/scikit-build/scikit-ci-addons ../ci
-
   appveyor:
     environment:
       PYTEST_ADDOPTS: "-m \"not fortran\""
       PYTHON: $<PYTHON_DIR>\\python.exe
-      RUN_ENV: .\\..\\ci\\appveyor\\run-with-visual-studio.cmd
+      RUN_ENV: .\\..\\addons\\appveyor\\run-with-visual-studio.cmd
     commands:
-      - python ../ci/appveyor/patch_vs2008.py
-      - python ../ci/appveyor/tweak_environment.py
+      - python ../addons/appveyor/patch_vs2008.py
 
   travis:
     osx:
       environment:
         PYTEST_ADDOPTS: "-m \"not fortran\""
-        RUN_ENV: ../ci/travis/run-with-pyenv.sh
+        RUN_ENV: ../addons/travis/run-with-pyenv.sh
       commands:
-        - python ../ci/travis/install_pyenv.py
+        - python ../addons/travis/install_pyenv.py
 
 install:
 
   commands:
-    - python ../ci/$<CI_NAME>/install_cmake.py 3.6.2
+    - python ../addons/$<CI_NAME>/install_cmake.py 3.6.2
     - $<RUN_ENV> $<PYTHON> -m pip install --disable-pip-version-check --upgrade pip
     - $<RUN_ENV> $<PYTHON> -m pip install -r requirements.txt
     - $<RUN_ENV> $<PYTHON> -m pip install -r requirements-dev.txt
@@ -61,8 +57,3 @@ after_test:
   commands:
     - $<RUN_ENV> codecov -X gcov --required --file ./tests/coverage.xml
     - $<RUN_ENV> $<PYTHON> setup.py bdist_wheel
-
-  appveyor:
-    commands:
-      - $<RUN_ENV> $<PYTHON> setup.py bdist_wininst
-      - $<RUN_ENV> $<PYTHON> setup.py bdist_msi
