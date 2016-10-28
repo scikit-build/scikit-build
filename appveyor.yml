@@ -73,19 +73,15 @@ cache:
   - C:\\cmake-3.6.2
 
 init:
-  - python -m pip install scikit-ci-addons==0.3.0
+  - python -m pip install scikit-ci==0.7.0 scikit-ci-addons==0.3.0
   - python -m ci_addons --install ../addons
 
   - ps: ../addons/appveyor/rolling-build.ps1
 
-  - python -m pip install -U scikit-ci==0.5.0
-
 install:
-  - python -m ci before_install
   - python -m ci install
 
 build_script:
-  - python -m ci before_build
   - python -m ci build
 
 test_script:
