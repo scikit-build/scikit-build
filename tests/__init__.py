@@ -117,7 +117,7 @@ def _copy_dir(target_dir, entry, on_duplicate='exception', keep_top_dir=False):
             # on_duplicate == 'ignore': do nothing with e2
 
 
-def initialize_git_repo_and_commit(project_dir):
+def initialize_git_repo_and_commit(project_dir, verbose=True):
     """Convenience function creating a git repository in ``project_dir``.
 
     If ``project_dir`` does NOT contain a ``.git`` directory, a new
@@ -135,7 +135,9 @@ def initialize_git_repo_and_commit(project_dir):
             ['git', 'add', '-A'],
             ['git', 'commit', '-m', 'Initial commit']
         ]:
-            subprocess.check_call(cmd)
+            do_call = (subprocess.check_call
+                       if verbose else subprocess.check_output)
+            do_call(cmd)
 
 
 def prepare_project(project, tmp_project_dir):
@@ -179,7 +181,7 @@ def execute_setup_py(project_dir, setup_args):
         yield
 
 
-def project_setup_py_test(project, setup_args, tmp_dir=None):
+def project_setup_py_test(project, setup_args, tmp_dir=None, verbose_git=True):
 
     def dec(fun):
 
@@ -189,7 +191,8 @@ def project_setup_py_test(project, setup_args, tmp_dir=None):
             if wrapped.tmp_dir is None:
                 wrapped.tmp_dir = _tmpdir(fun.__name__)
                 prepare_project(wrapped.project, wrapped.tmp_dir)
-                initialize_git_repo_and_commit(wrapped.tmp_dir)
+                initialize_git_repo_and_commit(
+                    wrapped.tmp_dir, verbose=wrapped.verbose_git)
 
             with execute_setup_py(wrapped.tmp_dir, wrapped.setup_args):
                 result2 = fun(*iargs, **ikwargs)
@@ -199,6 +202,7 @@ def project_setup_py_test(project, setup_args, tmp_dir=None):
         wrapped.project = project
         wrapped.setup_args = setup_args
         wrapped.tmp_dir = tmp_dir
+        wrapped.verbose_git = verbose_git
 
         return wrapped
 

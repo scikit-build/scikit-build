@@ -25,7 +25,9 @@ from setuptools import setup as upstream_setup
 from setuptools.dist import Distribution as upstream_Distribution
 
 from . import cmaker
-from .command import (build, install, clean, bdist, bdist_wheel, egg_info,
+from .command import (build, build_py, clean,
+                      install, install_lib, install_scripts,
+                      bdist, bdist_wheel, egg_info,
                       sdist, generate_source_manifest)
 from .constants import CMAKE_INSTALL_DIR
 from .exceptions import SKBuildError
@@ -114,12 +116,15 @@ def _parse_setuptools_arguments(setup_attrs):
     """This function instantiates a Distribution object and
     parses the command line arguments.
 
-    It returns a tuple (display_only, help_commands, commands) where
-     - display_only is a boolean indicating if an argument like '--help',
-     '--help-commands' or '--author' was passed.
-     - help_commands is a boolean indicating if argument '--help-commands'
-     was passed.
-     - commands contains the list of commands that were passed.
+    It returns a tuple (display_only, help_commands, commands, hide_listing)
+    where
+    - display_only is a boolean indicating if an argument like '--help',
+      '--help-commands' or '--author' was passed.
+    - help_commands is a boolean indicating if argument '--help-commands'
+      was passed.
+    - commands contains the list of commands that were passed.
+    - hide_listing is a boolean indicating if the list of files being included
+      in the distribution is displayed or not.
 
     Otherwise it raises DistutilsArgError exception if there are
     any error on the command-line, and it raises DistutilsGetoptError
@@ -134,6 +139,13 @@ def _parse_setuptools_arguments(setup_attrs):
 
     dist = upstream_Distribution(setup_attrs)
 
+    # Update class attribute to also ensure the argument is processed
+    # when ``upstream_setup`` is called.
+    upstream_Distribution.global_options.append(
+        ('hide-listing', None, "do not display list of files being "
+                               "included in the distribution")
+    )
+
     # Find and parse the config file(s): they will override options from
     # the setup script, but be overridden by the command line.
     dist.parse_config_files()
@@ -145,8 +157,10 @@ def _parse_setuptools_arguments(setup_attrs):
     with _capture_output():
         result = dist.parse_command_line()
         display_only = not result
+        if not hasattr(dist, 'hide_listing'):
+            dist.hide_listing = False
 
-    return display_only, dist.help_commands, dist.commands
+    return display_only, dist.help_commands, dist.commands, dist.hide_listing
 
 
 def _check_skbuild_parameters(skbuild_kw):
@@ -229,7 +243,12 @@ def setup(*args, **kw):  # noqa: C901
     # (patches provided, but no updates since 2014)
     cmdclass = kw.get('cmdclass', {})
     cmdclass['build'] = cmdclass.get('build', build.build)
+    cmdclass['build_py'] = cmdclass.get('build_py', build_py.build_py)
     cmdclass['install'] = cmdclass.get('install', install.install)
+    cmdclass['install_lib'] = cmdclass.get('install_lib',
+                                           install_lib.install_lib)
+    cmdclass['install_scripts'] = cmdclass.get('install_scripts',
+                                               install_scripts.install_scripts)
     cmdclass['clean'] = cmdclass.get('clean', clean.clean)
     cmdclass['sdist'] = cmdclass.get('sdist', sdist.sdist)
     cmdclass['bdist'] = cmdclass.get('bdist', bdist.bdist)
@@ -278,7 +297,7 @@ def setup(*args, **kw):  # noqa: C901
     display_only = has_invalid_arguments = help_commands = False
     commands = []
     try:
-        (display_only, help_commands, commands) = \
+        (display_only, help_commands, commands, hide_listing) = \
             _parse_setuptools_arguments(kw)
     except (DistutilsArgError, DistutilsGetoptError):
         has_invalid_arguments = True
@@ -360,7 +379,7 @@ def setup(*args, **kw):  # noqa: C901
                     cmake_source_dir, skbuild_kw['cmake_install_dir'])
 
     _consolidate(cmake_source_dir,
-                 packages, package_dir, py_modules, package_data)
+                 packages, package_dir, py_modules, package_data, hide_listing)
 
     kw['package_data'] = package_data
     kw['package_dir'] = {
@@ -537,7 +556,9 @@ def _classify_files(install_paths, package_data, package_prefixes,
 
 
 def _consolidate(
-        cmake_source_dir, packages, package_dir, py_modules, package_data):
+        cmake_source_dir, packages, package_dir, py_modules, package_data,
+        hide_listing
+):
     """This function consolidates packages having modules located in
     both the source tree and the CMake install tree into one location.
 
@@ -588,11 +609,13 @@ def _consolidate(
         # Create directory if needed
         dest_module_dir = os.path.dirname(dest_module_file)
         if not os.path.exists(dest_module_dir):
-            print("creating directory {}".format(dest_module_dir))
+            if not hide_listing:
+                print("creating directory {}".format(dest_module_dir))
             mkdir_p(dest_module_dir)
 
         # Copy file
-        print("copying {} -> {}".format(src_module_file, dest_module_file))
+        if not hide_listing:
+            print("copying {} -> {}".format(src_module_file, dest_module_file))
         copyfile(src_module_file, dest_module_file)
 
         # Since the mapping in package_data expects the package to be associated

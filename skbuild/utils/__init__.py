@@ -4,6 +4,8 @@ import errno
 import os
 
 from collections import namedtuple
+from contextlib import contextmanager
+from distutils import log as distutils_log
 from distutils.command.build_py import build_py as distutils_build_py
 from functools import wraps
 
@@ -157,3 +159,15 @@ def to_platform_path(path):
 def to_unix_path(path):
     """Return a version of ``path`` where all separator are ``/``"""
     return path.replace("\\", "/") if path is not None else None
+
+
+@contextmanager
+def distribution_hide_listing(distribution):
+    """Given a ``distribution``, this context manager allow to
+    temporarily set distutils verbosity to 0."""
+    old_threshold = distutils_log._global_log.threshold
+    if (hasattr(distribution, "hide_listing")
+            and distribution.hide_listing):
+        distutils_log.set_verbosity(0)
+    yield
+    distutils_log.set_verbosity(old_threshold)
