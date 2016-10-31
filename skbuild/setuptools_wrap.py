@@ -139,6 +139,13 @@ def _parse_setuptools_arguments(setup_attrs):
 
     dist = upstream_Distribution(setup_attrs)
 
+    # Update class attribute to also ensure the argument is processed
+    # when ``upstream_setup`` is called.
+    upstream_Distribution.global_options.append(
+        ('hide-listing', None, "do not display list of files being "
+                               "included in the distribution")
+    )
+
     # Find and parse the config file(s): they will override options from
     # the setup script, but be overridden by the command line.
     dist.parse_config_files()
@@ -150,14 +157,10 @@ def _parse_setuptools_arguments(setup_attrs):
     with _capture_output():
         result = dist.parse_command_line()
         display_only = not result
+        if not hasattr(dist, 'hide_listing'):
+            dist.hide_listing = False
 
-    hide_listing = False
-    for command in dist.cmdclass:
-        cmd_obj = dist.get_command_obj(command)
-        if hasattr(cmd_obj, 'hide_listing') and cmd_obj.hide_listing:
-            hide_listing = True
-
-    return display_only, dist.help_commands, dist.commands, hide_listing
+    return display_only, dist.help_commands, dist.commands, dist.hide_listing
 
 
 def _check_skbuild_parameters(skbuild_kw):
