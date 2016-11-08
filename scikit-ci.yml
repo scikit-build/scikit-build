@@ -2,14 +2,10 @@ schema_version: "0.5.0"
 
 before_install:
 
-  environment:
-    PYTHON: python
-    RUN_ENV: ""
-
   appveyor:
     environment:
       PYTEST_ADDOPTS: "-m \"not fortran\""
-      PYTHON: $<PYTHON_DIR>\\python.exe
+      PATH: $<PYTHON_DIR>;$<PYTHON_DIR>\\Scripts;$<PATH>
       RUN_ENV: .\\..\\addons\\appveyor\\run-with-visual-studio.cmd
     commands:
       - python ../addons/appveyor/patch_vs2008.py
@@ -18,7 +14,7 @@ before_install:
     osx:
       environment:
         PYTEST_ADDOPTS: "-m \"not fortran\""
-        RUN_ENV: ../addons/travis/run-with-pyenv.sh
+        PATH: $<HOME>/.pyenv/versions/$<PYTHONVERSION>/bin:$<PATH>
       commands:
         - python ../addons/travis/install_pyenv.py
 
@@ -26,9 +22,9 @@ install:
 
   commands:
     - python ../addons/$<CI_NAME>/install_cmake.py 3.6.2
-    - $<RUN_ENV> $<PYTHON> -m pip install --disable-pip-version-check --upgrade pip
-    - $<RUN_ENV> $<PYTHON> -m pip install -r requirements.txt
-    - $<RUN_ENV> $<PYTHON> -m pip install -r requirements-dev.txt
+    - python -m pip install --disable-pip-version-check --upgrade pip
+    - $<RUN_ENV> pip install -r requirements.txt
+    - $<RUN_ENV> pip install -r requirements-dev.txt
 
   circle:
     commands:
@@ -37,23 +33,17 @@ install:
 
 before_build:
   commands:
-    - $<RUN_ENV> $<PYTHON> -m flake8 -v
+    - flake8
 
 build:
   commands:
-    - $<RUN_ENV> $<PYTHON> setup.py build
+    - python setup.py sdist
+    - $<RUN_ENV> python setup.py bdist_wheel
 
 test:
-
-  appveyor:
-    environment:
-      PATH: $<PYTHON_DIR>\\Scripts;$<PATH>
-
   commands:
-    - $<RUN_ENV> $<PYTHON> setup.py test
+    - $<RUN_ENV> python setup.py test
 
 after_test:
-
   commands:
-    - $<RUN_ENV> codecov -X gcov --required --file ./tests/coverage.xml
-    - $<RUN_ENV> $<PYTHON> setup.py bdist_wheel
+    - codecov -X gcov --required --file ./tests/coverage.xml
