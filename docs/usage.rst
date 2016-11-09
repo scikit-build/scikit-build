@@ -23,7 +23,12 @@ To use scikit-build in a project, place the following in your project's
     # This line replaces 'from setuptools import setup'
     from skbuild import setup
 
-Now, your project will use scikit-build instead of setuptools.
+Your project now uses scikit-build instead of setuptools.
+
+Next, add a ``CMakeLists.txt``
+
+.. note:: *To be documented.*
+
 
 Setup options
 -------------
@@ -108,6 +113,38 @@ build tool options
 ^^^^^^^^^^^^^^^^^^
 
 These are specific to the underlying build tool (e.g msbuild.exe, make, ninja).
+
+
+.. _cross_compilation:
+
+Cross-compilation
+-----------------
+
+See `CMake Toolchains <https://cmake.org/cmake/help/v3.6/manual/cmake-toolchains.7.html>`_.
+
+
+Introduction to dockross
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. note:: *To be documented.*
+
+    See https://github.com/scikit-build/scikit-build/issues/80
+
+
+Using dockcross-manylinux to generate Linux wheels
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. note:: *To be documented.*
+
+    See https://github.com/scikit-build/scikit-build/issues/81
+
+
+Using dockcross-mingwpy to generate Windows wheels
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. note:: *To be documented.*
+
+    See https://github.com/scikit-build/scikit-build/issues/82
 
 
 Examples for scikit-build developers
