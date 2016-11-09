@@ -231,6 +231,25 @@ def _package_data_contain_module(module, package_data):
     return False
 
 
+def _should_run_cmake(commands):
+    """Return True if at least one command requiring ``cmake`` to run
+    is found in ``commands``."""
+    for expected_command in [
+        "build",
+        "install",
+        "install_lib",
+        "bdist",
+        "bdist_dumb",
+        "bdist_egg"
+        "bdist_rpm",
+        "bdist_wininst",
+        "bdist_wheel",
+    ]:
+        if expected_command in commands:
+            return True
+    return False
+
+
 # pylint:disable=too-many-locals
 def setup(*args, **kw):  # noqa: C901
     """This function wraps setup() so that we can run cmake, make,
@@ -309,9 +328,7 @@ def setup(*args, **kw):  # noqa: C901
 
     skip_cmake = (display_only
                   or has_invalid_arguments
-                  or 'clean' in commands
-                  or 'egg_info' in commands
-                  or 'sdist' in commands
+                  or not _should_run_cmake(commands)
                   or not has_cmakelists)
     if skip_cmake:
         if help_commands:
