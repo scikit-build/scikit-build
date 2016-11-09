@@ -13,6 +13,28 @@ To use scikit-build in a project, place the following in your project's
 
 Now, your project will use scikit-build instead of setuptools.
 
+Setup options
+-------------
+
+Scikit-build augments the ``setup()`` function with the following options:
+
+- ``cmake_args``: List of `CMake options <https://cmake.org/cmake/help/v3.6/manual/cmake.1.html#options>`_.
+
+For example::
+
+  setup(
+    [...]
+    cmake_args=['-DSOME_FEATURE:BOOL=OFF']
+    [...]
+    )
+
+- ``cmake_install_dir``: relative directory where the CMake artifacts are installed.
+  By default, it is set to an empty string.
+
+
+- ``cmake_source_dir``: Relative directory containing the project ``CMakeLists.txt``.
+  By default, it is set to the top-level directory where ``setup.py`` is found.
+
 
 Command line options
 --------------------
