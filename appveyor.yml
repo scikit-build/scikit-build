@@ -1,10 +1,6 @@
----
-
 branches:
  only:
   - master
-
-# borrowed heavily from ogrisel/python-appveyor-demo
 
 version: "0.0.1.{build}"
 
@@ -16,28 +12,24 @@ environment:
       PYTHON_VERSION: "2.7.x"
       PYTHON_ARCH: "32"
       CMAKE_GENERATOR: Visual Studio 9 2008
-      SKIP: "0"
       BLOCK: "0"
 
     - PYTHON_DIR: "C:\\Python27-x64"
       PYTHON_VERSION: "2.7.x"
       PYTHON_ARCH: "64"
       CMAKE_GENERATOR: Visual Studio 9 2008 Win64
-      SKIP: "0"
       BLOCK: "0"
 
     - PYTHON_DIR: "C:\\Python35"
       PYTHON_VERSION: "3.5.x"
       PYTHON_ARCH: "32"
       CMAKE_GENERATOR: Visual Studio 14 2015
-      SKIP: "0"
       BLOCK: "0"
 
     - PYTHON_DIR: "C:\\Python35-x64"
       PYTHON_VERSION: "3.5.x"
       PYTHON_ARCH: "64"
       CMAKE_GENERATOR: Visual Studio 14 2015 Win64
-      SKIP: "0"
       BLOCK: "0"
 
     # MinGW (Python 2 & 3, 64 bit only)
@@ -45,14 +37,12 @@ environment:
 #      PYTHON_VERSION: "2.7.x"
 #      PYTHON_ARCH: "64"
 #      CMAKE_GENERATOR: "MinGW Makefiles"
-#      SKIP: "1"
 #      BLOCK: "0"
 #
 #    - PYTHON_DIR: "C:\\Python35"
 #      PYTHON_VERSION: "3.5.x"
 #      PYTHON_ARCH: "32"
 #      CMAKE_GENERATOR: "MinGW Makefiles"
-#      SKIP: "1"
 #      BLOCK: "0"
 
     # Default -- make sure Visual Studio works as the default
@@ -60,13 +50,11 @@ environment:
     - PYTHON_DIR: "C:\\Python27-x64"
       PYTHON_VERSION: "2.7.x"
       PYTHON_ARCH: "64"
-      SKIP: "0"
       BLOCK: "0"
 
     - PYTHON_DIR: "C:\\Python35-x64"
       PYTHON_VERSION: "3.5.x"
       PYTHON_ARCH: "64"
-      SKIP: "0"
       BLOCK: "0"
 
 cache:
@@ -93,23 +81,11 @@ after_test:
 on_finish:
   - ps: ../addons/appveyor/enable-worker-remote-access.ps1 -check_for_block
 
-on_failure:
-  - ps: "Get-EventLog AppVeyor -newest 10 | Format-List"
-
 artifacts:
   # Archive the generated packages in the ci.appveyor.com build report.
   - path: dist\*
 
 matrix:
   fast_finish: false
-
-notifications:
-  - provider: GitHubPullRequest
-    auth_token:
-      secure: iXYaAwXJcHdnRGTeb1Gk1PembhlZleCGDK2oJgsiFvA=
-    template: >-
-      {{#passed}}:white_check_mark:{{/passed}}{{#failed}}:x:{{/failed}}
-      [Build {{&projectName}} {{buildVersion}} {{status}}]({{buildUrl}})
-      (commit {{commitUrl}} by @{{&commitAuthorUsername}})
 
 shallow_clone: false
