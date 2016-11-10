@@ -1,3 +1,15 @@
+
+===============================
+Why should I use scikit-build ?
+===============================
+
+Scikit-build is a replacement for `distutils.core.Extension <https://docs.python.org/3/distutils/apiref.html?highlight=extension#distutils.core.Extension>`_
+with the following advantages:
+
+- provide better support for `additional compilers and build systems <https://cmake.org/cmake/help/v3.6/manual/cmake-generators.7.html#cmake-generators>`_
+- first-class :ref:`cross-compilation <cross_compilation>` support
+- location of dependencies and their associated build requirements
+
 =====
 Usage
 =====
@@ -11,7 +23,34 @@ To use scikit-build in a project, place the following in your project's
     # This line replaces 'from setuptools import setup'
     from skbuild import setup
 
-Now, your project will use scikit-build instead of setuptools.
+Your project now uses scikit-build instead of setuptools.
+
+Next, add a ``CMakeLists.txt``
+
+.. note:: *To be documented.*
+
+
+Setup options
+-------------
+
+Scikit-build augments the ``setup()`` function with the following options:
+
+- ``cmake_args``: List of `CMake options <https://cmake.org/cmake/help/v3.6/manual/cmake.1.html#options>`_.
+
+For example::
+
+  setup(
+    [...]
+    cmake_args=['-DSOME_FEATURE:BOOL=OFF']
+    [...]
+    )
+
+- ``cmake_install_dir``: relative directory where the CMake artifacts are installed.
+  By default, it is set to an empty string.
+
+
+- ``cmake_source_dir``: Relative directory containing the project ``CMakeLists.txt``.
+  By default, it is set to the top-level directory where ``setup.py`` is found.
 
 
 Command line options
@@ -74,6 +113,38 @@ build tool options
 ^^^^^^^^^^^^^^^^^^
 
 These are specific to the underlying build tool (e.g msbuild.exe, make, ninja).
+
+
+.. _cross_compilation:
+
+Cross-compilation
+-----------------
+
+See `CMake Toolchains <https://cmake.org/cmake/help/v3.6/manual/cmake-toolchains.7.html>`_.
+
+
+Introduction to dockross
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. note:: *To be documented.*
+
+    See https://github.com/scikit-build/scikit-build/issues/80
+
+
+Using dockcross-manylinux to generate Linux wheels
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. note:: *To be documented.*
+
+    See https://github.com/scikit-build/scikit-build/issues/81
+
+
+Using dockcross-mingwpy to generate Windows wheels
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. note:: *To be documented.*
+
+    See https://github.com/scikit-build/scikit-build/issues/82
 
 
 Examples for scikit-build developers

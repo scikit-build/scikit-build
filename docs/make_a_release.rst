@@ -5,7 +5,7 @@ How to Make a Release
 A core developer should use the following steps to create a release of
 **scikit-build**.
 
-0. Configure `~/.pypirc` as described `here <http://peterdowns.com/posts/first-time-with-pypi.html>`_.
+0. Configure `~/.pypirc` as described `here <https://packaging.python.org/distributing/#uploading-your-project-to-pypi>`_.
 
 1. Make sure that all CI tests are passing.
 
@@ -19,7 +19,7 @@ A core developer should use the following steps to create a release of
 
 3. Upload the packages to the testing PyPI instance::
 
-    twine upload -r pypitest dist/*
+    twine upload --sign -r pypitest dist/*
 
 4. Check the `PyPI testing package page <https://testpypi.python.org/pypi/scikit-build/>`_.
 
@@ -29,7 +29,7 @@ A core developer should use the following steps to create a release of
 
 6. Upload the packages to the PyPI instance::
 
-    twine upload dist/*
+    twine upload --sign dist/*
 
 7. Check the `PyPI package page <https://pypi.python.org/pypi/scikit-build/>`_.
 
