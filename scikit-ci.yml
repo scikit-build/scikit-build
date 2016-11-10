@@ -14,7 +14,7 @@ before_install:
     osx:
       environment:
         PYTEST_ADDOPTS: "-m \"not fortran\""
-        PATH: $<HOME>/.pyenv/versions/$<PYTHONVERSION>/bin:$<PATH>
+        PATH: $<HOME>/.pyenv/versions/$<PYTHON_VERSION>/bin:$<PATH>
       commands:
         - python ../addons/travis/install_pyenv.py
 

@@ -4,7 +4,7 @@ machine:
 
 dependencies:
   override:
-    - pip install scikit-ci==0.12.0 scikit-ci-addons==0.10.0
+    - pip install scikit-ci==0.12.0 scikit-ci-addons==0.11.0
     - ci_addons --install ../addons
     - ci install
 
