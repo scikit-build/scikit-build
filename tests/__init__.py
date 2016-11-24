@@ -124,6 +124,9 @@ def initialize_git_repo_and_commit(project_dir, verbose=True):
     git repository with one commit containing all the directories and files
     is created.
     """
+    if isinstance(project_dir, six.string_types):
+        project_dir = py.path.local(project_dir)
+
     if project_dir.join('.git').exists():
         return
 
@@ -140,23 +143,25 @@ def initialize_git_repo_and_commit(project_dir, verbose=True):
             do_call(cmd)
 
 
-def prepare_project(project, tmp_project_dir):
+def prepare_project(project, tmp_project_dir, force=False):
     """Convenience function setting up the build directory ``tmp_project_dir``
     for the selected sample ``project``.
 
     If ``tmp_project_dir`` does not exist, it is created.
 
     If ``tmp_project_dir`` is empty, the sample ``project`` is copied into it.
+    Specifying ``force=True`` will copy the files even if ``tmp_project_dir``
+    is not empty.
     """
-
-    tmp_project_dir = py.path.local(tmp_project_dir)
+    if isinstance(tmp_project_dir, six.string_types):
+        tmp_project_dir = py.path.local(tmp_project_dir)
 
     # Create project directory if it does not exist
     if not tmp_project_dir.exists():
         tmp_project_dir = _tmpdir(project)
 
-    # If empty, copy project files and initialize git
-    if not tmp_project_dir.listdir():
+    # If empty or if force is True, copy project files and initialize git
+    if not tmp_project_dir.listdir() or force:
         _copy_dir(tmp_project_dir, os.path.join(SAMPLES_DIR, project))
 
 
