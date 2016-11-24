@@ -38,81 +38,96 @@ def test_context_decorator():
 
 
 def test_push_dir(tmpdir):
-    assert os.path.split(os.getcwd())[-1] == 'tests'
-
-    # No directory
-    with push_dir():
-        os.chdir(os.path.join(os.getcwd(), '..'))
-        assert os.path.split(os.getcwd())[-1] == 'scikit-build'
-    assert os.path.split(os.getcwd())[-1] == 'tests'
-
-    # With existing directory
-    with push_dir(directory=os.path.join(os.getcwd(), '..')):
-        assert os.path.split(os.getcwd())[-1] == 'scikit-build'
-    assert os.path.split(os.getcwd())[-1] == 'tests'
-
-    foo_directory = os.path.join(str(tmpdir), 'foo')
-
-    # With non existing directory
-    failed = False
+    old_cwd = os.getcwd()
     try:
-        with push_dir(directory=foo_directory):
-            pass
-    except OSError:
-        failed = True
-    assert failed
-    assert not os.path.isdir(foo_directory)
+        level1 = tmpdir.mkdir("level1")
+        level2 = level1.mkdir("level2")
 
-    # With make_directory option
-    with push_dir(directory=foo_directory, make_directory=True):
-        assert os.getcwd() == foo_directory
-    assert os.path.split(os.getcwd())[-1] == 'tests'
-    assert os.path.isdir(foo_directory)
+        os.chdir(str(level2))
+        assert os.path.split(os.getcwd())[-1] == 'level2'
+
+        # No directory
+        with push_dir():
+            os.chdir(os.path.join(os.getcwd(), '..'))
+            assert os.path.split(os.getcwd())[-1] == 'level1'
+        assert os.path.split(os.getcwd())[-1] == 'level2'
+
+        # With existing directory
+        with push_dir(directory=os.path.join(os.getcwd(), '..')):
+            assert os.path.split(os.getcwd())[-1] == 'level1'
+        assert os.path.split(os.getcwd())[-1] == 'level2'
+
+        foo_directory = os.path.join(str(tmpdir), 'foo')
+
+        # With non existing directory
+        failed = False
+        try:
+            with push_dir(directory=foo_directory):
+                pass
+        except OSError:
+            failed = True
+        assert failed
+        assert not os.path.isdir(foo_directory)
+
+        # With make_directory option
+        with push_dir(directory=foo_directory, make_directory=True):
+            assert os.getcwd() == foo_directory
+        assert os.path.split(os.getcwd())[-1] == 'level2'
+        assert os.path.isdir(foo_directory)
+    finally:
+        os.chdir(old_cwd)
 
 
 def test_push_dir_decorator(tmpdir):
-    assert os.path.split(os.getcwd())[-1] == 'tests'
-
-    # No directory
-    @push_dir()
-    def test_default():
-        os.chdir(os.path.join(os.getcwd(), '..'))
-        assert os.path.split(os.getcwd())[-1] == 'scikit-build'
-
-    test_default()
-    assert os.path.split(os.getcwd())[-1] == 'tests'
-
-    # With existing directory
-    @push_dir(directory=os.path.join(os.getcwd(), '..'))
-    def test():
-        assert os.path.split(os.getcwd())[-1] == 'scikit-build'
-
-    test()
-    assert os.path.split(os.getcwd())[-1] == 'tests'
-
-    foo_directory = os.path.join(str(tmpdir), 'foo')
-
-    # With non existing directory
-    failed = False
+    old_cwd = os.getcwd()
     try:
-        @push_dir(directory=foo_directory)
+        level1 = tmpdir.mkdir("level1")
+        level2 = level1.mkdir("level2")
+        os.chdir(str(level2))
+        assert os.path.split(os.getcwd())[-1] == 'level2'
+
+        # No directory
+        @push_dir()
+        def test_default():
+            os.chdir(os.path.join(os.getcwd(), '..'))
+            assert os.path.split(os.getcwd())[-1] == 'level1'
+
+        test_default()
+        assert os.path.split(os.getcwd())[-1] == 'level2'
+
+        # With existing directory
+        @push_dir(directory=os.path.join(os.getcwd(), '..'))
         def test():
-            pass
+            assert os.path.split(os.getcwd())[-1] == 'level1'
 
         test()
-    except OSError:
-        failed = True
-    assert failed
-    assert not os.path.isdir(foo_directory)
+        assert os.path.split(os.getcwd())[-1] == 'level2'
 
-    # With make_directory option
-    @push_dir(directory=foo_directory, make_directory=True)
-    def test():
-        assert os.getcwd() == foo_directory
+        foo_directory = os.path.join(str(tmpdir), 'foo')
 
-    test()
-    assert os.path.split(os.getcwd())[-1] == 'tests'
-    assert os.path.isdir(foo_directory)
+        # With non existing directory
+        failed = False
+        try:
+            @push_dir(directory=foo_directory)
+            def test():
+                pass
+
+            test()
+        except OSError:
+            failed = True
+        assert failed
+        assert not os.path.isdir(foo_directory)
+
+        # With make_directory option
+        @push_dir(directory=foo_directory, make_directory=True)
+        def test():
+            assert os.getcwd() == foo_directory
+
+        test()
+        assert os.path.split(os.getcwd())[-1] == 'level2'
+        assert os.path.isdir(foo_directory)
+    finally:
+        os.chdir(old_cwd)
 
 
 def test_mkdir_p(tmpdir):
