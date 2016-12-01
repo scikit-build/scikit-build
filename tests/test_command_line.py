@@ -130,3 +130,9 @@ def test_sdist_hide_listing(action, hide_listing, capfd):
         assert "copied 3 files" in out  # build_py
         assert "copied 4 files" in out  # install_lib
         assert "copied 0 files" in out  # install_scripts
+
+
+@project_setup_py_test("hello", ["--skip-cmake", "build"])
+def test_skip_cmake_arg(capfd):
+    out, _ = capfd.readouterr()
+    assert "Generating done" not in out
