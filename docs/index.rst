@@ -30,6 +30,8 @@ developing pyproject.toml build system specification
    hacking
    authors
    history
+   changes
+
 
 .. toctree::
    :maxdepth: 2
