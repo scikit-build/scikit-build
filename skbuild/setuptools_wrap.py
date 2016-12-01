@@ -247,7 +247,7 @@ def _package_data_contain_module(module, package_data):
     return False
 
 
-def _should_run_cmake(commands):
+def _should_run_cmake(commands, cmake_with_sdist):
     """Return True if at least one command requiring ``cmake`` to run
     is found in ``commands``."""
     for expected_command in [
@@ -263,6 +263,8 @@ def _should_run_cmake(commands):
     ]:
         if expected_command in commands:
             return True
+    if "sdist" in commands and cmake_with_sdist:
+        return True
     return False
 
 
@@ -302,7 +304,8 @@ def setup(*args, **kw):  # noqa: C901
     parameters = {
         'cmake_args': [],
         'cmake_install_dir': '',
-        'cmake_source_dir': ''
+        'cmake_source_dir': '',
+        'cmake_with_sdist': False
     }
     skbuild_kw = {param: kw.pop(param, parameters[param])
                   for param in parameters}
@@ -349,7 +352,8 @@ def setup(*args, **kw):  # noqa: C901
     skip_cmake = (skip_cmake
                   or display_only
                   or has_invalid_arguments
-                  or not _should_run_cmake(commands)
+                  or not _should_run_cmake(commands,
+                                           skbuild_kw["cmake_with_sdist"])
                   or not has_cmakelists)
     if skip_cmake and not force_cmake:
         if help_commands:

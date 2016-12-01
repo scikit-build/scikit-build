@@ -21,7 +21,8 @@ from skbuild.exceptions import SKBuildError
 from skbuild.setuptools_wrap import strip_package
 from skbuild.utils import (push_dir, to_platform_path)
 
-from . import (_tmpdir, execute_setup_py, push_argv)
+from . import (_tmpdir, execute_setup_py,
+               initialize_git_repo_and_commit, push_argv)
 
 
 @pytest.mark.parametrize("distribution_type",
@@ -217,6 +218,45 @@ def test_cmake_install_dir_keyword(
     else:
         assert "copying {}".format(os.path.join(
             *"_skbuild/cmake-install/banana/__init__.py".split("/"))) in out
+
+
+@pytest.mark.parametrize("cmake_with_sdist", [True, False])
+def test_cmake_with_sdist_keyword(cmake_with_sdist, capfd):
+    tmp_dir = _tmpdir('cmake_with_sdist')
+
+    tmp_dir.join('setup.py').write(textwrap.dedent(
+        """
+        from skbuild import setup
+        setup(
+            name="hello",
+            version="1.2.3",
+            description="a minimal example package",
+            author='The scikit-build team',
+            license="MIT",
+            cmake_with_sdist={cmake_with_sdist}
+        )
+        """.format(cmake_with_sdist=cmake_with_sdist)
+    ))
+    tmp_dir.join('CMakeLists.txt').write(textwrap.dedent(
+        """
+        cmake_minimum_required(VERSION 3.5.0)
+        project(test NONE)
+        install(CODE "execute_process(
+          COMMAND \${CMAKE_COMMAND} -E sleep 0)")
+        """
+    ))
+
+    initialize_git_repo_and_commit(tmp_dir)
+
+    with execute_setup_py(tmp_dir, ['sdist']):
+        pass
+
+    out, _ = capfd.readouterr()
+
+    if cmake_with_sdist:
+        assert "Generating done" in out
+    else:
+        assert "Generating done" not in out
 
 
 @pytest.mark.parametrize("distribution_type", ('pure', 'skbuild'))

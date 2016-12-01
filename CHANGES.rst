@@ -13,6 +13,8 @@ New features
 
 * Improve user experience by running CMake only if needed. See :issue:`207`
 
+* Add support for :ref:`cmake_with_sdist <cmake_with_sdist>` setup keyword argument.
+
 * Add support for ``--force-cmake`` and ``--skip-cmake`` global :ref:`setup options <setuptools_options>`.
 
 * scikit-build conda-forge recipe added by :user:`isuruf`.
