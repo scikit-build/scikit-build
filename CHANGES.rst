@@ -5,6 +5,53 @@ Release Notes
 This is the list of changes to scikit-build between each release. For full
 details, see the commit logs at http://github.com/scikit-build/scikit-build
 
+Next Release
+============
+
+New features
+------------
+
+* Improve user experience by running CMake only if needed. See :issue:`207`
+
+* Add support for ``--force-cmake`` and ``--skip-cmake`` global :ref:`setup options <setuptools_options>`.
+
+* scikit-build conda-forge recipe added by :user:`isuruf`.
+  See `conda-forge/staged-recipes#1989 <https://github.com/conda-forge/staged-recipes/pull/1989>`_
+
+Documentation
+-------------
+
+* add :doc:`/changes` section
+
+* allow github issues and users to easily be referenced using ``:issue:`XY```
+  and ``:user:`username``` markups.
+  This functionality is enabled by the `sphinx-issue <https://github.com/sloria/sphinx-issues>`_ sphinx extension
+
+* make_a_release: Ensure uploaded distributions are signed
+
+* usage:
+
+ * Add empty cross-compilation / wheels building sections
+ * Add "Why should I use scikit-build ?"
+ * Add "Setup options" section
+
+Tests
+-----
+
+* Improve "push_dir" tests to not rely on build directory name.
+  Thanks :user:`isuruf` for reporting the issue.
+
+* travis/install_pyenv: Improve MacOSX build time updating scikit-ci-addons
+
+Cleanups
+--------
+
+* appveyor.yml:
+
+ * Remove unused "on_failure: event logging" and "notifications: GitHubPullRequest"
+ * Remove unused SKIP env variable
+
+
 Scikit-build 0.4.0
 ==================
 

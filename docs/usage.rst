@@ -84,6 +84,8 @@ build_tool set of options needs to be separated by ``--``::
     Arguments following a "--" are passed directly to CMake (e.g. -DMY_VAR:BOOL=TRUE).
     Arguments following a second "--" are passed directly to  the build tool.
 
+.. _setuptools_options:
+
 setuptools options
 ^^^^^^^^^^^^^^^^^^
 
