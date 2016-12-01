@@ -20,6 +20,12 @@ New features
 * scikit-build conda-forge recipe added by :user:`isuruf`.
   See `conda-forge/staged-recipes#1989 <https://github.com/conda-forge/staged-recipes/pull/1989>`_
 
+Bug fixes
+---------
+
+* Fix scikit-build source distribution and add test. See :issue:`214`
+  Thanks :user:`isuruf` for reporting the issue.
+
 Documentation
 -------------
 
