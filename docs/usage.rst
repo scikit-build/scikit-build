@@ -97,6 +97,7 @@ For more details, see the `official documentation <https://setuptools.readthedoc
           [...]
           --hide-listing      do not display list of files being included in the
                               distribution
+          --force-cmake       always run CMake
           --skip-cmake        do not run CMake
 
 scikit-build options

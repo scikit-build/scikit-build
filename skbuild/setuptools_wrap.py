@@ -117,7 +117,8 @@ def _parse_setuptools_arguments(setup_attrs):
     parses the command line arguments.
 
     It returns the tuple
-        ``(display_only, help_commands, commands, hide_listing, skip_cmake)``
+        ``(display_only, help_commands, commands,
+        hide_listing, force_cmake, skip_cmake)``
     where
     - display_only is a boolean indicating if an argument like '--help',
       '--help-commands' or '--author' was passed.
@@ -126,6 +127,7 @@ def _parse_setuptools_arguments(setup_attrs):
     - commands contains the list of commands that were passed.
     - hide_listing is a boolean indicating if the list of files being included
       in the distribution is displayed or not.
+    - force_cmake a boolean indicating that CMake should always be executed.
     - skip_cmake is a boolean indicating if the execution of CMake should
       explicitly be skipped.
 
@@ -149,6 +151,9 @@ def _parse_setuptools_arguments(setup_attrs):
                                "included in the distribution")
     )
     upstream_Distribution.global_options.append(
+        ('force-cmake', None, "always run CMake")
+    )
+    upstream_Distribution.global_options.append(
         ('skip-cmake', None, "do not run CMake")
     )
 
@@ -165,11 +170,13 @@ def _parse_setuptools_arguments(setup_attrs):
         display_only = not result
         if not hasattr(dist, 'hide_listing'):
             dist.hide_listing = False
+        if not hasattr(dist, 'force_cmake'):
+            dist.force_cmake = False
         if not hasattr(dist, 'skip_cmake'):
             dist.skip_cmake = False
 
     return (display_only, dist.help_commands, dist.commands,
-            dist.hide_listing, dist.skip_cmake)
+            dist.hide_listing, dist.force_cmake, dist.skip_cmake)
 
 
 def _check_skbuild_parameters(skbuild_kw):
@@ -325,10 +332,11 @@ def setup(*args, **kw):  # noqa: C901
     # * no command requiring cmake is provided
     # * no CMakeLists.txt if found
     display_only = has_invalid_arguments = help_commands = False
-    skip_cmake = False
+    force_cmake = skip_cmake = False
     commands = []
     try:
-        (display_only, help_commands, commands, hide_listing, skip_cmake) = \
+        (display_only, help_commands, commands,
+         hide_listing, force_cmake, skip_cmake) = \
             _parse_setuptools_arguments(kw)
     except (DistutilsArgError, DistutilsGetoptError):
         has_invalid_arguments = True
@@ -343,7 +351,7 @@ def setup(*args, **kw):  # noqa: C901
                   or has_invalid_arguments
                   or not _should_run_cmake(commands)
                   or not has_cmakelists)
-    if skip_cmake:
+    if skip_cmake and not force_cmake:
         if help_commands:
             # Prepend scikit-build help. Generate option descriptions using
             # argparse.
