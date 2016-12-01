@@ -89,14 +89,25 @@ setuptools options
 
 For more details, see the `official documentation <https://setuptools.readthedocs.io/en/latest/setuptools.html#command-reference>`_.
 
-.. note::
+scikit-build extends the global set of setuptools options with:
 
-    scikit-build extends the global set of setuptools options with::
+.. versionadded:: 0.4.0
 
-        Global options:
-          [...]
-          --hide-listing      do not display list of files being included in the
-                              distribution
+::
+
+    Global options:
+      [...]
+      --hide-listing      do not display list of files being included in the
+                          distribution
+
+.. versionadded:: 0.5.0
+
+::
+
+    Global options:
+      [...]
+      --force-cmake       always run CMake
+      --skip-cmake        do not run CMake
 
 scikit-build options
 ^^^^^^^^^^^^^^^^^^^^
