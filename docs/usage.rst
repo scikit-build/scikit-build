@@ -52,6 +52,14 @@ For example::
 - ``cmake_source_dir``: Relative directory containing the project ``CMakeLists.txt``.
   By default, it is set to the top-level directory where ``setup.py`` is found.
 
+.. _cmake_with_sdist:
+
+.. versionadded:: 0.5.0
+
+- ``cmake_with_sdist``: Boolean indicating if CMake should be executed when
+  running `sdist` command. Setting this option to ``True`` is useful when
+  part of the sources specified in ``MANIFEST.in`` are downloaded by CMake.
+  By default, this option is ``False``.
 
 Command line options
 --------------------
