@@ -130,12 +130,16 @@ def initialize_git_repo_and_commit(project_dir, verbose=True):
     if project_dir.join('.git').exists():
         return
 
+    # If any, exclude virtualenv files
+    project_dir.join(".gitignore").write(".env")
+
     with push_dir(str(project_dir)):
         for cmd in [
             ['git', 'init'],
             ['git', 'config', 'user.name', 'scikit-build'],
             ['git', 'config', 'user.email', 'test@test'],
             ['git', 'add', '-A'],
+            ['git', 'reset', '.gitignore'],
             ['git', 'commit', '-m', 'Initial commit']
         ]:
             do_call = (subprocess.check_call
