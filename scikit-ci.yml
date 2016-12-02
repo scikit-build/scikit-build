@@ -24,7 +24,7 @@ install:
     - python ../addons/$<CI_NAME>/install_cmake.py 3.6.2
     - python -m pip install --disable-pip-version-check --upgrade pip
     - $<RUN_ENV> pip install -r requirements.txt
-    - $<RUN_ENV> pip install -r requirements-dev.txt
+    - $<RUN_ENV> pip install -U -r requirements-dev.txt
 
   circle:
     commands:

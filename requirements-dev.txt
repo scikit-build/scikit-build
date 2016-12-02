@@ -6,5 +6,6 @@ pytest==3.0.3
 pytest-cov==2.4.0
 pytest-mock==1.4.0
 pytest-runner==2.9
-pytest-virtualenv==1.2.4
+git+https://github.com/jcfr/virtualenv@windows-copy-static-library#egg=virtualenv
+git+https://github.com/jcfr/pytest-plugins@pytest-virtualenv-2016-12-01-0aa72e0#egg=pytest-virtualenv
 six==1.10.0
