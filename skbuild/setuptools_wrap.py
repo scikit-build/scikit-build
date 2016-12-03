@@ -232,7 +232,7 @@ def _package_data_contain_module(module, package_data):
     """
     (package, _, module_file) = module
     if package not in package_data:
-        return True
+        return False
     # We need to strip the package because a module entry
     # usually looks like this:
     #
@@ -242,7 +242,7 @@ def _package_data_contain_module(module, package_data):
     #
     #   {'foo.bar' : ['module.py']}
     if (strip_package(package.split("."), module_file)
-            not in package_data[package]):
+            in package_data[package]):
         return True
     return False
 
@@ -640,7 +640,7 @@ def _consolidate(
     for entry in modules:
 
         # Check if module file should be copied into the CMake install tree.
-        if not _package_data_contain_module(entry, package_data):
+        if _package_data_contain_module(entry, package_data):
             continue
 
         (package, _, src_module_file) = entry
