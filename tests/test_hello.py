@@ -212,3 +212,22 @@ def test_hello_cleans(capfd):
     assert "removing '_skbuild'" == clean1_out.splitlines()[3]
 
     assert "running clean" == clean2_out
+
+
+@project_setup_py_test("hello", ["develop"])
+def test_hello_develop():
+    for expected_file in [
+        # These files are the "regular" source files
+        'setup.py',
+        'CMakeLists.txt',
+        'bonjour/__init__.py',
+        'hello/__init__.py',
+        'hello/__main__.py',
+        'hello/_hello.cxx',
+        'hello/CMakeLists.txt',
+        # These files are "generated" by CMake and
+        # are copied from CMAKE_INSTALL_DIR
+        'hello/_hello%s' % (sysconfig.get_config_var('SO')),
+        'hello/world.py'
+    ]:
+        assert os.path.exists(expected_file)

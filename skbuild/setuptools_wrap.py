@@ -252,6 +252,7 @@ def _should_run_cmake(commands, cmake_with_sdist):
     is found in ``commands``."""
     for expected_command in [
         "build",
+        "develop",
         "install",
         "install_lib",
         "bdist",
@@ -374,6 +375,8 @@ def setup(*args, **kw):  # noqa: C901
             print('')
         return upstream_setup(*args, **kw)
 
+    developer_mode = "develop" in commands
+
     packages = kw.get('packages', [])
     package_dir = kw.get('package_dir', {})
     package_data = kw.get('package_data', {}).copy()
@@ -420,8 +423,17 @@ def setup(*args, **kw):  # noqa: C901
                     data_files,
                     cmake_source_dir, skbuild_kw['cmake_install_dir'])
 
-    _consolidate(cmake_source_dir,
-                 packages, package_dir, py_modules, package_data, hide_listing)
+    if developer_mode:
+        for package, package_file_list in package_data.items():
+            for package_file in package_file_list:
+                package_file = os.path.join(package_dir[package], package_file)
+                cmake_file = os.path.join(CMAKE_INSTALL_DIR, package_file)
+                if os.path.exists(cmake_file):
+                    _copy_file(cmake_file, package_file, hide_listing)
+    else:
+        _consolidate(cmake_source_dir,
+                     packages, package_dir, py_modules, package_data,
+                     hide_listing)
 
     kw['package_data'] = package_data
     kw['package_dir'] = {
