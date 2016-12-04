@@ -129,6 +129,7 @@ def test_hello_wheel():
         'hello/_hello%s' % (sysconfig.get_config_var('SO')),
         'hello/__init__.py',
         'hello/__main__.py',
+        'hello/world.py',
         'bonjour/__init__.py'
     ]
 
