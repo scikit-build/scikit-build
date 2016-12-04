@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
+from pip.req import parse_requirements
 
 try:
     from setuptools import setup
@@ -14,11 +15,12 @@ with open('README.rst', 'r') as fp:
 with open('HISTORY.rst', 'r') as fp:
     history = fp.read().replace('.. :changelog:', '')
 
-with open('requirements.txt', 'r') as fp:
-    requirements = list(filter(bool, (line.strip() for line in fp)))
 
-with open('requirements-dev.txt', 'r') as fp:
-    dev_requirements = list(filter(bool, (line.strip() for line in fp)))
+def _parse_requirements(filename):
+    return [str(ir.req) for ir in parse_requirements(filename, session=False)]
+
+requirements = _parse_requirements('requirements.txt')
+dev_requirements = _parse_requirements('requirements-dev.txt')
 
 # Require pytest-runner only when running tests
 pytest_runner = (['pytest-runner>=2.0,<3dev']
