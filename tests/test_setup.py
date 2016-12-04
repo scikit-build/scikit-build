@@ -660,7 +660,7 @@ def test_setup_inputs(
         tmp_dir.ensure(os.path.join(root, path))
 
     # Do not call the real setup function. Instead, replace it with
-    # a MagicMock allowing to
+    # a MagicMock allowing to check with which arguments it was invoked.
     mock_setup = mocker.patch('skbuild.setuptools_wrap.upstream_setup')
 
     # Convenience print function

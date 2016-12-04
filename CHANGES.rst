@@ -20,6 +20,8 @@ New features
 * scikit-build conda-forge recipe added by :user:`isuruf`.
   See `conda-forge/staged-recipes#1989 <https://github.com/conda-forge/staged-recipes/pull/1989>`_
 
+* Add support for `development mode <https://packaging.python.org/distributing/#working-in-development-mode>`_. (:issue:`187`).
+
 Bug fixes
 ---------
 

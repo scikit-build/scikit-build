@@ -232,7 +232,7 @@ def _package_data_contain_module(module, package_data):
     """
     (package, _, module_file) = module
     if package not in package_data:
-        return True
+        return False
     # We need to strip the package because a module entry
     # usually looks like this:
     #
@@ -242,7 +242,7 @@ def _package_data_contain_module(module, package_data):
     #
     #   {'foo.bar' : ['module.py']}
     if (strip_package(package.split("."), module_file)
-            not in package_data[package]):
+            in package_data[package]):
         return True
     return False
 
@@ -252,6 +252,7 @@ def _should_run_cmake(commands, cmake_with_sdist):
     is found in ``commands``."""
     for expected_command in [
         "build",
+        "develop",
         "install",
         "install_lib",
         "bdist",
@@ -374,6 +375,8 @@ def setup(*args, **kw):  # noqa: C901
             print('')
         return upstream_setup(*args, **kw)
 
+    developer_mode = "develop" in commands
+
     packages = kw.get('packages', [])
     package_dir = kw.get('package_dir', {})
     package_data = kw.get('package_data', {}).copy()
@@ -420,8 +423,17 @@ def setup(*args, **kw):  # noqa: C901
                     data_files,
                     cmake_source_dir, skbuild_kw['cmake_install_dir'])
 
-    _consolidate(cmake_source_dir,
-                 packages, package_dir, py_modules, package_data, hide_listing)
+    if developer_mode:
+        for package, package_file_list in package_data.items():
+            for package_file in package_file_list:
+                package_file = os.path.join(package_dir[package], package_file)
+                cmake_file = os.path.join(CMAKE_INSTALL_DIR, package_file)
+                if os.path.exists(cmake_file):
+                    _copy_file(cmake_file, package_file, hide_listing)
+    else:
+        _consolidate(cmake_source_dir,
+                     packages, package_dir, py_modules, package_data,
+                     hide_listing)
 
     kw['package_data'] = package_data
     kw['package_dir'] = {
@@ -597,6 +609,27 @@ def _classify_files(install_paths, package_data, package_prefixes,
         del parent_dir, file_set
 
 
+def _copy_file(src_file, dest_file, hide_listing=True):
+    """Copy ``src_file`` to ``dest_file`` ensuring parent directory exists.
+
+    By default, message like `creating directory /path/to/package` and
+    `copying directory /src/path/to/package -> path/to/package` are displayed
+    on standard output. Setting ``hide_listing`` to False avoids message from
+    being displayed.
+    """
+    # Create directory if needed
+    dest_dir = os.path.dirname(dest_file)
+    if not os.path.exists(dest_dir):
+        if not hide_listing:
+            print("creating directory {}".format(dest_dir))
+        mkdir_p(dest_dir)
+
+    # Copy file
+    if not hide_listing:
+        print("copying {} -> {}".format(src_file, dest_file))
+    copyfile(src_file, dest_file)
+
+
 def _consolidate(
         cmake_source_dir, packages, package_dir, py_modules, package_data,
         hide_listing
@@ -640,25 +673,14 @@ def _consolidate(
     for entry in modules:
 
         # Check if module file should be copied into the CMake install tree.
-        if not _package_data_contain_module(entry, package_data):
+        if _package_data_contain_module(entry, package_data):
             continue
 
         (package, _, src_module_file) = entry
 
         # Copy missing module file
         dest_module_file = os.path.join(CMAKE_INSTALL_DIR, src_module_file)
-
-        # Create directory if needed
-        dest_module_dir = os.path.dirname(dest_module_file)
-        if not os.path.exists(dest_module_dir):
-            if not hide_listing:
-                print("creating directory {}".format(dest_module_dir))
-            mkdir_p(dest_module_dir)
-
-        # Copy file
-        if not hide_listing:
-            print("copying {} -> {}".format(src_module_file, dest_module_file))
-        copyfile(src_module_file, dest_module_file)
+        _copy_file(src_module_file, dest_module_file, hide_listing)
 
         # Since the mapping in package_data expects the package to be associated
         # with a list of files relative to the directory containing the package,

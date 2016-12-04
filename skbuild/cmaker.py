@@ -323,7 +323,7 @@ class CMaker(object):
         information (install destination) from the CMake build files
         ``*.cmake`` found in ``CMAKE_BUILD_DIR``.
 
-        It raises ``SKBuildError`` if it found install detination outside of
+        It raises ``SKBuildError`` if it found install destination outside of
         ``CMAKE_INSTALL_DIR``.
         """
 
