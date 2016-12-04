@@ -597,6 +597,27 @@ def _classify_files(install_paths, package_data, package_prefixes,
         del parent_dir, file_set
 
 
+def _copy_file(src_file, dest_file, hide_listing=True):
+    """Copy ``src_file`` to ``dest_file`` ensuring parent directory exists.
+
+    By default, message like `creating directory /path/to/package` and
+    `copying directory /src/path/to/package -> path/to/package` are displayed
+    on standard output. Setting ``hide_listing`` to False avoids message from
+    being displayed.
+    """
+    # Create directory if needed
+    dest_dir = os.path.dirname(dest_file)
+    if not os.path.exists(dest_dir):
+        if not hide_listing:
+            print("creating directory {}".format(dest_dir))
+        mkdir_p(dest_dir)
+
+    # Copy file
+    if not hide_listing:
+        print("copying {} -> {}".format(src_file, dest_file))
+    copyfile(src_file, dest_file)
+
+
 def _consolidate(
         cmake_source_dir, packages, package_dir, py_modules, package_data,
         hide_listing
@@ -647,18 +668,7 @@ def _consolidate(
 
         # Copy missing module file
         dest_module_file = os.path.join(CMAKE_INSTALL_DIR, src_module_file)
-
-        # Create directory if needed
-        dest_module_dir = os.path.dirname(dest_module_file)
-        if not os.path.exists(dest_module_dir):
-            if not hide_listing:
-                print("creating directory {}".format(dest_module_dir))
-            mkdir_p(dest_module_dir)
-
-        # Copy file
-        if not hide_listing:
-            print("copying {} -> {}".format(src_module_file, dest_module_file))
-        copyfile(src_module_file, dest_module_file)
+        _copy_file(src_module_file, dest_module_file, hide_listing)
 
         # Since the mapping in package_data expects the package to be associated
         # with a list of files relative to the directory containing the package,
