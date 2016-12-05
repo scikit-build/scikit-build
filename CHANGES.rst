@@ -51,7 +51,7 @@ Requirements
 * setuptools: As suggested by :user:`mivade` in :issue:`212`, remove the
   hard requirement for ``==28.8.0`` and require version ``>= 28.0.0``. This allows
   to "play" nicely with conda where it is problematic to update the version
-  of setuptools. See `pypa/pip#2751 <https://github.com/pypa/pip/issues/2751`_
+  of setuptools. See `pypa/pip#2751 <https://github.com/pypa/pip/issues/2751>`_
   and `ContinuumIO/anaconda-issues#542 <https://github.com/ContinuumIO/anaconda-issues/issues/542>`_.
 
 Tests
