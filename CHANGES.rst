@@ -45,6 +45,10 @@ Documentation
  * Add "Why should I use scikit-build ?"
  * Add "Setup options" section
 
+* hacking:
+
+ * Add :ref:`internal_api` section generated using `sphinx-apidoc`.
+
 Requirements
 ------------
 
