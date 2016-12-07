@@ -51,8 +51,9 @@ coverage: test
 	open htmlcov/index.html || xdg-open htmlcov/index.html
 
 docs-only:
-	rm -f docs/skbuild rst
+	rm -f docs/skbuild.rst
 	rm -f docs/modules.rst
+	sphinx-apidoc -o docs/ -M  skbuild
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
 

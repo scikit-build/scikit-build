@@ -26,5 +26,11 @@ You can drive CMake directly using scikit-build::
 
     maker.make()
 
-.. autoclass:: skbuild.cmaker.CMaker
-   :members: configure, make
+See :obj:`skbuild.cmaker.CMaker` for more details.
+
+.. _internal_api:
+
+Internal API
+------------
+
+.. include:: modules.rst
