@@ -95,7 +95,10 @@ class CMakePlatform(object):
     @staticmethod
     @push_dir(directory=test_folder)
     def compile_test_cmakelist(cmake_exe_path, candidate_generators):
-        """Attempt to configure the test project with
+        """
+        compile_test_cmakelist(cmake_exe_path, candidate_generators)
+
+        Attempt to configure the test project with
         each ``candidate_generators``.
 
         The function returns the first generator allowing to successfully
