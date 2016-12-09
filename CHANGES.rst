@@ -79,6 +79,14 @@ Internal API
   from :mod:`skbuild.platform_specifics`.
   This change breaks backward compatibility.
 
+* :class:`skbuild.platform_specifics.abstract.CMakeGenerator`: This class allows to
+  handle generators as sophisticated object instead of simple string. This is done
+  anticipating the support for `CMAKE_GENERATOR_PLATFORM <https://cmake.org/cmake/help/v3.7/variable/CMAKE_GENERATOR_PLATFORM.html>`_
+  and `CMAKE_GENERATOR_TOOLSET <https://cmake.org/cmake/help/v3.7/variable/CMAKE_GENERATOR_TOOLSET.html>`_. Note also that the
+  class is directly importable from :mod:`skbuild.platform_specifics` and is now returned
+  by :meth:`skbuild.platform_specifics.get_best_generator`. This change breaks backward compatibility.
+
+
 Cleanups
 --------
 

@@ -14,7 +14,7 @@ import pytest
 from subprocess import (check_call, CalledProcessError)
 
 from skbuild.exceptions import SKBuildError
-from skbuild.platform_specifics import get_platform
+from skbuild.platform_specifics import CMakeGenerator, get_platform
 from skbuild.utils import push_dir
 
 from . import project_setup_py_test
@@ -128,7 +128,7 @@ def test_invalid_cmake(exception, mocker):
 
 def test_first_invalid_generator(mocker, capfd):
     platform = get_platform()
-    default_generators = ['Invalid']
+    default_generators = [CMakeGenerator('Invalid')]
     default_generators.extend(platform.default_generators)
     mocker.patch.object(type(platform), 'default_generators',
                         new_callable=mocker.PropertyMock,
@@ -151,7 +151,7 @@ def test_invalid_generator(mocker, capfd):
     platform = get_platform()
     mocker.patch.object(type(platform), 'default_generators',
                         new_callable=mocker.PropertyMock,
-                        return_value=['Invalid'])
+                        return_value=[CMakeGenerator('Invalid')])
     mocker.patch('skbuild.cmaker.get_platform', return_value=platform)
 
     with push_dir(), push_env(CMAKE_GENERATOR=None):

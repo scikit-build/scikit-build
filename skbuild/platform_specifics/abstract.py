@@ -70,15 +70,15 @@ class CMakePlatform(object):
         generators. Set to False for debugging to see CMake's output files.
         :type cleanup: bool
 
-        :return: CMake Generator name
-        :rtype: string or None
+        :return: CMake Generator object
+        :rtype: :class:`CMakeGenerator` or None
 
         """
 
         candidate_generators = self.default_generators
 
         if generator_name is not None:
-            candidate_generators = [generator_name]
+            candidate_generators = [CMakeGenerator(generator_name)]
 
         cmake_exe_path = self.get_cmake_exe_path()
 
@@ -99,7 +99,7 @@ class CMakePlatform(object):
         compile_test_cmakelist(cmake_exe_path, candidate_generators)
 
         Attempt to configure the test project with
-        each ``candidate_generators``.
+        each :class:`CMakeGenerator` from ``candidate_generators``.
 
         The function returns the first generator allowing to successfully
         configure the test project using ``cmake_exe_path``."""
@@ -119,7 +119,7 @@ class CMakePlatform(object):
                 # call cmake to see if the compiler specified by this
                 # generator works for the specified languages
                 cmake_execution_string = '{:s} ../ -G "{:s}"'.format(
-                    cmake_exe_path, generator)
+                    cmake_exe_path, generator.name)
                 status = subprocess.call(cmake_execution_string, shell=True)
 
             # cmake succeeded, this generator should work
@@ -129,3 +129,24 @@ class CMakePlatform(object):
                 break
 
         return working_generator
+
+
+class CMakeGenerator(object):
+    """Represents a CMake generator.
+
+    .. automethod:: __init__
+    """
+
+    def __init__(self, name=None):
+        """Instantiate a generator object with the given ``name``.
+        """
+        self._generator_name = name
+
+    @property
+    def name(self):
+        """Name of CMake generator."""
+        return self._generator_name
+
+    @name.setter
+    def name(self, name):
+        self._generator_name = name

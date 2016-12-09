@@ -85,11 +85,11 @@ class CMaker(object):
         if cli_generator_name is not None:
             generator_name = cli_generator_name
 
-        # use the generator_name returned from the platform, with the current
+        # use the generator returned from the platform, with the current
         # generator_name as a suggestion
-        generator_name = self.platform.get_best_generator(generator_name)
+        generator = self.platform.get_best_generator(generator_name)
 
-        if generator_name is None:
+        if generator is None:
             raise SKBuildError(
                 "Could not get working generator for your system."
                 "  Aborting build.")
@@ -109,7 +109,7 @@ class CMaker(object):
 
         cmake_source_dir = os.path.abspath(cmake_source_dir)
         cmd = [
-            'cmake', cmake_source_dir, '-G', generator_name,
+            'cmake', cmake_source_dir, '-G', generator.name,
             ("-DCMAKE_INSTALL_PREFIX:PATH=" +
                 os.path.abspath(
                     os.path.join(CMAKE_INSTALL_DIR, cmake_install_dir))),

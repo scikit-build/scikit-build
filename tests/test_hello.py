@@ -42,13 +42,15 @@ def test_hello_builds():
         another_run()
 
 
-@pytest.mark.parametrize("generator_args",
-                         [
-                             ["-G", "invalid"],
-                             ["--", "-G", "invalid"],
-                             ["-G", get_platform().default_generators[0]],
-                             ["--", "-G", get_platform().default_generators[0]],
-                         ])
+@pytest.mark.parametrize(
+    "generator_args",
+    [
+        ["-G", "invalid"],
+        ["--", "-G", "invalid"],
+        ["-G", get_platform().default_generators[0].name],
+        ["--", "-G", get_platform().default_generators[0].name],
+    ]
+)
 def test_hello_builds_with_generator(generator_args):
     with push_dir():
 

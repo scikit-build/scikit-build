@@ -22,7 +22,7 @@ def test_generator_selection():
     arch = platform.architecture()[0]
 
     if env_generator:
-        assert(get_best_generator(env_generator) == env_generator)
+        assert(get_best_generator(env_generator).name == env_generator)
 
     if this_platform == "windows":
         # assert that we are running a supported version of python
@@ -53,4 +53,4 @@ def test_generator_selection():
             ""
         )
 
-        assert(get_best_generator() == generator)
+        assert(get_best_generator().name == generator)
