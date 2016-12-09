@@ -66,6 +66,19 @@ Tests
 
 * travis/install_pyenv: Improve MacOSX build time updating scikit-ci-addons
 
+Internal API
+------------
+
+* :meth:`skbuild.cmaker.CMaker.configure`: Change parameter name from ``generator_id``
+  to ``generator_name``. This is consistent with how generator are identified
+  in `CMake documentation <https://cmake.org/cmake/help/v3.7/manual/cmake-generators.7.html>`_.
+  This change breaks backward compatibility.
+
+* :meth:`skbuild.platform_specifics.abstract.CMakePlatform.get_best_generator`: Change parameter name
+  from ``generator`` to ``generator_name``. Note that this function is also directly importable
+  from :mod:`skbuild.platform_specifics`.
+  This change breaks backward compatibility.
+
 Cleanups
 --------
 

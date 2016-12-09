@@ -55,12 +55,12 @@ class CMakePlatform(object):
     # TODO: this method name is not great.  Does anyone have a better idea for
     # renaming it?
     def get_best_generator(
-            self, generator=None, languages=("CXX", "C"), cleanup=True):
+            self, generator_name=None, languages=("CXX", "C"), cleanup=True):
         """Loop over generators to find one that works.
 
-        :param generator: If provided, uses only provided generator, instead \
-        of trying :attr:`default_generators`.
-        :type generator: string or None
+        :param generator_name: If provided, uses only provided generator, \
+        instead of trying :attr:`default_generators`.
+        :type generator_name: string or None
 
         :param languages: The languages you'll need for your project, in terms \
         that CMake recognizes.
@@ -70,15 +70,15 @@ class CMakePlatform(object):
         generators. Set to False for debugging to see CMake's output files.
         :type cleanup: bool
 
-        :return: CMake Generator identifier
+        :return: CMake Generator name
         :rtype: string or None
 
         """
 
         candidate_generators = self.default_generators
 
-        if generator is not None:
-            candidate_generators = [generator]
+        if generator_name is not None:
+            candidate_generators = [generator_name]
 
         cmake_exe_path = self.get_cmake_exe_path()
 
