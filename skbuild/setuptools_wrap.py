@@ -399,10 +399,10 @@ def setup(*args, **kw):  # noqa: C901
 
     try:
         cmkr = cmaker.CMaker()
-        cmkr.configure(cmake_args,
-                       cmake_source_dir=cmake_source_dir,
-                       cmake_install_dir=skbuild_kw['cmake_install_dir'])
-        cmkr.make(make_args)
+        env = cmkr.configure(cmake_args,
+                             cmake_source_dir=cmake_source_dir,
+                             cmake_install_dir=skbuild_kw['cmake_install_dir'])
+        cmkr.make(make_args, env=env)
     except SKBuildError as ex:
         import traceback
         print("Traceback (most recent call last):")

@@ -84,6 +84,9 @@ class CMaker(object):
         cmake_install_dir: string
             Relative directory to append
             to :const:`skbuild.constants.CMAKE_INSTALL_DIR`.
+
+        Return a mapping of the environment associated with the
+        selected :class:`skbuild.platform_specifics.abstract.CMakeGenerator`.
         """
 
         # if no provided default generator_name, check environment
@@ -146,7 +149,7 @@ class CMaker(object):
 
         # changes dir to cmake_build and calls cmake's configure step
         # to generate makefile
-        rtn = subprocess.call(cmd, cwd=CMAKE_BUILD_DIR)
+        rtn = subprocess.call(cmd, cwd=CMAKE_BUILD_DIR, env=generator.env)
         if rtn != 0:
             raise SKBuildError(
                 "An error occurred while configuring with CMake.\n"
@@ -162,6 +165,8 @@ class CMaker(object):
                     os.path.abspath(CMAKE_BUILD_DIR)))
 
         CMaker.check_for_bad_installs()
+
+        return generator.env
 
     @staticmethod
     def get_python_version():
@@ -372,7 +377,7 @@ class CMaker(object):
                     ("      " + _install) for _install in bad_installs)
             )))
 
-    def make(self, clargs=(), config="Release", source_dir="."):
+    def make(self, clargs=(), config="Release", source_dir=".", env=None):
         """Calls the system-specific make program to compile code.
         """
         clargs, config = pop_arg('--config', clargs, config)
@@ -389,7 +394,7 @@ class CMaker(object):
                    shlex.split(os.environ.get("SKBUILD_BUILD_OPTIONS", "")))
         )
 
-        rtn = subprocess.call(cmd, cwd=CMAKE_BUILD_DIR)
+        rtn = subprocess.call(cmd, cwd=CMAKE_BUILD_DIR, env=env)
         if rtn != 0:
             raise SKBuildError(
                 "An error occurred while building with CMake.\n"

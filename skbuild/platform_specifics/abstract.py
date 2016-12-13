@@ -75,10 +75,20 @@ class CMakePlatform(object):
 
         """
 
-        candidate_generators = self.default_generators
+        candidate_generators = []
 
-        if generator_name is not None:
-            candidate_generators = [CMakeGenerator(generator_name)]
+        if generator_name is None:
+            candidate_generators = self.default_generators
+        else:
+            # Lookup CMakeGenerator by name. Doing this allow to get a
+            # generator object with its ``env`` property appropriately
+            # initialized.
+            for default_generator in self.default_generators:
+                if default_generator.name == generator_name:
+                    candidate_generators = [default_generator]
+                    break
+            if len(candidate_generators) == 0:
+                candidate_generators = [CMakeGenerator(generator_name)]
 
         cmake_exe_path = self.get_cmake_exe_path()
 
@@ -120,7 +130,8 @@ class CMakePlatform(object):
                 # generator works for the specified languages
                 cmake_execution_string = '{:s} ../ -G "{:s}"'.format(
                     cmake_exe_path, generator.name)
-                status = subprocess.call(cmake_execution_string, shell=True)
+                status = subprocess.call(
+                    cmake_execution_string, shell=True, env=generator.env)
 
             # cmake succeeded, this generator should work
             if status == 0:
@@ -137,10 +148,17 @@ class CMakeGenerator(object):
     .. automethod:: __init__
     """
 
-    def __init__(self, name=None):
+    def __init__(self, name, env=None):
         """Instantiate a generator object with the given ``name``.
+
+        By default, ``os.environ`` is associated with the generator. Dictionary
+        passed as ``env`` parameter will be merged with ``os.environ``. If an
+        environment variable is set in both ``os.environ`` and ``env``, the
+        variable in ``env`` is used.
         """
         self._generator_name = name
+        self.env = dict(
+            list(os.environ.items()) + list(env.items() if env else []))
 
     @property
     def name(self):
