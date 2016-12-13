@@ -71,9 +71,19 @@ class CMaker(object):
                   cmake_source_dir='.', cmake_install_dir=''):
         """Calls cmake to generate the Makefile/VS Solution/XCode project.
 
+        clargs: tuple
+            List of command line arguments to pass to cmake executable.
+
         generator_name: string
             The string representing the CMake generator to use.
             If None, uses defaults for your platform.
+
+        cmake_source_dir: string
+            Path to source tree containing a ``CMakeLists.txt``
+
+        cmake_install_dir: string
+            Relative directory to append
+            to :const:`skbuild.constants.CMAKE_INSTALL_DIR`.
         """
 
         # if no provided default generator_name, check environment
