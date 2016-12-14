@@ -20,9 +20,7 @@ class WindowsPlatform(abstract.CMakePlatform):
             (version.major == 2 and version.minor >= 7) or
             (version.major == 3 and version.minor <= 2)
         ):
-            self.default_generators.append(
-                CMakeVisualStudioIDEGenerator("2008")
-            )
+            official_vs_year = "2008"
 
         # For Python 3.3 to Python 3.4: VS2010
         elif (
@@ -31,18 +29,29 @@ class WindowsPlatform(abstract.CMakePlatform):
                 version.minor <= 4
             )
         ):
-            self.default_generators.append(
-                CMakeVisualStudioIDEGenerator("2010")
-            )
+            official_vs_year = "2010"
 
         # For Python 3.5 and above: VS2015
         elif version.major == 3 and version.minor >= 5:
-            self.default_generators.append(
-                CMakeVisualStudioIDEGenerator("2015")
-            )
+            official_vs_year = "2015"
 
         else:
             raise RuntimeError("Only Python >= 2.7 is supported on Windows.")
+
+        assert official_vs_year is not None
+
+        supported_vs_years = [official_vs_year]
+
+        for vs_year in supported_vs_years:
+            self.default_generators.extend([
+                CMakeVisualStudioCommandLineGenerator("Ninja",
+                                                      vs_year),
+                CMakeVisualStudioIDEGenerator(vs_year),
+                CMakeVisualStudioCommandLineGenerator(
+                    "NMake Makefiles", vs_year),
+                CMakeVisualStudioCommandLineGenerator(
+                    "NMake Makefiles JOM", vs_year)
+            ])
 
         self.default_generators.append(
             CMakeGenerator("MinGW Makefiles")
@@ -72,4 +81,39 @@ class CMakeVisualStudioIDEGenerator(CMakeGenerator):
         # Python is Win64, build a Win64 module
         if platform.architecture()[0] == "64bit":
             vs_base += " Win64"
-        self._generator_name = vs_base
+        super(CMakeVisualStudioIDEGenerator, self).__init__(vs_base)
+
+
+def _get_msvc_compiler_env(vs_version):
+    from setuptools import monkey
+    monkey.patch_for_msvc_specialized_compiler()
+    arch = "x86"
+    if vs_version < 14:
+        if platform.architecture()[0] == "64bit":
+            arch = "amd64"
+        try:
+            import distutils.msvc9compiler
+            return distutils.msvc9compiler.query_vcvarsall(vs_version, arch)
+        except ImportError:
+            print("failed to import 'distutils.msvc9compiler'")
+    else:
+        if platform.architecture()[0] == "64bit":
+            arch = "x86_amd64"
+        try:
+            import distutils._msvccompiler
+            vc_env = distutils._msvccompiler._get_vc_env(arch)
+            return {
+                'PATH': vc_env.get('path', ''),
+                'INCLUDE': vc_env.get('include', ''),
+                'LIB': vc_env.get('lib', '')
+            }
+        except ImportError:
+            print("failed to import 'distutils._msvccompiler'")
+    return {}
+
+
+class CMakeVisualStudioCommandLineGenerator(CMakeGenerator):
+    def __init__(self, name, year):
+        vc_env = _get_msvc_compiler_env(VS_YEAR_TO_VERSION[year])
+        env = {str(key.upper()): str(value) for key, value in vc_env.items()}
+        super(CMakeVisualStudioCommandLineGenerator, self).__init__(name, env)

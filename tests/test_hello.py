@@ -14,8 +14,6 @@ import sysconfig
 import tarfile
 
 from skbuild.constants import SKBUILD_DIR
-from skbuild.exceptions import SKBuildError
-from skbuild.platform_specifics import get_platform
 from skbuild.utils import push_dir
 
 from zipfile import ZipFile
@@ -40,41 +38,6 @@ def test_hello_builds():
             pass
 
         another_run()
-
-
-@pytest.mark.parametrize(
-    "generator_args",
-    [
-        ["-G", "invalid"],
-        ["--", "-G", "invalid"],
-        ["-G", get_platform().default_generators[0].name],
-        ["--", "-G", get_platform().default_generators[0].name],
-    ]
-)
-def test_hello_builds_with_generator(generator_args):
-    with push_dir():
-
-        build_args = ["build"]
-        build_args.extend(generator_args)
-
-        @project_setup_py_test("hello", build_args)
-        def run():
-            pass
-
-        failed = False
-        message = ""
-        try:
-            run()
-        except SystemExit as e:
-            failed = isinstance(e.code, SKBuildError)
-            message = str(e)
-
-        if 'invalid' in generator_args:
-            assert failed
-            assert "Could not get working generator for your system." \
-                   "  Aborting build." in message
-        else:
-            assert not failed
 
 
 # @project_setup_py_test("hello", ["test"])

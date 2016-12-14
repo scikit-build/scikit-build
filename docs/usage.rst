@@ -6,7 +6,7 @@ Why should I use scikit-build ?
 Scikit-build is a replacement for `distutils.core.Extension <https://docs.python.org/3/distutils/apiref.html?highlight=extension#distutils.core.Extension>`_
 with the following advantages:
 
-- provide better support for `additional compilers and build systems <https://cmake.org/cmake/help/v3.6/manual/cmake-generators.7.html#cmake-generators>`_
+- provide better support for :doc:`additional compilers and build systems </generators>`
 - first-class :ref:`cross-compilation <cross_compilation>` support
 - location of dependencies and their associated build requirements
 

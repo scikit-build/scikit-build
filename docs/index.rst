@@ -25,6 +25,7 @@ developing pyproject.toml build system specification
    installation
    usage
    extension_build_system
+   generators
    cmake-modules
    contributing
    hacking

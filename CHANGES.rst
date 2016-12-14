@@ -22,6 +22,19 @@ New features
 
 * Add support for `development mode <https://packaging.python.org/distributing/#working-in-development-mode>`_. (:issue:`187`).
 
+* If available, uses `Ninja <https://cmake.org/cmake/help/v3.7/generator/Ninja.html>`_
+  build system generator on all platforms. An advantages is that ninja automatically
+  parallelizes the build based on the number of CPUs. See :doc:`/generators`.
+
+* Improve support of ``Ninja``, ``NMake Makefiles`` and ``NMake Makefiles JOM``
+  command line generators by automatically setting the `Visual Studio` environment
+  expected by the version of python being used. See :doc:`/generators`.
+
+* Support `Microsoft Visual C++ Compiler for Python 2.7 <http://aka.ms/vcpython27>`_.
+  Worth noting that when ``ninja`` executable is available in the ``PATH``, build using
+  this compiler is automatically parallelized.
+  See :doc:`/generators` and :issue:`216`.
+
 Bug fixes
 ---------
 
@@ -65,6 +78,8 @@ Tests
   Thanks :user:`isuruf` for reporting the issue.
 
 * travis/install_pyenv: Improve MacOSX build time updating scikit-ci-addons
+
+* Add ``get_cmakecache_variables`` utility function.
 
 Internal API
 ------------
