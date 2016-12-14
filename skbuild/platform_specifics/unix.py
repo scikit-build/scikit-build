@@ -1,5 +1,7 @@
 """This module defines object specific to Unix platform."""
 
+from .abstract import CMakeGenerator
+
 from . import abstract
 
 
@@ -8,4 +10,7 @@ class UnixPlatform(abstract.CMakePlatform):
 
     def __init__(self):
         super(UnixPlatform, self).__init__()
-        self.default_generators = ["Unix Makefiles", ]
+        self.default_generators = [
+            CMakeGenerator("Ninja"),
+            CMakeGenerator("Unix Makefiles")
+        ]

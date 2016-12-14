@@ -8,11 +8,7 @@ Introduction
 
 By default, scikit-build looks in the project top-level directory for a
 file named ``CMakeLists.txt``. It will then invoke ``cmake`` executable
-specifying a generator matching the python being used.
-
-Indeed, each CPython version is associated with an official compiler. By
-default, scikit-build will automatically select the compiler, associated
-C runtime, and build flags matching the official recommendations:
+specifying a :doc:`generator </generators>` matching the python being used.
 
 
 How to test if scikit-build is driving the compilation ?

@@ -55,12 +55,12 @@ class CMakePlatform(object):
     # TODO: this method name is not great.  Does anyone have a better idea for
     # renaming it?
     def get_best_generator(
-            self, generator=None, languages=("CXX", "C"), cleanup=True):
+            self, generator_name=None, languages=("CXX", "C"), cleanup=True):
         """Loop over generators to find one that works.
 
-        :param generator: If provided, uses only provided generator, instead \
-        of trying :attr:`default_generators`.
-        :type generator: string or None
+        :param generator_name: If provided, uses only provided generator, \
+        instead of trying :attr:`default_generators`.
+        :type generator_name: string or None
 
         :param languages: The languages you'll need for your project, in terms \
         that CMake recognizes.
@@ -70,15 +70,25 @@ class CMakePlatform(object):
         generators. Set to False for debugging to see CMake's output files.
         :type cleanup: bool
 
-        :return: CMake Generator identifier
-        :rtype: string or None
+        :return: CMake Generator object
+        :rtype: :class:`CMakeGenerator` or None
 
         """
 
-        candidate_generators = self.default_generators
+        candidate_generators = []
 
-        if generator is not None:
-            candidate_generators = [generator]
+        if generator_name is None:
+            candidate_generators = self.default_generators
+        else:
+            # Lookup CMakeGenerator by name. Doing this allow to get a
+            # generator object with its ``env`` property appropriately
+            # initialized.
+            for default_generator in self.default_generators:
+                if default_generator.name == generator_name:
+                    candidate_generators = [default_generator]
+                    break
+            if len(candidate_generators) == 0:
+                candidate_generators = [CMakeGenerator(generator_name)]
 
         cmake_exe_path = self.get_cmake_exe_path()
 
@@ -99,7 +109,7 @@ class CMakePlatform(object):
         compile_test_cmakelist(cmake_exe_path, candidate_generators)
 
         Attempt to configure the test project with
-        each ``candidate_generators``.
+        each :class:`CMakeGenerator` from ``candidate_generators``.
 
         The function returns the first generator allowing to successfully
         configure the test project using ``cmake_exe_path``."""
@@ -119,8 +129,9 @@ class CMakePlatform(object):
                 # call cmake to see if the compiler specified by this
                 # generator works for the specified languages
                 cmake_execution_string = '{:s} ../ -G "{:s}"'.format(
-                    cmake_exe_path, generator)
-                status = subprocess.call(cmake_execution_string, shell=True)
+                    cmake_exe_path, generator.name)
+                status = subprocess.call(
+                    cmake_execution_string, shell=True, env=generator.env)
 
             # cmake succeeded, this generator should work
             if status == 0:
@@ -129,3 +140,31 @@ class CMakePlatform(object):
                 break
 
         return working_generator
+
+
+class CMakeGenerator(object):
+    """Represents a CMake generator.
+
+    .. automethod:: __init__
+    """
+
+    def __init__(self, name, env=None):
+        """Instantiate a generator object with the given ``name``.
+
+        By default, ``os.environ`` is associated with the generator. Dictionary
+        passed as ``env`` parameter will be merged with ``os.environ``. If an
+        environment variable is set in both ``os.environ`` and ``env``, the
+        variable in ``env`` is used.
+        """
+        self._generator_name = name
+        self.env = dict(
+            list(os.environ.items()) + list(env.items() if env else []))
+
+    @property
+    def name(self):
+        """Name of CMake generator."""
+        return self._generator_name
+
+    @name.setter
+    def name(self, name):
+        self._generator_name = name

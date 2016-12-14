@@ -216,3 +216,26 @@ def project_setup_py_test(project, setup_args, tmp_dir=None, verbose_git=True):
         return wrapped
 
     return dec
+
+
+def get_cmakecache_variables(cmakecache):
+    """Returns a dictionary of all variables found in given CMakeCache.txt.
+
+    Dictionary entries are tuple of the
+    form ``(variable_type, variable_value)``.
+
+    Possible `variable_type` are documented
+    `here <https://cmake.org/cmake/help/v3.7/prop_cache/TYPE.html>`_.
+    """
+    results = {}
+    cache_entry_pattern = re.compile(r"^([\w\d_-]+):([\w]+)=")
+    with open(cmakecache) as content:
+        for line in content.readlines():
+            line = line.strip()
+            result = cache_entry_pattern.match(line)
+            if result:
+                variable_name = result.group(1)
+                variable_type = result.group(2)
+                variable_value = line.split("=")[1]
+                results[variable_name] = (variable_type, variable_value)
+    return results

@@ -67,29 +67,42 @@ class CMaker(object):
 
         self.platform = get_platform()
 
-    def configure(self, clargs=(), generator_id=None,
+    def configure(self, clargs=(), generator_name=None,
                   cmake_source_dir='.', cmake_install_dir=''):
         """Calls cmake to generate the Makefile/VS Solution/XCode project.
 
-        generator_id: string
+        clargs: tuple
+            List of command line arguments to pass to cmake executable.
+
+        generator_name: string
             The string representing the CMake generator to use.
             If None, uses defaults for your platform.
+
+        cmake_source_dir: string
+            Path to source tree containing a ``CMakeLists.txt``
+
+        cmake_install_dir: string
+            Relative directory to append
+            to :const:`skbuild.constants.CMAKE_INSTALL_DIR`.
+
+        Return a mapping of the environment associated with the
+        selected :class:`skbuild.platform_specifics.abstract.CMakeGenerator`.
         """
 
-        # if no provided default generator_id, check environment
-        if generator_id is None:
-            generator_id = os.environ.get("CMAKE_GENERATOR")
+        # if no provided default generator_name, check environment
+        if generator_name is None:
+            generator_name = os.environ.get("CMAKE_GENERATOR")
 
-        # if generator_id is provided on command line, use it
-        clargs, cli_generator_id = pop_arg('-G', clargs)
-        if cli_generator_id is not None:
-            generator_id = cli_generator_id
+        # if generator_name is provided on command line, use it
+        clargs, cli_generator_name = pop_arg('-G', clargs)
+        if cli_generator_name is not None:
+            generator_name = cli_generator_name
 
-        # use the generator_id returned from the platform, with the current
-        # generator_id as a suggestion
-        generator_id = self.platform.get_best_generator(generator_id)
+        # use the generator returned from the platform, with the current
+        # generator_name as a suggestion
+        generator = self.platform.get_best_generator(generator_name)
 
-        if generator_id is None:
+        if generator is None:
             raise SKBuildError(
                 "Could not get working generator for your system."
                 "  Aborting build.")
@@ -109,7 +122,7 @@ class CMaker(object):
 
         cmake_source_dir = os.path.abspath(cmake_source_dir)
         cmd = [
-            'cmake', cmake_source_dir, '-G', generator_id,
+            'cmake', cmake_source_dir, '-G', generator.name,
             ("-DCMAKE_INSTALL_PREFIX:PATH=" +
                 os.path.abspath(
                     os.path.join(CMAKE_INSTALL_DIR, cmake_install_dir))),
@@ -136,7 +149,7 @@ class CMaker(object):
 
         # changes dir to cmake_build and calls cmake's configure step
         # to generate makefile
-        rtn = subprocess.call(cmd, cwd=CMAKE_BUILD_DIR)
+        rtn = subprocess.call(cmd, cwd=CMAKE_BUILD_DIR, env=generator.env)
         if rtn != 0:
             raise SKBuildError(
                 "An error occurred while configuring with CMake.\n"
@@ -152,6 +165,8 @@ class CMaker(object):
                     os.path.abspath(CMAKE_BUILD_DIR)))
 
         CMaker.check_for_bad_installs()
+
+        return generator.env
 
     @staticmethod
     def get_python_version():
@@ -362,7 +377,7 @@ class CMaker(object):
                     ("      " + _install) for _install in bad_installs)
             )))
 
-    def make(self, clargs=(), config="Release", source_dir="."):
+    def make(self, clargs=(), config="Release", source_dir=".", env=None):
         """Calls the system-specific make program to compile code.
         """
         clargs, config = pop_arg('--config', clargs, config)
@@ -379,7 +394,7 @@ class CMaker(object):
                    shlex.split(os.environ.get("SKBUILD_BUILD_OPTIONS", "")))
         )
 
-        rtn = subprocess.call(cmd, cwd=CMAKE_BUILD_DIR)
+        rtn = subprocess.call(cmd, cwd=CMAKE_BUILD_DIR, env=env)
         if rtn != 0:
             raise SKBuildError(
                 "An error occurred while building with CMake.\n"
