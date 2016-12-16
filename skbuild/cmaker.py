@@ -102,11 +102,6 @@ class CMaker(object):
         # generator_name as a suggestion
         generator = self.platform.get_best_generator(generator_name)
 
-        if generator is None:
-            raise SKBuildError(
-                "Could not get working generator for your system."
-                "  Aborting build.")
-
         if not os.path.exists(CMAKE_BUILD_DIR):
             os.makedirs(CMAKE_BUILD_DIR)
 

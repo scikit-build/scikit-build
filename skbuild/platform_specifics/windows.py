@@ -2,6 +2,7 @@
 
 import sys
 import platform
+import textwrap
 
 from .abstract import CMakeGenerator
 
@@ -14,6 +15,15 @@ class WindowsPlatform(abstract.CMakePlatform):
     def __init__(self):
         super(WindowsPlatform, self).__init__()
         version = sys.version_info
+        self._vs_help = ""
+        vs_help_template = textwrap.dedent(
+            """
+            Building windows wheels for Python {pyver} requires Microsoft Visual Studio %s.
+            Get it with "%s":
+
+              %s
+            """  # noqa: E501
+        ).strip().format(pyver="%s.%s" % sys.version_info[:2])
 
         # For Python 2.7 to Python 3.2: VS2008
         if (
@@ -21,6 +31,11 @@ class WindowsPlatform(abstract.CMakePlatform):
             (version.major == 3 and version.minor <= 2)
         ):
             official_vs_year = "2008"
+            self._vs_help = vs_help_template % (
+                official_vs_year,
+                "Microsoft Visual C++ Compiler for Python 2.7",
+                "http://aka.ms/vcpython27"
+            )
 
         # For Python 3.3 to Python 3.4: VS2010
         elif (
@@ -30,10 +45,28 @@ class WindowsPlatform(abstract.CMakePlatform):
             )
         ):
             official_vs_year = "2010"
+            self._vs_help = vs_help_template % (
+                official_vs_year,
+                "Windows SDK for Windows 7 and .NET 4.0",
+                "https://www.microsoft.com/download/details.aspx?id=8279"
+            )
+            #
 
         # For Python 3.5 and above: VS2015
         elif version.major == 3 and version.minor >= 5:
             official_vs_year = "2015"
+            self._vs_help = vs_help_template % (
+                official_vs_year,
+                "Microsoft Visual C++ Build Tools",
+                "http://landinghub.visualstudio.com/visual-cpp-build-tools"
+            )
+            self._vs_help += "\n\n" + textwrap.dedent(
+                """
+                Or with "Visual Studio 2015":
+
+                  https://visualstudio.com/
+                """
+            ).strip()
 
         else:
             raise RuntimeError("Only Python >= 2.7 is supported on Windows.")
@@ -56,6 +89,10 @@ class WindowsPlatform(abstract.CMakePlatform):
         self.default_generators.append(
             CMakeGenerator("MinGW Makefiles")
         )
+
+    @property
+    def generator_installation_help(self):
+        return self._vs_help
 
 
 VS_YEAR_TO_VERSION = {
