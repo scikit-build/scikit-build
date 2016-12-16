@@ -1,4 +1,6 @@
 
+.. _why:
+
 ===============================
 Why should I use scikit-build ?
 ===============================
@@ -30,6 +32,8 @@ Next, add a ``CMakeLists.txt``
 .. note:: *To be documented.*
 
 
+.. _usage-setup_options:
+
 Setup options
 -------------
 
@@ -52,7 +56,7 @@ For example::
 - ``cmake_source_dir``: Relative directory containing the project ``CMakeLists.txt``.
   By default, it is set to the top-level directory where ``setup.py`` is found.
 
-.. _cmake_with_sdist:
+.. _usage-cmake_with_sdist:
 
 .. versionadded:: 0.5.0
 
@@ -92,7 +96,7 @@ build_tool set of options needs to be separated by ``--``::
     Arguments following a "--" are passed directly to CMake (e.g. -DMY_VAR:BOOL=TRUE).
     Arguments following a second "--" are passed directly to  the build tool.
 
-.. _setuptools_options:
+.. _usage-setuptools_options:
 
 setuptools options
 ^^^^^^^^^^^^^^^^^^
@@ -118,6 +122,8 @@ scikit-build extends the global set of setuptools options with:
       [...]
       --force-cmake       always run CMake
       --skip-cmake        do not run CMake
+
+.. _usage_scikit-build_options:
 
 scikit-build options
 ^^^^^^^^^^^^^^^^^^^^

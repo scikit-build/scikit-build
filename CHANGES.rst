@@ -13,27 +13,26 @@ New features
 
 * Improve user experience by running CMake only if needed. See :issue:`207`
 
-* Add support for :ref:`cmake_with_sdist <cmake_with_sdist>` setup keyword argument.
+* Add support for :ref:`cmake_with_sdist <usage-cmake_with_sdist>` setup keyword argument.
 
-* Add support for ``--force-cmake`` and ``--skip-cmake`` global :ref:`setup options <setuptools_options>`.
+* Add support for ``--force-cmake`` and ``--skip-cmake`` global :ref:`setup command-line options <usage-setuptools_options>`.
 
 * scikit-build conda-forge recipe added by :user:`isuruf`.
   See `conda-forge/staged-recipes#1989 <https://github.com/conda-forge/staged-recipes/pull/1989>`_
 
 * Add support for `development mode <https://packaging.python.org/distributing/#working-in-development-mode>`_. (:issue:`187`).
 
-* If available, uses `Ninja <https://cmake.org/cmake/help/v3.7/generator/Ninja.html>`_
-  build system generator on all platforms. An advantages is that ninja automatically
-  parallelizes the build based on the number of CPUs. See :doc:`/generators`.
+* Improved :doc:`/generators` selection:
 
-* Improve support of ``Ninja``, ``NMake Makefiles`` and ``NMake Makefiles JOM``
-  command line generators by automatically setting the `Visual Studio` environment
-  expected by the version of python being used. See :doc:`/generators`.
+ * If available, uses :ref:`Ninja` build system generator on all platforms. An
+   advantages is that ninja automatically parallelizes the build based on the number
+   of CPUs.
 
-* Support `Microsoft Visual C++ Compiler for Python 2.7 <http://aka.ms/vcpython27>`_.
-  Worth noting that when ``ninja`` executable is available in the ``PATH``, build using
-  this compiler is automatically parallelized.
-  See :doc:`/generators` and :issue:`216`.
+ * Automatically set the expected `Visual Studio` environment when
+   ``Ninja`` or ``NMake Makefiles`` generators are used.
+
+ * Support `Microsoft Visual C++ Compiler for Python 2.7 <http://aka.ms/vcpython27>`_.
+   See :issue:`216`.
 
 Bug fixes
 ---------
@@ -43,6 +42,8 @@ Bug fixes
 
 Documentation
 -------------
+
+* add :doc:`/generators` section
 
 * add :doc:`/changes` section
 
@@ -55,8 +56,8 @@ Documentation
 * usage:
 
  * Add empty cross-compilation / wheels building sections
- * Add "Why should I use scikit-build ?"
- * Add "Setup options" section
+ * Add :ref:`Why should I use scikit-build ? <why>`
+ * Add :ref:`Setup options <usage-setup_options>` section
 
 * hacking:
 
@@ -77,7 +78,7 @@ Tests
 * Improve "push_dir" tests to not rely on build directory name.
   Thanks :user:`isuruf` for reporting the issue.
 
-* travis/install_pyenv: Improve MacOSX build time updating scikit-ci-addons
+* travis/install_pyenv: Improve MacOSX build time updating `scikit-ci-addons <http://scikit-ci-addons.readthedocs.io>`_
 
 * Add ``get_cmakecache_variables`` utility function.
 
