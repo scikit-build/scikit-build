@@ -4,6 +4,7 @@ supported on the current platform."""
 import os
 import shutil
 import subprocess
+import textwrap
 
 from ..exceptions import SKBuildGeneratorNotFoundError
 from ..utils import push_dir
@@ -105,10 +106,18 @@ class CMakePlatform(object):
             cmake_exe_path, candidate_generators)
 
         if working_generator is None:
-            raise SKBuildGeneratorNotFoundError(
-                "Could not get working generator for your system."
-                "  Aborting build. %s" %
-                self.generator_installation_help)
+            raise SKBuildGeneratorNotFoundError(textwrap.dedent(
+                """
+                {line}
+                scikit-build could not get a working generator for your system. Aborting build.
+
+                {installation_help}
+
+                {line}
+                """).strip().format(  # noqa: E501
+                    line="*"*80,
+                    installation_help=self.generator_installation_help)
+            )
 
         if cleanup:
             CMakePlatform.cleanup_test()

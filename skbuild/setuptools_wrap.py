@@ -30,7 +30,7 @@ from .command import (build, build_py, clean,
                       bdist, bdist_wheel, egg_info,
                       sdist, generate_source_manifest)
 from .constants import CMAKE_INSTALL_DIR
-from .exceptions import SKBuildError
+from .exceptions import SKBuildError, SKBuildGeneratorNotFoundError
 from .utils import (mkdir_p, PythonModuleFinder, to_platform_path, to_unix_path)
 
 
@@ -403,6 +403,8 @@ def setup(*args, **kw):  # noqa: C901
                              cmake_source_dir=cmake_source_dir,
                              cmake_install_dir=skbuild_kw['cmake_install_dir'])
         cmkr.make(make_args, env=env)
+    except SKBuildGeneratorNotFoundError as ex:
+        sys.exit(ex)
     except SKBuildError as ex:
         import traceback
         print("Traceback (most recent call last):")
