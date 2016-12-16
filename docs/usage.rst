@@ -153,31 +153,25 @@ See `CMake Toolchains <https://cmake.org/cmake/help/v3.6/manual/cmake-toolchains
 Introduction to dockross
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. note:: *To be documented.*
-
-    See https://github.com/scikit-build/scikit-build/issues/80
+.. note:: *To be documented.* See :issue:`227`.
 
 
 Using dockcross-manylinux to generate Linux wheels
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. note:: *To be documented.*
-
-    See https://github.com/scikit-build/scikit-build/issues/81
+.. note:: *To be documented.* See :issue:`227`.
 
 
 Using dockcross-mingwpy to generate Windows wheels
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. note:: *To be documented.*
-
-    See https://github.com/scikit-build/scikit-build/issues/82
+.. note:: *To be documented.* See :issue:`227`.
 
 
 Examples for scikit-build developers
 ------------------------------------
 
-.. note:: *To be documented.*
+.. note:: *To be documented.* See :issue:`227`.
 
     Provide small, self-contained setup function calls for (at least) two use
     cases:
