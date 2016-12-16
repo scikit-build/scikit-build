@@ -152,5 +152,5 @@ def test_invalid_generator(generator_args):
             message = str(e)
 
         assert failed
-        assert "Could not get working generator for your system." \
-               "  Aborting build." in message
+        assert "scikit-build could not get a working generator " \
+               "for your system. Aborting build." in message
