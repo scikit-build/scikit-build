@@ -119,6 +119,8 @@ scikit-build extends the global set of setuptools options with:
       --force-cmake       always run CMake
       --skip-cmake        do not run CMake
 
+.. _usage_scikit-build_options:
+
 scikit-build options
 ^^^^^^^^^^^^^^^^^^^^
 

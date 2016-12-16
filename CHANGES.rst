@@ -22,18 +22,17 @@ New features
 
 * Add support for `development mode <https://packaging.python.org/distributing/#working-in-development-mode>`_. (:issue:`187`).
 
-* If available, uses `Ninja <https://cmake.org/cmake/help/v3.7/generator/Ninja.html>`_
-  build system generator on all platforms. An advantages is that ninja automatically
-  parallelizes the build based on the number of CPUs. See :doc:`/generators`.
+* Improved :doc:`/generators` selection:
 
-* Improve support of ``Ninja``, ``NMake Makefiles`` and ``NMake Makefiles JOM``
-  command line generators by automatically setting the `Visual Studio` environment
-  expected by the version of python being used. See :doc:`/generators`.
+ * If available, uses :ref:`Ninja` build system generator on all platforms. An
+   advantages is that ninja automatically parallelizes the build based on the number
+   of CPUs.
 
-* Support `Microsoft Visual C++ Compiler for Python 2.7 <http://aka.ms/vcpython27>`_.
-  Worth noting that when ``ninja`` executable is available in the ``PATH``, build using
-  this compiler is automatically parallelized.
-  See :doc:`/generators` and :issue:`216`.
+ * Automatically set the expected `Visual Studio` environment when
+   ``Ninja`` or ``NMake Makefiles`` generators are used.
+
+ * Support `Microsoft Visual C++ Compiler for Python 2.7 <http://aka.ms/vcpython27>`_.
+   See :issue:`216`.
 
 Bug fixes
 ---------
@@ -43,6 +42,8 @@ Bug fixes
 
 Documentation
 -------------
+
+* add :doc:`/generators` section
 
 * add :doc:`/changes` section
 
