@@ -186,7 +186,3 @@ class CMakeGenerator(object):
     def name(self):
         """Name of CMake generator."""
         return self._generator_name
-
-    @name.setter
-    def name(self, name):
-        self._generator_name = name
