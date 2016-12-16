@@ -33,7 +33,7 @@ class CMakePlatform(object):
     @property
     def generator_installation_help(self):
         """Return message guiding the user for installing a valid toolchain."""
-        return ""
+        raise NotImplementedError  # pragma: no cover
 
     @staticmethod
     def write_test_cmakelist(languages):

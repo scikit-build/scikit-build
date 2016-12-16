@@ -11,6 +11,7 @@ class OSXPlatform(unix.UnixPlatform):
 
     @property
     def generator_installation_help(self):
+        """Return message guiding the user for installing a valid toolchain."""
         return textwrap.dedent(
             """
             Building MacOSX wheels for Python {pyver} requires XCode.

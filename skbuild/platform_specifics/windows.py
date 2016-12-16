@@ -92,6 +92,7 @@ class WindowsPlatform(abstract.CMakePlatform):
 
     @property
     def generator_installation_help(self):
+        """Return message guiding the user for installing a valid toolchain."""
         return self._vs_help
 
 

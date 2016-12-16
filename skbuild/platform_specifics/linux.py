@@ -44,6 +44,7 @@ class LinuxPlatform(unix.UnixPlatform):
 
     @property
     def generator_installation_help(self):
+        """Return message guiding the user for installing a valid toolchain."""
         distribution_name, cmd = self.build_essential_install_cmd()
         install_help = ""
         if distribution_name:
