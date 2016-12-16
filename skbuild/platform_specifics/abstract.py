@@ -5,6 +5,7 @@ import os
 import shutil
 import subprocess
 
+from ..exceptions import SKBuildGeneratorNotFoundError
 from ..utils import push_dir
 
 test_folder = "_cmake_test_compile"
@@ -27,6 +28,11 @@ class CMakePlatform(object):
     @default_generators.setter
     def default_generators(self, generators):
         self._default_generators = generators
+
+    @property
+    def generator_installation_help(self):
+        """Return message guiding the user for installing a valid toolchain."""
+        return ""
 
     @staticmethod
     def write_test_cmakelist(languages):
@@ -73,6 +79,7 @@ class CMakePlatform(object):
         :return: CMake Generator object
         :rtype: :class:`CMakeGenerator` or None
 
+        :raises skbuild.exceptions.SKBuildGeneratorNotFoundError:
         """
 
         candidate_generators = []
@@ -96,6 +103,12 @@ class CMakePlatform(object):
 
         working_generator = self.compile_test_cmakelist(
             cmake_exe_path, candidate_generators)
+
+        if working_generator is None:
+            raise SKBuildGeneratorNotFoundError(
+                "Could not get working generator for your system."
+                "  Aborting build. %s" %
+                self.generator_installation_help)
 
         if cleanup:
             CMakePlatform.cleanup_test()

@@ -8,3 +8,10 @@ class SKBuildError(RuntimeError):
     project.
     """
     pass
+
+
+class SKBuildGeneratorNotFoundError(SKBuildError):
+    """Exception raised when no suitable generator is found for the current
+    platform.
+    """
+    pass
