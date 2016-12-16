@@ -13,9 +13,9 @@ New features
 
 * Improve user experience by running CMake only if needed. See :issue:`207`
 
-* Add support for :ref:`cmake_with_sdist <cmake_with_sdist>` setup keyword argument.
+* Add support for :ref:`cmake_with_sdist <usage-cmake_with_sdist>` setup keyword argument.
 
-* Add support for ``--force-cmake`` and ``--skip-cmake`` global :ref:`setup options <setuptools_options>`.
+* Add support for ``--force-cmake`` and ``--skip-cmake`` global :ref:`setup command-line options <usage-setuptools_options>`.
 
 * scikit-build conda-forge recipe added by :user:`isuruf`.
   See `conda-forge/staged-recipes#1989 <https://github.com/conda-forge/staged-recipes/pull/1989>`_
@@ -56,8 +56,8 @@ Documentation
 * usage:
 
  * Add empty cross-compilation / wheels building sections
- * Add "Why should I use scikit-build ?"
- * Add "Setup options" section
+ * Add :ref:`Why should I use scikit-build ? <why>`
+ * Add :ref:`Setup options <usage-setup_options>` section
 
 * hacking:
 
@@ -78,7 +78,7 @@ Tests
 * Improve "push_dir" tests to not rely on build directory name.
   Thanks :user:`isuruf` for reporting the issue.
 
-* travis/install_pyenv: Improve MacOSX build time updating scikit-ci-addons
+* travis/install_pyenv: Improve MacOSX build time updating `scikit-ci-addons <http://scikit-ci-addons.readthedocs.io>`_
 
 * Add ``get_cmakecache_variables`` utility function.
 
