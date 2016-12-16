@@ -34,6 +34,8 @@ New features
  * Support `Microsoft Visual C++ Compiler for Python 2.7 <http://aka.ms/vcpython27>`_.
    See :issue:`216`.
 
+ * Prompt for user to install the required compiler if it is not available. See :issue:`27`.
+
 Bug fixes
 ---------
 
@@ -78,9 +80,11 @@ Tests
 * Improve "push_dir" tests to not rely on build directory name.
   Thanks :user:`isuruf` for reporting the issue.
 
-* travis/install_pyenv: Improve MacOSX build time updating `scikit-ci-addons <http://scikit-ci-addons.readthedocs.io>`_
+* travis/install_pyenv: Improve MacOSX build time updating `scikit-ci-addons`_
 
 * Add ``get_cmakecache_variables`` utility function.
+
+.. _scikit-ci-addons: http://scikit-ci-addons.readthedocs.io
 
 Internal API
 ------------
@@ -159,7 +163,7 @@ Tests
 * Simplify continuous integration
 
  * use `scikit-ci <http://scikit-ci.readthedocs.io/en/latest/>`_ and
-   `scikit-ci-addons <http://scikit-ci-addons.readthedocs.io/en/latest/>`_
+   `scikit-ci-addons`_
  * speed up build setting up caching
 
 * Makefile:
