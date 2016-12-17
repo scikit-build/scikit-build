@@ -138,8 +138,17 @@ class CMakePlatform(object):
         # working generator is the first generator we find that works.
         working_generator = None
 
+        def _generator_discovery_status_msg(_generator, suffix=""):
+            outer = "-" * 80
+            inner = ["-" * ((idx * 5) - 3) for idx in range(1, 8)]
+            print(outer if suffix == "" else "\n".join(inner))
+            print("-- Trying \"%s\" generator%s" % (_generator.name, suffix))
+            print(outer if suffix != "" else "\n".join(inner[::-1]))
 
         for generator in candidate_generators:
+            print("\n")
+            _generator_discovery_status_msg(generator)
+
             # clear the cache for each attempted generator type
             if os.path.isdir('build'):
                 shutil.rmtree('build')
@@ -151,6 +160,10 @@ class CMakePlatform(object):
                     cmake_exe_path, generator.name)
                 status = subprocess.call(
                     cmake_execution_string, shell=True, env=generator.env)
+
+            _generator_discovery_status_msg(
+                generator, " - %s" % ("success" if status == 0 else "failure"))
+            print("")
 
             # cmake succeeded, this generator should work
             if status == 0:
