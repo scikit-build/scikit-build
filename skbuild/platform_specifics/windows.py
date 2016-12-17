@@ -86,10 +86,6 @@ class WindowsPlatform(abstract.CMakePlatform):
                     "NMake Makefiles JOM", vs_year)
             ])
 
-        self.default_generators.append(
-            CMakeGenerator("MinGW Makefiles")
-        )
-
     @property
     def generator_installation_help(self):
         """Return message guiding the user for installing a valid toolchain."""
