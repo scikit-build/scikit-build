@@ -1,76 +1,70 @@
+#.rst:
 #
-# - This module provides the function
-# target_link_libraries_with_dynamic_lookup which can be used to
-# "weakly" link a loadable module.
-#
-# Link a library to a target such that the symbols are resolved at
-# run-time not link-time. This should be used when compiling a
-# loadable module when the symbols should be resolve from the run-time
-# environment where the module is loaded, and not a specific system
-# library.
-#
-# Specifically, for OSX it uses undefined dynamic_lookup. This is
-# similar to using "-shared" on Linux where undefined symbols are
-# ignored.
-#
-# Additionally, the linker is checked to see if it supports undefined
-# symbols when linking a shared library. If it does then the library
-# is not linked when specified with this function.
-#
-# http://blog.tim-smith.us/2015/09/python-extension-modules-os-x/
-#
+# Public Functions
+# ^^^^^^^^^^^^^^^^
 #
 # The following functions are defined:
 #
-#   _get_target_type(<ResultVar> <Target>)
+# .. cmake:command:: target_link_libraries_with_dynamic_lookup
 #
-# **INTERNAL** Shorthand for querying an abbreviated version of the target type
-# of the given ``<Target>``.  ``<ResultVar>`` is set to "STATIC" for a
-# STATIC_LIBRARY, "SHARED" for a SHARED_LIBRARY, "MODULE" for a MODULE_LIBRARY,
-# and "EXE" for an EXECUTABLE.
+# ::
 #
-# Defined variables:
-#
-# ``<ResultVar>``
-#   The abbreviated version of the ``<Target>``'s type.
+#     target_link_libraries_with_dynamic_lookup(<Target> [<Libraries>])
 #
 #
-#   _test_weak_link_project(<TargetType>
-#                           <LibType>
-#                           <ResultVar>
-#                           <LinkFlagsVar>)
+# Useful to "weakly" link a loadable module. For example, it should be used
+# when compiling a loadable module when the symbols should be resolve from
+# the run-time environment where the module is loaded, and not a specific
+# system library.
 #
-# **INTERNAL** Attempt to compile and run a test project where a target of type
-# ``<TargetType>`` is weakly-linked against a dependency of type ``<LibType>``.
-# ``<TargetType>`` can be one of "STATIC", "SHARED", "MODULE", or "EXE".
-# ``<LibType>`` can be one of "STATIC", "SHARED", or "MODULE".
+# Like proper linking, except that the given ``<Libraries>`` are not necessarily
+# linked. Instead, the ``<Target>`` is produced in a manner that allows for
+# symbols unresolved within it to be resolved at runtime, presumably by the
+# given ``<Libraries>``.  If such a target can be produced, the provided
+# ``<Libraries>`` are not actually linked.
 #
-# Defined variables:
+# It links a library to a target such that the symbols are resolved at
+# run-time not link-time.
 #
-# ``<ResultVar>``
-#   Whether the current C toolchain can produce a working target binary of type
-#   ``<TargetType>`` that is weakly-linked against a dependency target of type
-#   ``<LibType>``.
+# The linker is checked to see if it supports undefined
+# symbols when linking a shared library. If it does then the library
+# is not linked when specified with this function.
 #
-# ``<LinkFlagsVar>``
-#   List of flags to add to the linker command to produce a working target
-#   binary of type ``<TargetType>`` that is weakly-linked against a dependency
-#   target of type ``<LibType>``.
+# On platforms that do not support weak-linking, this function works just
+# like ``target_link_libraries``.
+#
+# .. note::
+#
+#     For OSX it uses ``undefined dynamic_lookup``. This is similar to using
+#     ``-shared`` on Linux where undefined symbols are ignored.
+#
+#     For more details, see `blog <http://blog.tim-smith.us/2015/09/python-extension-modules-os-x/>`_
+#     from Tim D. Smith.
 #
 #
-#   check_dynamic_lookup(<TargetType>
-#                        <LibType>
-#                        <ResultVar>
-#                        <LinkFlagsVar>)
+# .. cmake:command:: check_dynamic_lookup
+#
+# ::
+#
+#     check_dynamic_lookup(<TargetType>
+#                          <LibType>
+#                          <ResultVar>
+#                          <LinkFlagsVar>)
+#
 #
 # Check if the linker requires a command line flag to allow leaving symbols
 # unresolved when producing a target of type ``<TargetType>`` that is
-# weakly-linked against a dependency of type ``<LibType>``.  ``<TargetType>``
-# can be one of "STATIC", "SHARED", "MODULE", or "EXE".  ``<LibType>`` can be
-# one of "STATIC", "SHARED", or "MODULE".  The result is cached between
-# invocations and recomputed only when the value of CMake's linker flag list
-# changes; ``CMAKE_STATIC_LINKER_FLAGS`` if ``<TargetType>`` is "STATIC", and
-# ``CMAKE_SHARED_LINKER_FLAGS`` otherwise.
+# weakly-linked against a dependency of type ``<LibType>``.
+#
+# ``<TargetType>``
+#   can be one of "STATIC", "SHARED", "MODULE", or "EXE".
+#
+# ``<LibType>``
+#   can be one of "STATIC", "SHARED", or "MODULE".
+#
+# The result is cached between invocations and recomputed only when the value
+# of CMake's linker flag list changes; ``CMAKE_STATIC_LINKER_FLAGS`` if
+# ``<TargetType>`` is "STATIC", and ``CMAKE_SHARED_LINKER_FLAGS`` otherwise.
 #
 #
 # Defined variables:
@@ -92,14 +86,69 @@
 #   Cached, global alias for ``<LinkFlagsVar>``
 #
 #
-#   target_link_libraries_with_dynamic_lookup(<Target> [<Libraries>])
+# Private Functions
+# ^^^^^^^^^^^^^^^^^
 #
-# Like proper linking, except that the given ``<Libraries>`` are not necessarily
-# linked. Instead, the ``<Target>`` is produced in a manner that allows for
-# symbols unresolved within it to be resolved at runtime, presumably by the
-# given ``<Libraries>``.  If such a target can be produced, the provided
-# ``<Libraries>`` are not actually linked.  On platforms that do not support
-# weak-linking, this function works just like ``target_link_libraries``.
+# The following private functions are defined:
+#
+# .. warning:: These functions are not part of the scikit-build API. They
+#     exist purely as an implementation detail and may change from version
+#     to version without notice, or even be removed.
+#
+#     We mean it.
+#
+#
+# .. cmake:command:: _get_target_type
+#
+# ::
+#
+#     _get_target_type(<ResultVar> <Target>)
+#
+#
+# Shorthand for querying an abbreviated version of the target type
+# of the given ``<Target>``.
+#
+# ``<ResultVar>`` is set to:
+#
+# - "STATIC" for a STATIC_LIBRARY,
+# - "SHARED" for a SHARED_LIBRARY,
+# - "MODULE" for a MODULE_LIBRARY,
+# - and "EXE" for an EXECUTABLE.
+#
+# Defined variables:
+#
+# ``<ResultVar>``
+#   The abbreviated version of the ``<Target>``'s type.
+#
+#
+# .. cmake:command:: _test_weak_link_project
+#
+# ::
+#
+#     _test_weak_link_project(<TargetType>
+#                             <LibType>
+#                             <ResultVar>
+#                             <LinkFlagsVar>)
+#
+#
+# Attempt to compile and run a test project where a target of type
+# ``<TargetType>`` is weakly-linked against a dependency of type ``<LibType>``:
+#
+# - ``<TargetType>`` can be one of "STATIC", "SHARED", "MODULE", or "EXE".
+# - ``<LibType>`` can be one of "STATIC", "SHARED", or "MODULE".
+#
+# Defined variables:
+#
+# ``<ResultVar>``
+#   Whether the current C toolchain can produce a working target binary of type
+#   ``<TargetType>`` that is weakly-linked against a dependency target of type
+#   ``<LibType>``.
+#
+# ``<LinkFlagsVar>``
+#   List of flags to add to the linker command to produce a working target
+#   binary of type ``<TargetType>`` that is weakly-linked against a dependency
+#   target of type ``<LibType>``.
+#
 
 function(_get_target_type result_var target)
   set(target_type "SHARED_LIBRARY")

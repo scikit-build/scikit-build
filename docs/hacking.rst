@@ -34,3 +34,11 @@ Internal API
 ------------
 
 .. include:: modules.rst
+
+Internal CMake Modules
+----------------------
+
+.. toctree::
+   :maxdepth: 1
+
+   cmake-modules/targetLinkLibrariesWithDynamicLookup
