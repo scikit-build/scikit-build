@@ -139,6 +139,7 @@ def _get_msvc_compiler_env(vs_version):
             arch = "x86_amd64"
         try:
             import distutils._msvccompiler
+            from distutils.errors import DistutilsPlatformError
             vc_env = distutils._msvccompiler._get_vc_env(arch)
             return {
                 'PATH': vc_env.get('path', ''),
@@ -147,6 +148,8 @@ def _get_msvc_compiler_env(vs_version):
             }
         except ImportError:
             print("failed to import 'distutils._msvccompiler'")
+        except DistutilsPlatformError:
+            pass
     return {}
 
 
