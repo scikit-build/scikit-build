@@ -86,10 +86,6 @@ class WindowsPlatform(abstract.CMakePlatform):
                     "NMake Makefiles JOM", vs_year)
             ])
 
-        self.default_generators.append(
-            CMakeGenerator("MinGW Makefiles")
-        )
-
     @property
     def generator_installation_help(self):
         """Return message guiding the user for installing a valid toolchain."""
@@ -139,6 +135,7 @@ def _get_msvc_compiler_env(vs_version):
             arch = "x86_amd64"
         try:
             import distutils._msvccompiler
+            from distutils.errors import DistutilsPlatformError
             vc_env = distutils._msvccompiler._get_vc_env(arch)
             return {
                 'PATH': vc_env.get('path', ''),
@@ -147,6 +144,8 @@ def _get_msvc_compiler_env(vs_version):
             }
         except ImportError:
             print("failed to import 'distutils._msvccompiler'")
+        except DistutilsPlatformError:
+            pass
     return {}
 
 

@@ -12,14 +12,12 @@ import platform
 import pytest
 import sys
 
-from pytest_shutil.cmdline import which
-
 from skbuild.constants import CMAKE_BUILD_DIR
 from skbuild.exceptions import SKBuildError
 from skbuild.platform_specifics import get_platform
 
 from . import (get_cmakecache_variables, project_setup_py_test,
-               push_dir, push_env)
+               push_dir, push_env, which)
 
 
 def test_generator_selection():
