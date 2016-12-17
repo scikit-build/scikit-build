@@ -138,9 +138,6 @@ class CMakePlatform(object):
         # working generator is the first generator we find that works.
         working_generator = None
 
-        # initial status is failure.  If subprocess call of cmake succeeds, it
-        # gets set to 0.
-        status = -1
 
         for generator in candidate_generators:
             # clear the cache for each attempted generator type
