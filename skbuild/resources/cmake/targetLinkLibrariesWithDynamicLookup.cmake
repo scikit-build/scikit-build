@@ -460,10 +460,12 @@ function(check_dynamic_lookup
     set(${cache_var} "${has_dynamic_lookup}"
         CACHE BOOL
         "linker supports dynamic lookup for undefined symbols${caveat}")
+    mark_as_advanced(${cache_var})
 
     set(${result_var} "${link_flags}"
         CACHE BOOL
         "linker flags for dynamic lookup${caveat}")
+    mark_as_advanced(${result_var})
 
     set(${cache_hash_var} "${cmake_flags_hash}"
         CACHE INTERNAL "hashed flags for ${cache_var} check")
