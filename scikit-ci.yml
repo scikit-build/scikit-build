@@ -4,7 +4,6 @@ before_install:
 
   appveyor:
     environment:
-      PYTEST_ADDOPTS: "-m \"not fortran\""
       PATH: $<PYTHON_DIR>;$<PYTHON_DIR>\\Scripts;$<PATH>
       RUN_ENV: .\\..\\addons\\appveyor\\run-with-visual-studio.cmd
     commands:
@@ -13,7 +12,6 @@ before_install:
   travis:
     osx:
       environment:
-        PYTEST_ADDOPTS: "-m \"not fortran\""
         PATH: $<HOME>/.pyenv/versions/$<PYTHON_VERSION>/bin:$<PATH>
       commands:
         - python ../addons/travis/install_pyenv.py

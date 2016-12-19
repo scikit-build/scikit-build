@@ -8,6 +8,7 @@ Tests for platforms, to verify that CMake correctly does a test compilation.
 """
 
 import os
+import platform
 import pytest
 
 from skbuild.platform_specifics import get_platform
@@ -62,6 +63,8 @@ def test_cxx_compiler():
         skbuild_platform.cleanup_test()
 
 
+@pytest.mark.skipif(platform.system().lower() in ["darwin", "windows"],
+                    reason="no fortran compiler is available by default")
 @pytest.mark.fortran
 def test_fortran_compiler():
     generator = skbuild_platform.get_best_generator(languages=["Fortran"])
