@@ -11,45 +11,16 @@ environment:
     - PYTHON_DIR: "C:\\Python27"
       PYTHON_VERSION: "2.7.x"
       PYTHON_ARCH: "32"
-      CMAKE_GENERATOR: Visual Studio 9 2008
       BLOCK: "0"
 
     - PYTHON_DIR: "C:\\Python27-x64"
       PYTHON_VERSION: "2.7.x"
       PYTHON_ARCH: "64"
-      CMAKE_GENERATOR: Visual Studio 9 2008 Win64
       BLOCK: "0"
 
     - PYTHON_DIR: "C:\\Python35"
       PYTHON_VERSION: "3.5.x"
       PYTHON_ARCH: "32"
-      CMAKE_GENERATOR: Visual Studio 14 2015
-      BLOCK: "0"
-
-    - PYTHON_DIR: "C:\\Python35-x64"
-      PYTHON_VERSION: "3.5.x"
-      PYTHON_ARCH: "64"
-      CMAKE_GENERATOR: Visual Studio 14 2015 Win64
-      BLOCK: "0"
-
-    # MinGW (Python 2 & 3, 64 bit only)
-#    - PYTHON_DIR: "C:\\Python27-x64"
-#      PYTHON_VERSION: "2.7.x"
-#      PYTHON_ARCH: "64"
-#      CMAKE_GENERATOR: "MinGW Makefiles"
-#      BLOCK: "0"
-#
-#    - PYTHON_DIR: "C:\\Python35"
-#      PYTHON_VERSION: "3.5.x"
-#      PYTHON_ARCH: "32"
-#      CMAKE_GENERATOR: "MinGW Makefiles"
-#      BLOCK: "0"
-
-    # Default -- make sure Visual Studio works as the default
-    # (Python 2 & 3, 64 bit only)
-    - PYTHON_DIR: "C:\\Python27-x64"
-      PYTHON_VERSION: "2.7.x"
-      PYTHON_ARCH: "64"
       BLOCK: "0"
 
     - PYTHON_DIR: "C:\\Python35-x64"
