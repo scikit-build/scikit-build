@@ -3,7 +3,7 @@ This module provides an interface for invoking CMake executable.
 """
 
 import argparse
-import distutils.sysconfig as sysconfig
+import distutils.sysconfig as du_sysconfig
 import glob
 import itertools
 import os
@@ -13,6 +13,7 @@ import re
 import subprocess
 import shlex
 import sys
+import sysconfig
 
 from .constants import (CMAKE_BUILD_DIR,
                         CMAKE_INSTALL_DIR,
@@ -289,7 +290,12 @@ class CMaker(object):
             if abiflags:
                 candidate_abiflags.append('')
 
-            libdir = sysconfig.get_config_var('LIBDIR')
+            # Ensure the value injected by virtualenv is
+            # returned on windows.
+            # Because calling `sysconfig.get_config_var('multiarchsubdir')`
+            # returns an empty string on Linux, `du_sysconfig` is only used to
+            # get the value of `LIBDIR`.
+            libdir = du_sysconfig.get_config_var('LIBDIR')
             if sysconfig.get_config_var('MULTIARCH'):
                 masd = sysconfig.get_config_var('multiarchsubdir')
                 if masd:
