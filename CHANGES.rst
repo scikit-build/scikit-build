@@ -49,6 +49,8 @@ Bug fixes
 * Fix scikit-build source distribution and add test. See :issue:`214`
   Thanks :user:`isuruf` for reporting the issue.
 
+* Support building extension within a virtualenv on windows. See :issue:`119`.
+
 Documentation
 -------------
 
