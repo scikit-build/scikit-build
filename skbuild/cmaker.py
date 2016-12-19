@@ -3,6 +3,7 @@ This module provides an interface for invoking CMake executable.
 """
 
 import argparse
+import distutils.sysconfig as sysconfig
 import glob
 import itertools
 import os
@@ -12,7 +13,6 @@ import re
 import subprocess
 import shlex
 import sys
-import sysconfig
 
 from .constants import (CMAKE_BUILD_DIR,
                         CMAKE_INSTALL_DIR,

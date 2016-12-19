@@ -60,30 +60,37 @@ def test_generator_selection():
             "Microsoft/Visual C++ for Python/%.1f/vcvarsall.bat"
 
         if py_27_32:
-            generator = "Visual Studio 9 2008"
+            vs_generator = "Visual Studio 9 2008"
             vs_version = 9
         elif py_33_34:
-            generator = "Visual Studio 10 2010"
+            vs_generator = "Visual Studio 10 2010"
             vs_version = 10
         else:
-            generator = "Visual Studio 14 2015"
+            vs_generator = "Visual Studio 14 2015"
             vs_version = 14
 
-        generator += (" Win64" if arch == "64bit" else "")
+        vs_generator += (" Win64" if arch == "64bit" else "")
 
         vs_ide_vcvars_path = vs_ide_vcvars_path_pattern % vs_version
         vs_for_python_vcvars_path = os.path.expanduser(
             vs_for_python_vcvars_path_pattern % vs_version)
 
-        # If environment exists and ninja is found, update the
-        # expected generator
+        generator = None
+
+        # If environment exists, update the expected generator
         if (
                     os.path.exists(vs_for_python_vcvars_path) or
                     os.path.exists(vs_ide_vcvars_path)
         ) and which("ninja.exe"):
             generator = "Ninja"
 
-        assert(get_best_generator().name == generator)
+        elif os.path.exists(vs_ide_vcvars_path):
+            generator = vs_generator
+
+        elif os.path.exists(vs_for_python_vcvars_path):
+            generator = "NMake Makefiles"
+
+        assert (get_best_generator().name == generator)
 
     elif this_platform in ["darwin", "linux"]:
         generator = "Unix Makefiles"
