@@ -36,6 +36,13 @@ New features
 
 * Prompt for user to install the required compiler if it is not available. See :issue:`27`.
 
+* Improve :doc:`/cmake-modules/targetLinkLibrariesWithDynamicLookup`  CMake Module extending
+  the API of ``check_dynamic_lookup`` function:
+
+ * Update long signature: ``<LinkFlagsVar>`` is now optional
+ * Add support for short signature: ``check_dynamic_lookup(<ResultVar>)``.
+   See `SimpleITK/SimpleITK#80 <https://github.com/SimpleITK/SimpleITK/pull/80#issuecomment-267617180>`_.
+
 Bug fixes
 ---------
 
@@ -64,6 +71,9 @@ Documentation
 * hacking:
 
  * Add :ref:`internal_api` section generated using `sphinx-apidoc`.
+
+ * Add :ref:`internal_cmake_modules` to document :doc:`/cmake-modules/targetLinkLibrariesWithDynamicLookup`
+   CMake module.
 
 Requirements
 ------------

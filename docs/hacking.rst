@@ -35,6 +35,8 @@ Internal API
 
 .. include:: modules.rst
 
+.. _internal_cmake_modules:
+
 Internal CMake Modules
 ----------------------
 

@@ -44,14 +44,6 @@
 #
 # .. cmake:command:: check_dynamic_lookup
 #
-# ::
-#
-#     check_dynamic_lookup(<TargetType>
-#                          <LibType>
-#                          <ResultVar>
-#                          <LinkFlagsVar>)
-#
-#
 # Check if the linker requires a command line flag to allow leaving symbols
 # unresolved when producing a target of type ``<TargetType>`` that is
 # weakly-linked against a dependency of type ``<LibType>``.
@@ -61,6 +53,24 @@
 #
 # ``<LibType>``
 #   can be one of "STATIC", "SHARED", or "MODULE".
+#
+# Long signature:
+#
+# ::
+#
+#     check_dynamic_lookup(<TargetType>
+#                          <LibType>
+#                          <ResultVar>
+#                          [<LinkFlagsVar>])
+#
+#
+# Short signature:
+#
+# ::
+#
+#     check_dynamic_lookup(<ResultVar>) # <TargetType> set to "MODULE"
+#                                       # <LibType> set to "SHARED"
+#
 #
 # The result is cached between invocations and recomputed only when the value
 # of CMake's linker flag list changes; ``CMAKE_STATIC_LINKER_FLAGS`` if
@@ -415,12 +425,55 @@ function(_test_weak_link_project
   endforeach()
 endfunction()
 
+function(check_dynamic_lookup)
+  # Two signatures are supported:
 
-function(check_dynamic_lookup
+  if(ARGC EQUAL "1")
+    #
+    # check_dynamic_lookup(<ResultVar>)
+    #
+    set(target_type "MODULE")
+    set(lib_type "SHARED")
+    set(has_dynamic_lookup_var "${ARGV0}")
+    set(link_flags_var "unused")
+
+  elseif(ARGC GREATER "2")
+    #
+    # check_dynamic_lookup(<TargetType>
+    #                      <LibType>
+    #                      <ResultVar>
+    #                      [<LinkFlagsVar>])
+    #
+    set(target_type "${ARGV0}")
+    set(lib_type "${ARGV1}")
+    set(has_dynamic_lookup_var "${ARGV2}")
+    if(ARGC EQUAL "3")
+      set(link_flags_var "unused")
+    else()
+      set(link_flags_var "${ARGV3}")
+    endif()
+  else()
+    message(FATAL_ERROR "missing arguments")
+  endif()
+
+  _check_dynamic_lookup(
+    ${target_type}
+    ${lib_type}
+    ${has_dynamic_lookup_var}
+    ${link_flags_var}
+    )
+  set(${has_dynamic_lookup_var} ${${has_dynamic_lookup_var}} PARENT_SCOPE)
+  if(NOT link_flags_var STREQUAL "unused")
+    set(${link_flags_var} ${${link_flags_var}} PARENT_SCOPE)
+  endif()
+endfunction()
+
+function(_check_dynamic_lookup
          target_type
          lib_type
          has_dynamic_lookup_var
-         link_flags_var)
+         link_flags_var
+         )
 
   # hash the CMAKE_FLAGS passed and check cache to know if we need to rerun
   if("${target_type}" STREQUAL "STATIC")
@@ -474,7 +527,6 @@ function(check_dynamic_lookup
   set(${has_dynamic_lookup_var} "${${cache_var}}" PARENT_SCOPE)
   set(${link_flags_var} "${${result_var}}" PARENT_SCOPE)
 endfunction()
-
 
 function(target_link_libraries_with_dynamic_lookup target)
   _get_target_type(target_type ${target})
