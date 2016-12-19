@@ -8,6 +8,7 @@ Tests for platforms, to verify that CMake correctly does a test compilation.
 """
 
 import os
+import platform
 import pytest
 
 from skbuild.platform_specifics import get_platform
@@ -16,19 +17,19 @@ from skbuild.utils import mkdir_p
 # XXX This should probably be a constant imported from skbuild.constants
 test_folder = "_cmake_test_compile"
 
-# platform is shared across each test.  It's a platform-specific object
+# skbuild_platform is shared across each test.  It's a platform-specific object
 # that defines default CMake generator strings.
-platform = get_platform()
+skbuild_platform = get_platform()
 
 
 def test_platform_has_entries():
-    assert(len(platform.default_generators) > 0)
+    assert(len(skbuild_platform.default_generators) > 0)
 
 
 def test_write_compiler_test_file():
     # write the file that CMake will use to test compile (empty list indicates
     # we're testing no languages.)
-    platform.write_test_cmakelist([])
+    skbuild_platform.write_test_cmakelist([])
     try:
         # verify that the test file exists (it's not valid, because it has no
         # languages)
@@ -36,7 +37,7 @@ def test_write_compiler_test_file():
     except:
         raise
     finally:
-        platform.cleanup_test()
+        skbuild_platform.cleanup_test()
 
 
 def test_cxx_compiler():
@@ -45,8 +46,8 @@ def test_cxx_compiler():
     test_build_folder = os.path.join(test_folder, 'build', 'foo')
     mkdir_p(test_build_folder)
 
-    generator = platform.get_best_generator(languages=["CXX", "C"],
-                                            cleanup=False)
+    generator = skbuild_platform.get_best_generator(languages=["CXX", "C"],
+                                                    cleanup=False)
     # TODO: this isn't a true unit test.  It depends on the test CMakeLists.txt
     #       file having been written correctly.
     # with the known test file present, this tries to generate a makefile
@@ -59,12 +60,14 @@ def test_cxx_compiler():
     except:
         raise
     finally:
-        platform.cleanup_test()
+        skbuild_platform.cleanup_test()
 
 
+@pytest.mark.skipif(platform.system().lower() in ["darwin", "windows"],
+                    reason="no fortran compiler is available by default")
 @pytest.mark.fortran
 def test_fortran_compiler():
-    generator = platform.get_best_generator(languages=["Fortran"])
+    generator = skbuild_platform.get_best_generator(languages=["Fortran"])
     # TODO: this isn't a true unit test.  It depends on the test
     #       CMakeLists.txt file having been written correctly.
     # with the known test file present, this tries to generate a
@@ -76,7 +79,7 @@ def test_fortran_compiler():
     except:
         raise
     finally:
-        platform.cleanup_test()
+        skbuild_platform.cleanup_test()
 
 
 def test_generator_cleanup():
