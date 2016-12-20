@@ -1,6 +1,8 @@
 """This module defines objects useful to discover which CMake generator is
 supported on the current platform."""
 
+from __future__ import print_function
+
 import os
 import shutil
 import subprocess

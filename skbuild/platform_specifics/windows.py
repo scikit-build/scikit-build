@@ -1,5 +1,7 @@
 """This module defines object specific to Windows platform."""
 
+from __future__ import print_function
+
 import sys
 import platform
 import textwrap
