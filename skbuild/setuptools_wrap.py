@@ -146,13 +146,16 @@ def _parse_setuptools_arguments(setup_attrs):
 
     # Update class attribute to also ensure the argument is processed
     # when ``upstream_setup`` is called.
+    # pylint:disable=no-member
     upstream_Distribution.global_options.append(
         ('hide-listing', None, "do not display list of files being "
                                "included in the distribution")
     )
+    # pylint:disable=no-member
     upstream_Distribution.global_options.append(
         ('force-cmake', None, "always run CMake")
     )
+    # pylint:disable=no-member
     upstream_Distribution.global_options.append(
         ('skip-cmake', None, "do not run CMake")
     )
@@ -269,7 +272,7 @@ def _should_run_cmake(commands, cmake_with_sdist):
     return False
 
 
-# pylint:disable=too-many-locals
+# pylint:disable=too-many-locals, too-many-branches
 def setup(*args, **kw):  # noqa: C901
     """This function wraps setup() so that we can run cmake, make,
     CMake build, then proceed as usual with setuptools, appending the
