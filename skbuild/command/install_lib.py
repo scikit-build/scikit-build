@@ -13,6 +13,7 @@ class install_lib(set_build_base_mixin, new_style(_install_lib)):
     """Custom implementation of ``install_data`` setuptools command."""
 
     def install(self):
+        """Handle --hide-listing option."""
         with distribution_hide_listing(self.distribution):
             outfiles = super(install_lib, self).install()
         if outfiles is not None:
