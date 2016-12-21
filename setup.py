@@ -29,7 +29,7 @@ setup_requires = pytest_runner
 
 setup(
     name='scikit-build',
-    version='0.4.0',
+    version='0.5.0',
     description='Improved build system generator for Python C extensions',
     long_description=readme + '\n\n' + history,
     author='The scikit-build team',
