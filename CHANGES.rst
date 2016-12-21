@@ -8,6 +8,9 @@ details, see the commit logs at http://github.com/scikit-build/scikit-build
 Next Release
 ============
 
+Scikit-build 0.5.0
+==================
+
 New features
 ------------
 
