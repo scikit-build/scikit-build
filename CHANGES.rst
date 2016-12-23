@@ -8,6 +8,15 @@ details, see the commit logs at http://github.com/scikit-build/scikit-build
 Next Release
 ============
 
+Scikit-build 0.5.1
+==================
+
+Bug fixes
+---------
+
+* Ensure file copied in "develop" mode have "mode bits" maintained.
+
+
 Scikit-build 0.5.0
 ==================
 
