@@ -13,7 +13,7 @@ from contextlib import contextmanager
 from distutils.errors import (DistutilsArgError,
                               DistutilsError,
                               DistutilsGetoptError)
-from shutil import copyfile
+from shutil import copyfile, copymode
 
 # XXX If 'six' becomes a dependency, use 'six.StringIO' instead.
 try:
@@ -633,6 +633,7 @@ def _copy_file(src_file, dest_file, hide_listing=True):
     if not hide_listing:
         print("copying {} -> {}".format(src_file, dest_file))
     copyfile(src_file, dest_file)
+    copymode(src_file, dest_file)
 
 
 def _consolidate(
