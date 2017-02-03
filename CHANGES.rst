@@ -8,6 +8,11 @@ details, see the commit logs at http://github.com/scikit-build/scikit-build
 Next Release
 ============
 
+Documentation
+-------------
+* Fix :ref:`table <Visual Studio>` listing *Visual Studio IDE* version and
+  corresponding with *CPython version* in :doc:`/generators`.
+
 Scikit-build 0.5.1
 ==================
 
