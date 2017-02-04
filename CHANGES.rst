@@ -14,6 +14,13 @@ Bug fixes
 * CMake module :doc:`\cmake-modules/targetLinkLibrariesWithDynamicLookup`: Fix the
   caching of *dynamic lookup* variables. See :issue:`240` fixed by :user:`blowekamp`.
 
+Requirements
+------------
+
+* wheel:  As suggested by :user:`thewtex`, unpinning version of the package
+  by requiring ``>=0.29.0`` instead of ``==0.29.0`` will avoid uninstalling a newer
+  version of wheel package on up-to-date system.
+
 Documentation
 -------------
 
