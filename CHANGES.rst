@@ -8,6 +8,12 @@ details, see the commit logs at http://github.com/scikit-build/scikit-build
 Next Release
 ============
 
+Bug fixes
+---------
+
+* CMake module :doc:`\cmake-modules/targetLinkLibrariesWithDynamicLookup`: Fix the
+  caching of *dynamic lookup* variables. See :issue:`240` fixed by :user:`blowekamp`.
+
 Documentation
 -------------
 
