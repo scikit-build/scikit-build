@@ -136,6 +136,17 @@ scikit-build options
       -j N               allow N build jobs at once
 
 
+.. _usage_cmake_options:
+
+CMake options
+^^^^^^^^^^^^^
+
+These are specific to CMake. See list of `CMake options <https://cmake.org/cmake/help/v3.6/manual/cmake.1.html#options>`_.
+
+For example::
+
+  -DSOME_FEATURE:BOOL=OFF
+
 build tool options
 ^^^^^^^^^^^^^^^^^^
 
