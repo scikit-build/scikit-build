@@ -8,6 +8,14 @@ details, see the commit logs at http://github.com/scikit-build/scikit-build
 Next Release
 ============
 
+Documentation
+-------------
+
+* Add a command line :ref:`CMake Options <usage_cmake_options>` section to :doc:`Usage <\usage>`.
+
+* Fix :ref:`table <Visual Studio>` listing *Visual Studio IDE* version and
+  corresponding with *CPython version* in :doc:`/generators`.
+
 Scikit-build 0.5.1
 ==================
 
