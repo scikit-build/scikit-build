@@ -700,22 +700,17 @@ def test_setup_inputs(
         _pprint('expected_package_dir', expected_package_dir)
         _pprint('package_dir')
 
-        def prepend_package_base(module_files):
-            # return [package_base + module_file
-            #         for module_file in module_files]
-            return module_files
-
         # package data
         expected_package_data = {}
 
         if has_cmake_package:
-            expected_package_data['cmake'] = prepend_package_base([
+            expected_package_data['cmake'] = [
                 '__init__.py',
                 'cmake.py'
-            ])
+            ]
 
         if has_hybrid_package:
-            expected_package_data['hybrid'] = prepend_package_base([
+            expected_package_data['hybrid'] = [
                 '__init__.py',
                 # 'hybrid_cmake.dat',
                 'hybrid_cmake.py',
@@ -723,25 +718,25 @@ def test_setup_inputs(
                 'hybrid_pure.py',
                 # 'data/hybrid_data_cmake.dat',
                 # 'data/hybrid_data_pure.dat',
-            ])
-            expected_package_data['hybrid.hybrid_2'] = prepend_package_base([
+            ]
+            expected_package_data['hybrid.hybrid_2'] = [
                 '__init__.py',
                 'hybrid_2_cmake.py',
                 'hybrid_2_pure.py'
-            ])
+            ]
 
         if has_pure_package:
             expected_package_data['hybrid.hybrid_2_pure'] = \
-                prepend_package_base([
+                [
                     '__init__.py',
                     'hybrid_2_pure_1.py',
                     'hybrid_2_pure_2.py'
-                ])
-            expected_package_data['pure'] = prepend_package_base([
+                ]
+            expected_package_data['pure'] = [
                 '__init__.py',
                 'pure.py',
                 # 'data/pure.dat',
-            ])
+            ]
 
         _pprint('expected_package_data', expected_package_data)
         package_data = {p: sorted(files)
