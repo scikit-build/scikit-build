@@ -149,6 +149,14 @@ class PythonModuleFinder(new_style(distutils_build_py)):
 
         return map(_strip_directory, modules)
 
+    def check_module(self, module, module_file):
+        if not os.path.isfile(module_file):
+            distutils_log.warn(
+                "file %s (for module %s) not found", module_file, module)
+            return False
+        else:
+            return True
+
 
 def to_platform_path(path):
     """Return a version of ``path`` where all separator are :attr:`os.sep` """

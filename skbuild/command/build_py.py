@@ -1,6 +1,8 @@
 """This module defines custom implementation of ``build_py`` setuptools
 command."""
 
+import os
+
 from setuptools.command.build_py import build_py as _build_py
 
 from . import set_build_base_mixin
@@ -37,3 +39,55 @@ class build_py(set_build_base_mixin, new_style(_build_py)):
         with distribution_hide_listing(self.distribution):
             super(build_py, self).run(*args, **kwargs)
         distutils_log.info("copied %d files" % self.outfiles_count)
+
+    def find_modules(self):
+        """Finds individually-specified Python modules, ie. those listed by
+        module name in 'self.py_modules'.  Returns a list of tuples (package,
+        module_base, filename): 'package' is a tuple of the path through
+        package-space to the module; 'module_base' is the bare (no
+        packages, no dots) module name, and 'filename' is the path to the
+        ".py" file (relative to the distribution root) that implements the
+        module.
+        """
+        # Map package names to tuples of useful info about the package:
+        #    (package_dir, checked)
+        # package_dir - the directory where we'll find source files for
+        #   this package
+        # checked - true if we have checked that the package directory
+        #   is valid (exists, contains __init__.py, ... ?)
+        packages = {}
+
+        # List of (package, module, filename) tuples to return
+        modules = []
+
+        # We treat modules-in-packages almost the same as toplevel modules,
+        # just the "package" for a toplevel is empty (either an empty
+        # string or empty list, depending on context).  Differences:
+        #   - don't check for __init__.py in directory for empty package
+        for module in self.py_modules:
+            path = module.split('.')
+            package = '.'.join(path[0:-1])
+            module_base = path[-1]
+
+            try:
+                (package_dir, checked) = packages[package]
+            except KeyError:
+                package_dir = self.get_package_dir(package)
+                checked = 0
+
+            if not checked:
+                init_py = self.check_package(package, package_dir)
+                packages[package] = (package_dir, 1)
+                if init_py:
+                    modules.append((package, "__init__", init_py))
+
+            # XXX perhaps we should also check for just .pyc files
+            # (so greedy closed-source bastards can distribute Python
+            # modules too)
+            module_file = os.path.join(package_dir, module_base + ".py")
+            if not self.check_module(module, module_file):
+                continue
+
+            modules.append((package, module_base, module_file))
+
+        return modules
