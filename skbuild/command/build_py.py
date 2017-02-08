@@ -6,6 +6,7 @@ import os
 from setuptools.command.build_py import build_py as _build_py
 
 from . import set_build_base_mixin
+from ..constants import CMAKE_INSTALL_DIR
 from ..utils import distribution_hide_listing, new_style
 
 from distutils import log as distutils_log
@@ -85,6 +86,12 @@ class build_py(set_build_base_mixin, new_style(_build_py)):
             # (so greedy closed-source bastards can distribute Python
             # modules too)
             module_file = os.path.join(package_dir, module_base + ".py")
+
+            # skbuild: prepend CMAKE_INSTALL_DIR if file exists in the
+            # CMake install tree.
+            if os.path.exists(os.path.join(CMAKE_INSTALL_DIR, module_file)):
+                module_file = os.path.join(CMAKE_INSTALL_DIR, module_file)
+
             if not self.check_module(module, module_file):
                 continue
 

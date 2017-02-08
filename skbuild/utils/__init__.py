@@ -150,6 +150,11 @@ class PythonModuleFinder(new_style(distutils_build_py)):
         return map(_strip_directory, modules)
 
     def check_module(self, module, module_file):
+        if self.alternative_build_base is not None:
+            updated_module_file = os.path.join(
+                self.alternative_build_base, module_file)
+            if os.path.exists(updated_module_file):
+                module_file = updated_module_file
         if not os.path.isfile(module_file):
             distutils_log.warn(
                 "file %s (for module %s) not found", module_file, module)
