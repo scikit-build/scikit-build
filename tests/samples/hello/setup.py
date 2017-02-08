@@ -7,4 +7,5 @@ setup(
     author='The scikit-build team',
     license="MIT",
     packages=['bonjour', 'hello'],
+    py_modules=['bonjourModule', 'helloModule']
 )

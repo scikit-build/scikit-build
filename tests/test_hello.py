@@ -54,6 +54,7 @@ def test_hello_sdist():
     expected_content = [
         'hello-1.2.3/CMakeLists.txt',
         'hello-1.2.3/bonjour/__init__.py',
+        'hello-1.2.3/bonjourModule.py',
         'hello-1.2.3/hello/_hello.cxx',
         'hello-1.2.3/hello/CMakeLists.txt',
         'hello-1.2.3/hello/__init__.py',
@@ -95,7 +96,9 @@ def test_hello_wheel():
         'hello/__init__.py',
         'hello/__main__.py',
         'hello/world.py',
-        'bonjour/__init__.py'
+        'helloModule.py',
+        'bonjour/__init__.py',
+        'bonjourModule.py'
     ]
 
     member_list = ZipFile(whls[0]).namelist()
@@ -186,6 +189,7 @@ def test_hello_develop():
         'setup.py',
         'CMakeLists.txt',
         'bonjour/__init__.py',
+        'bonjourModule.py',
         'hello/__init__.py',
         'hello/__main__.py',
         'hello/_hello.cxx',
@@ -193,6 +197,7 @@ def test_hello_develop():
         # These files are "generated" by CMake and
         # are copied from CMAKE_INSTALL_DIR
         'hello/_hello%s' % (sysconfig.get_config_var('SO')),
-        'hello/world.py'
+        'hello/world.py',
+        'helloModule.py'
     ]:
         assert os.path.exists(expected_file)

@@ -222,8 +222,9 @@ def strip_package(package_parts, module_file):
 
     module_dir = module_dir[:len(package)]
 
-    return module_file[len(package) + 1:] if module_dir.startswith(
-        package) else module_file
+    return (module_file[len(package) + 1:]
+            if package != "" and module_dir.startswith(package)
+            else module_file)
 
 
 def _package_data_contain_module(module, package_data):
@@ -429,12 +430,19 @@ def setup(*args, **kw):  # noqa: C901
                     cmake_source_dir, skbuild_kw['cmake_install_dir'])
 
     if developer_mode:
+        # Copy packages
         for package, package_file_list in package_data.items():
             for package_file in package_file_list:
                 package_file = os.path.join(package_dir[package], package_file)
                 cmake_file = os.path.join(CMAKE_INSTALL_DIR, package_file)
                 if os.path.exists(cmake_file):
                     _copy_file(cmake_file, package_file, hide_listing)
+        # Copy modules
+        for py_module in py_modules:
+            package_file = py_module + ".py"
+            cmake_file = os.path.join(CMAKE_INSTALL_DIR, package_file)
+            if os.path.exists(cmake_file):
+                _copy_file(cmake_file, package_file, hide_listing)
     else:
         _consolidate(cmake_source_dir,
                      packages, package_dir, py_modules, package_data,
@@ -448,11 +456,6 @@ def setup(*args, **kw):  # noqa: C901
             else prefix)
         for prefix, package in package_prefixes
     }
-
-    kw['py_modules'] = [
-        os.path.join(CMAKE_INSTALL_DIR, py_module) if mask else py_module
-        for py_module, mask in new_py_modules.items()
-    ]
 
     kw['scripts'] = [
         os.path.join(CMAKE_INSTALL_DIR, script) if mask else script
@@ -562,7 +565,7 @@ def _classify_files(install_paths, package_data, package_prefixes,
 
         # check to see if path is part of a package
         for prefix, package in package_prefixes:
-            if path.startswith(prefix):
+            if path.startswith(prefix + "/"):
                 # peel off the package prefix
                 path = os.path.relpath(path, prefix)
 
@@ -624,7 +627,7 @@ def _copy_file(src_file, dest_file, hide_listing=True):
     """
     # Create directory if needed
     dest_dir = os.path.dirname(dest_file)
-    if not os.path.exists(dest_dir):
+    if dest_dir != "" and not os.path.exists(dest_dir):
         if not hide_listing:
             print("creating directory {}".format(dest_dir))
         mkdir_p(dest_dir)
@@ -685,8 +688,9 @@ def _consolidate(
         (package, _, src_module_file) = entry
 
         # Copy missing module file
-        dest_module_file = os.path.join(CMAKE_INSTALL_DIR, src_module_file)
-        _copy_file(src_module_file, dest_module_file, hide_listing)
+        if os.path.exists(src_module_file):
+            dest_module_file = os.path.join(CMAKE_INSTALL_DIR, src_module_file)
+            _copy_file(src_module_file, dest_module_file, hide_listing)
 
         # Since the mapping in package_data expects the package to be associated
         # with a list of files relative to the directory containing the package,
