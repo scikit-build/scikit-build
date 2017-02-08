@@ -563,7 +563,7 @@ def _classify_files(install_paths, package_data, package_prefixes,
 
         # check to see if path is part of a package
         for prefix, package in package_prefixes:
-            if path.startswith(prefix):
+            if path.startswith(prefix + "/"):
                 # peel off the package prefix
                 path = os.path.relpath(path, prefix)
 

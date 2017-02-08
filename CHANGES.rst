@@ -11,6 +11,11 @@ Next Release
 Bug fixes
 ---------
 
+* Do not implicitly install python modules when the beginning of their name
+  match a package explicitly listed. For example, if a project has a package
+  ``foo/__init__.py`` and a module ``fooConfig.py``, and only package ``foo``
+  was listed in ``setup.py``, ``fooConfig.py`` is not installed anymore.
+
 * CMake module :doc:`\cmake-modules/targetLinkLibrariesWithDynamicLookup`: Fix the
   caching of *dynamic lookup* variables. See :issue:`240` fixed by :user:`blowekamp`.
 
