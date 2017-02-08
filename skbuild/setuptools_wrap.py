@@ -222,8 +222,9 @@ def strip_package(package_parts, module_file):
 
     module_dir = module_dir[:len(package)]
 
-    return module_file[len(package) + 1:] if module_dir.startswith(
-        package) else module_file
+    return (module_file[len(package) + 1:]
+            if package != "" and module_dir.startswith(package)
+            else module_file)
 
 
 def _package_data_contain_module(module, package_data):

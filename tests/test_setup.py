@@ -421,6 +421,7 @@ def test_py_modules_keyword(distribution_type, capsys):
 
 @pytest.mark.parametrize("package_parts, module_file, expected", [
     ([], "", ""),
+    ([""], "file.py", "file.py"),
     ([], "foo/file.py", "foo/file.py"),
     (["foo"], "", ""),
     (["foo"], "", ""),

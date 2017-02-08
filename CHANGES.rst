@@ -14,6 +14,11 @@ Bug fixes
 * CMake module :doc:`\cmake-modules/targetLinkLibrariesWithDynamicLookup`: Fix the
   caching of *dynamic lookup* variables. See :issue:`240` fixed by :user:`blowekamp`.
 
+Internal API
+^^^^^^^^^^^^
+
+* :meth:`skbuild.setuptools_wrap.strip_package`: Function can now handle empty package.
+
 Requirements
 ------------
 
