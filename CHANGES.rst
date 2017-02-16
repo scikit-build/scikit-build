@@ -5,6 +5,9 @@ Release Notes
 This is the list of changes to scikit-build between each release. For full
 details, see the commit logs at http://github.com/scikit-build/scikit-build
 
+Next Release
+============
+
 Scikit-build 0.6.0
 ==================
 
