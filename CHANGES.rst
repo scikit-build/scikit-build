@@ -43,6 +43,8 @@ Documentation
 * Fix :ref:`table <Visual Studio>` listing *Visual Studio IDE* version and
   corresponding with *CPython version* in :doc:`/generators`.
 
+* Improve :doc:`/make_a_release` section.
+
 Tests
 -----
 
