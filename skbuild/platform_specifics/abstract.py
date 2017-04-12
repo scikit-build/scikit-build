@@ -64,12 +64,16 @@ class CMakePlatform(object):
     # TODO: this method name is not great.  Does anyone have a better idea for
     # renaming it?
     def get_best_generator(
-            self, generator_name=None, languages=("CXX", "C"), cleanup=True):
+            self, generator_name=None, clargs=(), languages=("CXX", "C"), cleanup=True):
         """Loop over generators to find one that works.
 
         :param generator_name: If provided, uses only provided generator, \
         instead of trying :attr:`default_generators`.
         :type generator_name: string or None
+
+        :param clargs: List of command line arguments to pass to cmake
+        executable.
+        :type clargs: tuple
 
         :param languages: The languages you'll need for your project, in terms \
         that CMake recognizes.
@@ -105,7 +109,7 @@ class CMakePlatform(object):
         self.write_test_cmakelist(languages)
 
         working_generator = self.compile_test_cmakelist(
-            cmake_exe_path, candidate_generators)
+            cmake_exe_path, candidate_generators, clargs)
 
         if working_generator is None:
             raise SKBuildGeneratorNotFoundError(textwrap.dedent(
@@ -128,9 +132,9 @@ class CMakePlatform(object):
 
     @staticmethod
     @push_dir(directory=test_folder)
-    def compile_test_cmakelist(cmake_exe_path, candidate_generators):
+    def compile_test_cmakelist(cmake_exe_path, candidate_generators, clargs):
         """
-        compile_test_cmakelist(cmake_exe_path, candidate_generators)
+        compile_test_cmakelist(cmake_exe_path, candidate_generators, clargs)
 
         Attempt to configure the test project with
         each :class:`CMakeGenerator` from ``candidate_generators``.
@@ -158,8 +162,10 @@ class CMakePlatform(object):
             with push_dir('build', make_directory=True):
                 # call cmake to see if the compiler specified by this
                 # generator works for the specified languages
-                cmake_execution_string = '{:s} ../ -G "{:s}"'.format(
+                cmake_execution_string = '{:s} --no-warn-unused-cli ../ -G "{:s}"'.format(
                     cmake_exe_path, generator.name)
+                for arg in clargs:
+                    cmake_execution_string += ' "{:s}"'.format(arg)
                 status = subprocess.call(
                     cmake_execution_string, shell=True, env=generator.env)
 
