@@ -145,6 +145,7 @@ def _get_msvc_compiler_env(vs_version):
         try:
             import distutils._msvccompiler
             from distutils.errors import DistutilsPlatformError
+            # pylint:disable=protected-access
             vc_env = distutils._msvccompiler._get_vc_env(arch)
             return {
                 'PATH': vc_env.get('path', ''),
