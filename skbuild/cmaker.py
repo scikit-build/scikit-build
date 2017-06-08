@@ -33,7 +33,7 @@ def pop_arg(arg, args, default=None):
     parser.add_argument(arg)
     namespace, args = parser.parse_known_args(args)
     namespace = tuple(vars(namespace).items())
-    if len(namespace) > 0 and namespace[0][1] is not None:
+    if namespace and namespace[0][1] is not None:
         val = namespace[0][1]
     else:
         val = default
