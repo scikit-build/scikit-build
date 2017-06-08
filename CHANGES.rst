@@ -8,6 +8,11 @@ details, see the commit logs at http://github.com/scikit-build/scikit-build
 Next Release
 ============
 
+Cleanups
+--------
+
+* Fix miscellaneous pylint warnings.
+
 Scikit-build 0.6.1
 ==================
 

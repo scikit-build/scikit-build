@@ -159,8 +159,7 @@ class PythonModuleFinder(new_style(distutils_build_py)):
             distutils_log.warn(
                 "file %s (for module %s) not found", module_file, module)
             return False
-        else:
-            return True
+        return True
 
 
 def to_platform_path(path):
@@ -178,6 +177,7 @@ def to_unix_path(path):
 def distribution_hide_listing(distribution):
     """Given a ``distribution``, this context manager allow to
     temporarily set distutils verbosity to 0."""
+    # pylint:disable=protected-access
     old_threshold = distutils_log._global_log.threshold
     if (hasattr(distribution, "hide_listing")
             and distribution.hide_listing):

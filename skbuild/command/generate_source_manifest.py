@@ -17,6 +17,7 @@ class generate_source_manifest(set_build_base_mixin, new_style(Command)):
 
     description = "generate source MANIFEST"
 
+    # pylint:disable=no-self-use
     def initialize_options(self):
         """Set default values for all the options that this command supports."""
         pass

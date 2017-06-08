@@ -5,6 +5,7 @@ from .abstract import CMakeGenerator
 from . import abstract
 
 
+# pylint:disable=abstract-method
 class UnixPlatform(abstract.CMakePlatform):
     """Unix implementation of :class:`.abstract.CMakePlatform`."""
 

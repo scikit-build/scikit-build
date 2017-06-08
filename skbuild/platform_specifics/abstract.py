@@ -55,6 +55,7 @@ class CMakePlatform(object):
         if os.path.exists(test_folder):
             shutil.rmtree(test_folder)
 
+    # pylint:disable=no-self-use
     def get_cmake_exe_path(self):
         """Override this method with additional logic where necessary
         if CMake is not on PATH.
@@ -104,7 +105,7 @@ class CMakePlatform(object):
                 if default_generator.name == generator_name:
                     candidate_generators = [default_generator]
                     break
-            if len(candidate_generators) == 0:
+            if not candidate_generators:
                 candidate_generators = [CMakeGenerator(generator_name)]
 
         cmake_exe_path = self.get_cmake_exe_path()
