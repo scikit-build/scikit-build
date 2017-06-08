@@ -74,6 +74,6 @@ class generate_source_manifest(set_build_base_mixin, new_style(Command)):
             with open(SKBUILD_MARKER_FILE, 'w'):  # touch
                 pass
 
-    def finalize_options(self):
+    def finalize_options(self, *args, **kwargs):
         """Set final values for all the options that this command supports."""
         pass

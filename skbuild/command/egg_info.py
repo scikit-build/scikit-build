@@ -13,7 +13,7 @@ from ..utils import new_style
 class egg_info(set_build_base_mixin, new_style(_egg_info)):
     """Custom implementation of ``egg_info`` setuptools command."""
 
-    def finalize_options(self):
+    def finalize_options(self, *args, **kwargs):
         # pylint:disable=access-member-before-definition
         if self.egg_base is not None:
             script_path = os.path.abspath(self.distribution.script_name)
@@ -21,4 +21,4 @@ class egg_info(set_build_base_mixin, new_style(_egg_info)):
             # pylint:disable=attribute-defined-outside-init
             self.egg_base = os.path.join(script_dir, self.egg_base)
 
-        super(egg_info, self).finalize_options()
+        super(egg_info, self).finalize_options(*args, **kwargs)
