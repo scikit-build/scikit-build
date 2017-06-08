@@ -150,6 +150,8 @@ class PythonModuleFinder(new_style(distutils_build_py)):
         return map(_strip_directory, modules)
 
     def check_module(self, module, module_file):
+        """Return True if ``module_file`` belongs to ``module``.
+        """
         if self.alternative_build_base is not None:
             updated_module_file = os.path.join(
                 self.alternative_build_base, module_file)

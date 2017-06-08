@@ -1,3 +1,6 @@
+"""This module defines custom ``generate_source_manifest`` setuptools
+command."""
+
 import os
 import subprocess
 import sys
@@ -12,8 +15,8 @@ SKBUILD_MARKER_FILE = os.path.join(SKBUILD_DIR, "_skbuild_MANIFEST")
 
 
 class generate_source_manifest(set_build_base_mixin, new_style(Command)):
-    """Custom implementation of ``egg_info`` setuptools command generating
-    a `MANIFEST` file if not already provided."""
+    """Custom setuptools command generating a `MANIFEST` file if
+    not already provided."""
 
     description = "generate source MANIFEST"
 

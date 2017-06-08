@@ -8,6 +8,16 @@ details, see the commit logs at http://github.com/scikit-build/scikit-build
 Next Release
 ============
 
+Documentation
+-------------
+
+* Improve internal API documentation:
+
+  * :mod:`skbuild.platform_specifics.windows`
+  * :mod:`skbuild.command`
+  * :mod:`skbuild.command.generate_source_manifest`
+  * :mod:`skbuild.utils`
+
 Cleanups
 --------
 

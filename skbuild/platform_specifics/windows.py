@@ -99,6 +99,12 @@ VS_YEAR_TO_VERSION = {
     "2010": 10,
     "2015": 14
 }
+"""Describes the version of `Visual Studio` supported by
+:class:`CMakeVisualStudioIDEGenerator` and
+:class:`CMakeVisualStudioCommandLineGenerator`.
+
+The different version are identified by their year.
+"""
 
 
 class CMakeVisualStudioIDEGenerator(CMakeGenerator):
@@ -109,8 +115,9 @@ class CMakeVisualStudioIDEGenerator(CMakeGenerator):
     """
     def __init__(self, year):
         """Instantiate a generator object with its name set to the `Visual
-        Studio` generator associated with the given ``year`` and
-        the current platform (32-bit or 64-bit).
+        Studio` generator associated with the given ``year``
+        (see :data:`VS_YEAR_TO_VERSION`) and the current platform (32-bit
+        or 64-bit).
         """
         vs_version = VS_YEAR_TO_VERSION[year]
         vs_base = "Visual Studio %s %s" % (vs_version, year)
@@ -152,7 +159,24 @@ def _get_msvc_compiler_env(vs_version):
 
 
 class CMakeVisualStudioCommandLineGenerator(CMakeGenerator):
+    """
+    Represents a command-line CMake generator initialized with a
+    specific `Visual Studio` environment.
+
+    .. automethod:: __init__
+    """
     def __init__(self, name, year):
+        """Instantiate CMake command-line generator.
+
+        The generator ``name`` can be values like `Ninja`, `NMake Makefiles`
+        or `NMake Makefiles JOM`.
+
+        The ``year`` defines the `Visual Studio` environment associated
+        with the generator. See :data:`VS_YEAR_TO_VERSION`.
+
+        The platform (32-bit or 64-bit) is automatically selected based
+        on the value of ``platform.architecture()[0]``.
+        """
         vc_env = _get_msvc_compiler_env(VS_YEAR_TO_VERSION[year])
         env = {str(key.upper()): str(value) for key, value in vc_env.items()}
         super(CMakeVisualStudioCommandLineGenerator, self).__init__(name, env)
