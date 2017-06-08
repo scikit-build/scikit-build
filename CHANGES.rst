@@ -8,6 +8,14 @@ details, see the commit logs at http://github.com/scikit-build/scikit-build
 Next Release
 ============
 
+Bug fixes
+---------
+
+* Ensure CMake arguments passed to scikit-build and starting with ``-DCMAKE_*``
+  are passed to the test project allowing to determine which generator to use.
+  For example, this ensures that arguments like ``-DCMAKE_MAKE_PROGRAM:FILEPATH=/path/to/program``
+  are passed.
+
 Scikit-build 0.6.0
 ==================
 

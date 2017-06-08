@@ -69,7 +69,7 @@ class CMaker(object):
         self.platform = get_platform()
 
     def configure(self, clargs=(), generator_name=None,
-                  cmake_source_dir='.', cmake_install_dir=''):
+                  cmake_source_dir='.', cmake_install_dir='', cleanup=True):
         """Calls cmake to generate the Makefile/VS Solution/XCode project.
 
         clargs: tuple
@@ -86,6 +86,11 @@ class CMaker(object):
             Relative directory to append
             to :const:`skbuild.constants.CMAKE_INSTALL_DIR`.
 
+        cleanup: bool
+            If True, cleans up temporary folder used to test
+            generators. Set to False for debugging to see CMake's
+            output files.
+
         Return a mapping of the environment associated with the
         selected :class:`skbuild.platform_specifics.abstract.CMakeGenerator`.
         """
@@ -101,7 +106,8 @@ class CMaker(object):
 
         # use the generator returned from the platform, with the current
         # generator_name as a suggestion
-        generator = self.platform.get_best_generator(generator_name)
+        generator = self.platform.get_best_generator(
+            generator_name, cmake_args=clargs, cleanup=cleanup)
 
         if not os.path.exists(CMAKE_BUILD_DIR):
             os.makedirs(CMAKE_BUILD_DIR)

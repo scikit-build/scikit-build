@@ -16,7 +16,7 @@ from skbuild.cmaker import (CMAKE_BUILD_DIR, CMaker)
 from skbuild.exceptions import SKBuildError
 from skbuild.utils import push_dir
 
-from . import _tmpdir
+from . import _tmpdir, get_cmakecache_variables
 
 
 def test_get_python_version():
@@ -89,3 +89,45 @@ def test_make(configure_with_cmake_source_dir, capfd):
         out, _ = capfd.readouterr()
         for message in messages:
             assert message in out
+
+
+def test_configure_with_cmake_args(capfd):
+    tmp_dir = _tmpdir('test_configure_with_cmake_args')
+    with push_dir(str(tmp_dir)):
+
+        tmp_dir.join('CMakeLists.txt').write(textwrap.dedent(
+            """
+            cmake_minimum_required(VERSION 3.5.0)
+            project(foobar NONE)
+            # Do not complain about missing arguments passed to the main
+            # project
+            foreach(unused_var IN ITEMS
+              ${CMAKE_EXPECTED_BAR}
+              ${CMAKE_EXPECTED_FOO}
+              ${PYTHON_EXECUTABLE}
+              ${PYTHON_INCLUDE_DIR}
+              ${PYTHON_LIBRARY}
+              ${PYTHON_VERSION_STRING}
+              ${SKBUILD}
+              )
+            endforeach()
+            """
+        ))
+
+        with push_dir(str(tmp_dir)):
+            cmkr = CMaker()
+            cmkr.configure(clargs=[
+                '-DCMAKE_EXPECTED_FOO:STRING=foo',
+                '-DCMAKE_EXPECTED_BAR:STRING=bar'
+            ], cleanup=False)
+
+        cmakecache = tmp_dir.join(
+            "_cmake_test_compile", "build", "CMakeCache.txt")
+        assert cmakecache.exists()
+        variables = get_cmakecache_variables(str(cmakecache))
+        assert variables.get('CMAKE_EXPECTED_FOO', (None, None))[1] == "foo"
+        assert variables.get('CMAKE_EXPECTED_BAR', (None, None))[1] == "bar"
+
+        unexpected = "Manually-specified variables were not used by the project"
+        _, err = capfd.readouterr()
+        assert unexpected not in err
