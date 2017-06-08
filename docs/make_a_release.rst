@@ -9,12 +9,16 @@ A core developer should use the following steps to create a release `X.Y.Z` of
 
 1. Make sure that all CI tests are passing.
 
-2. Update version numbers:
+2. Update version numbers and download count:
 
   * in `setup.py` and `skbuild/__init__.py`
 
   * in `CHANGES.rst` by changing ``Next Release`` section header with
     ``Scikit-build X.Y.Z``.
+
+  * run `this big table query <https://bigquery.cloud.google.com/savedquery/282424744644:d13dae955ff540cfafd2fddf8190962a>`_
+    and update the pypi download count in ``README.rst``. To learn more about `pypi-stats`,
+    see `How to get PyPI download statistics <https://kirankoduru.github.io/python/pypi-stats.html>`_.
 
 3. Commit the changes using title ``scikit-build X.Y.Z``.
 
