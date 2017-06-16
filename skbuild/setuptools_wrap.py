@@ -120,7 +120,7 @@ def _parse_setuptools_arguments(setup_attrs):
 
     It returns the tuple
         ``(display_only, help_commands, commands,
-        hide_listing, force_cmake, skip_cmake)``
+        hide_listing, force_cmake, skip_cmake, plat_name)``
     where
     - display_only is a boolean indicating if an argument like '--help',
       '--help-commands' or '--author' was passed.
@@ -132,6 +132,8 @@ def _parse_setuptools_arguments(setup_attrs):
     - force_cmake a boolean indicating that CMake should always be executed.
     - skip_cmake is a boolean indicating if the execution of CMake should
       explicitly be skipped.
+    - plat_name is a string identifying the platform name to embed in generated
+      filenames. It defaults to ``distutils.util.get_platform()``.
 
     Otherwise it raises DistutilsArgError exception if there are
     any error on the command-line, and it raises DistutilsGetoptError
@@ -180,8 +182,20 @@ def _parse_setuptools_arguments(setup_attrs):
         if not hasattr(dist, 'skip_cmake'):
             dist.skip_cmake = False
 
+    plat_names = set()
+    for cmd in [dist.get_command_obj(command) for command in dist.commands]:
+        if getattr(cmd, 'plat_name', None) is not None:
+            plat_names.add(cmd.plat_name)
+    if not plat_names:
+        plat_names.add(None)
+    elif len(plat_names) > 1:
+        raise SKBuildError(
+            "--plat-name is ambiguous: %s" % ", ".join(plat_names))
+    plat_name = list(plat_names)[0]
+
     return (display_only, dist.help_commands, dist.commands,
-            dist.hide_listing, dist.force_cmake, dist.skip_cmake)
+            dist.hide_listing, dist.force_cmake, dist.skip_cmake,
+            plat_name)
 
 
 def _check_skbuild_parameters(skbuild_kw):
@@ -346,7 +360,8 @@ def setup(*args, **kw):  # noqa: C901
     commands = []
     try:
         (display_only, help_commands, commands,
-         hide_listing, force_cmake, skip_cmake) = \
+         hide_listing, force_cmake, skip_cmake,
+         plat_name) = \
             _parse_setuptools_arguments(kw)
     except (DistutilsArgError, DistutilsGetoptError):
         has_invalid_arguments = True
@@ -398,7 +413,25 @@ def setup(*args, **kw):  # noqa: C901
         for parent_dir, file_list in kw.get('data_files', [])
     }
 
-    # Since CMake arguments provided through the command line have more
+    if sys.platform == 'darwin':
+
+        if plat_name is None:
+            # The following code is duplicated in bdist_wheel.finalize_options()
+            plat_name = "macosx-10.6-x86_64"
+
+        (_, version, machine) = plat_name.split('-')
+        if not cmaker.has_cmake_cache_arg(
+                cmake_args, 'CMAKE_OSX_DEPLOYMENT_TARGET'):
+            cmake_args.append(
+                '-DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=%s' % version
+            )
+        if not cmaker.has_cmake_cache_arg(
+                cmake_args, 'CMAKE_OSX_ARCHITECTURES'):
+            cmake_args.append(
+                '-DCMAKE_OSX_ARCHITECTURES:STRING=%s' % machine
+            )
+
+            # Since CMake arguments provided through the command line have more
     # weight and when CMake is given multiple times a argument, only the last
     # one is considered, let's prepend the one provided in the setup call.
     cmake_args = skbuild_kw['cmake_args'] + cmake_args

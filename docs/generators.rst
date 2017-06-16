@@ -162,9 +162,137 @@ optimized for building Linux wheels using scikit-build.
 MacOSX
 ------
 
-.. note:: *To be documented*
+scikit-build uses the toolchain set using ``CC`` (and ``CXX``) environment variables. If
+no environment variable is set, it defaults to the `Apple compiler`_ installed with XCode.
 
-    See https://github.com/MacPython/wiki/wiki/Spinning-wheels
+.. _Apple compiler: https://en.wikipedia.org/wiki/Xcode#Toolchain_versions
+
+Default Deployment Target and Architecture
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. versionadded:: 0.7.0
+
+The default deployment target and architecture selected by scikit-build are
+hard-coded for MacOSX and are respectively ``10.6`` and ``x86_64``.
+
+This means that the platform name associated with the `bdist_wheel`
+command is::
+
+    macosx-10.6-x86_64
+
+and is equivalent to building the wheel using::
+
+    python setup.py bdist_wheel --plat-name macosx-10.6-x86_64
+
+Respectively, the values associated with the corresponding `CMAKE_OSX_DEPLOYMENT_TARGET`_
+and `CMAKE_OSX_ARCHITECTURES`_ CMake options that are automatically used to configure
+the project are the following::
+
+    CMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.6
+    CMAKE_OSX_ARCHITECTURES:STRING=x86_64
+
+.. _CMAKE_OSX_DEPLOYMENT_TARGET: https://cmake.org/cmake/help/latest/variable/CMAKE_OSX_DEPLOYMENT_TARGET.html
+.. _CMAKE_OSX_ARCHITECTURES: https://cmake.org/cmake/help/latest/variable/CMAKE_OSX_ARCHITECTURES.html
+
+As illustrated in the table below, choosing ``10.6`` as deployment target to build
+MacOSX wheels will allow them to work on `System CPython`, the `Official CPython`,
+`Macports` and also `Homebrew` installations of CPython.
+
+.. table:: List of platform names for each CPython distributions, CPython and OSX versions.
+
+    +----------------------+----------------------+--------------+--------------------------------+
+    | CPython Distribution | CPython Version      | OSX Version  | ``get_platform()`` [#getplat]_ |
+    +======================+======================+==============+================================+
+    | Official CPython     | 3.6, 3.5, 3.4, 2.7   | 10.12        | macosx-**10.6**-intel          |
+    |                      +----------------------+--------------+                                |
+    |                      | 3.4, 2.7             | 10.9         |                                |
+    |                      +----------------------+--------------+                                |
+    |                      | 2.7                  | 10.7         |                                |
+    +----------------------+----------------------+--------------+--------------------------------+
+    | System CPython       | 2.7                  | 10.12        | macosx-10.12-intel             |
+    |                      |                      +--------------+--------------------------------+
+    |                      |                      | 10.9         | macosx-10.9-intel              |
+    |                      |                      +--------------+--------------------------------+
+    |                      |                      | 10.7         | macosx-10.7-intel              |
+    +----------------------+----------------------+--------------+--------------------------------+
+    | Macports CPython     | 2.7                  | 10.9         | macosx-10.9-x86_64             |
+    +----------------------+----------------------+--------------+                                |
+    | Homebrew CPython     | 2.7                  | 10.9         |                                |
+    +----------------------+----------------------+--------------+--------------------------------+
+
+
+The information above have been adapted from the excellent `Spinning wheels`_
+article written by Matthew Brett.
+
+.. _Spinning wheels: https://github.com/MacPython/wiki/wiki/Spinning-wheels
+
+
+Default SDK and customization
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. versionadded:: 0.7.0
+
+By default, scikit-build lets CMake discover the most recent SDK available on the
+system during the configuration of the project. CMake internally uses the logic
+implemented in the `Platform/Darwin-Initialize.cmake`_ CMake module.
+
+.. _Platform/Darwin-Initialize.cmake: https://github.com/Kitware/CMake/blob/master/Modules/Platform/Darwin-Initialize.cmake
+
+
+Customizing SDK
+^^^^^^^^^^^^^^^
+
+.. versionadded:: 0.7.0
+
+If needed, this can be overridden by explicitly passing the CMake option
+`CMAKE_OSX_SYSROOT`_. For example::
+
+    python setup.py bdist_wheel -- -DCMAKE_OSX_SYSROOT:PATH=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk
+
+.. _CMAKE_OSX_SYSROOT: https://cmake.org/cmake/help/latest/variable/CMAKE_OSX_SYSROOT.html
+
+Customizing Deployment Target and Architecture
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. versionadded:: 0.7.0
+
+Deployment target and architecture can be customized by associating the
+``--plat-name macosx-<deployment_target>-<arch>`` option with the `bdist_wheel`
+command.
+
+For example::
+
+    python setup.py bdist_wheel --plat-name macosx-10.9-x86_64
+
+
+scikit-build also sets the value of `CMAKE_OSX_DEPLOYMENT_TARGET`_ and
+`CMAKE_OSX_ARCHITECTURES`_ option based on the provided platform name. Based on
+the example above, the options used to configure the associated CMake project
+are::
+
+    -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.9
+    -DCMAKE_OSX_ARCHITECTURES:STRING=x86_64
+
+libstdc++ vs libc++
+^^^^^^^^^^^^^^^^^^^
+
+Before OSX 10.9, the default was ``libstdc++``.
+
+With OSX 10.9 and above, the default is ``libc++``.
+
+Forcing the use of ``libstdc++`` on newer version of OSX is still possible using the
+flag ``-stdlib=libstdc++``. That said, doing so will report the following warning::
+
+    clang: warning: libstdc++ is deprecated; move to libc++
+
+
+* `libstdc++ <https://gcc.gnu.org/onlinedocs/libstdc++/>`_:
+
+    This is the GNU Standard C++ Library v3 aiming to implement the ISO 14882 Standard C++ library.
+
+* `libc++ <https://libcxx.llvm.org/docs/>`_:
+
+    This is a new implementation of the C++ standard library, targeting C++11.
 
 
 Windows
@@ -234,6 +362,8 @@ Steve Dower, engineer at Microsoft.
 
 
 .. rubric:: Footnotes
+
+.. [#getplat] ``from distutils.util import get_platform; print(get_platform())``
 
 .. [#alternativevs] `How to deal with the pain of “unable to find vcvarsall.bat” <https://blogs.msdn.microsoft.com/pythonengineering/2016/04/11/unable-to-find-vcvarsall-bat/>`_
 

@@ -12,7 +12,7 @@ import pytest
 import re
 import textwrap
 
-from skbuild.cmaker import CMaker
+from skbuild.cmaker import CMaker, has_cmake_cache_arg
 from skbuild.constants import CMAKE_BUILD_DIR, CMAKE_INSTALL_DIR
 from skbuild.exceptions import SKBuildError
 from skbuild.utils import push_dir, to_unix_path
@@ -28,6 +28,20 @@ def test_get_python_library():
     python_library = CMaker.get_python_library(CMaker.get_python_version())
     assert python_library
     assert os.path.exists(python_library)
+
+
+def test_has_cmake_cache_arg():
+    cmake_args = ['-DFOO:STRING=42', '-DBAR', '-DCLIMBING:BOOL=ON']
+    assert has_cmake_cache_arg(cmake_args, "FOO", "42")
+    assert not has_cmake_cache_arg(cmake_args, "foo", "42")
+    assert not has_cmake_cache_arg(cmake_args, "FOO", "43")
+    assert not has_cmake_cache_arg(cmake_args, "BAR")
+    assert not has_cmake_cache_arg(cmake_args, "BA")
+    assert not has_cmake_cache_arg(cmake_args, "BAR", None)
+    assert not has_cmake_cache_arg(cmake_args, "BAR", "42")
+    assert has_cmake_cache_arg(cmake_args, "CLIMBING")
+    assert has_cmake_cache_arg(cmake_args, "CLIMBING", None)
+    assert has_cmake_cache_arg(cmake_args, "CLIMBING", "ON")
 
 
 def test_make_without_build_dir_fails():
