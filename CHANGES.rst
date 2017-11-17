@@ -8,6 +8,11 @@ details, see the commit logs at http://github.com/scikit-build/scikit-build
 Next Release
 ============
 
+Bug fixes
+---------
+
+* Fix support of ``--hide-listing`` when building wheel.
+
 Documentation
 -------------
 
@@ -39,6 +44,7 @@ Documentation
 
 * Update :doc:`/make_a_release` section including instructions to update ``README.rst``
   with up-to-date pypi download statistics based on Google big table.
+
 
 Scikit-build 0.6.0
 ==================
