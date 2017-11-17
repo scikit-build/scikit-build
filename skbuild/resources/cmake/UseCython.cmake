@@ -26,7 +26,7 @@
 #
 # The Cython include search path is amended with any entries found in the
 # ``INCLUDE_DIRECTORIES`` property of the directory containing the
-# ``<CythonInput>`` file.  Use ``iunclude_directories`` to add to the Cython
+# ``<CythonInput>`` file.  Use ``include_directories`` to add to the Cython
 # include search path.
 #
 # Options:
@@ -101,6 +101,7 @@ set(CYTHON_ANNOTATE OFF
 set(CYTHON_FLAGS "" CACHE STRING
     "Extra flags to the cython compiler.")
 mark_as_advanced(CYTHON_ANNOTATE CYTHON_FLAGS)
+string(REGEX REPLACE " " ";" CYTHON_FLAGS_LIST "${CYTHON_FLAGS}")
 
 find_package(PythonLibs REQUIRED)
 
@@ -363,7 +364,7 @@ function(add_cython_target _name)
                      ARGS ${cxx_arg} ${include_directory_arg} ${py_version_arg}
                           ${embed_arg} ${annotate_arg} ${no_docstrings_arg}
                           ${cython_debug_arg} ${embed_pos_arg}
-                          ${line_directives_arg} ${CYTHON_FLAGS} ${pyx_location}
+                          ${line_directives_arg} ${CYTHON_FLAGS_LIST} ${pyx_location}
                           --output-file ${generated_file}
                      DEPENDS ${_source_file}
                              ${pxd_dependencies}
