@@ -177,12 +177,18 @@ def to_unix_path(path):
 
 @contextmanager
 def distribution_hide_listing(distribution):
-    """Given a ``distribution``, this context manager allow to
-    temporarily set distutils verbosity to 0."""
+    """Given a ``distribution``, this context manager temporarily
+    sets distutils threshold to WARN if ``--hide-listing`` argument
+    was provided.
+
+    It yields True if ``--hide-listing`` argument was provided.
+    """
     # pylint:disable=protected-access
     old_threshold = distutils_log._global_log.threshold
+    hide_listing = False
     if (hasattr(distribution, "hide_listing")
             and distribution.hide_listing):
-        distutils_log.set_verbosity(0)
-    yield
-    distutils_log.set_verbosity(old_threshold)
+        hide_listing = True
+        distutils_log.set_threshold(distutils_log.WARN)
+    yield hide_listing
+    distutils_log.set_threshold(old_threshold)
