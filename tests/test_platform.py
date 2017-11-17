@@ -34,8 +34,6 @@ def test_write_compiler_test_file():
         # verify that the test file exists (it's not valid, because it has no
         # languages)
         assert(os.path.exists(os.path.join(test_folder, "CMakeLists.txt")))
-    except:
-        raise
     finally:
         skbuild_platform.cleanup_test()
 
@@ -57,8 +55,6 @@ def test_cxx_compiler():
     try:
         assert(generator is not None)
         assert not os.path.exists(test_build_folder)
-    except:
-        raise
     finally:
         skbuild_platform.cleanup_test()
 
@@ -76,8 +72,6 @@ def test_fortran_compiler():
     # doesn't actually compile anything.
     try:
         assert(generator is not None)
-    except:
-        raise
     finally:
         skbuild_platform.cleanup_test()
 
