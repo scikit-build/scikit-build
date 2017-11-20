@@ -13,6 +13,10 @@ Bug fixes
 
 * Fix support of ``--hide-listing`` when building wheel.
 
+* CMake module :doc:`\cmake-modules/Cython`: Fix escaping of spaces associated with ``CYTHON_FLAGS`` when
+  provided as command line arguments to the cython executable through CMake cache entries. See :issue:`265`
+  fixed by :user:`neok-m4700`.
+
 Documentation
 -------------
 
