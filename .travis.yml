@@ -47,6 +47,7 @@ addons:
       - python-vtk
 
 before_install:
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then mkdir $HOME/bin; ln -s $(which pip2) $HOME/bin/pip; fi
   - pip install scikit-ci==0.12.0 scikit-ci-addons==0.11.0
   - ci_addons --install ../addons
 
