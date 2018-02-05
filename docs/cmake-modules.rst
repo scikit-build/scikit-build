@@ -12,6 +12,7 @@ CMake modules:
    cmake-modules/Cython
    cmake-modules/NumPy
    cmake-modules/PythonExtensions
+   cmake-modules/F2PY
 
 
 They can be included using ``find_package``:
@@ -21,6 +22,7 @@ They can be included using ``find_package``:
     find_package(Cython REQUIRED)
     find_package(NumPy REQUIRED)
     find_package(PythonExtensions REQUIRED)
+    find_package(F2PY REQUIRED)
 
 
 For more details, see the respective documentation of each modules.
