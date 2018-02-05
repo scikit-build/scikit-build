@@ -34,11 +34,11 @@
 #   add_custom_target(fortran_methods ALL
 #     DEPENDS fortran_methods${CMAKE_SHARED_LIBRARY_SUFFIX}
 #     )
-#   add_custom_command(OUTPUT fortran_methods${CMAKE_SHARED_LIBRARY_SUFFIX}
+#   add_custom_command(OUTPUT fortran_methodsmodule.c
 #     COMMAND ${F2PY_EXECUTABLE} -m fortran_methods
 #             -I${PROJECT_BINARY_DIR}/src
 #             --f90flags="-fdefault-real-8"
-#             -c ${PROJECT_SOURCE_DIR}/src/fortran_methods/main.f90
+#             ${PROJECT_SOURCE_DIR}/src/fortran_methods/main.f90
 #    )
 #
 #=============================================================================
