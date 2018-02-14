@@ -8,6 +8,14 @@ details, see the commit logs at http://github.com/scikit-build/scikit-build
 Next Release
 ============
 
+New Features
+------------
+
+* Add CMake module :doc:`\cmake-modules/F2PY` useful to find the ``f2py`` executable for building Python
+  extensions with Fortran. Thanks to :user:`xoviat` for moving forward with the integration. Concept for the
+  module comes from the work of :user:`scopatz` done in `PyNE <https://github.com/pyne/pyne>`_ project.
+  See :issue:`273`.
+
 Bug fixes
 ---------
 

@@ -19,6 +19,9 @@
 #   PYTHON_PATH_SEPARATOR             - separator string for PATH-style
 #                                       environment variables.  Equivalent to
 #                                       ``os.pathsep`` in Python.
+#   PYTHON_EXTENSION_MODULE_SUFFIX    - suffix of the compiled module. For example, on
+#                                       Linux, based on environment, it could be ``.cpython-35m-x86_64-linux-gnu.so``.
+#
 #
 #
 # The following functions are defined:
