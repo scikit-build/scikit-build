@@ -10,7 +10,10 @@
 #   The include directories needed to use NumpPy.
 # ``NumPy_VERSION``
 #   The version of NumPy found.
-#
+# ``NumPy_CONV_TEMPLATE``
+#   The command-line arguments required to execute the conv-template script
+# ``NumPy_FROM_TEMPLATE``
+#   The command-line arguments required to execute the from-template script
 #
 # The module will also explicitly define one cache variable:
 #
