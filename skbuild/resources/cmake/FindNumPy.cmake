@@ -28,6 +28,9 @@ if(NOT NumPy_FOUND)
   find_package(PythonInterp ${_find_extra_args})
   find_package(PythonLibs ${_find_extra_args})
 
+  find_program(NumPy_CONV_TEMPLATE NAMES conv-template)
+  find_program(NumPy_FROM_TEMPLATE NAMES from-template)
+
   if(PYTHON_EXECUTABLE)
     execute_process(COMMAND "${PYTHON_EXECUTABLE}"
       -c "import numpy; print(numpy.get_include())"
@@ -41,6 +44,26 @@ if(NOT NumPy_FOUND)
       OUTPUT_STRIP_TRAILING_WHITESPACE
       ERROR_QUIET
       )
+
+    if(NOT NumPy_CONV_TEMPLATE)
+      execute_process(COMMAND "${PYTHON_EXECUTABLE}"
+        -c "from numpy.distutils import conv_template; print(conv_template.__file__)"
+        OUTPUT_VARIABLE _numpy_conv_template_file
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_QUIET
+        )
+      set(NumPy_CONV_TEMPLATE "${PYTHON_EXECUTABLE}" "${_numpy_conv_template_file}")
+    endif()
+
+    if(NOT NumPy_FROM_TEMPLATE)
+      execute_process(COMMAND "${PYTHON_EXECUTABLE}"
+        -c "from numpy.distutils import from_template; print(from_template.__file__)"
+        OUTPUT_VARIABLE _numpy_from_template_file
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_QUIET
+        )
+      set(NumPy_FROM_TEMPLATE "${PYTHON_EXECUTABLE}" "${_numpy_from_template_file}")
+    endif()
   endif()
 endif()
 
@@ -56,7 +79,7 @@ set(NumPy_INCLUDE_DIRS ${NumPy_INCLUDE_DIR})
 # all listed variables are TRUE
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(NumPy
-                                  REQUIRED_VARS NumPy_INCLUDE_DIR
+                                  REQUIRED_VARS NumPy_INCLUDE_DIR NumPy_CONV_TEMPLATE NumPy_FROM_TEMPLATE
                                   VERSION_VAR NumPy_VERSION
                                   )
 
