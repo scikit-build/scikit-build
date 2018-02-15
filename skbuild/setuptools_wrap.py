@@ -567,7 +567,7 @@ def _classify_files(install_paths, package_data, package_prefixes,
         for prefix, package in package_prefixes:
             if path.startswith(prefix + "/"):
                 # peel off the package prefix
-                path = os.path.relpath(path, prefix)
+                path = to_unix_path(os.path.relpath(path, prefix))
 
                 package_file_list = package_data.get(package, [])
                 package_file_list.append(path)
