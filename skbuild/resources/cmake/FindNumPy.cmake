@@ -82,7 +82,7 @@ set(NumPy_INCLUDE_DIRS ${NumPy_INCLUDE_DIR})
 # all listed variables are TRUE
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(NumPy
-                                  REQUIRED_VARS NumPy_INCLUDE_DIR NumPy_CONV_TEMPLATE NumPy_FROM_TEMPLATE
+                                  REQUIRED_VARS NumPy_INCLUDE_DIR NumPy_CONV_TEMPLATE_EXECUTABLE NumPy_FROM_TEMPLATE_EXECUTABLE
                                   VERSION_VAR NumPy_VERSION
                                   )
 
