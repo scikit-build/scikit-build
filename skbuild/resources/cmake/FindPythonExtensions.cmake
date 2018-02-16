@@ -540,3 +540,81 @@ function(python_modules_header _name)
   set(${_include_dirs_var} ${CMAKE_CURRENT_BINARY_DIR} PARENT_SCOPE)
 endfunction()
 
+# Example usage:
+# 
+# add_python_library(lsoda
+#   lsoda.pyf.src
+#   lsoda.c.src
+#   lsoda.pyx
+#   lsoda.f90
+#   lsoda.cxx
+# )
+# 
+# Targets are automatically generated
+
+function(add_python_library _name _sources _library_type)
+  
+  # Generate targets for all *.src files
+  set(_processed )
+  foreach(_source IN ${_sources})
+    if(${_source} MATCHES *.pyf.src)
+      get_filename_component(_source_we _source NAME_WE)
+      add_custom_command(
+        OUTPUT _source_we
+        COMMAND ${NumPy_FROM_TEMPLATE_EXECUTABLE} 
+                ${_source}
+      )
+      set(_processed ${_processed} ${_source_we})
+    elseif(${_source} MATCHES *.c.src)
+      get_filename_component(_source_we _source NAME_WE)
+      add_custom_command(
+        OUTPUT _source_we
+        COMMAND ${NumPy_CONV_TEMPLATE_EXECUTABLE} 
+                ${_source}
+      )
+      set(_processed ${_processed} ${_source_we})
+    else()
+      set(_processed ${_processed} ${_source})
+    endif()
+  endforeach()
+  set(_sources ${_processed})
+
+  # Generate targets for all *.pyx files
+  set(_processed )
+  foreach(_source IN ${_sources})
+    if(${_source} MATCHES *.pyx)
+      # TODO: Generate target name
+      add_cython_target(${_pyx_target_name}
+          ${_source}
+          OUTPUT _pyx_target_output
+      )
+      set(_processed ${_processed} ${_pyx_target_output})
+    else()
+      set(_processed ${_processed} ${_source})
+    endif()
+  endforeach()
+  set(_sources ${_processed})
+
+  # Generate targets for all *.pyf files
+  set(_processed )
+  foreach(_source IN ${_sources})
+    if(${_source} MATCHES *.pyf)
+      # TODO: Generate target name
+      add_f2py_target(${_pyf_target_name}
+          ${_source}
+          OUTPUT _pyf_target_output
+      )
+      set(_processed ${_processed} ${_pyf_target_output})
+    else()
+      set(_processed ${_processed} ${_source})
+    endif()
+  endforeach()
+  set(_sources ${_processed})
+
+  add_library(${_sources} ${_library_type})
+endfunction()
+
+function(add_python_extension _name _sources)
+  add_python_library(_name sources SHARED)
+  python_extension_module(_name)
+endfunction()
