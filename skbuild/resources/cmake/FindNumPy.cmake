@@ -48,7 +48,7 @@ if(NOT NumPy_FOUND)
       ERROR_QUIET
       )
 
-    if(NOT NumPy_CONV_TEMPLATE_EXECUTABLE)
+    if(NOT NumPy_CONV_TEMPLATE_COMMAND)
       execute_process(COMMAND "${PYTHON_EXECUTABLE}"
         -c "from numpy.distutils import conv_template; print(conv_template.__file__)"
         OUTPUT_VARIABLE _numpy_conv_template_file
@@ -58,7 +58,7 @@ if(NOT NumPy_FOUND)
       set(NumPy_CONV_TEMPLATE_COMMAND "${PYTHON_EXECUTABLE}" "${_numpy_conv_template_file}")
     endif()
 
-    if(NOT NumPy_FROM_TEMPLATE_EXECUTABLE)
+    if(NOT NumPy_FROM_TEMPLATE_COMMAND)
       execute_process(COMMAND "${PYTHON_EXECUTABLE}"
         -c "from numpy.distutils import from_template; print(from_template.__file__)"
         OUTPUT_VARIABLE _numpy_from_template_file
