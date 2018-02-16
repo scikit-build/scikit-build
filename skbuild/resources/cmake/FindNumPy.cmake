@@ -10,9 +10,9 @@
 #   The include directories needed to use NumpPy.
 # ``NumPy_VERSION``
 #   The version of NumPy found.
-# ``NumPy_CONV_TEMPLATE``
+# ``NumPy_CONV_TEMPLATE_EXECUTABLE``
 #   The command-line arguments required to execute the conv-template script
-# ``NumPy_FROM_TEMPLATE``
+# ``NumPy_FROM_TEMPLATE_EXECUTABLE``
 #   The command-line arguments required to execute the from-template script
 #
 # The module will also explicitly define one cache variable:
@@ -31,8 +31,8 @@ if(NOT NumPy_FOUND)
   find_package(PythonInterp ${_find_extra_args})
   find_package(PythonLibs ${_find_extra_args})
 
-  find_program(NumPy_CONV_TEMPLATE NAMES conv-template)
-  find_program(NumPy_FROM_TEMPLATE NAMES from-template)
+  find_program(NumPy_CONV_TEMPLATE_EXECUTABLE NAMES conv-template)
+  find_program(NumPy_FROM_TEMPLATE_EXECUTABLE NAMES from-template)
 
   if(PYTHON_EXECUTABLE)
     execute_process(COMMAND "${PYTHON_EXECUTABLE}"
@@ -48,24 +48,24 @@ if(NOT NumPy_FOUND)
       ERROR_QUIET
       )
 
-    if(NOT NumPy_CONV_TEMPLATE)
+    if(NOT NumPy_CONV_TEMPLATE_EXECUTABLE)
       execute_process(COMMAND "${PYTHON_EXECUTABLE}"
         -c "from numpy.distutils import conv_template; print(conv_template.__file__)"
         OUTPUT_VARIABLE _numpy_conv_template_file
         OUTPUT_STRIP_TRAILING_WHITESPACE
         ERROR_QUIET
         )
-      set(NumPy_CONV_TEMPLATE "${PYTHON_EXECUTABLE}" "${_numpy_conv_template_file}")
+      set(NumPy_CONV_TEMPLATE_EXECUTABLE "${PYTHON_EXECUTABLE}" "${_numpy_conv_template_file}")
     endif()
 
-    if(NOT NumPy_FROM_TEMPLATE)
+    if(NOT NumPy_FROM_TEMPLATE_EXECUTABLE)
       execute_process(COMMAND "${PYTHON_EXECUTABLE}"
         -c "from numpy.distutils import from_template; print(from_template.__file__)"
         OUTPUT_VARIABLE _numpy_from_template_file
         OUTPUT_STRIP_TRAILING_WHITESPACE
         ERROR_QUIET
         )
-      set(NumPy_FROM_TEMPLATE "${PYTHON_EXECUTABLE}" "${_numpy_from_template_file}")
+      set(NumPy_FROM_TEMPLATE_EXECUTABLE "${PYTHON_EXECUTABLE}" "${_numpy_from_template_file}")
     endif()
   endif()
 endif()
