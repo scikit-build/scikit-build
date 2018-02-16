@@ -10,9 +10,9 @@
 #   The include directories needed to use NumpPy.
 # ``NumPy_VERSION``
 #   The version of NumPy found.
-# ``NumPy_CONV_TEMPLATE_EXECUTABLE``
+# ``NumPy_CONV_TEMPLATE_COMMAND``
 #   The command-line arguments required to execute the conv-template script
-# ``NumPy_FROM_TEMPLATE_EXECUTABLE``
+# ``NumPy_FROM_TEMPLATE_COMMAND``
 #   The command-line arguments required to execute the from-template script
 #
 # The module will also explicitly define one cache variable:
@@ -31,8 +31,8 @@ if(NOT NumPy_FOUND)
   find_package(PythonInterp ${_find_extra_args})
   find_package(PythonLibs ${_find_extra_args})
 
-  find_program(NumPy_CONV_TEMPLATE_EXECUTABLE NAMES conv-template)
-  find_program(NumPy_FROM_TEMPLATE_EXECUTABLE NAMES from-template)
+  find_program(NumPy_CONV_TEMPLATE_COMMAND NAMES conv-template)
+  find_program(NumPy_FROM_TEMPLATE_COMMAND NAMES from-template)
 
   if(PYTHON_EXECUTABLE)
     execute_process(COMMAND "${PYTHON_EXECUTABLE}"
@@ -55,7 +55,7 @@ if(NOT NumPy_FOUND)
         OUTPUT_STRIP_TRAILING_WHITESPACE
         ERROR_QUIET
         )
-      set(NumPy_CONV_TEMPLATE_EXECUTABLE "${PYTHON_EXECUTABLE}" "${_numpy_conv_template_file}")
+      set(NumPy_CONV_TEMPLATE_COMMAND "${PYTHON_EXECUTABLE}" "${_numpy_conv_template_file}")
     endif()
 
     if(NOT NumPy_FROM_TEMPLATE_EXECUTABLE)
@@ -65,7 +65,7 @@ if(NOT NumPy_FOUND)
         OUTPUT_STRIP_TRAILING_WHITESPACE
         ERROR_QUIET
         )
-      set(NumPy_FROM_TEMPLATE_EXECUTABLE "${PYTHON_EXECUTABLE}" "${_numpy_from_template_file}")
+      set(NumPy_FROM_TEMPLATE_COMMAND "${PYTHON_EXECUTABLE}" "${_numpy_from_template_file}")
     endif()
   endif()
 endif()
@@ -82,7 +82,7 @@ set(NumPy_INCLUDE_DIRS ${NumPy_INCLUDE_DIR})
 # all listed variables are TRUE
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(NumPy
-                                  REQUIRED_VARS NumPy_INCLUDE_DIR NumPy_CONV_TEMPLATE_EXECUTABLE NumPy_FROM_TEMPLATE_EXECUTABLE
+                                  REQUIRED_VARS NumPy_INCLUDE_DIR NumPy_CONV_TEMPLATE_COMMAND NumPy_FROM_TEMPLATE_COMMAND
                                   VERSION_VAR NumPy_VERSION
                                   )
 
