@@ -16,6 +16,9 @@ New Features
   module comes from the work of :user:`scopatz` done in `PyNE <https://github.com/pyne/pyne>`_ project.
   See :issue:`273`.
 
+* Update CMake module :doc:`\cmake-modules/NumPy` setting variables ``NumPy_CONV_TEMPLATE_EXECUTABLE``
+  and ``NumPy_FROM_TEMPLATE_EXECUTABLE``. Thanks :user:`xoviat` for the contribution. See :issue:`278`.
+
 Bug fixes
 ---------
 
