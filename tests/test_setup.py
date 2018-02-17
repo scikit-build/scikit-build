@@ -184,7 +184,7 @@ def test_cmake_install_dir_keyword(
     tmp_dir.join('CMakeLists.txt').write(textwrap.dedent(
         """
         cmake_minimum_required(VERSION 3.5.0)
-        project(banana)
+        project(banana NONE)
         file(WRITE "${CMAKE_BINARY_DIR}/__init__.py" "")
         install(FILES "${CMAKE_BINARY_DIR}/__init__.py" DESTINATION ".")
         """
@@ -305,7 +305,7 @@ def test_script_keyword(distribution_type, capsys):
         tmp_dir.join('CMakeLists.txt').write(textwrap.dedent(
             """
             cmake_minimum_required(VERSION 3.5.0)
-            project(foo)
+            project(foo NONE)
             file(WRITE "${CMAKE_BINARY_DIR}/foo.py" "# foo.py")
             file(WRITE "${CMAKE_BINARY_DIR}/bar.py" "# bar.py")
             install(
@@ -385,7 +385,7 @@ def test_py_modules_keyword(distribution_type, capsys):
         tmp_dir.join('CMakeLists.txt').write(textwrap.dedent(
             """
             cmake_minimum_required(VERSION 3.5.0)
-            project(foobar)
+            project(foobar NONE)
             file(WRITE "${CMAKE_BINARY_DIR}/foo.py" "# foo.py")
             file(WRITE "${CMAKE_BINARY_DIR}/bar.py" "# bar.py")
             install(
@@ -595,7 +595,7 @@ def test_setup_inputs(
     src_dir.join('CMakeLists.txt').write(textwrap.dedent(
         """
         cmake_minimum_required(VERSION 3.5.0)
-        project(hybrid)
+        project(hybrid NONE)
         set(build_dir ${{CMAKE_BINARY_DIR}})
 
         {c_off} file(WRITE ${{build_dir}}/__init__.py "")
@@ -882,7 +882,7 @@ def test_cmake_install_into_pure_package(with_cmake_source_dir, capsys):
     cmake_src_dir.join('CMakeLists.txt').write(textwrap.dedent(
         """
         cmake_minimum_required(VERSION 3.5.0)
-        project(test)
+        project(test NONE)
         file(WRITE "${CMAKE_BINARY_DIR}/apple.py" "# apple.py")
         file(WRITE "${CMAKE_BINARY_DIR}/banana.py" "# banana.py")
         install(
