@@ -40,7 +40,7 @@ def test_cmake_source_dir(cmake_source_dir, expected_failed):
         """
         from skbuild import setup
         setup(
-            name="hello",
+            name="test_cmake_source_dir",
             version="1.2.3",
             description="a minimal example package",
             author='The scikit-build team',
