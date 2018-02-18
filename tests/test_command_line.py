@@ -15,7 +15,7 @@ from skbuild.utils import push_dir, to_platform_path
 from . import project_setup_py_test
 
 
-@project_setup_py_test("hello", ["--help"])
+@project_setup_py_test("hello-no-language", ["--help"])
 def test_help(capsys):
     out, err = capsys.readouterr()
     assert "scikit-build options" not in out
@@ -23,7 +23,7 @@ def test_help(capsys):
     assert "usage:" in out
 
 
-@project_setup_py_test("hello", ["--help-commands"])
+@project_setup_py_test("hello-no-language", ["--help-commands"])
 def test_help_commands(capsys):
     out, err = capsys.readouterr()
     assert "scikit-build options" in out
@@ -32,20 +32,20 @@ def test_help_commands(capsys):
     assert "usage:" in out
 
 
-@project_setup_py_test("hello", ["--author", "--name"])
+@project_setup_py_test("hello-no-language", ["--author", "--name"])
 def test_metadata_display(capsys):
     out, err = capsys.readouterr()
     assert "scikit-build options" not in out
     assert "Global options:" not in out
     assert "usage:" not in out
     assert "The scikit-build team" == out.splitlines()[0]
-    assert "hello" == out.splitlines()[1]
+    assert "hello_no_language" == out.splitlines()[1]
 
 
 def test_no_command():
     with push_dir():
 
-        @project_setup_py_test("hello", [])
+        @project_setup_py_test("hello-no-language", [])
         def run():
             pass
 
@@ -63,7 +63,7 @@ def test_invalid_command():
 
     with push_dir():
 
-        @project_setup_py_test("hello", ["unknown"])
+        @project_setup_py_test("hello-no-language", ["unknown"])
         def run():
             pass
 
@@ -80,7 +80,7 @@ def test_invalid_command():
 def test_too_many_separators():
     with push_dir():
 
-        @project_setup_py_test("hello", ["--"] * 3)
+        @project_setup_py_test("hello-no-language", ["--"] * 3)
         def run():
             pass
 
@@ -93,7 +93,7 @@ def test_too_many_separators():
         assert failed
 
 
-@project_setup_py_test("hello",
+@project_setup_py_test("hello-no-language",
                        ["build", "--", "-DMY_CMAKE_VARIABLE:BOOL=1"])
 def test_cmake_args(capfd):
     out, err = capfd.readouterr()
@@ -109,7 +109,7 @@ def test_hide_listing(action, hide_listing, capfd):
     if hide_listing:
         cmd.insert(0, "--hide-listing")
 
-    @project_setup_py_test("hello", cmd, verbose_git=False)
+    @project_setup_py_test("hello-cpp", cmd, verbose_git=False)
     def run():
         pass
 
@@ -132,13 +132,13 @@ def test_hide_listing(action, hide_listing, capfd):
         assert "copied 0 files" in out  # install_scripts
 
 
-@project_setup_py_test("hello", ["--force-cmake", "--help"])
+@project_setup_py_test("hello-no-language", ["--force-cmake", "--help"])
 def test_run_cmake_arg(capfd):
     out, _ = capfd.readouterr()
     assert "Generating done" in out
 
 
-@project_setup_py_test("hello", ["--skip-cmake", "build"])
+@project_setup_py_test("hello-no-language", ["--skip-cmake", "build"])
 def test_skip_cmake_arg(capfd):
     out, _ = capfd.readouterr()
     assert "Generating done" not in out

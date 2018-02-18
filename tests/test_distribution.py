@@ -28,7 +28,7 @@ def test_source_distribution(virtualenv):
     virtualenv.run("pip install %s" % sdists[0])
     assert "scikit-build" in virtualenv.installed_packages()
 
-    prepare_project("hello", virtualenv.workspace, force=True)
+    prepare_project("hello-no-language", virtualenv.workspace, force=True)
     initialize_git_repo_and_commit(virtualenv.workspace, verbose=False)
 
     virtualenv.run("python setup.py bdist_wheel")
@@ -45,7 +45,7 @@ def test_wheel(virtualenv):
     virtualenv.run("pip install %s" % wheels[0])
     assert "scikit-build" in virtualenv.installed_packages()
 
-    prepare_project("hello", virtualenv.workspace, force=True)
+    prepare_project("hello-no-language", virtualenv.workspace, force=True)
     initialize_git_repo_and_commit(virtualenv.workspace, verbose=False)
 
     virtualenv.run("python setup.py bdist_wheel")
