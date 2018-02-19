@@ -4,6 +4,7 @@ from distutils and setuptools.
 
 from __future__ import print_function
 
+import copy
 import os
 import os.path
 import sys
@@ -13,6 +14,7 @@ from contextlib import contextmanager
 from distutils.errors import (DistutilsArgError,
                               DistutilsError,
                               DistutilsGetoptError)
+from glob import glob
 from shutil import copyfile, copymode
 
 # XXX If 'six' becomes a dependency, use 'six.StringIO' instead.
@@ -383,7 +385,7 @@ def setup(*args, **kw):  # noqa: C901
 
     packages = kw.get('packages', [])
     package_dir = kw.get('package_dir', {})
-    package_data = kw.get('package_data', {}).copy()
+    package_data = copy.deepcopy(kw.get('package_data', {}))
 
     py_modules = kw.get('py_modules', [])
     new_py_modules = {py_module: False for py_module in py_modules}
@@ -444,9 +446,11 @@ def setup(*args, **kw):  # noqa: C901
             if os.path.exists(cmake_file):
                 _copy_file(cmake_file, package_file, hide_listing)
     else:
-        _consolidate(cmake_source_dir,
-                     packages, package_dir, py_modules, package_data,
-                     hide_listing)
+        _consolidate_package_modules(
+            cmake_source_dir, packages, package_dir, py_modules, package_data, hide_listing)
+
+        original_package_data = kw.get('package_data', {}).copy()
+        _consolidate_package_data_files(original_package_data, package_prefixes, hide_listing)
 
     kw['package_data'] = package_data
     kw['package_dir'] = {
@@ -639,7 +643,7 @@ def _copy_file(src_file, dest_file, hide_listing=True):
     copymode(src_file, dest_file)
 
 
-def _consolidate(
+def _consolidate_package_modules(
         cmake_source_dir, packages, package_dir, py_modules, package_data,
         hide_listing
 ):
@@ -710,3 +714,35 @@ def _consolidate(
             package_data[package].append(stripped_module_file)
         except KeyError:
             package_data[package] = [stripped_module_file]
+
+
+def _consolidate_package_data_files(original_package_data, package_prefixes, hide_listing):
+    """This function copies package data files specified using the ``package_data`` keyword
+    into data::`.constants.CMAKE_INSTALL_DIR`.
+
+    ::
+
+        setup(...,
+            packages=['mypkg'],
+            package_dir={'mypkg': 'src/mypkg'},
+            package_data={'mypkg': ['data/*.dat']},
+            )
+
+    Considering that (1) the packages associated with modules located in both the source tree and
+    the CMake install tree are consolidated into the CMake install tree, and (2) the consolidated
+    package path set in the package_dir dictionary and later used by setuptools to package
+    (or install) modules and data files is data::`.constants.CMAKE_INSTALL_DIR`, copying the data files
+    is required to ensure setuptools can find them when it uses the package directory.
+    """
+    project_root = os.getcwd()
+    for prefix, package in package_prefixes:
+        if package not in original_package_data:
+            continue
+        raw_patterns = original_package_data[package]
+        for pattern in raw_patterns:
+            expanded_package_dir = os.path.join(project_root, prefix, pattern)
+            for src_data_file in glob(expanded_package_dir):
+                full_prefix_length = len(os.path.join(project_root, prefix)) + 1
+                data_file = src_data_file[full_prefix_length:]
+                dest_data_file = os.path.join(CMAKE_INSTALL_DIR, prefix, data_file)
+                _copy_file(src_data_file, dest_data_file, hide_listing)

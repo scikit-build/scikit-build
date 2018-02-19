@@ -125,10 +125,10 @@ def test_hide_listing(action, hide_listing, capfd):
         what = "copied"
         if hasattr(os, 'link'):
             what = "hard-linked"
-        assert "%s 7 files" % what in out
+        assert "%s 10 files" % what in out
     elif action == "bdist_wheel":
         assert "copied 6 files" in out  # build_py
-        assert "copied 6 files" in out  # install_lib
+        assert "copied 9 files" in out  # install_lib
         assert "copied 0 files" in out  # install_scripts
 
 
