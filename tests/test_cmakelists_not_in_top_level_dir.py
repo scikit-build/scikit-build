@@ -21,7 +21,7 @@ from skbuild.exceptions import SKBuildError
 from . import (_tmpdir, execute_setup_py, project_setup_py_test)
 
 
-@project_setup_py_test("cmakelists-not-in-top-level-dir", ["build"])
+@project_setup_py_test("cmakelists-not-in-top-level-dir", ["build"], disable_languages_test=True)
 def test_build(capsys):
     out, err = capsys.readouterr()
     dist_warning = "Unknown distribution option: 'cmake_source_dir'"
@@ -40,7 +40,7 @@ def test_cmake_source_dir(cmake_source_dir, expected_failed):
         """
         from skbuild import setup
         setup(
-            name="hello",
+            name="test_cmake_source_dir",
             version="1.2.3",
             description="a minimal example package",
             author='The scikit-build team',
@@ -49,10 +49,11 @@ def test_cmake_source_dir(cmake_source_dir, expected_failed):
         )
         """.format(cmake_source_dir=cmake_source_dir)
     ))
+
     failed = False
     message = ""
     try:
-        with execute_setup_py(tmp_dir, ['build']):
+        with execute_setup_py(tmp_dir, ['build'], disable_languages_test=True):
             pass
     except SystemExit as e:
         failed = isinstance(e.code, SKBuildError)
@@ -63,7 +64,7 @@ def test_cmake_source_dir(cmake_source_dir, expected_failed):
         assert "'cmake_source_dir' set to a nonexistent directory." in message
 
 
-@project_setup_py_test("cmakelists-not-in-top-level-dir", ["sdist"])
+@project_setup_py_test("cmakelists-not-in-top-level-dir", ["sdist"], disable_languages_test=True)
 def test_hello_sdist():
     sdists_tar = glob.glob('dist/*.tar.gz')
     sdists_zip = glob.glob('dist/*.zip')

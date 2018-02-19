@@ -116,7 +116,7 @@ def test_generator(generator, expected_make_program):
         pytest.skip("%s generator is available only on %s" % (
             generator, this_platform.title()))
 
-    @project_setup_py_test("hello", ["build"])
+    @project_setup_py_test("hello-cpp", ["build"])
     def run_build():
         pass
 
@@ -144,7 +144,7 @@ def test_invalid_generator(generator_args):
         build_args = ["build"]
         build_args.extend(generator_args)
 
-        @project_setup_py_test("hello", build_args)
+        @project_setup_py_test("hello-no-language", build_args, disable_languages_test=True)
         def run():
             pass
 

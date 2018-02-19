@@ -12,7 +12,9 @@ import sys
 
 from contextlib import contextmanager
 
+from mock import patch
 from skbuild.utils import push_dir
+from skbuild.platform_specifics import get_platform
 
 
 SAMPLES_DIR = os.path.join(
@@ -170,7 +172,7 @@ def prepare_project(project, tmp_project_dir, force=False):
 
 
 @contextmanager
-def execute_setup_py(project_dir, setup_args):
+def execute_setup_py(project_dir, setup_args, disable_languages_test=False):
     """Context manager executing ``setup.py`` with the given arguments.
 
     It yields after changing the current working directory
@@ -179,18 +181,30 @@ def execute_setup_py(project_dir, setup_args):
 
     with push_dir(str(project_dir)), \
             push_argv(["setup.py"] + setup_args):
-        setup_code = None
 
         with open("setup.py", "r") as fp:
             setup_code = compile(fp.read(), "setup.py", mode="exec")
 
-        if setup_code is not None:
-            six.exec_(setup_code)
+            if setup_code is not None:
+
+                if disable_languages_test:
+
+                    platform = get_platform()
+                    original_write_test_cmakelist = platform.write_test_cmakelist
+
+                    def write_test_cmakelist_no_languages(_self, _languages):
+                        original_write_test_cmakelist([])
+
+                    with patch.object(type(platform), 'write_test_cmakelist', new=write_test_cmakelist_no_languages):
+                        six.exec_(setup_code)
+
+                else:
+                    six.exec_(setup_code)
 
         yield
 
 
-def project_setup_py_test(project, setup_args, tmp_dir=None, verbose_git=True):
+def project_setup_py_test(project, setup_args, tmp_dir=None, verbose_git=True, disable_languages_test=False):
 
     def dec(fun):
 
@@ -203,7 +217,7 @@ def project_setup_py_test(project, setup_args, tmp_dir=None, verbose_git=True):
                 initialize_git_repo_and_commit(
                     wrapped.tmp_dir, verbose=wrapped.verbose_git)
 
-            with execute_setup_py(wrapped.tmp_dir, wrapped.setup_args):
+            with execute_setup_py(wrapped.tmp_dir, wrapped.setup_args, disable_languages_test=disable_languages_test):
                 result2 = fun(*iargs, **ikwargs)
 
             return wrapped.tmp_dir, result2

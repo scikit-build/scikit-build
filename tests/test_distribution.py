@@ -20,7 +20,7 @@ except ImportError:
 @pytest.mark.skipif(not HAS_PYTEST_VIRTUALENV,
                     reason="pytest_virtualenv not available. See #228")
 def test_source_distribution(virtualenv):
-    sdists = Path(DIST_DIR).files(pattern="*.tar.gz")
+    sdists = Path(DIST_DIR).files(pattern="*.tar.gz") if Path(DIST_DIR).exists() else []
     if not sdists:
         pytest.skip("no source distribution available")
     assert len(sdists) == 1
@@ -28,7 +28,7 @@ def test_source_distribution(virtualenv):
     virtualenv.run("pip install %s" % sdists[0])
     assert "scikit-build" in virtualenv.installed_packages()
 
-    prepare_project("hello", virtualenv.workspace, force=True)
+    prepare_project("hello-no-language", virtualenv.workspace, force=True)
     initialize_git_repo_and_commit(virtualenv.workspace, verbose=False)
 
     virtualenv.run("python setup.py bdist_wheel")
@@ -37,7 +37,7 @@ def test_source_distribution(virtualenv):
 @pytest.mark.skipif(not HAS_PYTEST_VIRTUALENV,
                     reason="pytest_virtualenv not available. See #228")
 def test_wheel(virtualenv):
-    wheels = Path(DIST_DIR).files(pattern="*.whl")
+    wheels = Path(DIST_DIR).files(pattern="*.whl") if Path(DIST_DIR).exists() else []
     if not wheels:
         pytest.skip("no wheel available")
     assert len(wheels) == 1
@@ -45,7 +45,7 @@ def test_wheel(virtualenv):
     virtualenv.run("pip install %s" % wheels[0])
     assert "scikit-build" in virtualenv.installed_packages()
 
-    prepare_project("hello", virtualenv.workspace, force=True)
+    prepare_project("hello-no-language", virtualenv.workspace, force=True)
     initialize_git_repo_and_commit(virtualenv.workspace, verbose=False)
 
     virtualenv.run("python setup.py bdist_wheel")

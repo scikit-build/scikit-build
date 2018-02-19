@@ -17,7 +17,7 @@ from skbuild.utils import push_dir
 from . import project_setup_py_test
 
 
-@project_setup_py_test("hello-pure", ["build"])
+@project_setup_py_test("hello-pure", ["build"], disable_languages_test=True)
 def test_hello_pure_builds(capsys):
     out, _ = capsys.readouterr()
     assert "skipping skbuild (no CMakeLists.txt found)" in out
@@ -28,7 +28,7 @@ def test_hello_pure_builds(capsys):
 #     pass
 
 
-@project_setup_py_test("hello-pure", ["sdist"])
+@project_setup_py_test("hello-pure", ["sdist"], disable_languages_test=True)
 def test_hello_pure_sdist():
     sdists_tar = glob.glob('dist/*.tar.gz')
     sdists_zip = glob.glob('dist/*.zip')
@@ -58,7 +58,7 @@ def test_hello_pure_sdist():
     assert sorted(expected_content) == sorted(member_list)
 
 
-@project_setup_py_test("hello-pure", ["bdist_wheel"])
+@project_setup_py_test("hello-pure", ["bdist_wheel"], disable_languages_test=True)
 def test_hello_pure_wheel():
     whls = glob.glob('dist/*.whl')
     assert len(whls) == 1
@@ -81,7 +81,7 @@ def test_hello_pure_wheel():
 def test_hello_clean(capfd):
     with push_dir():
 
-        @project_setup_py_test("hello-pure", ["build"])
+        @project_setup_py_test("hello-pure", ["build"], disable_languages_test=True)
         def run_build():
             pass
 
@@ -89,7 +89,7 @@ def test_hello_clean(capfd):
 
         assert tmp_dir.join(SKBUILD_DIR).exists()
 
-        @project_setup_py_test("hello-pure", ["clean"], tmp_dir=tmp_dir)
+        @project_setup_py_test("hello-pure", ["clean"], tmp_dir=tmp_dir, disable_languages_test=True)
         def run_clean():
             pass
 

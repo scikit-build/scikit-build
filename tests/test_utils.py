@@ -175,7 +175,7 @@ def test_push_env():
 
 def test_python_module_finder():
     modules = PythonModuleFinder(['bonjour', 'hello'], {}, []).find_all_modules(
-        os.path.join(SAMPLES_DIR, 'hello')
+        os.path.join(SAMPLES_DIR, 'hello-cpp')
     )
     assert sorted(modules) == sorted([
         ('bonjour', '__init__', to_platform_path('bonjour/__init__.py')),
