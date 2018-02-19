@@ -28,6 +28,28 @@ Bug fixes
   provided as command line arguments to the cython executable through CMake cache entries. See :issue:`265`
   fixed by :user:`neok-m4700`.
 
+Tests
+-----
+
+* Speedup execution of tests that do not require any CMake language enabled. This is achieved by (1) introducing the
+  test project ``hello-no-language``, (2) updating test utility functions ``execute_setup_py`` and ``project_setup_py_test``
+  to accept the optional parameter ``disable_languages_test`` allowing to skip unneeded compiler detection in test project
+  used to verify that the selected CMake generator works as expected, and (3) updating relevant tests to use the new test
+  project and parameters.
+
+  Overall testing time on all continuous integration services was reduced:
+
+  * AppVeyor:
+
+    * from ~16 to ~7 minutes for 64 and 32-bit Python 2.7 tests done using Visual Studio Express 2008
+    * from more than 2 hours to 55m for 64 and 32-bit Python 3.5 tests done using Visual Studio 2015
+
+  * CircleCI: from ~7 to ~5.5 minutes.
+
+  * TravisCI: from ~21 to ~10 minutes.
+
+* Update maximum line length specified in flake8 settings from 80 to 120 characters.
+
 Documentation
 -------------
 

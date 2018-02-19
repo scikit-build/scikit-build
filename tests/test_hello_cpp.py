@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""test_hello
+"""test_hello_cpp
 ----------------------------------
 
-Tries to build and test the `hello` sample project.
+Tries to build and test the `hello-cpp` sample project.
 """
 
 import glob
@@ -25,7 +25,7 @@ from . import (_copy_dir, _tmpdir, SAMPLES_DIR)
 def test_hello_builds():
     with push_dir():
 
-        @project_setup_py_test("hello", ["build"])
+        @project_setup_py_test("hello-cpp", ["build"])
         def run():
             pass
 
@@ -33,19 +33,19 @@ def test_hello_builds():
         # See issue scikit-build#120
         tmp_dir = run()[0]
 
-        @project_setup_py_test("hello", ["build"], tmp_dir=tmp_dir)
+        @project_setup_py_test("hello-cpp", ["build"], tmp_dir=tmp_dir)
         def another_run():
             pass
 
         another_run()
 
 
-# @project_setup_py_test("hello", ["test"])
+# @project_setup_py_test("hello-cpp", ["test"])
 # def test_hello_works():
 #     pass
 
 
-@project_setup_py_test("hello", ["sdist"])
+@project_setup_py_test("hello-cpp", ["sdist"])
 def test_hello_sdist():
     sdists_tar = glob.glob('dist/*.tar.gz')
     sdists_zip = glob.glob('dist/*.zip')
@@ -79,7 +79,7 @@ def test_hello_sdist():
     assert sorted(expected_content) == sorted(member_list)
 
 
-@project_setup_py_test("hello", ["bdist_wheel"])
+@project_setup_py_test("hello-cpp", ["bdist_wheel"])
 def test_hello_wheel():
     whls = glob.glob('dist/*.whl')
     assert len(whls) == 1
@@ -111,7 +111,7 @@ def test_hello_clean(dry_run, capfd):
 
         dry_run = dry_run == 'with-dry-run'
 
-        @project_setup_py_test("hello", ["build"])
+        @project_setup_py_test("hello-cpp", ["build"])
         def run_build():
             pass
 
@@ -128,7 +128,7 @@ def test_hello_clean(dry_run, capfd):
         if dry_run:
             clean_args.append("--dry-run")
 
-        @project_setup_py_test("hello", clean_args, tmp_dir=tmp_dir)
+        @project_setup_py_test("hello-cpp", clean_args, tmp_dir=tmp_dir)
         def run_clean():
             pass
 
@@ -149,13 +149,13 @@ def test_hello_cleans(capfd):
 
         tmp_dir = _tmpdir("test_hello_cleans")
 
-        _copy_dir(tmp_dir, os.path.join(SAMPLES_DIR, "hello"))
+        _copy_dir(tmp_dir, os.path.join(SAMPLES_DIR, "hello-cpp"))
 
-        @project_setup_py_test("hello", ["build"], tmp_dir=tmp_dir)
+        @project_setup_py_test("hello-cpp", ["build"], tmp_dir=tmp_dir)
         def run_build():
             pass
 
-        @project_setup_py_test("hello", ["clean"], tmp_dir=tmp_dir)
+        @project_setup_py_test("hello-cpp", ["clean"], tmp_dir=tmp_dir)
         def run_clean():
             pass
 
@@ -182,7 +182,7 @@ def test_hello_cleans(capfd):
     assert "running clean" == clean2_out
 
 
-@project_setup_py_test("hello", ["develop"])
+@project_setup_py_test("hello-cpp", ["develop"])
 def test_hello_develop():
     for expected_file in [
         # These files are the "regular" source files
