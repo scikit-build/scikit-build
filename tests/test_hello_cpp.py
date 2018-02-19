@@ -180,11 +180,11 @@ def test_hello_cleans(capfd):
     clean2_out = clean2_out.strip()
 
     assert "running clean" == clean1_out.splitlines()[0]
-    assert "removing '_skbuild{}cmake-install'".format(os.path.sep) \
+    assert "removing '{}{}cmake-install'".format(SKBUILD_DIR, os.path.sep) \
            == clean1_out.splitlines()[1]
-    assert "removing '_skbuild{}cmake-build'".format(os.path.sep) \
+    assert "removing '{}{}cmake-build'".format(SKBUILD_DIR, os.path.sep) \
            == clean1_out.splitlines()[2]
-    assert "removing '_skbuild'" == clean1_out.splitlines()[3]
+    assert "removing '{}'".format(SKBUILD_DIR) == clean1_out.splitlines()[3]
 
     assert "running clean" == clean2_out
 
