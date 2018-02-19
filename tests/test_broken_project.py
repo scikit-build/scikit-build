@@ -137,7 +137,7 @@ def test_first_invalid_generator(mocker, capfd):
     mocker.patch('skbuild.cmaker.get_platform', return_value=platform)
 
     with push_dir(), push_env(CMAKE_GENERATOR=None):
-        @project_setup_py_test("hello-no-language", ["build"], disable_languages_test=True)
+        @project_setup_py_test("hello-no-language", ["build"])
         def run_build():
             pass
 
@@ -155,7 +155,7 @@ def test_invalid_generator(mocker, capfd):
     mocker.patch('skbuild.cmaker.get_platform', return_value=platform)
 
     with push_dir(), push_env(CMAKE_GENERATOR=None):
-        @project_setup_py_test("hello-no-language", ["build"], disable_languages_test=True)
+        @project_setup_py_test("hello-no-language", ["build"])
         def should_fail():
             pass
 

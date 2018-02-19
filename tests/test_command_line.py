@@ -105,11 +105,11 @@ def test_cmake_args(capfd):
 @pytest.mark.parametrize("hide_listing", [True, False])
 def test_hide_listing(action, hide_listing, capfd):
 
-    cmd = [action, "--", "-DMY_CMAKE_VARIABLE:BOOL=1"]
+    cmd = [action]
     if hide_listing:
         cmd.insert(0, "--hide-listing")
 
-    @project_setup_py_test("hello-cpp", cmd, verbose_git=False)
+    @project_setup_py_test("test-hide-listing", cmd, verbose_git=False, disable_languages_test=True)
     def run():
         pass
 
@@ -125,10 +125,10 @@ def test_hide_listing(action, hide_listing, capfd):
         what = "copied"
         if hasattr(os, 'link'):
             what = "hard-linked"
-        assert "%s 8 files" % what in out
+        assert "%s 7 files" % what in out
     elif action == "bdist_wheel":
         assert "copied 6 files" in out  # build_py
-        assert "copied 7 files" in out  # install_lib
+        assert "copied 6 files" in out  # install_lib
         assert "copied 0 files" in out  # install_scripts
 
 
