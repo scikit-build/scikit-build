@@ -15,6 +15,7 @@ import textwrap
 from skbuild.cmaker import (CMAKE_BUILD_DIR, CMaker)
 from skbuild.exceptions import SKBuildError
 from skbuild.utils import push_dir
+from skbuild.constants import SKBUILD_DIR
 
 from . import _tmpdir, get_cmakecache_variables
 
@@ -78,13 +79,21 @@ def test_make(configure_with_cmake_source_dir, capfd):
         messages = ["Project has been installed"]
 
         if configure_with_cmake_source_dir:
-            messages += ["/SRC",
-                         "/BUILD/_skbuild/cmake-build",
-                         "/BUILD/_skbuild/cmake-install/./foo.txt"]
+            messages += [
+                "/SRC",
+                "/BUILD/{}/cmake-build".format(SKBUILD_DIR).replace('\\', '/'),
+                "/BUILD/{}/cmake-install/./foo.txt".format(
+                    SKBUILD_DIR
+                ).replace('\\', '/'),
+            ]
         else:
-            messages += ["/SRC",
-                         "/SRC/_skbuild/cmake-build",
-                         "/SRC/_skbuild/cmake-install/./foo.txt"]
+            messages += [
+                "/SRC",
+                "/SRC/{}/cmake-build".format(SKBUILD_DIR).replace('\\', '/'),
+                "/SRC/{}/cmake-install/./foo.txt".format(
+                    SKBUILD_DIR
+                ).replace('\\', '/'),
+            ]
 
         out, _ = capfd.readouterr()
         for message in messages:
