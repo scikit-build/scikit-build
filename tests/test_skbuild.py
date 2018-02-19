@@ -144,7 +144,7 @@ def test_invalid_generator(generator_args):
         build_args = ["build"]
         build_args.extend(generator_args)
 
-        @project_setup_py_test("hello-no-language", build_args)
+        @project_setup_py_test("hello-no-language", build_args, disable_languages_test=True)
         def run():
             pass
 

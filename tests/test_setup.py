@@ -13,11 +13,13 @@ import pprint
 import pytest
 
 from distutils.core import Distribution as distutils_Distribution
+from mock import patch
 from setuptools import Distribution as setuptool_Distribution
 
 from skbuild import setup as skbuild_setup
 from skbuild.cmaker import CMAKE_INSTALL_DIR
 from skbuild.exceptions import SKBuildError
+from skbuild.platform_specifics import get_platform
 from skbuild.setuptools_wrap import strip_package
 from skbuild.utils import (push_dir, to_platform_path)
 
@@ -65,18 +67,26 @@ def test_distribution_is_pure(distribution_type, tmpdir):
         raise Exception(
             "Unknown distribution_type: {}".format(distribution_type))
 
-    with push_dir(str(tmpdir)), push_argv(["setup.py", "build"]):
-        distribution = skbuild_setup(
-            name="test",
-            version="0.0.1",
-            description="test object returned by setup function",
-            author="The scikit-build team",
-            license="MIT",
-            **skbuild_setup_kwargs
-        )
-        assert issubclass(distribution.__class__,
-                          (distutils_Distribution, setuptool_Distribution))
-        assert is_pure == distribution.is_pure()
+    platform = get_platform()
+    original_write_test_cmakelist = platform.write_test_cmakelist
+
+    def write_test_cmakelist_no_languages(_self, _languages):
+        original_write_test_cmakelist([])
+
+    with patch.object(type(platform), 'write_test_cmakelist', new=write_test_cmakelist_no_languages):
+
+        with push_dir(str(tmpdir)), push_argv(["setup.py", "build"]):
+            distribution = skbuild_setup(
+                name="test",
+                version="0.0.1",
+                description="test object returned by setup function",
+                author="The scikit-build team",
+                license="MIT",
+                **skbuild_setup_kwargs
+            )
+            assert issubclass(distribution.__class__,
+                              (distutils_Distribution, setuptool_Distribution))
+            assert is_pure == distribution.is_pure()
 
 
 @pytest.mark.parametrize("cmake_args", [
@@ -114,7 +124,7 @@ def test_cmake_args_keyword(cmake_args, capfd):
         """
     ))
 
-    with execute_setup_py(tmp_dir, ['build'] + cmake_args):
+    with execute_setup_py(tmp_dir, ['build'] + cmake_args, disable_languages_test=True):
         pass
 
     out, _ = capfd.readouterr()
@@ -195,7 +205,7 @@ def test_cmake_install_dir_keyword(
     failed = False
     message = ""
     try:
-        with execute_setup_py(tmp_dir, ['build']):
+        with execute_setup_py(tmp_dir, ['build'], disable_languages_test=True):
             pass
     except SystemExit as e:
         # Error is not of type SKBuildError, it is expected to be
@@ -248,7 +258,7 @@ def test_cmake_with_sdist_keyword(cmake_with_sdist, capfd):
 
     initialize_git_repo_and_commit(tmp_dir)
 
-    with execute_setup_py(tmp_dir, ['sdist']):
+    with execute_setup_py(tmp_dir, ['sdist'], disable_languages_test=True):
         pass
 
     out, _ = capfd.readouterr()
@@ -331,7 +341,7 @@ def test_script_keyword(distribution_type, capsys):
             "_skbuild/setuptools/scripts-".format(module)
             for module in ['foo', 'bar']]
 
-    with execute_setup_py(tmp_dir, ['build']):
+    with execute_setup_py(tmp_dir, ['build'], disable_languages_test=True):
         pass
 
     out, _ = capsys.readouterr()
@@ -411,7 +421,7 @@ def test_py_modules_keyword(distribution_type, capsys):
             "_skbuild/setuptools/lib".format(module)
             for module in ['foo', 'bar']]
 
-    with execute_setup_py(tmp_dir, ['build']):
+    with execute_setup_py(tmp_dir, ['build'], disable_languages_test=True):
         pass
 
     out, _ = capsys.readouterr()
@@ -655,7 +665,7 @@ def test_setup_inputs(
     # Commented paths are the one expected to be installed by CMake. For
     # this reason, corresponding files should NOT be created in the source
     # tree.
-    for (type, path) in select_paths([
+    for (_type, path) in select_paths([
         # ('c', 'cmake/__init__.py'),
         # ('c', 'cmake/cmake.py'),
 
@@ -685,9 +695,9 @@ def test_setup_inputs(
 
         ('p', 'pure/data/pure.dat'),
     ]):
-        assert type in ['p', 'pm', 'h']
+        assert _type in ['p', 'pm', 'h']
         root = (package_base
-                if (type == 'p' or type == 'pm')
+                if (_type == 'p' or _type == 'pm')
                 else cmake_source_dir)
         tmp_dir.ensure(os.path.join(root, path))
 
@@ -704,7 +714,7 @@ def test_setup_inputs(
             "{}\n".format(desc, pprint.pformat(
                 setup_kw.get(desc, {}) if value is None else value, indent=2)))
 
-    with execute_setup_py(tmp_dir, ['build']):
+    with execute_setup_py(tmp_dir, ['build'], disable_languages_test=True):
 
         assert mock_setup.call_count == 1
         setup_kw = mock_setup.call_args[1]
@@ -904,7 +914,7 @@ def test_cmake_install_into_pure_package(with_cmake_source_dir, capsys):
 
     tmp_dir.ensure('fruits/__init__.py')
 
-    with execute_setup_py(tmp_dir, ['build']):
+    with execute_setup_py(tmp_dir, ['build'], disable_languages_test=True):
         pass
 
     messages = [

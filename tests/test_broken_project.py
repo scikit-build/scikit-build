@@ -25,7 +25,7 @@ def test_cmakelists_with_fatalerror_fails(capfd):
 
     with push_dir():
 
-        @project_setup_py_test("fail-with-fatal-error-cmakelists", ["build"])
+        @project_setup_py_test("fail-with-fatal-error-cmakelists", ["build"], disable_languages_test=True)
         def should_fail():
             pass
 
@@ -48,7 +48,7 @@ def test_cmakelists_with_syntaxerror_fails(capfd):
 
     with push_dir():
 
-        @project_setup_py_test("fail-with-syntax-error-cmakelists", ["build"])
+        @project_setup_py_test("fail-with-syntax-error-cmakelists", ["build"], disable_languages_test=True)
         def should_fail():
             pass
 
@@ -110,7 +110,7 @@ def test_invalid_cmake(exception, mocker):
 
     with push_dir():
 
-        @project_setup_py_test("hello-no-language", ["build"])
+        @project_setup_py_test("hello-no-language", ["build"], disable_languages_test=True)
         def should_fail():
             pass
 
@@ -137,7 +137,7 @@ def test_first_invalid_generator(mocker, capfd):
     mocker.patch('skbuild.cmaker.get_platform', return_value=platform)
 
     with push_dir(), push_env(CMAKE_GENERATOR=None):
-        @project_setup_py_test("hello-no-language", ["build"])
+        @project_setup_py_test("hello-no-language", ["build"], disable_languages_test=True)
         def run_build():
             pass
 
@@ -155,7 +155,7 @@ def test_invalid_generator(mocker, capfd):
     mocker.patch('skbuild.cmaker.get_platform', return_value=platform)
 
     with push_dir(), push_env(CMAKE_GENERATOR=None):
-        @project_setup_py_test("hello-no-language", ["build"])
+        @project_setup_py_test("hello-no-language", ["build"], disable_languages_test=True)
         def should_fail():
             pass
 
