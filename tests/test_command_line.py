@@ -103,7 +103,7 @@ def test_cmake_args(capfd):
 
 @pytest.mark.parametrize("action", ['sdist', 'bdist_wheel'])
 @pytest.mark.parametrize("hide_listing", [True, False])
-def test_sdist_hide_listing(action, hide_listing, capfd):
+def test_hide_listing(action, hide_listing, capfd):
 
     cmd = [action, "--", "-DMY_CMAKE_VARIABLE:BOOL=1"]
     if hide_listing:
