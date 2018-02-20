@@ -41,12 +41,17 @@ Tests
 
   * AppVeyor:
 
-    * from ~16 to ~7 minutes for 64 and 32-bit Python 2.7 tests done using Visual Studio Express 2008
-    * from more than 2 hours to 55m for 64 and 32-bit Python 3.5 tests done using Visual Studio 2015
+    * from **~16 to ~7** minutes for 64 and 32-bit Python 2.7 tests done using Visual Studio Express 2008
+    * from more than **2 hours to ~50 minutes** for 64 and 32-bit Python 3.5 tests done using Visual Studio 2015. Improvement specific
+      to Python 3.x were obtained by caching the results of slow calls to ``distutils.msvc9compiler.query_vcvarsall`` (for Python 3.3 and 3.4) and
+      ``distutils._msvccompiler._get_vc_env`` (for Python 3.5 and above).
+      These functions were called multiple times to create the list of :class:`skbuild.platform_specifics.windows.CMakeVisualStudioCommandLineGenerator`
+      used in :class:`skbuild.platform_specifics.windows.WindowsPlatform`.
 
-  * CircleCI: from ~7 to ~5.5 minutes.
 
-  * TravisCI: from ~21 to ~10 minutes.
+  * CircleCI: from **~7 to ~5** minutes.
+
+  * TravisCI: from **~21 to ~10** minutes.
 
 * Update maximum line length specified in flake8 settings from 80 to 120 characters.
 
