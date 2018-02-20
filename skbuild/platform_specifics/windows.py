@@ -127,31 +127,49 @@ class CMakeVisualStudioIDEGenerator(CMakeGenerator):
         super(CMakeVisualStudioIDEGenerator, self).__init__(vs_base)
 
 
+# To avoid multiple slow calls to ``query_vcvarsall`` or ``_get_vc_env``, results
+# of previous calls are cached.
+__get_msvc_compiler_env_cache = dict()
+
+
 def _get_msvc_compiler_env(vs_version):
+    global __get_msvc_compiler_env_cache
     from setuptools import monkey
     monkey.patch_for_msvc_specialized_compiler()
     arch = "x86"
     if vs_version < 14:
         if platform.architecture()[0] == "64bit":
             arch = "amd64"
+        # If any, return cached version
+        cache_key = ",".join([str(vs_version), arch])
+        if cache_key in __get_msvc_compiler_env_cache:
+            return __get_msvc_compiler_env_cache[cache_key]
         try:
             import distutils.msvc9compiler
-            return distutils.msvc9compiler.query_vcvarsall(vs_version, arch)
+            cached_env = distutils.msvc9compiler.query_vcvarsall(vs_version, arch)
+            __get_msvc_compiler_env_cache[cache_key] = cached_env
+            return cached_env
         except ImportError:
             print("failed to import 'distutils.msvc9compiler'")
     else:
         if platform.architecture()[0] == "64bit":
             arch = "x86_amd64"
+        # If any, return cached version
+        cache_key = ",".join([str(vs_version), arch])
+        if cache_key in __get_msvc_compiler_env_cache:
+            return __get_msvc_compiler_env_cache[cache_key]
         try:
             import distutils._msvccompiler
             from distutils.errors import DistutilsPlatformError
             # pylint:disable=protected-access
             vc_env = distutils._msvccompiler._get_vc_env(arch)
-            return {
+            cached_env = {
                 'PATH': vc_env.get('path', ''),
                 'INCLUDE': vc_env.get('include', ''),
                 'LIB': vc_env.get('lib', '')
             }
+            __get_msvc_compiler_env_cache[cache_key] = cached_env
+            return cached_env
         except ImportError:
             print("failed to import 'distutils._msvccompiler'")
         except DistutilsPlatformError:
