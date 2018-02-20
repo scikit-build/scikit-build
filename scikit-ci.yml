@@ -19,8 +19,8 @@ before_install:
 install:
 
   commands:
-    - python ../addons/$<CI_NAME>/install_cmake.py 3.6.2
     - python -m pip install --disable-pip-version-check --upgrade pip
+    - pip install -U cmake ninja
     - $<RUN_ENV> pip install -r requirements.txt
     - $<RUN_ENV> pip install -r requirements-dev.txt
 
