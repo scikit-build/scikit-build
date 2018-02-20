@@ -489,18 +489,18 @@ def test_setup_inputs(
     #             pure.py
     #
     #             data/
-    #                 pure.dat                   *NO TEST*
+    #                 pure.dat
     #
     #     [<cmake_src_dir>/]
     #
     #         hybrid/
     #             CMakeLists.txt
     #             __init__.py
-    #             hybrid_pure.dat                *NO TEST*
+    #             hybrid_pure.dat
     #             hybrid_pure.py
     #
     #             data/
-    #                 hybrid_data_pure.dat       *NO TEST*
+    #                 hybrid_data_pure.dat
     #
     #             hybrid_2/
     #                 __init__.py
@@ -527,11 +527,13 @@ def test_setup_inputs(
     #         cmake.py                   # CMake
     #
     #     hybrid/
-    #         hybrid_cmake.dat           # CMake                  *NO TEST*
+    #         hybrid_cmake.dat           # CMake
     #         hybrid_cmake.py            # CMake
+    #         hybrid_pure.dat            # Setuptools
+    #         hybrid_pure.py             # Setuptools
     #
     #         data/
-    #             hybrid_data_pure.dat   # CMake or Setuptools    *NO TEST*
+    #             hybrid_data_pure.dat   # CMake or Setuptools
     #             hybrid_data_cmake.dat  # CMake                  *NO TEST*
     #
     #         hybrid_2/
@@ -551,7 +553,7 @@ def test_setup_inputs(
     #         pure.py                    # Setuptools
     #
     #         data/
-    #             pure.dat               # Setuptools    *NO TEST*
+    #             pure.dat               # Setuptools
 
     tmp_dir.join('setup.py').write(textwrap.dedent(
         """
@@ -577,9 +579,10 @@ def test_setup_inputs(
         {pm_off}   '{package_base}pureModule',
         {cm_off}   '{package_base}cmakeModule',
             ],
-            #package_data=[
-            #    '': ['*.dat']
-            #]
+            package_data={{
+        {p_off}        'pure': ['data/pure.dat'],
+        {h_off}        'hybrid': ['hybrid_pure.dat', 'data/hybrid_data_pure.dat'],
+            }},
             # Arbitrary order of package_dir
             package_dir = {{
         {p_off}    'hybrid.hybrid_2_pure': '{package_base}hybrid/hybrid_2_pure',
@@ -622,10 +625,20 @@ def test_setup_inputs(
         {cm_off}     FILES ${{build_dir}}/cmakeModule.py
         {cm_off}     DESTINATION .)
 
+        {h_off} file(WRITE ${{build_dir}}/hybrid_cmake.dat "")
+        {h_off} install(
+        {h_off}     FILES ${{build_dir}}/hybrid_cmake.dat
+        {h_off}     DESTINATION hybrid)
+
         {h_off} file(WRITE ${{build_dir}}/hybrid_cmake.py "")
         {h_off} install(
         {h_off}     FILES ${{build_dir}}/hybrid_cmake.py
         {h_off}     DESTINATION hybrid)
+
+        {h_off} file(WRITE ${{build_dir}}/hybrid_data_cmake.dat "")
+        {h_off} install(
+        {h_off}     FILES ${{build_dir}}/hybrid_data_cmake.dat
+        {h_off}     DESTINATION hybrid/data)
 
         {h_off} file(WRITE ${{build_dir}}/hybrid_2_cmake.py "")
         {h_off} install(
@@ -753,12 +766,12 @@ def test_setup_inputs(
         if has_hybrid_package:
             expected_package_data['hybrid'] = [
                 '__init__.py',
-                # 'hybrid_cmake.dat',
+                'hybrid_cmake.dat',
                 'hybrid_cmake.py',
-                # 'hybrid_pure.dat'
+                'hybrid_pure.dat',
                 'hybrid_pure.py',
-                # 'data/hybrid_data_cmake.dat',
-                # 'data/hybrid_data_pure.dat',
+                'data/hybrid_data_cmake.dat',
+                'data/hybrid_data_pure.dat',
             ]
             expected_package_data['hybrid.hybrid_2'] = [
                 '__init__.py',
@@ -776,7 +789,7 @@ def test_setup_inputs(
             expected_package_data['pure'] = [
                 '__init__.py',
                 'pure.py',
-                # 'data/pure.dat',
+                'data/pure.dat',
             ]
 
         if has_cmake_module or has_pure_module:

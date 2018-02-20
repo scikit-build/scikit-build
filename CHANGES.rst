@@ -28,6 +28,9 @@ Bug fixes
   provided as command line arguments to the cython executable through CMake cache entries. See :issue:`265`
   fixed by :user:`neok-m4700`.
 
+* Ensure package data files specified in the ``setup()`` function using ``package_data`` keyword are packaged
+  and installed.
+
 Tests
 -----
 
