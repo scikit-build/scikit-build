@@ -55,6 +55,19 @@ def _remove_cwd_prefix(path):
     return result
 
 
+def has_cmake_cache_arg(cmake_args, arg_name, arg_value=None):
+    """Return True if ``-D<arg_name>:TYPE=<arg_value>`` is found
+    in ``cmake_args``. If ``arg_value`` is None, return True only if
+    ``-D<arg_name>:`` is found in the list."""
+    for arg in cmake_args:
+        if arg.startswith("-D%s:" % arg_name):
+            if arg_value is None:
+                return True
+            elif "=" in arg:
+                return arg.split("=")[1] == arg_value
+    return False
+
+
 class CMaker(object):
     """Interface to CMake executable."""
 
