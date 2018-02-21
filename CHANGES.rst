@@ -19,6 +19,10 @@ New Features
 * Update CMake module :doc:`\cmake-modules/NumPy` setting variables ``NumPy_CONV_TEMPLATE_EXECUTABLE``
   and ``NumPy_FROM_TEMPLATE_EXECUTABLE``. Thanks :user:`xoviat` for the contribution. See :issue:`278`.
 
+* Use ``_skbuild/platform-X.Y`` instead of ``_skbuild`` to build package. This allows to have a different build
+  directory for each python version. Thanks :user:`isuruf` for the suggestion and :user:`xoviat` for contributing
+  the feature. See :issue:`283`.
+
 Bug fixes
 ---------
 
