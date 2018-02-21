@@ -13,7 +13,7 @@ import pytest
 import sysconfig
 import tarfile
 
-from skbuild.constants import SKBUILD_DIR
+from skbuild.constants import CMAKE_BUILD_DIR, CMAKE_INSTALL_DIR, SKBUILD_DIR
 from skbuild.utils import push_dir
 
 from zipfile import ZipFile
@@ -180,10 +180,8 @@ def test_hello_cleans(capfd):
     clean2_out = clean2_out.strip()
 
     assert "running clean" == clean1_out.splitlines()[0]
-    assert "removing '{}{}cmake-install'".format(SKBUILD_DIR, os.path.sep) \
-           == clean1_out.splitlines()[1]
-    assert "removing '{}{}cmake-build'".format(SKBUILD_DIR, os.path.sep) \
-           == clean1_out.splitlines()[2]
+    assert "removing '{}'".format(CMAKE_INSTALL_DIR) == clean1_out.splitlines()[1]
+    assert "removing '{}'".format(CMAKE_BUILD_DIR) == clean1_out.splitlines()[2]
     assert "removing '{}'".format(SKBUILD_DIR) == clean1_out.splitlines()[3]
 
     assert "running clean" == clean2_out

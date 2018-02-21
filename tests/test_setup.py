@@ -17,12 +17,11 @@ from mock import patch
 from setuptools import Distribution as setuptool_Distribution
 
 from skbuild import setup as skbuild_setup
-from skbuild.cmaker import CMAKE_INSTALL_DIR
+from skbuild.constants import CMAKE_INSTALL_DIR, SKBUILD_DIR
 from skbuild.exceptions import SKBuildError
 from skbuild.platform_specifics import get_platform
 from skbuild.setuptools_wrap import strip_package
 from skbuild.utils import (push_dir, to_platform_path)
-from skbuild.constants import SKBUILD_DIR
 
 from . import (_tmpdir, execute_setup_py,
                initialize_git_repo_and_commit, push_argv)
@@ -227,10 +226,8 @@ def test_cmake_install_dir_keyword(
                 "setup parameter 'cmake_install_dir' "
                 "is set to an absolute path.")
     else:
-        assert "copying {}".format(os.path.join(
-            *"{}/cmake-install/banana/__init__.py".format(
-                SKBUILD_DIR
-            ).split("/"))) in out
+        init_py = to_platform_path("{}/banana/__init__.py".format(CMAKE_INSTALL_DIR))
+        assert "copying {}".format(init_py) in out
 
 
 @pytest.mark.parametrize("cmake_with_sdist", [True, False])
@@ -331,8 +328,8 @@ def test_script_keyword(distribution_type, capsys):
         ))
 
         messages = [
-            "copying {}/cmake-install/{}.py -> "
-            "{}/setuptools/scripts-".format(SKBUILD_DIR, module, SKBUILD_DIR)
+            "copying {}/{}.py -> "
+            "{}/setuptools/scripts-".format(CMAKE_INSTALL_DIR, module, SKBUILD_DIR)
             for module in ['foo', 'bar']]
 
     elif distribution_type == 'pure':
@@ -411,8 +408,8 @@ def test_py_modules_keyword(distribution_type, capsys):
         ))
 
         messages = [
-            "copying {}/cmake-install/{}.py -> "
-            "{}/setuptools/lib".format(SKBUILD_DIR, module, SKBUILD_DIR)
+            "copying {}/{}.py -> "
+            "{}/setuptools/lib".format(CMAKE_INSTALL_DIR, module, SKBUILD_DIR)
             for module in ['foo', 'bar']]
 
     elif distribution_type == 'pure':
@@ -934,8 +931,8 @@ def test_cmake_install_into_pure_package(with_cmake_source_dir, capsys):
         pass
 
     messages = [
-        "copying {}/cmake-install/{} -> "
-        "{}/setuptools/lib".format(SKBUILD_DIR, module, SKBUILD_DIR)
+        "copying {}/{} -> "
+        "{}/setuptools/lib".format(CMAKE_INSTALL_DIR, module, SKBUILD_DIR)
         for module in [
             'fruits/__init__.py',
             'fruits/apple.py',
