@@ -41,6 +41,10 @@ Bug fixes
   ``package_dir={'':'src'}`` in ``setup.py``. Thanks :user:`benjaminjack` for reporting the issue.
   See :issue:`274`.
 
+* Improve ``--skip-cmake`` command line option support so that it can re-generate a source distribution or a python
+  wheel without having to run cmake executable to re-configure and build. Thanks to :user:`jonwoodring` for reporting
+  the issue on the `mailing list <https://groups.google.com/forum/?utm_medium=email&utm_source=footer#!topic/scikit-build/-ManO0dhIV4>`_.
+
 Tests
 -----
 
