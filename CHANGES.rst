@@ -23,6 +23,8 @@ New Features
   directory for each python version. Thanks :user:`isuruf` for the suggestion and :user:`xoviat` for contributing
   the feature. See :issue:`283`.
 
+* Run cmake and ``develop`` command when command ``test`` is executed.
+
 Bug fixes
 ---------
 
@@ -34,6 +36,10 @@ Bug fixes
 
 * Ensure package data files specified in the ``setup()`` function using ``package_data`` keyword are packaged
   and installed.
+
+* Support specifying a default directory for all packages not already associated with one using syntax like
+  ``package_dir={'':'src'}`` in ``setup.py``. Thanks :user:`benjaminjack` for reporting the issue.
+  See :issue:`274`.
 
 Tests
 -----
@@ -61,6 +67,11 @@ Tests
   * TravisCI: from **~21 to ~10** minutes.
 
 * Update maximum line length specified in flake8 settings from 80 to 120 characters.
+
+* Add ``prepend_sys_path`` utility function.
+
+* Ensure that the project directory is prepended to ``sys.path`` when executing test building sample project
+  with the help of ``execute_setup_py`` function.
 
 Documentation
 -------------
