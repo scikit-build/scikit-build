@@ -10,9 +10,11 @@ Tries to build and test the `hello-cpp` sample project.
 import glob
 import os
 import pytest
+import six
 import sysconfig
 import tarfile
 
+from skbuild import __version__ as skbuild_version
 from skbuild.constants import CMAKE_BUILD_DIR, CMAKE_INSTALL_DIR, SKBUILD_DIR
 from skbuild.utils import push_dir
 
@@ -107,8 +109,20 @@ def test_hello_wheel():
         assert len(whls) == 1
         assert not whls[0].endswith('-none-any.whl')
 
-        member_list = ZipFile(whls[0]).namelist()
+        archive = ZipFile(whls[0])
+        member_list = archive.namelist()
         assert sorted(expected_content) == sorted(member_list)
+
+        # PEP-0427: Generator is the name and optionally the version of the
+        # software that produced the archive.
+        # See https://www.python.org/dev/peps/pep-0427/#file-contents
+        current_generator = None
+        with archive.open("hello-1.2.3.dist-info/WHEEL") as wheel_file:
+            for line in wheel_file:
+                if line.startswith(b"Generator"):
+                    current_generator = line.split(b":")[1].strip()
+                    break
+        assert current_generator == six.b("skbuild %s" % skbuild_version)
 
     @project_setup_py_test("hello-cpp", ["bdist_wheel"])
     def build_wheel():
