@@ -438,7 +438,10 @@ class CMaker(object):
     def _parse_manifests(self):
         paths = \
             glob.glob(os.path.join(CMAKE_BUILD_DIR, "install_manifest*.txt"))
-        return [self._parse_manifest(path) for path in paths][0]
+        try:
+            return [self._parse_manifest(path) for path in paths][0]
+        except IndexError:
+            return []
 
     @staticmethod
     def _parse_manifest(install_manifest_path):

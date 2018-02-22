@@ -373,13 +373,12 @@ def setup(*args, **kw):  # noqa: C901
     if not has_cmakelists:
         print('skipping skbuild (no CMakeLists.txt found)')
 
-    skip_cmake = (skip_cmake
-                  or display_only
-                  or has_invalid_arguments
-                  or not _should_run_cmake(commands,
-                                           skbuild_kw["cmake_with_sdist"])
-                  or not has_cmakelists)
-    if skip_cmake and not force_cmake:
+    skip_skbuild = (display_only
+                    or has_invalid_arguments
+                    or not _should_run_cmake(commands,
+                                             skbuild_kw["cmake_with_sdist"])
+                    or not has_cmakelists)
+    if skip_skbuild and not force_cmake:
         if help_commands:
             # Prepend scikit-build help. Generate option descriptions using
             # argparse.
@@ -440,10 +439,11 @@ def setup(*args, **kw):  # noqa: C901
 
     try:
         cmkr = cmaker.CMaker()
-        env = cmkr.configure(cmake_args,
-                             cmake_source_dir=cmake_source_dir,
-                             cmake_install_dir=skbuild_kw['cmake_install_dir'])
-        cmkr.make(make_args, env=env)
+        if not skip_cmake:
+            env = cmkr.configure(cmake_args,
+                                 cmake_source_dir=cmake_source_dir,
+                                 cmake_install_dir=skbuild_kw['cmake_install_dir'])
+            cmkr.make(make_args, env=env)
     except SKBuildGeneratorNotFoundError as ex:
         sys.exit(ex)
     except SKBuildError as ex:

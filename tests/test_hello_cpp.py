@@ -83,12 +83,7 @@ def test_hello_sdist():
     assert sorted(expected_content) == sorted(member_list)
 
 
-@project_setup_py_test("hello-cpp", ["bdist_wheel"])
 def test_hello_wheel():
-    whls = glob.glob('dist/*.whl')
-    assert len(whls) == 1
-    assert not whls[0].endswith('-none-any.whl')
-
     expected_content = [
         'hello-1.2.3.dist-info/top_level.txt',
         'hello-1.2.3.dist-info/DESCRIPTION.rst',
@@ -108,8 +103,32 @@ def test_hello_wheel():
         'bonjourModule.py'
     ]
 
-    member_list = ZipFile(whls[0]).namelist()
-    assert sorted(expected_content) == sorted(member_list)
+    def check_whls(whls):
+        assert len(whls) == 1
+        assert not whls[0].endswith('-none-any.whl')
+
+        member_list = ZipFile(whls[0]).namelist()
+        assert sorted(expected_content) == sorted(member_list)
+
+    @project_setup_py_test("hello-cpp", ["bdist_wheel"])
+    def build_wheel():
+        whls = glob.glob('dist/*.whl')
+        check_whls(whls)
+        os.remove(whls[0])
+        assert not os.path.exists(whls[0])
+
+        assert os.path.exists(os.path.join(CMAKE_BUILD_DIR, "CMakeCache.txt"))
+        os.remove(os.path.join(CMAKE_BUILD_DIR, "CMakeCache.txt"))
+
+    tmp_dir = build_wheel()[0]
+
+    @project_setup_py_test("hello-cpp", ["--skip-cmake", "bdist_wheel"], tmp_dir=tmp_dir)
+    def build_wheel_skip_cmake():
+        assert not os.path.exists(os.path.join(CMAKE_BUILD_DIR, "CMakeCache.txt"))
+        whls = glob.glob('dist/*.whl')
+        check_whls(whls)
+
+    build_wheel_skip_cmake()
 
 
 @pytest.mark.parametrize("dry_run", ['with-dry-run', 'without-dry-run'])

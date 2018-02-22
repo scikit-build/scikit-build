@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import _pytest.tmpdir
+import distutils
 import os
 import os.path
 import py.path
@@ -189,6 +190,9 @@ def execute_setup_py(project_dir, setup_args, disable_languages_test=False):
     It yields after changing the current working directory
     to ``project_dir``.
     """
+
+    # See https://stackoverflow.com/questions/9160227/dir-util-copy-tree-fails-after-shutil-rmtree
+    distutils.dir_util._path_created = {}
 
     with push_dir(str(project_dir)), push_argv(["setup.py"] + setup_args), prepend_sys_path([str(project_dir)]):
 
