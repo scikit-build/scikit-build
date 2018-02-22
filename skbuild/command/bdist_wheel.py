@@ -39,3 +39,8 @@ class bdist_wheel(set_build_base_mixin, new_style(_bdist_wheel)):
             # pylint:disable=attribute-defined-outside-init
             self.plat_name = "macosx-10.6-x86_64"
         super(bdist_wheel, self).finalize_options(*args, **kwargs)
+
+    def write_wheelfile(self, wheelfile_base, _=None):
+        from .. import __version__ as skbuild_version
+        generator = "skbuild %s" % skbuild_version
+        super(bdist_wheel, self).write_wheelfile(wheelfile_base, generator)

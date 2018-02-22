@@ -45,6 +45,9 @@ Bug fixes
   wheel without having to run cmake executable to re-configure and build. Thanks to :user:`jonwoodring` for reporting
   the issue on the `mailing list <https://groups.google.com/forum/?utm_medium=email&utm_source=footer#!topic/scikit-build/-ManO0dhIV4>`_.
 
+* Set ``skbuild <version>`` as wheel generator.
+  See `PEP-0427 <https://www.python.org/dev/peps/pep-0427/#file-contents>`_ and :issue:`191`.
+
 Tests
 -----
 
