@@ -47,6 +47,17 @@ def push_env(**kwargs):
         os.environ[saved_var] = saved_value
 
 
+@contextmanager
+def prepend_sys_path(paths):
+    """This context manager allows to prepend paths to ``sys.path`` and restore the
+    original list.
+    """
+    saved_paths = list(sys.path)
+    sys.path = paths + saved_paths
+    yield
+    sys.path = saved_paths
+
+
 def _tmpdir(basename):
     """This function returns a temporary directory similar to the one
     returned by the ``tmpdir`` pytest fixture.
@@ -179,8 +190,7 @@ def execute_setup_py(project_dir, setup_args, disable_languages_test=False):
     to ``project_dir``.
     """
 
-    with push_dir(str(project_dir)), \
-            push_argv(["setup.py"] + setup_args):
+    with push_dir(str(project_dir)), push_argv(["setup.py"] + setup_args), prepend_sys_path([str(project_dir)]):
 
         with open("setup.py", "r") as fp:
             setup_code = compile(fp.read(), "setup.py", mode="exec")

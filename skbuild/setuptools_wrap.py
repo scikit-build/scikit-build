@@ -30,7 +30,7 @@ from . import cmaker
 from .command import (build, build_py, clean,
                       install, install_lib, install_scripts,
                       bdist, bdist_wheel, egg_info,
-                      sdist, generate_source_manifest)
+                      sdist, generate_source_manifest, test)
 from .constants import CMAKE_INSTALL_DIR
 from .exceptions import SKBuildError, SKBuildGeneratorNotFoundError
 from .utils import (mkdir_p, PythonModuleFinder, to_platform_path, to_unix_path)
@@ -281,6 +281,7 @@ def _should_run_cmake(commands, cmake_with_sdist):
         "bdist_rpm",
         "bdist_wininst",
         "bdist_wheel",
+        "test",
     ]:
         if expected_command in commands:
             return True
@@ -316,6 +317,7 @@ def setup(*args, **kw):  # noqa: C901
     cmdclass['generate_source_manifest'] = cmdclass.get(
         'generate_source_manifest',
         generate_source_manifest.generate_source_manifest)
+    cmdclass['test'] = cmdclass.get('test', test.test)
     kw['cmdclass'] = cmdclass
 
     # Extract setup keywords specific to scikit-build and remove them from kw.
@@ -396,7 +398,7 @@ def setup(*args, **kw):  # noqa: C901
             print('')
         return upstream_setup(*args, **kw)
 
-    developer_mode = "develop" in commands
+    developer_mode = "develop" in commands or "test" in commands
 
     packages = kw.get('packages', [])
     package_dir = kw.get('package_dir', {})
@@ -454,7 +456,9 @@ def setup(*args, **kw):  # noqa: C901
     # If needed, set reasonable defaults for package_dir
     for package in packages:
         if package not in package_dir:
-            package_dir[package] = package.replace(".", os.path.sep)
+            package_dir[package] = package.replace(".", "/")
+            if '' in package_dir:
+                package_dir[package] = to_unix_path(os.path.join(package_dir[''], package_dir[package]))
 
     package_prefixes = _collect_package_prefixes(package_dir, packages)
 
