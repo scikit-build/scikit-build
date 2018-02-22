@@ -278,14 +278,17 @@ for candidate in candidates:
         rel_result = rel_candidate
         break
 
-sys.stdout.write(\";\".join((
-    os.sep,
-    os.pathsep,
-    sys.prefix,
-    result,
-    rel_result,
-    sysconfig.get_config_var('SO')
-)))
+sys.stdout.write(\";\".join(
+    entry.replace(\";\", 4*\"\\\\\" + \";\")
+    for entry in (
+        os.sep,
+        os.pathsep,
+        sys.prefix,
+        result,
+        rel_result,
+        sysconfig.get_config_var('SO')
+    )
+))
 ")
 
 execute_process(COMMAND "${PYTHON_EXECUTABLE}" -c "${_command}"
