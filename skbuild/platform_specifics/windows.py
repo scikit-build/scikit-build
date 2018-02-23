@@ -133,6 +133,7 @@ __get_msvc_compiler_env_cache = dict()
 
 
 def _get_msvc_compiler_env(vs_version):
+    # pylint:disable=global-statement
     global __get_msvc_compiler_env_cache
     from setuptools import monkey
     monkey.patch_for_msvc_specialized_compiler()
