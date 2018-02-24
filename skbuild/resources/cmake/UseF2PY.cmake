@@ -136,7 +136,7 @@ function(add_f2py_target _name)
                      ARGS ${pyf_location}
                      COMMAND ${CMAKE_COMMAND}
                      ARGS -E touch ${generated_wrapper}
-                     DEPENDS ${_source_file} ${generated_wrapper}
+                     DEPENDS ${_source_file}
                              ${_args_DEPENDS}
                      COMMENT ${source_comment})
 
