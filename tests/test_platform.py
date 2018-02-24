@@ -118,4 +118,4 @@ def test_cached_generator():
     generator = platform.get_generator('Ninja')
     env = generator.env
 
-    assert 'Visual Studio' in env['LIB']
+    assert 'Visual Studio' in env['LIB'] or 'Visual C++' in env['LIB']
