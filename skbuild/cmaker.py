@@ -50,7 +50,7 @@ def get_cached_generator():
             for line in fp:
                 if line.startswith(cmake_generator):
                     return line[len(cmake_generator):].strip()
-    except OSError:
+    except (OSError, IOError):
         pass
 
     return None
