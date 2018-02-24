@@ -122,28 +122,20 @@ function(add_f2py_target _name)
 
   file(RELATIVE_PATH generated_file_relative
       ${CMAKE_BINARY_DIR} ${generated_file})
-  file(RELATIVE_PATH generated_wrapper_relative
-      ${CMAKE_BINARY_DIR} ${generated_wrapper})
 
-  set(source_comment "Generating ${_output_syntax} source ${generated_file_relative}")
-  set(wrapper_comment "Touching F2PY wrapper source ${generated_wrapper_relative}")
+  set(comment "Generating ${_output_syntax} source ${generated_file_relative}")
 
   # Get the include directories.
   get_source_file_property(pyf_location ${_source_file} LOCATION)
   get_filename_component(pyf_path ${pyf_location} PATH)
 
-  # Add the command to touch the wrapper file in case it isn't generated.  
-  add_custom_command(OUTPUT ${generated_wrapper}
-      COMMAND ${CMAKE_COMMAND}
-      ARGS -E touch ${generated_wrapper}
-      COMMENT ${wrapper_comment}
-  )
-
   # Add the command to run the compiler.
-  add_custom_command(OUTPUT ${generated_file}
+  add_custom_command(OUTPUT ${generated_file} ${generated_wrapper}
                      WORKING_DIRECTORY ${generated_file_dir}
                      COMMAND ${F2PY_EXECUTABLE}
                      ARGS ${pyf_location}
+                     COMMAND ${CMAKE_COMMAND}
+                     ARGS -E touch ${generated_wrapper}
                      DEPENDS ${_source_file} ${generated_wrapper}
                              ${_args_DEPENDS}
                      COMMENT ${source_comment})
