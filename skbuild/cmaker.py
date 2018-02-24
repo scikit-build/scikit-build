@@ -40,6 +40,22 @@ def pop_arg(arg, args, default=None):
     return args, val
 
 
+def get_cached_generator():
+    """Reads and returns the cached generator from the BUILD_DIR; returns None
+    if not found.
+    """
+    try:
+        cmake_generator = 'CMAKE_GENERATOR:INTERNAL='
+        with open(os.path.join(CMAKE_BUILD_DIR, 'CMakeCache.txt')) as fp:
+            for line in fp:
+                if line.startswith(cmake_generator):
+                    return line[len(cmake_generator):].strip()
+    except:
+        pass
+    
+    return None
+
+
 def _remove_cwd_prefix(path):
     cwd = os.getcwd()
 
