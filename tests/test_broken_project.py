@@ -11,7 +11,7 @@ its value.
 
 import pytest
 
-from subprocess import (check_call, CalledProcessError)
+from subprocess import (check_output, CalledProcessError)
 
 from skbuild.exceptions import SKBuildError
 from skbuild.platform_specifics import CMakeGenerator, get_platform
@@ -98,15 +98,15 @@ def test_invalid_cmake(exception, mocker):
         CalledProcessError: CalledProcessError(['cmake', '--version'], 1)
     }
 
-    check_call_original = check_call
+    check_output_original = check_output
 
-    def check_call_mock(*args, **kwargs):
+    def check_output_mock(*args, **kwargs):
         if args[0] == ['cmake', '--version']:
             raise exceptions[exception]
-        check_call_original(*args, **kwargs)
+        check_output_original(*args, **kwargs)
 
-    mocker.patch('skbuild.cmaker.subprocess.check_call',
-                 new=check_call_mock)
+    mocker.patch('skbuild.cmaker.subprocess.check_output',
+                 new=check_output_mock)
 
     with push_dir():
 

@@ -74,12 +74,38 @@ class CMaker(object):
     def __init__(self):
         # verify that CMake is installed
         try:
-            subprocess.check_call(['cmake', '--version'])
+            version_string = subprocess.check_output(['cmake', '--version'])
         except (OSError, subprocess.CalledProcessError):
             raise SKBuildError(
                 "Problem with the CMake installation, aborting build.")
 
+        if sys.version_info > (3, 0):
+            version_string = version_string.decode()
+
+        self.cmake_version = version_string.splitlines()[0].split(' ')[-1]
         self.platform = get_platform()
+
+    def get_cached_generator_name(self):
+        """Reads and returns the cached generator from the BUILD_DIR; returns None
+        if not found.
+        """
+        try:
+            cmake_generator = 'CMAKE_GENERATOR:INTERNAL='
+            with open(os.path.join(CMAKE_BUILD_DIR, 'CMakeCache.txt')) as fp:
+                for line in fp:
+                    if line.startswith(cmake_generator):
+                        return line[len(cmake_generator):].strip()
+        except (OSError, IOError):
+            pass
+
+        return None
+
+    def get_cached_env(self):
+        generator_name = self.get_cached_generator_name()
+        if generator_name is not None:
+            return self.platform.get_generator(generator_name).env
+
+        return None
 
     def configure(self, clargs=(), generator_name=None,
                   cmake_source_dir='.', cmake_install_dir='',

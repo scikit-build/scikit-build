@@ -8,6 +8,7 @@ Tests for platforms, to verify that CMake correctly does a test compilation.
 """
 
 import os
+import sys
 import platform
 import pytest
 
@@ -109,3 +110,12 @@ def test_unsupported_platform(mocker):
 
     assert failed
     assert "Unsupported platform: bogus." in message
+
+
+@pytest.mark.skipif(sys.platform != 'win32', reason='Requires Windows')
+def test_cached_generator():
+    platform = get_platform()
+    generator = platform.get_generator('Ninja')
+    env = generator.env
+
+    assert 'Visual Studio' in env['LIB'] or 'Visual C++' in env['LIB']
