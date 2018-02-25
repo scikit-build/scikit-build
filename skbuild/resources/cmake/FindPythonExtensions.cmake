@@ -330,7 +330,7 @@ function(_set_python_extension_symbol_visibility _target)
     )
   elseif("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
     set(_script_path
-      ${CMAKE_CURRENT_BINARY_DIR}/_skbuild/${_target}-version-script.map
+      ${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/${_target}-version-script.map
     )
     file(WRITE ${_script_path} 
                "{global: ${_modinit_prefix}${_target}; local: *; };"
