@@ -441,15 +441,14 @@ def setup(*args, **kw):  # noqa: C901
         cmkr = cmaker.CMaker()
         if not skip_cmake:
             # skip the configure step for a cached build
-            generator_name = cmaker.get_cached_generator()
-            if generator_name is not None:
-                env = cmkr.platform.get_generator(generator_name).env
-            else:
+            env = cmkr.get_cached_env()
+            if env is None:
                 env = cmkr.configure(
                     cmake_args,
                     cmake_source_dir=cmake_source_dir,
                     cmake_install_dir=skbuild_kw['cmake_install_dir']
                 )
+
             cmkr.make(make_args, env=env)
     except SKBuildGeneratorNotFoundError as ex:
         sys.exit(ex)
