@@ -118,7 +118,7 @@ function(add_python_library _name)
         COMMAND ${NumPy_FROM_TEMPLATE_EXECUTABLE} 
                 ${CMAKE_CURRENT_SOURCE_DIR}/${_source}
                 ${CMAKE_CURRENT_BINARY_DIR}/${_source_we}
-        DEPENDS ${_source}
+        DEPENDS ${_source} ${_args_DEPENDS}
         COMMENT "Generating ${_source_we} from template ${_source}"
       )
       list(APPEND _processed ${_source_we})
@@ -135,7 +135,7 @@ function(add_python_library _name)
         COMMAND ${NumPy_CONV_TEMPLATE_EXECUTABLE} 
                 ${CMAKE_CURRENT_SOURCE_DIR}/${_source}
                 ${CMAKE_CURRENT_BINARY_DIR}/${_source_we}
-        DEPENDS ${_source}
+        DEPENDS ${_source} ${_args_DEPENDS}
         COMMENT "Generating ${_source_we} from template ${_source}"
       )
       list(APPEND _processed ${_source_we})
@@ -170,6 +170,7 @@ function(add_python_library _name)
         OUTPUT ${_source_we}
         COMMAND ${PYTHON_EXECUTABLE} -c "${_tempita_command}"
         DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/${_source}"
+                ${_args_DEPENDS}
       )
       list(APPEND _processed ${_source_we})
     else()
