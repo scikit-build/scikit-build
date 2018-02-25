@@ -131,13 +131,13 @@ function(add_f2py_target _name)
 
   # Add the command to run the compiler.
   add_custom_command(OUTPUT ${generated_file} ${generated_wrapper}
-                     WORKING_DIRECTORY ${generated_file_dir}
                      COMMAND ${F2PY_EXECUTABLE}
                      ARGS ${pyf_location}
                      COMMAND ${CMAKE_COMMAND}
                      ARGS -E touch ${generated_wrapper}
                      DEPENDS ${_source_file}
                              ${_args_DEPENDS}
+                     WORKING_DIRECTORY ${generated_file_dir}
                      COMMENT ${source_comment})
 
 endfunction()
