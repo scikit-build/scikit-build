@@ -129,6 +129,9 @@ function(add_f2py_target _name)
   get_source_file_property(pyf_location ${_source_file} LOCATION)
   get_filename_component(pyf_path ${pyf_location} PATH)
 
+  # Create the directory so that the command can cd to it
+  file(MAKE_DIRECTORY ${generated_file_dir})
+
   # Add the command to run the compiler.
   add_custom_command(OUTPUT ${generated_file} ${generated_wrapper}
                      COMMAND ${F2PY_EXECUTABLE}
