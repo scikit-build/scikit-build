@@ -550,6 +550,8 @@ function(target_link_libraries_with_dynamic_lookup target)
           list(APPEND link_props "${dynamic_lookup_flags}")
         endif()
       endif()
+    elseif(${lib} MATCHES "(debug|optimized|general)")
+      # See gh-255
     else()
       list(APPEND link_libs "${lib}")
     endif()
