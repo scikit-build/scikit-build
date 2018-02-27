@@ -82,7 +82,8 @@ class CMaker(object):
         self.platform = get_platform()
 
     def configure(self, clargs=(), generator_name=None,
-                  cmake_source_dir='.', cmake_install_dir='', cleanup=True):
+                  cmake_source_dir='.', cmake_install_dir='',
+                  languages=('C', 'CXX'), cleanup=True):
         """Calls cmake to generate the Makefile/VS Solution/XCode project.
 
         clargs: tuple
@@ -120,7 +121,8 @@ class CMaker(object):
         # use the generator returned from the platform, with the current
         # generator_name as a suggestion
         generator = self.platform.get_best_generator(
-            generator_name, cmake_args=clargs, cleanup=cleanup)
+            generator_name, cmake_args=clargs,
+            languages=languages, cleanup=cleanup)
 
         if not os.path.exists(CMAKE_BUILD_DIR):
             os.makedirs(CMAKE_BUILD_DIR)
