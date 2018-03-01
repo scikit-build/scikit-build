@@ -328,7 +328,8 @@ def setup(*args, **kw):  # noqa: C901
         'cmake_args': [],
         'cmake_install_dir': '',
         'cmake_source_dir': '',
-        'cmake_with_sdist': False
+        'cmake_with_sdist': False,
+        'cmake_languages': ('C', 'CXX'),
     }
     skbuild_kw = {param: kw.pop(param, parameters[param])
                   for param in parameters}
@@ -432,17 +433,21 @@ def setup(*args, **kw):  # noqa: C901
                 '-DCMAKE_OSX_ARCHITECTURES:STRING=%s' % machine
             )
 
-            # Since CMake arguments provided through the command line have more
+    # Since CMake arguments provided through the command line have more
     # weight and when CMake is given multiple times a argument, only the last
     # one is considered, let's prepend the one provided in the setup call.
     cmake_args = skbuild_kw['cmake_args'] + cmake_args
+
+    # Languages are used to determine a working generator
+    cmake_languages = skbuild_kw['cmake_languages']
 
     try:
         cmkr = cmaker.CMaker()
         if not skip_cmake:
             env = cmkr.configure(cmake_args,
                                  cmake_source_dir=cmake_source_dir,
-                                 cmake_install_dir=skbuild_kw['cmake_install_dir'])
+                                 cmake_install_dir=skbuild_kw['cmake_install_dir'],
+                                 languages=cmake_languages)
             cmkr.make(make_args, env=env)
     except SKBuildGeneratorNotFoundError as ex:
         sys.exit(ex)
