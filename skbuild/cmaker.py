@@ -100,6 +100,11 @@ class CMaker(object):
             Relative directory to append
             to :const:`skbuild.constants.CMAKE_INSTALL_DIR`.
 
+        languages: tuple
+            List of languages required to configure the project and expected to
+            be supported by the compiler. The language identifier that can be specified
+            in the list corresponds to the one recognized by CMake.
+
         cleanup: bool
             If True, cleans up temporary folder used to test
             generators. Set to False for debugging to see CMake's

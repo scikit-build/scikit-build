@@ -65,6 +65,10 @@ For example::
   part of the sources specified in ``MANIFEST.in`` are downloaded by CMake.
   By default, this option is ``False``.
 
+.. _usage-cmake_languages:
+
+.. versionadded:: 0.7.0
+
 - ``cmake_languages``: Tuple of languages that the project use, by default
   `('C', 'CXX',)`. This option ensures that a generator is chosen that supports
   all languages for the project.
