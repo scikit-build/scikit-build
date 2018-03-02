@@ -317,6 +317,30 @@ if(NOT DEFINED PYTHON_EXTENSION_MODULE_SUFFIX)
   set(PYTHON_EXTENSION_MODULE_SUFFIX "${_item}")
 endif()
 
+function(_set_python_extension_symbol_visibility _target)
+  if(PYTHON_VERSION_MAJOR VERSION_GREATER 2)
+    set(_modinit_prefix "PyInit_")
+  else()
+    set(_modinit_prefix "init")
+  endif()
+  message("_modinit_prefix:${_modinit_prefix}")
+  if("${CMAKE_C_COMPILER_ID}" STREQUAL "MSVC")
+    set_target_properties(${_target} PROPERTIES LINK_FLAGS 
+        "/EXPORT:${_modinit_prefix}${_target}"
+    )
+  elseif("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
+    set(_script_path
+      ${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/${_target}-version-script.map
+    )
+    file(WRITE ${_script_path} 
+               "{global: ${_modinit_prefix}${_target}; local: *; };"
+    )
+    set_property(TARGET ${_target} APPEND_STRING PROPERTY LINK_FLAGS
+        " -Wl,--version-script=${_script_path}"
+    )
+  endif()
+endfunction()
+
 function(python_extension_module _target)
   set(one_ops LINKED_MODULES_VAR FORWARD_DECL_MODULES_VAR MODULE_SUFFIX)
   cmake_parse_arguments(_args "" "${one_ops}" "" ${ARGN})
@@ -393,6 +417,10 @@ function(python_extension_module _target)
     endif()
 
     target_link_libraries_with_dynamic_lookup(${_target} ${PYTHON_LIBRARIES})
+    
+    if(_is_module_lib)
+      _set_python_extension_symbol_visibility(${_target})
+    endif()
   endif()
 endfunction()
 
