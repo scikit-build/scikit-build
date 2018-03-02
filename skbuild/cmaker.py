@@ -104,7 +104,8 @@ class CMaker(object):
         return None
 
     def configure(self, clargs=(), generator_name=None,
-                  cmake_source_dir='.', cmake_install_dir='', cleanup=True):
+                  cmake_source_dir='.', cmake_install_dir='',
+                  languages=('C', 'CXX'), cleanup=True):
         """Calls cmake to generate the Makefile/VS Solution/XCode project.
 
         clargs: tuple
@@ -120,6 +121,11 @@ class CMaker(object):
         cmake_install_dir: string
             Relative directory to append
             to :const:`skbuild.constants.CMAKE_INSTALL_DIR`.
+
+        languages: tuple
+            List of languages required to configure the project and expected to
+            be supported by the compiler. The language identifier that can be specified
+            in the list corresponds to the one recognized by CMake.
 
         cleanup: bool
             If True, cleans up temporary folder used to test
@@ -142,7 +148,8 @@ class CMaker(object):
         # use the generator returned from the platform, with the current
         # generator_name as a suggestion
         generator = self.platform.get_best_generator(
-            generator_name, cmake_args=clargs, cleanup=cleanup)
+            generator_name, cmake_args=clargs,
+            languages=languages, cleanup=cleanup)
 
         if not os.path.exists(CMAKE_BUILD_DIR):
             os.makedirs(CMAKE_BUILD_DIR)
