@@ -16,6 +16,7 @@ from contextlib import contextmanager
 from mock import patch
 from skbuild.utils import push_dir
 from skbuild.platform_specifics import get_platform
+from skbuild.compat import which
 
 
 SAMPLES_DIR = os.path.join(
