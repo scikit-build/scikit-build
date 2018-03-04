@@ -74,11 +74,15 @@ class CMaker(object):
     def __init__(self):
         # verify that CMake is installed
         try:
-            subprocess.check_call(['cmake', '--version'])
+            version_string = subprocess.check_output(['cmake', '--version'])
         except (OSError, subprocess.CalledProcessError):
             raise SKBuildError(
                 "Problem with the CMake installation, aborting build.")
 
+        if sys.version_info > (3, 0):
+            version_string = version_string.decode()
+
+        self.cmake_version = version_string.splitlines()[0].split(' ')[-1]
         self.platform = get_platform()
 
     def get_cached_generator_name(self):

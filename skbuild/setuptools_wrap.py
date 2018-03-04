@@ -27,7 +27,7 @@ except ImportError:
 try:
     from shutil import which
 except ImportError:
-    from distutils.spawn import find_executable as which
+    from .compat import which
 
 from setuptools import setup as upstream_setup
 from setuptools.dist import Distribution as upstream_Distribution
@@ -465,25 +465,29 @@ def setup(*args, **kw):  # noqa: C901
     # one is considered, let's prepend the one provided in the setup call.
     cmake_args = skbuild_kw['cmake_args'] + cmake_args
 
-    # Used to confirm that the cmake executable is the same
-    cmake_cmd = [which('cmake')] + cmake_args
-
     # Languages are used to determine a working generator
     cmake_languages = skbuild_kw['cmake_languages']
 
     try:
         cmkr = cmaker.CMaker()
+
+        # Used to confirm that the cmake executable is the same
+        cmake_spec = {
+            'args': [which('cmake')] + cmake_args,
+            'version': cmkr.cmake_version,
+        }
+
         if not skip_cmake:
             # skip the configure step for a cached build
             env = cmkr.get_cached_env()
-            if env is None or cmake_cmd != _load_cmake_args():
+            if env is None or cmake_spec != _load_cmake_args():
                 env = cmkr.configure(
                     cmake_args,
                     cmake_source_dir=cmake_source_dir,
                     cmake_install_dir=skbuild_kw['cmake_install_dir'],
                     languages=cmake_languages
                 )
-                _save_cmake_args(cmake_cmd)
+                _save_cmake_args(cmake_spec)
 
             cmkr.make(make_args, env=env)
     except SKBuildGeneratorNotFoundError as ex:
