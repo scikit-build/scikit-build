@@ -464,7 +464,7 @@ def setup(*args, **kw):  # noqa: C901
     # weight and when CMake is given multiple times a argument, only the last
     # one is considered, let's prepend the one provided in the setup call.
     cmake_args = skbuild_kw['cmake_args'] + cmake_args
-    
+
     # Used to confirm that the cmake executable is the same
     cmake_cmd = [which('cmake')] + cmake_args
 
