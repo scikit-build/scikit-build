@@ -25,8 +25,6 @@ New Features
 
 * Run cmake and ``develop`` command when command ``test`` is executed.
 
-* Add support for :ref:`cmake_languages <usage-cmake_languages>` setup keyword argument.
-
 Bug fixes
 ---------
 

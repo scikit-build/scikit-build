@@ -51,6 +51,11 @@
 #   generated source file.  By default, ``<Name>`` is used as the output
 #   variable name.
 #
+# ``DEPENDS source1 [source2 ...]``
+#   When the Cython input is not available (is generated), add_cython_target
+#   is unable to automatically detect dependencies, and you will need to include
+#   them here.
+#
 # Defined variables:
 #
 # ``<OutputVar>``
@@ -110,9 +115,15 @@ set(CYTHON_C_EXTENSION "c")
 
 get_property(languages GLOBAL PROPERTY ENABLED_LANGUAGES)
 
+define_property(SOURCE PROPERTY CYTHON_LANGUAGE
+    BRIEF_DOCS "The language to which Cython compiles the source file"
+    FULL_DOCS "The language, either C or CXX, to which Cython compiles the source file"
+)
+
 function(add_cython_target _name)
   set(options EMBED_MAIN C CXX PY2 PY3)
   set(options1 OUTPUT_VAR)
+  set(options2 DEPENDS)
   cmake_parse_arguments(_args "${options}" "${options1}" "" ${ARGN})
 
   list(GET _args_UNPARSED_ARGUMENTS 0 _arg0)
@@ -135,6 +146,15 @@ function(add_cython_target _name)
       set(_source_file ${_name}.pyx)
     endif()
   endif()
+  
+  if(_source)
+    get_source_file_property(_output_syntax ${_source} CYTHON_LANGUAGE)
+  endif()
+  if(_output_syntax STREQUAL "C")
+    set(_args_C ON)
+  elseif(_output_syntax STREQUAL "CXX")
+    set(_args_CXX ON)
+  endif()
 
   set(_embed_main FALSE)
 
@@ -149,6 +169,12 @@ function(add_cython_target _name)
   if("${PYTHONLIBS_VERSION_STRING}" MATCHES "^2.")
     set(_input_syntax "PY2")
   else()
+    set(_input_syntax "PY3")
+  endif()
+
+  if("${CMAKE_CYTHON_STANDARD}" STREQUAL "PY2")
+    set(_input_syntax "PY2")
+  elseif("${CMAKE_CYTHON_STANDARD}" MATCHES "PY3")
     set(_input_syntax "PY3")
   endif()
 
@@ -194,6 +220,9 @@ function(add_cython_target _name)
   set(generated_file "${CMAKE_CURRENT_BINARY_DIR}/${_name}.${extension}")
   set_source_files_properties(${generated_file} PROPERTIES GENERATED TRUE)
 
+  get_filename_component(generated_path ${generated_file} DIRECTORY)
+  file(MAKE_DIRECTORY ${generated_path})
+
   set(_output_var ${_name})
   if(_args_OUTPUT_VAR)
       set(_output_var ${_args_OUTPUT_VAR})
@@ -211,9 +240,39 @@ function(add_cython_target _name)
   # Get the include directories.
   get_source_file_property(pyx_location ${_source_file} LOCATION)
   get_filename_component(pyx_path ${pyx_location} PATH)
-  get_directory_property(cmake_include_directories
-                         DIRECTORY ${pyx_path}
-                         INCLUDE_DIRECTORIES)
+  get_filename_component(pyx_source_path "${CMAKE_CURRENT_SOURCE_DIR}/${_name}"
+                         DIRECTORY)
+  
+  if(EXISTS "${_source_file}")
+    get_directory_property(cmake_include_directories
+                          DIRECTORY ${pyx_path}
+                          INCLUDE_DIRECTORIES)
+  endif()
+
+  # Try really hard to to the right thing for generated files
+  file(RELATIVE_PATH _current_dir ${CMAKE_SOURCE_DIR}
+                                  ${CMAKE_CURRENT_SOURCE_DIR})
+
+  list(APPEND cython_include_directories ${CMAKE_SOURCE_DIR}
+                                         ${CMAKE_BINARY_DIR})
+  while(1)
+    list(APPEND cython_include_directories 
+      "${CMAKE_SOURCE_DIR}/${_current_dir}"
+      "${CMAKE_BINARY_DIR}/${_current_dir}"
+    )
+
+    configure_file(
+      "${CMAKE_SOURCE_DIR}/${_current_dir}/__init__.py"
+      "${CMAKE_BINARY_DIR}/${_current_dir}/__init__.py"
+      COPYONLY
+    )
+
+    get_filename_component(_current_dir "${_current_dir}/" DIRECTORY)
+    if("${_current_dir}" STREQUAL "")
+      break()
+    endif()
+  endwhile()
+
   list(APPEND cython_include_directories ${cmake_include_directories})
 
   # Determine dependencies.
@@ -227,10 +286,16 @@ function(add_cython_target _name)
     list(APPEND pxd_dependencies "${corresponding_pxd_file}")
   endif()
 
+  list(FILTER pxd_dependencies INCLUDE REGEX .pxd$)
+
   # pxd files to check for additional dependencies
-  set(pxds_to_check "${_source_file}" "${pxd_dependencies}")
+  set(pxds_to_check "${pxd_dependencies}" "${_source_file}")
   set(pxds_checked "")
-  set(number_pxds_to_check 1)
+  if(EXISTS "${_source_file}")
+    set(number_pxds_to_check 1)
+  else()
+    set(number_pxds_to_check 0)
+  endif()
   while(number_pxds_to_check GREATER 0)
     foreach(pxd ${pxds_to_check})
       list(APPEND pxds_checked "${pxd}")
@@ -365,9 +430,11 @@ function(add_cython_target _name)
                           ${embed_arg} ${annotate_arg} ${no_docstrings_arg}
                           ${cython_debug_arg} ${embed_pos_arg}
                           ${line_directives_arg} ${CYTHON_FLAGS_LIST} ${pyx_location}
-                          --output-file ${generated_file}
+                          --fast-fail --output-file ${generated_file}
+                     WORKING_DIRECTORY ${pyx_source_path}
                      DEPENDS ${_source_file}
                              ${pxd_dependencies}
+                             ${_args_DEPENDS}
                      IMPLICIT_DEPENDS ${_output_syntax}
                                       ${c_header_dependencies}
                      COMMENT ${comment})

@@ -81,6 +81,28 @@ class CMaker(object):
 
         self.platform = get_platform()
 
+    def get_cached_generator_name(self):
+        """Reads and returns the cached generator from the BUILD_DIR; returns None
+        if not found.
+        """
+        try:
+            cmake_generator = 'CMAKE_GENERATOR:INTERNAL='
+            with open(os.path.join(CMAKE_BUILD_DIR, 'CMakeCache.txt')) as fp:
+                for line in fp:
+                    if line.startswith(cmake_generator):
+                        return line[len(cmake_generator):].strip()
+        except (OSError, IOError):
+            pass
+
+        return None
+
+    def get_cached_env(self):
+        generator_name = self.get_cached_generator_name()
+        if generator_name is not None:
+            return self.platform.get_generator(generator_name).env
+
+        return None
+
     def configure(self, clargs=(), generator_name=None,
                   cmake_source_dir='.', cmake_install_dir='',
                   languages=('C', 'CXX'), cleanup=True):
@@ -99,11 +121,6 @@ class CMaker(object):
         cmake_install_dir: string
             Relative directory to append
             to :const:`skbuild.constants.CMAKE_INSTALL_DIR`.
-
-        languages: tuple
-            List of languages required to configure the project and expected to
-            be supported by the compiler. The language identifier that can be specified
-            in the list corresponds to the one recognized by CMake.
 
         cleanup: bool
             If True, cleans up temporary folder used to test

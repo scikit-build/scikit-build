@@ -278,13 +278,12 @@ for candidate in candidates:
         rel_result = rel_candidate
         break
 
+
 sys.stdout.write(\";\".join((
-    os.sep,
-    os.pathsep,
     sys.prefix,
     result,
     rel_result,
-    sysconfig.get_config_var('SO')
+    distutils.sysconfig.get_config_var('EXT_SUFFIX'),
 )))
 ")
 
@@ -293,29 +292,46 @@ execute_process(COMMAND "${PYTHON_EXECUTABLE}" -c "${_command}"
                 RESULT_VARIABLE _result)
 
 list(GET _list 0 _item)
-set(PYTHON_SEPARATOR "${_item}")
-mark_as_advanced(PYTHON_SEPARATOR)
-
-list(GET _list 1 _item)
-set(PYTHON_PATH_SEPARATOR "${_item}")
-mark_as_advanced(PYTHON_PATH_SEPARATOR)
-
-list(GET _list 2 _item)
 set(PYTHON_PREFIX "${_item}")
 mark_as_advanced(PYTHON_PREFIX)
 
-list(GET _list 3 _item)
+list(GET _list 1 _item)
 set(PYTHON_SITE_PACKAGES_DIR "${_item}")
 mark_as_advanced(PYTHON_SITE_PACKAGES_DIR)
 
-list(GET _list 4 _item)
+list(GET _list 2 _item)
 set(PYTHON_RELATIVE_SITE_PACKAGES_DIR "${_item}")
 mark_as_advanced(PYTHON_RELATIVE_SITE_PACKAGES_DIR)
 
 if(NOT DEFINED PYTHON_EXTENSION_MODULE_SUFFIX)
-  list(GET _list 5 _item)
+  list(GET _list 3 _item)
   set(PYTHON_EXTENSION_MODULE_SUFFIX "${_item}")
 endif()
+
+function(_set_python_extension_symbol_visibility _target)
+  if("${CMAKE_C_COMPILER_ID}" STREQUAL "MSVC")
+    set_target_properties(${_target} PROPERTIES LINK_FLAGS 
+        "/EXPORT:PyInit_${_target}"
+    )
+  elseif("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
+    set(_script_path
+      ${CMAKE_CURRENT_BINARY_DIR}/_skbuild/${_target}-version-script.map
+    )
+    file(WRITE
+      ${_script_path}
+      "
+      {
+        global:
+          PyInit_${_target};
+        local: *;
+      }
+      "      
+    )
+    set_target_properties(${_target} PROPERTIES LINK_FLAGS 
+        "-Wl,--version-script=${_script_path}"
+    )
+  endif()
+endfunction()
 
 function(python_extension_module _target)
   set(one_ops LINKED_MODULES_VAR FORWARD_DECL_MODULES_VAR MODULE_SUFFIX)
@@ -390,6 +406,8 @@ function(python_extension_module _target)
         set_target_properties(${_target}
           PROPERTIES SUFFIX ${_args_MODULE_SUFFIX})
       endif()
+
+      _set_python_extension_symbol_visibility(${_target})
     endif()
 
     target_link_libraries_with_dynamic_lookup(${_target} ${PYTHON_LIBRARIES})
@@ -540,3 +558,4 @@ function(python_modules_header _name)
   set(${_include_dirs_var} ${CMAKE_CURRENT_BINARY_DIR} PARENT_SCOPE)
 endfunction()
 
+include(UsePythonExtensions)

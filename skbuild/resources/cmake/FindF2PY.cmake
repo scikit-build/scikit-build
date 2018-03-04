@@ -68,6 +68,36 @@
 
 find_program(F2PY_EXECUTABLE NAMES f2py f2py${PYTHON_VERSION_MAJOR})
 
+# XXX This is required to support NumPy < v0.15.0. See note in module documentation above.
+if(NOT F2PY_EXECUTABLE)
+  find_package(NumPy)
+  set(F2PY_EXECUTABLE "${PYTHON_EXECUTABLE}" "-m" "numpy.f2py.__main__")
+endif()
+
+if(NOT F2PY_INCLUDE_DIR)
+  execute_process( 
+      COMMAND "${PYTHON_EXECUTABLE}" 
+      -c "import os; from numpy import f2py; print(os.path.dirname(f2py.__file__))"
+      OUTPUT_VARIABLE _f2py_directory
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+      ERROR_QUIET
+  )
+  string(REPLACE "\\" "/" _f2py_directory ${_f2py_directory})
+
+  SET(F2PY_INCLUDE_DIR "${_f2py_directory}/src" CACHE STRING "F2PY source directory location" FORCE)
+endif()
+
+# Set-up the F2PY libraries and include directories
+file(GLOB _f2py_sources "${F2PY_INCLUDE_DIR}/*.c")
+add_library(_f2py_runtime_library STATIC ${_f2py_sources})
+target_include_directories(
+  _f2py_runtime_library 
+  PRIVATE ${PYTHON_INCLUDE_DIRS} ${NumPy_INCLUDE_DIRS}
+)
+
+set(F2PY_LIBRARIES _f2py_runtime_library)
+set(F2PY_INCLUDE_DIRS "${F2PY_INCLUDE_DIR}" "${NumPy_INCLUDE_DIRS}")
+
 if(F2PY_EXECUTABLE)
   # extract the version string
   execute_process(COMMAND "${F2PY_EXECUTABLE}" -v
@@ -89,3 +119,5 @@ find_package_handle_standard_args(F2PY
   )
 
 mark_as_advanced(F2PY_EXECUTABLE)
+
+include(UseF2PY)
