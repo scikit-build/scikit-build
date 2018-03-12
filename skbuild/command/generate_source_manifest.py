@@ -49,12 +49,19 @@ class generate_source_manifest(set_build_base_mixin, new_style(Command)):
         )
 
         if do_generate:
+
             try:
                 with open('MANIFEST', 'wb') as manifest_file:
-                    manifest_file.write(
-                        subprocess.check_output(
-                            ['git', 'ls-tree', '--name-only', '-r', 'HEAD'])
-                    )
+                    # Since Git < 2.11 does not support --recurse-submodules option, fallback to
+                    # regular listing.
+                    try:
+                        manifest_file.write(
+                            subprocess.check_output(['git', 'ls-files', '--recurse-submodules'])
+                        )
+                    except subprocess.CalledProcessError:
+                        manifest_file.write(
+                             subprocess.check_output(['git', 'ls-files'])
+                         )
             except subprocess.CalledProcessError:
                 sys.stderr.write(
                     '\n\n'
@@ -62,10 +69,9 @@ class generate_source_manifest(set_build_base_mixin, new_style(Command)):
                     'MANIFEST, it tried to generate a MANIFEST file '
                     'automatically, but could not because it could not '
                     'determine which source files to include.\n\n'
-                    'The command used was "git ls-tree --name-only -r HEAD"\n'
+                    'The command used was "git ls-files"\n'
                     '\n\n'
                 )
-
                 raise
 
             if not os.path.exists(SKBUILD_DIR):
