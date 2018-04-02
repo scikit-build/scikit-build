@@ -11,6 +11,9 @@ Next Release
 New Features
 ------------
 
+* CMake module :doc:`\cmake-modules/PythonExtensions`: Set symbol visibility to export only the module init function.
+  This applies to GNU and MSVC compilers. Thanks :user:`xoviat`. See :issue:`299`.
+
 * Add CMake module :doc:`\cmake-modules/F2PY` useful to find the ``f2py`` executable for building Python
   extensions with Fortran. Thanks to :user:`xoviat` for moving forward with the integration. Concept for the
   module comes from the work of :user:`scopatz` done in `PyNE <https://github.com/pyne/pyne>`_ project.
