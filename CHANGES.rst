@@ -53,6 +53,13 @@ Bug fixes
 * Set ``skbuild <version>`` as wheel generator.
   See `PEP-0427 <https://www.python.org/dev/peps/pep-0427/#file-contents>`_ and :issue:`191`.
 
+Python Support
+--------------
+
+* Tests using Python 3.3.x were removed and support for this version of python is not guaranteed anymore. Support was
+  removed following the deprecation warnings reported by version 0.31.0 of wheel package, these were causing the tests
+  ``test_source_distribution`` and ``test_wheel`` to fail.
+
 Tests
 -----
 
