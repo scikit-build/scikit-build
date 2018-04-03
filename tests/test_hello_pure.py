@@ -9,10 +9,13 @@ Tries to build and test the `hello-pure` sample project.
 
 import glob
 import tarfile
-from zipfile import ZipFile
+import wheel
 
 from skbuild.constants import SKBUILD_DIR
 from skbuild.utils import push_dir
+
+from pkg_resources import parse_version
+from zipfile import ZipFile
 
 from . import project_setup_py_test
 
@@ -66,13 +69,17 @@ def test_hello_pure_wheel():
 
     expected_content = [
         'hello_pure-1.2.3.dist-info/top_level.txt',
-        'hello_pure-1.2.3.dist-info/DESCRIPTION.rst',
         'hello_pure-1.2.3.dist-info/WHEEL',
         'hello_pure-1.2.3.dist-info/RECORD',
-        'hello_pure-1.2.3.dist-info/metadata.json',
         'hello_pure-1.2.3.dist-info/METADATA',
         'hello/__init__.py'
     ]
+
+    if parse_version(wheel.__version__) < parse_version('0.31.0'):
+        expected_content += [
+            'hello_pure-1.2.3.dist-info/DESCRIPTION.rst',
+            'hello_pure-1.2.3.dist-info/metadata.json'
+        ]
 
     member_list = ZipFile(whls[0]).namelist()
     assert sorted(expected_content) == sorted(member_list)

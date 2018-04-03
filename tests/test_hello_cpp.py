@@ -13,11 +13,13 @@ import pytest
 import six
 import sysconfig
 import tarfile
+import wheel
 
 from skbuild import __version__ as skbuild_version
 from skbuild.constants import CMAKE_BUILD_DIR, CMAKE_INSTALL_DIR, SKBUILD_DIR
 from skbuild.utils import push_dir
 
+from pkg_resources import parse_version
 from zipfile import ZipFile
 
 from . import project_setup_py_test
@@ -88,10 +90,8 @@ def test_hello_sdist():
 def test_hello_wheel():
     expected_content = [
         'hello-1.2.3.dist-info/top_level.txt',
-        'hello-1.2.3.dist-info/DESCRIPTION.rst',
         'hello-1.2.3.dist-info/WHEEL',
         'hello-1.2.3.dist-info/RECORD',
-        'hello-1.2.3.dist-info/metadata.json',
         'hello-1.2.3.dist-info/METADATA',
         'hello/_hello%s' % (sysconfig.get_config_var('SO')),
         'hello/__init__.py',
@@ -104,6 +104,12 @@ def test_hello_wheel():
         'bonjour/data/terre.txt',
         'bonjourModule.py'
     ]
+
+    if parse_version(wheel.__version__) < parse_version('0.31.0'):
+        expected_content += [
+            'hello-1.2.3.dist-info/DESCRIPTION.rst',
+            'hello-1.2.3.dist-info/metadata.json'
+        ]
 
     def check_whls(whls):
         assert len(whls) == 1
