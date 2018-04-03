@@ -12,9 +12,6 @@ matrix:
       python: "3.4"
 
     - os: linux
-      python: "3.3.5"
-
-    - os: linux
       python: "2.7"
 
     - os: osx
@@ -25,17 +22,11 @@ matrix:
     - os: osx
       language: generic
       env:
-        - PYTHON_VERSION=3.3.7
-
-    - os: osx
-      language: generic
-      env:
         - PYTHON_VERSION=2.7.14
 
 cache:
   directories:
     - $HOME/.pyenv/versions/3.4.7
-    - $HOME/.pyenv/versions/3.3.7
     - $HOME/.pyenv/versions/2.7.14
     - $HOME/downloads
 
