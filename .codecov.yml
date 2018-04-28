@@ -1,0 +1,11 @@
+coverage:
+  status:
+    project:
+      default:
+        # Don't allow overall project coverage to be dropped more than 2%
+        threshold: 2
+    patch:
+      default:
+        # 75% of the changed code must be covered by tests
+        threshold: 25
+        only_pulls: true
