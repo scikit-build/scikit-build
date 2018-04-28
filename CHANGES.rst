@@ -92,6 +92,9 @@ Tests
 * Ensure that the project directory is prepended to ``sys.path`` when executing test building sample project
   with the help of ``execute_setup_py`` function.
 
+* Add codecov config file for better defaults and prevent associated Pull Request checks from reporting failure
+  when coverage only slightly changes.
+
 Documentation
 -------------
 
