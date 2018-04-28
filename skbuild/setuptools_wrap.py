@@ -9,6 +9,7 @@ import os
 import os.path
 import sys
 import argparse
+import json
 
 from contextlib import contextmanager
 from distutils.errors import (DistutilsArgError,
@@ -23,6 +24,11 @@ try:
 except ImportError:
     from io import StringIO
 
+try:
+    from shutil import which
+except ImportError:
+    from .compat import which
+
 from setuptools import setup as upstream_setup
 from setuptools.dist import Distribution as upstream_Distribution
 
@@ -31,7 +37,7 @@ from .command import (build, build_py, clean,
                       install, install_lib, install_scripts,
                       bdist, bdist_wheel, egg_info,
                       sdist, generate_source_manifest, test)
-from .constants import CMAKE_INSTALL_DIR
+from .constants import CMAKE_INSTALL_DIR, CMAKE_ARGUMENTS_FILE
 from .exceptions import SKBuildError, SKBuildGeneratorNotFoundError
 from .utils import (mkdir_p, PythonModuleFinder, to_platform_path, to_unix_path)
 
@@ -290,6 +296,27 @@ def _should_run_cmake(commands, cmake_with_sdist):
     return False
 
 
+def _save_cmake_args(args):
+    """Save the CMake arguments to disk"""
+    # We use JSON here because readability is more important than performance
+    try:
+        os.makedirs(os.path.dirname(CMAKE_ARGUMENTS_FILE))
+    except OSError:
+        pass
+
+    with open(CMAKE_ARGUMENTS_FILE, 'w+') as fp:
+        json.dump(args, fp)
+
+
+def _load_cmake_args():
+    """Load and return the CMake arguments from disk"""
+    try:
+        with open(CMAKE_ARGUMENTS_FILE) as fp:
+            return json.load(fp)
+    except (OSError, IOError, ValueError):
+        return None
+
+
 # pylint:disable=too-many-locals, too-many-branches
 def setup(*args, **kw):  # noqa: C901
     """This function wraps setup() so that we can run cmake, make,
@@ -443,11 +470,25 @@ def setup(*args, **kw):  # noqa: C901
 
     try:
         cmkr = cmaker.CMaker()
+
+        # Used to confirm that the cmake executable is the same
+        cmake_spec = {
+            'args': [which('cmake')] + cmake_args,
+            'version': cmkr.cmake_version,
+        }
+
         if not skip_cmake:
-            env = cmkr.configure(cmake_args,
-                                 cmake_source_dir=cmake_source_dir,
-                                 cmake_install_dir=skbuild_kw['cmake_install_dir'],
-                                 languages=cmake_languages)
+            # skip the configure step for a cached build
+            env = cmkr.get_cached_env()
+            if env is None or cmake_spec != _load_cmake_args():
+                env = cmkr.configure(
+                    cmake_args,
+                    cmake_source_dir=cmake_source_dir,
+                    cmake_install_dir=skbuild_kw['cmake_install_dir'],
+                    languages=cmake_languages
+                )
+                _save_cmake_args(cmake_spec)
+
             cmkr.make(make_args, env=env)
     except SKBuildGeneratorNotFoundError as ex:
         sys.exit(ex)
