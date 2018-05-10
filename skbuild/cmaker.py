@@ -86,8 +86,8 @@ class CMaker(object):
         self.platform = get_platform()
 
     def get_cached_generator_name(self):
-        """Reads and returns the cached generator from the BUILD_DIR; returns None
-        if not found.
+        """Reads and returns the cached generator from the :const:`skbuild.constants.CMAKE_BUILD_DIR`:.
+        Returns None if not found.
         """
         try:
             cmake_generator = 'CMAKE_GENERATOR:INTERNAL='
@@ -389,10 +389,10 @@ class CMaker(object):
 
         Indeed, we can not wait for the manifest, so we try to extract the
         information (install destination) from the CMake build files
-        ``*.cmake`` found in ``CMAKE_BUILD_DIR``.
+        ``*.cmake`` found in :const:`skbuild.constants.CMAKE_BUILD_DIR`.
 
-        It raises ``SKBuildError`` if it found install destination outside of
-        ``CMAKE_INSTALL_DIR``.
+        It raises :class:`skbuild.exceptions.SKBuildError` if it found install destination outside of
+        :const:`skbuild.constants.CMAKE_INSTALL_DIR`.
         """
 
         bad_installs = []
