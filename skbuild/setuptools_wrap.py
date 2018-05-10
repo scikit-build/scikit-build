@@ -483,7 +483,7 @@ def setup(*args, **kw):  # noqa: C901
             }
 
             # skip the configure step for a cached build
-            env = cmkr.get_cached_env()
+            env = cmkr.get_cached_generator_env()
             if env is None or cmake_spec != _load_cmake_spec():
                 env = cmkr.configure(cmake_args,
                                      cmake_source_dir=cmake_source_dir,

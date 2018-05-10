@@ -100,7 +100,7 @@ class CMaker(object):
 
         return None
 
-    def get_cached_env(self):
+    def get_cached_generator_env(self):
         """If any, return a mapping of environment associated with the cached generator.
         """
         generator_name = self.get_cached_generator_name()
@@ -141,7 +141,7 @@ class CMaker(object):
         Return a mapping of the environment associated with the
         selected :class:`skbuild.platform_specifics.abstract.CMakeGenerator`.
 
-        Mapping of the environment can also be later retrieved using :meth:`.get_cached_env`.
+        Mapping of the environment can also be later retrieved using :meth:`.get_cached_generator_env`.
         """
 
         # if no provided default generator_name, check environment
