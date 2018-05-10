@@ -322,6 +322,11 @@ def setup(*args, **kw):  # noqa: C901
     """This function wraps setup() so that we can run cmake, make,
     CMake build, then proceed as usual with setuptools, appending the
     CMake-generated output as necessary.
+
+    The CMake project is re-configured only if needed. This is achieved by (1) retrieving the environment mapping
+    associated with the generator set in the ``CMakeCache.txt`` file, (2) saving the CMake configure arguments and
+    version in :const:`skbuild.constants.CMAKE_SPEC_FILE`: and (3) re-configuring only if either the generator or
+    the CMake specs change.
     """
     sys.argv, cmake_args, make_args = parse_args()
 
