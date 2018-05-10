@@ -11,6 +11,12 @@ Next Release
 New Features
 ------------
 
+* Faster incremental build by re-configuring the project only if needed. This was achieved by (1) adding support
+  to retrieve the environment mapping associated with the generator set in the ``CMakeCache.txt`` file, (2) introducing
+  a :const:`CMake spec file <skbuild.constants.CMAKE_SPEC_FILE>` storing the CMake version as well as the
+  the CMake arguments and (3) re-configuring only if either the generator or the CMake specs change.
+  Thanks :user:`xoviat` for the contribution. See :issue:`301`.
+
 * CMake module :doc:`\cmake-modules/PythonExtensions`: Set symbol visibility to export only the module init function.
   This applies to GNU and MSVC compilers. Thanks :user:`xoviat`. See :issue:`299`.
 
