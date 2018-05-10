@@ -13,4 +13,5 @@ SKBUILD_DIR = os.path.join(
 )
 CMAKE_BUILD_DIR = os.path.join(SKBUILD_DIR, "cmake-build")
 CMAKE_INSTALL_DIR = os.path.join(SKBUILD_DIR, "cmake-install")
+CMAKE_SPEC_FILE = os.path.join(CMAKE_BUILD_DIR, "CMakeSpec.json")
 SETUPTOOLS_INSTALL_DIR = os.path.join(SKBUILD_DIR, "setuptools")
