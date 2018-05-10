@@ -26,6 +26,14 @@ skbuild.cmaker module
     :undoc-members:
     :show-inheritance:
 
+skbuild.compat module
+---------------------
+
+.. automodule:: skbuild.compat
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 skbuild.constants module
 ------------------------
 
