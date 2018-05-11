@@ -59,6 +59,10 @@ Bug fixes
 * Set ``skbuild <version>`` as wheel generator.
   See `PEP-0427 <https://www.python.org/dev/peps/pep-0427/#file-contents>`_ and :issue:`191`.
 
+* Ensure ``MANIFEST.in`` is considered when generating source distribution. Thanks :user:`seanlis` for reporting
+  the problem and providing an initial patch, and thanks :user:`henryiii` for implementing the corresponding test.
+  See :issue:`260`.
+
 Python Support
 --------------
 
