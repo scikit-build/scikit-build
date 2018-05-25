@@ -63,6 +63,9 @@ Bug fixes
   the problem and providing an initial patch, and thanks :user:`henryiii` for implementing the corresponding test.
   See :issue:`260`.
 
+* Support generation of source distribution for git repository having submodules. This works only for version
+  of git >= 2.11 supporting the ``--recurse-submodules`` option with ``ls-files`` command.
+
 Python Support
 --------------
 
