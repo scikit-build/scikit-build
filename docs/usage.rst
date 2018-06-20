@@ -142,6 +142,16 @@ scikit-build options
       --build-type       specify the CMake build type (e.g. Debug or Release)
       -G , --generator   specify the CMake build system generator
       -j N               allow N build jobs at once
+      [...]
+
+
+.. versionadded:: 0.7.0
+
+::
+
+    scikit-build options:
+      [...]
+      --cmake-executable specify the path to the cmake executable
 
 
 .. _usage_cmake_options:

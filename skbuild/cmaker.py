@@ -71,13 +71,15 @@ def has_cmake_cache_arg(cmake_args, arg_name, arg_value=None):
 class CMaker(object):
     """Interface to CMake executable."""
 
-    def __init__(self):
+    def __init__(self, cmake_executable='cmake'):
+        self.cmake_executable = cmake_executable
+
         # verify that CMake is installed
         try:
-            version_string = subprocess.check_output(['cmake', '--version'])
+            version_string = subprocess.check_output([self.cmake_executable, '--version'])
         except (OSError, subprocess.CalledProcessError):
             raise SKBuildError(
-                "Problem with the CMake installation, aborting build.")
+                "Problem with the CMake installation, aborting build. CMake executable is %s" % self.cmake_executable)
 
         if sys.version_info > (3, 0):
             version_string = version_string.decode()
@@ -174,7 +176,7 @@ class CMaker(object):
 
         cmake_source_dir = os.path.abspath(cmake_source_dir)
         cmd = [
-            'cmake', cmake_source_dir, '-G', generator.name,
+            self.cmake_executable, cmake_source_dir, '-G', generator.name,
             ("-DCMAKE_INSTALL_PREFIX:PATH=" +
                 os.path.abspath(
                     os.path.join(CMAKE_INSTALL_DIR, cmake_install_dir))),
@@ -443,7 +445,7 @@ class CMaker(object):
                                 "Did you forget to run configure before "
                                 "make?").format(CMAKE_BUILD_DIR))
 
-        cmd = ["cmake", "--build", source_dir,
+        cmd = [self.cmake_executable, "--build", source_dir,
                "--target", "install", "--config", config, "--"]
         cmd.extend(clargs)
         cmd.extend(

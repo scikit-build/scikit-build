@@ -30,6 +30,10 @@ def test_get_python_library():
     assert os.path.exists(python_library)
 
 
+def test_cmake_executable():
+    assert CMaker().cmake_executable == "cmake"
+
+
 def test_has_cmake_cache_arg():
     cmake_args = ['-DFOO:STRING=42', '-DBAR', '-DCLIMBING:BOOL=ON']
     assert has_cmake_cache_arg(cmake_args, "FOO", "42")
