@@ -10,7 +10,7 @@ from ..utils import distribution_hide_listing, new_style
 
 
 class install_lib(set_build_base_mixin, new_style(_install_lib)):
-    """Custom implementation of ``install_data`` setuptools command."""
+    """Custom implementation of ``install_lib`` setuptools command."""
 
     def install(self):
         """Handle --hide-listing option."""

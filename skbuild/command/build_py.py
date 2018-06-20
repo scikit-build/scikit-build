@@ -13,7 +13,7 @@ from ..utils import distribution_hide_listing, new_style
 
 
 class build_py(set_build_base_mixin, new_style(_build_py)):
-    """Custom implementation of ``install_data`` setuptools command."""
+    """Custom implementation of ``build_py`` setuptools command."""
 
     def initialize_options(self):
         """Handle --hide-listing option.

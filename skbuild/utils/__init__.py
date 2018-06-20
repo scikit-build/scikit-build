@@ -7,6 +7,9 @@ from collections import namedtuple
 from contextlib import contextmanager
 from distutils import log as distutils_log
 from distutils.command.build_py import build_py as distutils_build_py
+from distutils.errors import DistutilsTemplateError
+from distutils.filelist import FileList
+from distutils.text_file import TextFile
 from functools import wraps
 
 
@@ -192,3 +195,33 @@ def distribution_hide_listing(distribution):
         distutils_log.set_threshold(distutils_log.WARN)
     yield hide_listing
     distutils_log.set_threshold(old_threshold)
+
+
+def parse_manifestin(template):
+    """This function parses template file (usually MANIFEST.in)"""
+    if not os.path.exists(template):
+        return []
+
+    template = TextFile(template, strip_comments=1, skip_blanks=1,
+                        join_lines=1, lstrip_ws=1, rstrip_ws=1,
+                        collapse_join=1)
+
+    file_list = FileList()
+    try:
+        while True:
+            line = template.readline()
+            if line is None:  # end of file
+                break
+
+            try:
+                file_list.process_template_line(line)
+            # the call above can raise a DistutilsTemplateError for
+            # malformed lines, or a ValueError from the lower-level
+            # convert_path function
+            except (DistutilsTemplateError, ValueError) as msg:
+                print("%s, line %d: %s" % (template.filename,
+                                           template.current_line,
+                                           msg))
+        return file_list.files
+    finally:
+        template.close()

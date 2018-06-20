@@ -36,6 +36,9 @@ New Features
 
 * Add support for :ref:`cmake_languages <usage-cmake_languages>` setup keyword argument.
 
+* Add support for ``include_package_data`` and ``exclude_package_data`` setup keywords as well as parsing of
+  ``MANIFEST.in``. See :issue:`315`. Thanks :user:`reiver-dev` for reporting the issue.
+
 Bug fixes
 ---------
 

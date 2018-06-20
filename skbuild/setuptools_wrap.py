@@ -39,7 +39,7 @@ from .command import (build, build_py, clean,
                       sdist, generate_source_manifest, test)
 from .constants import CMAKE_INSTALL_DIR, CMAKE_SPEC_FILE
 from .exceptions import SKBuildError, SKBuildGeneratorNotFoundError
-from .utils import (mkdir_p, PythonModuleFinder, to_platform_path, to_unix_path)
+from .utils import (mkdir_p, parse_manifestin, PythonModuleFinder, to_platform_path, to_unix_path)
 
 
 def create_skbuild_argparser():
@@ -510,12 +510,20 @@ def setup(*args, **kw):  # noqa: C901
 
     package_prefixes = _collect_package_prefixes(package_dir, packages)
 
-    _classify_files(cmkr.install(), package_data, package_prefixes,
-                    py_modules, new_py_modules,
-                    scripts, new_scripts,
-                    data_files,
-                    cmake_source_dir, skbuild_kw['cmake_install_dir'])
+    _classify_installed_files(cmkr.install(), package_data, package_prefixes,
+                              py_modules, new_py_modules,
+                              scripts, new_scripts,
+                              data_files,
+                              cmake_source_dir, skbuild_kw['cmake_install_dir'])
 
+    original_manifestin_data_files = []
+    if kw.get("include_package_data", False):
+        original_manifestin_data_files = parse_manifestin(os.path.join(os.getcwd(), "MANIFEST.in"))
+        for path in original_manifestin_data_files:
+            _classify_file(path, package_data, package_prefixes,
+                           py_modules, new_py_modules,
+                           scripts, new_scripts,
+                           data_files)
     if developer_mode:
         # Copy packages
         for package, package_file_list in package_data.items():
@@ -536,6 +544,10 @@ def setup(*args, **kw):  # noqa: C901
 
         original_package_data = kw.get('package_data', {}).copy()
         _consolidate_package_data_files(original_package_data, package_prefixes, hide_listing)
+
+        for data_file in original_manifestin_data_files:
+            dest_data_file = os.path.join(CMAKE_INSTALL_DIR, data_file)
+            _copy_file(data_file, dest_data_file, hide_listing)
 
     kw['package_data'] = package_data
     kw['package_dir'] = {
@@ -611,11 +623,11 @@ def _collect_package_prefixes(package_dir, packages):
 
 
 # pylint:disable=too-many-arguments, too-many-branches
-def _classify_files(install_paths, package_data, package_prefixes,
-                    py_modules, new_py_modules,
-                    scripts, new_scripts,
-                    data_files,
-                    cmake_source_dir, cmake_install_dir):
+def _classify_installed_files(install_paths, package_data, package_prefixes,
+                              py_modules, new_py_modules,
+                              scripts, new_scripts,
+                              data_files,
+                              cmake_source_dir, cmake_install_dir):
     assert not os.path.isabs(cmake_source_dir)
     assert cmake_source_dir != "."
 
@@ -623,10 +635,6 @@ def _classify_files(install_paths, package_data, package_prefixes,
 
     install_root = os.path.join(os.getcwd(), CMAKE_INSTALL_DIR)
     for path in install_paths:
-        found_package = False
-        found_module = False
-        found_script = False
-
         # if this installed file is not within the project root, complain and
         # exit
         if not to_platform_path(path).startswith(CMAKE_INSTALL_DIR):
@@ -652,58 +660,73 @@ def _classify_files(install_paths, package_data, package_prefixes,
                 and not path.startswith(cmake_source_dir)):
             path = to_unix_path(os.path.join(cmake_source_dir, path))
 
-        # check to see if path is part of a package
-        for prefix, package in package_prefixes:
-            if path.startswith(prefix + "/"):
-                # peel off the package prefix
-                path = to_unix_path(os.path.relpath(path, prefix))
+        _classify_file(path, package_data, package_prefixes,
+                       py_modules, new_py_modules,
+                       scripts, new_scripts,
+                       data_files)
 
-                package_file_list = package_data.get(package, [])
-                package_file_list.append(path)
-                package_data[package] = package_file_list
 
-                found_package = True
-                break
+def _classify_file(path, package_data, package_prefixes,
+                   py_modules, new_py_modules,
+                   scripts, new_scripts,
+                   data_files):
+    found_package = False
+    found_module = False
+    found_script = False
 
-        if found_package:
-            continue
-        # If control reaches this point, then this installed file is not part of
-        # a package.
+    path = to_unix_path(path)
 
-        # check if path is a module
-        for module in py_modules:
-            if path.replace("/", ".") == ".".join((module, "py")):
-                new_py_modules[module] = True
-                found_module = True
-                break
+    # check to see if path is part of a package
+    for prefix, package in package_prefixes:
+        if path.startswith(prefix + "/"):
+            # peel off the package prefix
+            path = to_unix_path(os.path.relpath(path, prefix))
 
-        if found_module:
-            continue
-        # If control reaches this point, then this installed file is not a
-        # module
+            package_file_list = package_data.get(package, [])
+            package_file_list.append(path)
+            package_data[package] = package_file_list
 
-        # if the file is a script, mark the corresponding script
-        for script in scripts:
-            if path == script:
-                new_scripts[script] = True
-                found_script = True
-                break
+            found_package = True
+            break
 
-        if found_script:
-            continue
-        # If control reaches this point, then this installed file is not a
-        # script
+    if found_package:
+        return
+    # If control reaches this point, then this installed file is not part of
+    # a package.
 
-        # If control reaches this point, then we have installed files that are
-        # not part of a package, not a module, nor a script.  Without any other
-        # information, we can only treat it as a generic data file.
-        parent_dir = os.path.dirname(path)
-        file_set = data_files.get(parent_dir)
-        if file_set is None:
-            file_set = set()
-            data_files[parent_dir] = file_set
-        file_set.add(os.path.join(CMAKE_INSTALL_DIR, path))
-        del parent_dir, file_set
+    # check if path is a module
+    for module in py_modules:
+        if path.replace("/", ".") == ".".join((module, "py")):
+            new_py_modules[module] = True
+            found_module = True
+            break
+
+    if found_module:
+        return
+    # If control reaches this point, then this installed file is not a
+    # module
+
+    # if the file is a script, mark the corresponding script
+    for script in scripts:
+        if path == script:
+            new_scripts[script] = True
+            found_script = True
+            break
+
+    if found_script:
+        return
+    # If control reaches this point, then this installed file is not a
+    # script
+
+    # If control reaches this point, then we have installed files that are
+    # not part of a package, not a module, nor a script.  Without any other
+    # information, we can only treat it as a generic data file.
+    parent_dir = os.path.dirname(path)
+    file_set = data_files.get(parent_dir)
+    if file_set is None:
+        file_set = set()
+        data_files[parent_dir] = file_set
+    file_set.add(os.path.join(CMAKE_INSTALL_DIR, path))
 
 
 def _copy_file(src_file, dest_file, hide_listing=True):
@@ -815,7 +838,7 @@ def _consolidate_package_data_files(original_package_data, package_prefixes, hid
 
     Considering that (1) the packages associated with modules located in both the source tree and
     the CMake install tree are consolidated into the CMake install tree, and (2) the consolidated
-    package path set in the package_dir dictionary and later used by setuptools to package
+    package path set in the ``package_dir`` dictionary and later used by setuptools to package
     (or install) modules and data files is data::`.constants.CMAKE_INSTALL_DIR`, copying the data files
     is required to ensure setuptools can find them when it uses the package directory.
     """
