@@ -55,6 +55,10 @@ def create_skbuild_argparser():
     parser.add_argument(
         '-j', metavar='N', type=int, dest='jobs',
         help='allow N build jobs at once')
+    parser.add_argument(
+        '--cmake-executable', default='cmake', metavar='',
+        help='specify the path to the cmake executable'
+    )
     return parser
 
 
@@ -62,7 +66,7 @@ def parse_skbuild_args(args, cmake_args, build_tool_args):
     """
     Parse arguments in the scikit-build argument set. Convert specified
     arguments to proper format and append to cmake_args and build_tool_args.
-    Returns remaining arguments.
+    Returns the tuple ``(remaining arguments, cmake executable)``.
     """
     parser = create_skbuild_argparser()
     namespace, remaining_args = parser.parse_known_args(args)
@@ -77,13 +81,13 @@ def parse_skbuild_args(args, cmake_args, build_tool_args):
     if namespace.jobs is not None:
         build_tool_args.extend(['-j', str(namespace.jobs)])
 
-    return remaining_args
+    return remaining_args, namespace.cmake_executable
 
 
 def parse_args():
     """This function parses the command-line arguments ``sys.argv`` and returns
-    the tuple ``(setuptools_args, cmake_args, build_tool_args)`` where each
-    element corresponds to a set of arguments separated by ``--``."""
+    the tuple ``(setuptools_args, cmake_executable, cmake_args, build_tool_args)`` where each
+    ``*_args`` element corresponds to a set of arguments separated by ``--``."""
     dutils = []
     cmake = []
     make = []
@@ -102,9 +106,9 @@ def parse_args():
         else:
             argsets[i].append(arg)
 
-    dutils = parse_skbuild_args(dutils, cmake, make)
+    dutils, cmake_executable = parse_skbuild_args(dutils, cmake, make)
 
-    return dutils, cmake, make
+    return dutils, cmake_executable, cmake, make
 
 
 @contextmanager
@@ -328,7 +332,7 @@ def setup(*args, **kw):  # noqa: C901
     version in :const:`skbuild.constants.CMAKE_SPEC_FILE`: and (3) re-configuring only if either the generator or
     the CMake specs change.
     """
-    sys.argv, cmake_args, make_args = parse_args()
+    sys.argv, cmake_executable, cmake_args, make_args = parse_args()
 
     # work around https://bugs.python.org/issue1011113
     # (patches provided, but no updates since 2014)
@@ -474,7 +478,7 @@ def setup(*args, **kw):  # noqa: C901
     cmake_languages = skbuild_kw['cmake_languages']
 
     try:
-        cmkr = cmaker.CMaker()
+        cmkr = cmaker.CMaker(cmake_executable)
         if not skip_cmake:
             # Used to confirm that the cmake executable is the same
             cmake_spec = {

@@ -10,6 +10,7 @@ Tests for various command line functionality.
 import os
 import pytest
 
+from skbuild.exceptions import SKBuildError
 from skbuild.utils import push_dir, to_platform_path
 
 from . import project_setup_py_test
@@ -99,6 +100,27 @@ def test_cmake_args(capfd):
     out, err = capfd.readouterr()
     assert "Manually-specified variables were not used by the project" in err
     assert "MY_CMAKE_VARIABLE" in err
+
+
+def test_cmake_executable_arg():
+
+    cmake_executable = "/path/to/invalid/cmake"
+
+    @project_setup_py_test("hello-no-language",
+                           ["--cmake-executable", cmake_executable, "build"], disable_languages_test=True)
+    def should_fail():
+        pass
+
+    failed = False
+    message = ""
+    try:
+        should_fail()
+    except SystemExit as e:
+        failed = isinstance(e.code, SKBuildError)
+        message = str(e)
+
+    assert failed
+    assert "Problem with the CMake installation, aborting build. CMake executable is %s" % cmake_executable in message
 
 
 @pytest.mark.parametrize("action", ['sdist', 'bdist_wheel'])

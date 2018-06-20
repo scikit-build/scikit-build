@@ -39,6 +39,9 @@ New Features
 * Add support for ``include_package_data`` and ``exclude_package_data`` setup keywords as well as parsing of
   ``MANIFEST.in``. See :issue:`315`. Thanks :user:`reiver-dev` for reporting the issue.
 
+* Add support for ``--cmake-executable`` scikit-build command line option. Thanks :user:`henryborchers` for the suggestion.
+  See :issue:`317`.
+
 Bug fixes
 ---------
 
