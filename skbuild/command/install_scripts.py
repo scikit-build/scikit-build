@@ -11,7 +11,7 @@ from ..utils import distribution_hide_listing, new_style
 
 
 class install_scripts(set_build_base_mixin, new_style(_install_scripts)):
-    """Custom implementation of ``install_data`` setuptools command."""
+    """Custom implementation of ``install_scripts`` setuptools command."""
 
     def run(self, *args, **kwargs):
         """Handle --hide-listing option."""
