@@ -1,0 +1,7 @@
+include hello/hello_include_from_manifest.txt
+include hello2/hello2_include_from_manifest.txt
+
+include hello/data/subdata/*.txt
+include hello2/data2/subdata2/*.txt
+
+exclude */data*/subdata*/*_exclude_from_manifest.txt

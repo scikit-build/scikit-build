@@ -39,7 +39,7 @@ from .command import (build, build_py, clean,
                       sdist, generate_source_manifest, test)
 from .constants import CMAKE_INSTALL_DIR, CMAKE_SPEC_FILE
 from .exceptions import SKBuildError, SKBuildGeneratorNotFoundError
-from .utils import (mkdir_p, PythonModuleFinder, to_platform_path, to_unix_path)
+from .utils import (mkdir_p, parse_manifestin, PythonModuleFinder, to_platform_path, to_unix_path)
 
 
 def create_skbuild_argparser():
@@ -516,6 +516,14 @@ def setup(*args, **kw):  # noqa: C901
                               data_files,
                               cmake_source_dir, skbuild_kw['cmake_install_dir'])
 
+    original_manifestin_data_files = []
+    if kw.get("include_package_data", False):
+        original_manifestin_data_files = parse_manifestin(os.path.join(os.getcwd(), "MANIFEST.in"))
+        for path in original_manifestin_data_files:
+            _classify_file(path, package_data, package_prefixes,
+                           py_modules, new_py_modules,
+                           scripts, new_scripts,
+                           data_files)
     if developer_mode:
         # Copy packages
         for package, package_file_list in package_data.items():
@@ -536,6 +544,10 @@ def setup(*args, **kw):  # noqa: C901
 
         original_package_data = kw.get('package_data', {}).copy()
         _consolidate_package_data_files(original_package_data, package_prefixes, hide_listing)
+
+        for data_file in original_manifestin_data_files:
+            dest_data_file = os.path.join(CMAKE_INSTALL_DIR, data_file)
+            _copy_file(data_file, dest_data_file, hide_listing)
 
     kw['package_data'] = package_data
     kw['package_dir'] = {
@@ -661,6 +673,8 @@ def _classify_file(path, package_data, package_prefixes,
     found_package = False
     found_module = False
     found_script = False
+
+    path = to_unix_path(path)
 
     # check to see if path is part of a package
     for prefix, package in package_prefixes:

@@ -567,6 +567,7 @@ def test_setup_inputs(
             author='The scikit-build team',
             license="MIT",
             cmake_source_dir='{cmake_source_dir}',
+            cmake_install_dir='{cmake_install_dir}',
             # Arbitrary order of packages
             packages=[
         {p_off}    'pure',
@@ -594,6 +595,7 @@ def test_setup_inputs(
         )
         """.format(
             cmake_source_dir=cmake_source_dir,
+            cmake_install_dir=package_base,
             package_base=package_base_dir,
             c_off='' if has_cmake_package else '#',
             cm_off='' if has_cmake_module else '#',
