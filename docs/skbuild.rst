@@ -50,8 +50,8 @@ skbuild.exceptions module
     :undoc-members:
     :show-inheritance:
 
-skbuild.setuptools_wrap module
-------------------------------
+skbuild.setuptools\_wrap module
+-------------------------------
 
 .. automodule:: skbuild.setuptools_wrap
     :members:
