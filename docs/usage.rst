@@ -37,6 +37,59 @@ Next, add a ``CMakeLists.txt``
 Setup options
 -------------
 
+setuptools options
+^^^^^^^^^^^^^^^^^^
+
+The section below documents some of the options accepted by the ``setup()`` function.
+
+- ``packages``: Explicitly list of all packages to include in the distribution. Setuptools will not recursively
+  scan the source tree looking for any directory with an ``__init__.py`` file. To automatically generate the list
+  of packages, see `Using find_package()`_.
+
+- ``package_dir``: A mapping of package to directory names
+
+- ``include_package_data``: If set to ``True``, this tells setuptools to automatically include any data files it finds
+  inside your package directories that are specified by your ``MANIFEST.in`` file. For more information, see the setuptools
+  documentation section on `Including Data Files`_.
+
+- ``package_data``: A dictionary mapping package names to lists of glob patterns. For a complete description and examples,
+  see the setuptools documentation section on `Including Data Files`_.
+  You do not need to use this option if you are using include_package_data, unless you need to add e.g. files that are generated
+  by your setup script and build process. (And are therefore not in source control or are files that you don’t want to include
+  in your source distribution.)
+
+- ``exclude_package_data``: Dictionary mapping package names to lists of glob patterns that should be excluded from
+  the package directories. You can use this to trim back any excess files included by include_package_data.
+  For a complete description and examples, see the setuptools documentation section on `Including Data Files`_.
+
+- ``py_modules``: List all modules rather than listing packages. More details in the `Listing individual modules`_
+  section of the distutils documentation.
+
+- ``data_files``: Sequence of `(directory, files)` pairs. Each `(directory, files)` pair in the sequence specifies
+  the installation directory and the files to install there. More details in the `Installing Additional Files`_
+  section of the setuptools documentation.
+
+- ``entry_points``: A dictionary mapping entry point group names to strings or lists of strings defining the entry points.
+  Entry points are used to support dynamic discovery of services or plugins provided by a project.
+  See `Dynamic Discovery of Services and Plugins`_ for details and examples of the format of this argument. In addition,
+  this keyword is used to support `Automatic Script Creation`_.
+
+- ``scripts``: List of python script relative paths. If the first line of the script starts with ``#!`` and contains the
+  word `python`, the Distutils will adjust the first line to refer to the current interpreter location.
+  More details in the `Installing Scripts <https://docs.python.org/3/distutils/setupscript.html#installing-scripts>`_ section
+  of the distutils documentation.
+
+
+.. _Using find_package(): https://setuptools.readthedocs.io/en/latest/setuptools.html#using-find-packages
+.. _Including Data Files: https://setuptools.readthedocs.io/en/latest/setuptools.html#including-data-files
+.. _Installing Additional Files: https://docs.python.org/3/distutils/setupscript.html#installing-additional-files
+.. _Listing individual modules: https://docs.python.org/3/distutils/setupscript.html#listing-individual-modules
+.. _Dynamic Discovery of Services and Plugins: https://setuptools.readthedocs.io/en/latest/setuptools.html#dynamic-discovery-of-services-and-plugins
+.. _Automatic Script Creation: https://setuptools.readthedocs.io/en/latest/setuptools.html#automatic-script-creation
+
+scikit-build options
+^^^^^^^^^^^^^^^^^^^^
+
 Scikit-build augments the ``setup()`` function with the following options:
 
 - ``cmake_args``: List of `CMake options <https://cmake.org/cmake/help/v3.6/manual/cmake.1.html#options>`_.
@@ -72,6 +125,7 @@ For example::
 - ``cmake_languages``: Tuple of languages that the project use, by default
   `('C', 'CXX',)`. This option ensures that a generator is chosen that supports
   all languages for the project.
+
 
 Command line options
 --------------------
