@@ -44,9 +44,24 @@ jobs:
     docker:
       - image: circleci/python:2.7.14-jessie
     <<: *ci-steps
+  python35:
+    docker:
+      - image: circleci/python:3.5.5-jessie
+    <<: *ci-steps
+  python36:
+    docker:
+      - image: circleci/python:3.6.4-jessie
+    <<: *ci-steps
+#  python37:
+#    docker:
+#      - image: circleci/python:3.7.0-stretch
+#    <<: *ci-steps
 
 workflows:
   version: 2
   test-package-publish:
     jobs:
       - python27
+      - python35
+      - python36
+#      - python37
