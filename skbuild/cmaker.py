@@ -158,7 +158,7 @@ class CMaker(object):
         # use the generator returned from the platform, with the current
         # generator_name as a suggestion
         generator = self.platform.get_best_generator(
-            generator_name, cmake_args=clargs,
+            generator_name, cmake_executable=self.cmake_executable, cmake_args=clargs,
             languages=languages, cleanup=cleanup)
 
         if not os.path.exists(CMAKE_BUILD_DIR):

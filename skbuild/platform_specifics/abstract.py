@@ -55,13 +55,6 @@ class CMakePlatform(object):
         if os.path.exists(test_folder):
             shutil.rmtree(test_folder)
 
-    # pylint:disable=no-self-use
-    def get_cmake_exe_path(self):
-        """Override this method with additional logic where necessary
-        if CMake is not on PATH.
-        """
-        return "cmake"
-
     def get_generator(self, generator_name):
         """Loop over generators and return the first that matches the given
         name.
@@ -76,7 +69,7 @@ class CMakePlatform(object):
     # renaming it?
     def get_best_generator(
             self, generator_name=None, languages=("CXX", "C"), cleanup=True,
-            cmake_args=()):
+            cmake_executable='cmake', cmake_args=()):
         """Loop over generators to find one that works by configuring
         and compiling a test project.
 
@@ -91,6 +84,10 @@ class CMakePlatform(object):
         :param cleanup: If True, cleans up temporary folder used to test \
         generators. Set to False for debugging to see CMake's output files.
         :type cleanup: bool
+
+        :param cmake_executable: Path to CMake executable used to configure \
+        and build the test project used to evaluate if a generator is working.
+        :type cmake_executable: string
 
         :param cmake_args: List of CMake arguments to use when configuring \
         the test project. Only arguments starting with ``-DCMAKE_`` are \
@@ -118,12 +115,10 @@ class CMakePlatform(object):
             if not candidate_generators:
                 candidate_generators = [CMakeGenerator(generator_name)]
 
-        cmake_exe_path = self.get_cmake_exe_path()
-
         self.write_test_cmakelist(languages)
 
         working_generator = self.compile_test_cmakelist(
-            cmake_exe_path, candidate_generators, cmake_args)
+            cmake_executable, candidate_generators, cmake_args)
 
         if working_generator is None:
             raise SKBuildGeneratorNotFoundError(textwrap.dedent(
