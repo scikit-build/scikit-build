@@ -16,6 +16,7 @@ from distutils.errors import (DistutilsArgError,
                               DistutilsError,
                               DistutilsGetoptError)
 from glob import glob
+from packaging.version import parse as parse_version
 from shutil import copyfile, copymode
 
 # XXX If 'six' becomes a dependency, use 'six.StringIO' instead.
@@ -366,6 +367,7 @@ def setup(*args, **kw):  # noqa: C901
         'cmake_source_dir': '',
         'cmake_with_sdist': False,
         'cmake_languages': ('C', 'CXX'),
+        'cmake_minimum_required_version': None
     }
     skbuild_kw = {param: kw.pop(param, parameters[param])
                   for param in parameters}
@@ -480,6 +482,12 @@ def setup(*args, **kw):  # noqa: C901
     try:
         cmkr = cmaker.CMaker(cmake_executable)
         if not skip_cmake:
+            cmake_minimum_required_version = skbuild_kw['cmake_minimum_required_version']
+            if cmake_minimum_required_version is not None:
+                if parse_version(cmkr.cmake_version) < parse_version(cmake_minimum_required_version):
+                    raise SKBuildError(
+                        "CMake version %s or higher is required. CMake version %s is being used" % (
+                            cmake_minimum_required_version, cmkr.cmake_version))
             # Used to confirm that the cmake executable is the same
             cmake_spec = {
                 'args': [which('cmake')] + cmake_args,

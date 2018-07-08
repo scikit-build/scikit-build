@@ -17,16 +17,31 @@ New Features
   the CMake arguments and (3) re-configuring only if either the generator or the CMake specs change.
   Thanks :user:`xoviat` for the contribution. See :issue:`301`.
 
-* CMake module :doc:`\cmake-modules/PythonExtensions`: Set symbol visibility to export only the module init function.
-  This applies to GNU and MSVC compilers. Thanks :user:`xoviat`. See :issue:`299`.
+* CMake modules:
 
-* Add CMake module :doc:`\cmake-modules/F2PY` useful to find the ``f2py`` executable for building Python
-  extensions with Fortran. Thanks to :user:`xoviat` for moving forward with the integration. Concept for the
-  module comes from the work of :user:`scopatz` done in `PyNE <https://github.com/pyne/pyne>`_ project.
-  See :issue:`273`.
+  * CMake module :doc:`\cmake-modules/PythonExtensions`: Set symbol visibility to export only the module init function.
+    This applies to GNU and MSVC compilers. Thanks :user:`xoviat`. See :issue:`299`.
 
-* Update CMake module :doc:`\cmake-modules/NumPy` setting variables ``NumPy_CONV_TEMPLATE_EXECUTABLE``
-  and ``NumPy_FROM_TEMPLATE_EXECUTABLE``. Thanks :user:`xoviat` for the contribution. See :issue:`278`.
+  * Add CMake module :doc:`\cmake-modules/F2PY` useful to find the ``f2py`` executable for building Python
+    extensions with Fortran. Thanks to :user:`xoviat` for moving forward with the integration. Concept for the
+    module comes from the work of :user:`scopatz` done in `PyNE <https://github.com/pyne/pyne>`_ project.
+    See :issue:`273`.
+
+  * Update CMake module :doc:`\cmake-modules/NumPy` setting variables ``NumPy_CONV_TEMPLATE_EXECUTABLE``
+    and ``NumPy_FROM_TEMPLATE_EXECUTABLE``. Thanks :user:`xoviat` for the contribution. See :issue:`278`.
+
+* Setup keywords:
+
+  * Add support for :ref:`cmake_languages <usage-cmake_languages>` setup keyword.
+
+  * Add support for ``include_package_data`` and ``exclude_package_data`` setup keywords as well as parsing of
+    ``MANIFEST.in``. See :issue:`315`. Thanks :user:`reiver-dev` for reporting the issue.
+
+  * Add support for ``cmake_minimum_required_version`` setup keyword.  See :issue:`312`.
+    Suggested by :user:`henryiii`.
+
+* Add support for ``--cmake-executable`` scikit-build command line option. Thanks :user:`henryborchers` for the suggestion.
+  See :issue:`317`.
 
 * Use ``_skbuild/platform-X.Y`` instead of ``_skbuild`` to build package. This allows to have a different build
   directory for each python version. Thanks :user:`isuruf` for the suggestion and :user:`xoviat` for contributing
@@ -34,13 +49,6 @@ New Features
 
 * Run cmake and ``develop`` command when command ``test`` is executed.
 
-* Add support for :ref:`cmake_languages <usage-cmake_languages>` setup keyword argument.
-
-* Add support for ``include_package_data`` and ``exclude_package_data`` setup keywords as well as parsing of
-  ``MANIFEST.in``. See :issue:`315`. Thanks :user:`reiver-dev` for reporting the issue.
-
-* Add support for ``--cmake-executable`` scikit-build command line option. Thanks :user:`henryborchers` for the suggestion.
-  See :issue:`317`.
 
 Bug fixes
 ---------

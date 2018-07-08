@@ -269,6 +269,43 @@ def test_cmake_with_sdist_keyword(cmake_with_sdist, capfd):
         assert "Generating done" not in out
 
 
+def test_cmake_minimum_required_version_keyword():
+    tmp_dir = _tmpdir('cmake_minimum_required_version')
+
+    tmp_dir.join('setup.py').write(textwrap.dedent(
+        """
+        from skbuild import setup
+        setup(
+            name="cmake_with_sdist_keyword",
+            version="1.2.3",
+            description="a minimal example package",
+            author='The scikit-build team',
+            license="MIT",
+            cmake_minimum_required_version='99.98.97'
+        )
+        """
+    ))
+    tmp_dir.join('CMakeLists.txt').write(textwrap.dedent(
+        """
+        cmake_minimum_required(VERSION 3.5.0)
+        project(test NONE)
+        install(CODE "execute_process(
+          COMMAND \${CMAKE_COMMAND} -E sleep 0)")
+        """
+    ))
+
+    try:
+        with execute_setup_py(tmp_dir, ['build'], disable_languages_test=True):
+            pass
+    except SystemExit as e:
+        # Error is not of type SKBuildError, it is expected to be
+        # raised by distutils.core.setup
+        failed = isinstance(e.code, SKBuildError)
+        message = str(e)
+        assert failed
+        assert "CMake version 99.98.97 or higher is required." in message
+
+
 @pytest.mark.parametrize("distribution_type", ('pure', 'skbuild'))
 def test_script_keyword(distribution_type, capsys):
 
