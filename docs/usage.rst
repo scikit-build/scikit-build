@@ -126,6 +126,9 @@ For example::
   `('C', 'CXX',)`. This option ensures that a generator is chosen that supports
   all languages for the project.
 
+- ``cmake_minimum_required_version``: String identifying the minimum version of CMake required
+  to configure the project.
+
 
 Command line options
 --------------------
