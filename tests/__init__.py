@@ -7,6 +7,7 @@ import os.path
 import pkg_resources
 import py.path
 import re
+import requests
 import six
 import subprocess
 import sys
@@ -273,3 +274,12 @@ def get_cmakecache_variables(cmakecache):
                 variable_value = line.split("=")[1]
                 results[variable_name] = (variable_type, variable_value)
     return results
+
+
+def is_site_reachable(url):
+    """Return True if the given website can be accessed"""
+    try:
+        request = requests.get(url)
+        return request.status_code == 200
+    except requests.exceptions.ConnectionError:
+        return False
