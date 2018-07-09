@@ -80,6 +80,11 @@ Bug fixes
 * Support generation of source distribution for git repository having submodules. This works only for version
   of git >= 2.11 supporting the ``--recurse-submodules`` option with ``ls-files`` command.
 
+Internal API
+------------
+
+* Add :meth:`skbuild.cmaker.get_cmake_version`.
+
 Python Support
 --------------
 

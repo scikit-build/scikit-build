@@ -68,23 +68,28 @@ def has_cmake_cache_arg(cmake_args, arg_name, arg_value=None):
     return False
 
 
+def get_cmake_version(cmake_executable='cmake'):
+    """Runs CMake and extracts associated version information.
+    Raises :class:`skbuild.exceptions.SKBuildError` if it failed to execute CMake.
+    """
+    try:
+        version_string = subprocess.check_output([cmake_executable, '--version'])
+    except (OSError, subprocess.CalledProcessError):
+        raise SKBuildError(
+            "Problem with the CMake installation, aborting build. CMake executable is %s" % cmake_executable)
+
+    if sys.version_info > (3, 0):
+        version_string = version_string.decode()
+
+    return version_string.splitlines()[0].split(' ')[-1]
+
+
 class CMaker(object):
     """Interface to CMake executable."""
 
     def __init__(self, cmake_executable='cmake'):
         self.cmake_executable = cmake_executable
-
-        # verify that CMake is installed
-        try:
-            version_string = subprocess.check_output([self.cmake_executable, '--version'])
-        except (OSError, subprocess.CalledProcessError):
-            raise SKBuildError(
-                "Problem with the CMake installation, aborting build. CMake executable is %s" % self.cmake_executable)
-
-        if sys.version_info > (3, 0):
-            version_string = version_string.decode()
-
-        self.cmake_version = version_string.splitlines()[0].split(' ')[-1]
+        self.cmake_version = get_cmake_version(self.cmake_executable)
         self.platform = get_platform()
 
     def get_cached_generator_name(self):
