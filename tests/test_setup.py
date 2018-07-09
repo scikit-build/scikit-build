@@ -306,6 +306,48 @@ def test_cmake_minimum_required_version_keyword():
         assert "CMake version 99.98.97 or higher is required." in message
 
 
+def test_setup_requires_keyword_include_cmake(mocker, capsys):
+
+    mock_setup = mocker.patch('skbuild.setuptools_wrap.upstream_setup')
+
+    tmp_dir = _tmpdir('setup_requires_keyword_include_cmake')
+
+    setup_requires = ['cmake>=3.10']
+
+    tmp_dir.join('setup.py').write(textwrap.dedent(
+        """
+        from skbuild import setup
+        setup(
+            name="cmake_with_sdist_keyword",
+            version="1.2.3",
+            description="a minimal example package",
+            author='The scikit-build team',
+            license="MIT",
+            setup_requires=[{setup_requires}]
+        )
+        """.format(setup_requires=",".join(["'%s'" % package for package in setup_requires]))
+    ))
+    tmp_dir.join('CMakeLists.txt').write(textwrap.dedent(
+        """
+        cmake_minimum_required(VERSION 3.5.0)
+        project(test NONE)
+        install(CODE "execute_process(
+          COMMAND \${CMAKE_COMMAND} -E sleep 0)")
+        """
+    ))
+
+    with execute_setup_py(tmp_dir, ['build'], disable_languages_test=True):
+        assert mock_setup.call_count == 1
+        setup_kw = mock_setup.call_args[1]
+        assert setup_kw['setup_requires'] == setup_requires
+
+        import cmake
+
+        out, _ = capsys.readouterr()
+        if "Searching for cmake>=3.10" in out:
+            assert cmake.__file__.startswith(str(tmp_dir))
+
+
 @pytest.mark.parametrize("distribution_type", ('pure', 'skbuild'))
 def test_script_keyword(distribution_type, capsys):
 

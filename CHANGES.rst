@@ -37,8 +37,10 @@ New Features
   * Add support for ``include_package_data`` and ``exclude_package_data`` setup keywords as well as parsing of
     ``MANIFEST.in``. See :issue:`315`. Thanks :user:`reiver-dev` for reporting the issue.
 
-  * Add support for ``cmake_minimum_required_version`` setup keyword.  See :issue:`312`.
+  * Add support for ``cmake_minimum_required_version`` setup keyword. See :issue:`312`.
     Suggested by :user:`henryiii`.
+
+  * Install cmake if found in ``setup_requires`` list. See :issue:`313`. Suggested by :user:`henryiii`.
 
 * Add support for ``--cmake-executable`` scikit-build command line option. Thanks :user:`henryborchers` for the suggestion.
   See :issue:`317`.
@@ -79,6 +81,11 @@ Bug fixes
 
 * Support generation of source distribution for git repository having submodules. This works only for version
   of git >= 2.11 supporting the ``--recurse-submodules`` option with ``ls-files`` command.
+
+Internal API
+------------
+
+* Add :meth:`skbuild.cmaker.get_cmake_version`.
 
 Python Support
 --------------
