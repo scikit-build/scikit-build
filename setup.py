@@ -30,7 +30,7 @@ setup_requires = pytest_runner
 setup(
     name='scikit-build',
     version='0.7.0',
-    description='Improved build system generator for Python C extensions',
+    description='Improved build system generator for Python C/C++/Fortran/Cython extensions',
     long_description=readme + '\n\n' + history,
     author='The scikit-build team',
     author_email='scikit-build@googlegroups.com',
@@ -58,9 +58,10 @@ setup(
         "Programming Language :: Python :: 2",
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
     ],
     tests_require=dev_requirements,
     setup_requires=setup_requires
