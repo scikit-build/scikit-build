@@ -252,6 +252,25 @@ These are specific to the underlying build tool (e.g msbuild.exe, make, ninja).
 Advanced Usage
 ==============
 
+Adding cmake as building requirement only if not installed or too low a version
+-------------------------------------------------------------------------------
+
+If systematically installing cmake wheel is not desired, the ``setup_requires`` list
+can be set using the following approach::
+
+    from packaging.version import LegacyVersion
+    from skbuild.exceptions import SKBuildError
+    from skbuild.cmaker import get_cmake_version
+
+    # Add CMake as a build requirement if cmake is not installed or is too low a version
+    setup_requires = []
+    try:
+        if LegacyVersion(get_cmake_version()) < LegacyVersion("3.4"):
+            setup_requires.append('cmake')
+    except SKBuildError:
+        setup_requires.append('cmake')
+
+
 .. _cross_compilation:
 
 Cross-compilation
