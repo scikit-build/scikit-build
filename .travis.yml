@@ -8,34 +8,39 @@ language: python
 
 matrix:
   include:
-    - os: linux
-      python: "3.4"
-
-    - os: linux
-      python: "2.7"
+    - os: osx
+      language: generic
+      env:
+        - PYTHON_VERSION=3.7.0
 
     - os: osx
       language: generic
       env:
-        - PYTHON_VERSION=3.4.7
+        - PYTHON_VERSION=3.6.5
 
     - os: osx
       language: generic
       env:
-        - PYTHON_VERSION=2.7.14
+        - PYTHON_VERSION=3.5.5
+
+    - os: osx
+      language: generic
+      env:
+        - PYTHON_VERSION=3.4.8
+
+    - os: osx
+      language: generic
+      env:
+        - PYTHON_VERSION=2.7.15
 
 cache:
   directories:
-    - $HOME/.pyenv/versions/3.4.7
-    - $HOME/.pyenv/versions/2.7.14
+    - $HOME/.pyenv/versions/3.7.0
+    - $HOME/.pyenv/versions/3.6.5
+    - $HOME/.pyenv/versions/3.5.5
+    - $HOME/.pyenv/versions/3.4.8
+    - $HOME/.pyenv/versions/2.7.15
     - $HOME/downloads
-
-addons:
-  apt:
-    packages:
-      - gfortran
-      - libboost-python-dev
-      - python-vtk
 
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then mkdir $HOME/bin; ln -s $(which pip2) $HOME/bin/pip; fi

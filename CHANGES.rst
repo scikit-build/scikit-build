@@ -19,6 +19,10 @@ Tests
 * Skip `test_setup_requires_keyword_include_cmake` if running in conda test environment or
   if https://pypi.org is not reachable. Suggested by :user:`Luthaf`.
 
+* Continuous Integration
+
+  * TravisCI: Remove testing of linux now covered by CircleCI, add testing for Python 3.5, 3.6 and 3.7 on macOS.
+
 Scikit-build 0.7.1
 ==================
 
