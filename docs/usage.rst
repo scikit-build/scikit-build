@@ -87,6 +87,7 @@ The section below documents some of the options accepted by the ``setup()`` func
 .. _Dynamic Discovery of Services and Plugins: https://setuptools.readthedocs.io/en/latest/setuptools.html#dynamic-discovery-of-services-and-plugins
 .. _Automatic Script Creation: https://setuptools.readthedocs.io/en/latest/setuptools.html#automatic-script-creation
 
+
 scikit-build options
 ^^^^^^^^^^^^^^^^^^^^
 
@@ -128,6 +129,12 @@ For example::
 
 - ``cmake_minimum_required_version``: String identifying the minimum version of CMake required
   to configure the project.
+
+Scikit-build changes the following options:
+
+.. versionadded:: 0.7.0
+
+- ``setup_requires``: If ``cmake`` is found in the list, it is explicitly installed first by scikit-build.
 
 
 Command line options

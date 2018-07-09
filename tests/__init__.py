@@ -4,6 +4,7 @@ import _pytest.tmpdir
 import distutils
 import os
 import os.path
+import pkg_resources
 import py.path
 import re
 import six
@@ -196,6 +197,10 @@ def execute_setup_py(project_dir, setup_args, disable_languages_test=False):
     distutils.dir_util._path_created = {}
 
     with push_dir(str(project_dir)), push_argv(["setup.py"] + setup_args), prepend_sys_path([str(project_dir)]):
+
+        # Restore master working set that is reset following call to "python setup.py test"
+        # See function "project_on_sys_path()" in setuptools.command.test
+        pkg_resources._initialize_master_working_set()
 
         with open("setup.py", "r") as fp:
             setup_code = compile(fp.read(), "setup.py", mode="exec")

@@ -10,14 +10,17 @@ import os.path
 import sys
 import argparse
 import json
+import platform
+import stat
 
 from contextlib import contextmanager
 from distutils.errors import (DistutilsArgError,
                               DistutilsError,
                               DistutilsGetoptError)
 from glob import glob
-from packaging.version import parse as parse_version
 from shutil import copyfile, copymode
+from packaging.requirements import Requirement
+from packaging.version import parse as parse_version
 
 # XXX If 'six' becomes a dependency, use 'six.StringIO' instead.
 try:
@@ -57,7 +60,7 @@ def create_skbuild_argparser():
         '-j', metavar='N', type=int, dest='jobs',
         help='allow N build jobs at once')
     parser.add_argument(
-        '--cmake-executable', default='cmake', metavar='',
+        '--cmake-executable', default=None, metavar='',
         help='specify the path to the cmake executable'
     )
     return parser
@@ -471,6 +474,30 @@ def setup(*args, **kw):  # noqa: C901
                 '-DCMAKE_OSX_ARCHITECTURES:STRING=%s' % machine
             )
 
+    # Install cmake if listed in `setup_requires`
+    for package in kw.get('setup_requires', []):
+        if Requirement(package).name == 'cmake':
+            setup_requires = [package]
+            dist = upstream_Distribution({'setup_requires': setup_requires})
+            dist.fetch_build_eggs(setup_requires)
+
+            # Considering packages associated with "setup_requires" keyword are
+            # installed in .eggs subdirectory without honoring setuptools "console_scripts"
+            # entry_points and without settings the expected executable permissions, we are
+            # taking care of it below.
+            import cmake
+            for executable in ['cmake', 'cpack', 'ctest']:
+                executable = os.path.join(cmake.CMAKE_BIN_DIR, executable)
+                if platform.system().lower() == 'windows':
+                    executable += '.exe'
+                st = os.stat(executable)
+                permissions = (
+                        st.st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
+                )
+                os.chmod(executable, permissions)
+            cmake_executable = os.path.join(cmake.CMAKE_BIN_DIR, 'cmake')
+            break
+
     # Since CMake arguments provided through the command line have more
     # weight and when CMake is given multiple times a argument, only the last
     # one is considered, let's prepend the one provided in the setup call.
@@ -480,6 +507,8 @@ def setup(*args, **kw):  # noqa: C901
     cmake_languages = skbuild_kw['cmake_languages']
 
     try:
+        if cmake_executable is None:
+            cmake_executable = 'cmake'
         cmkr = cmaker.CMaker(cmake_executable)
         if not skip_cmake:
             cmake_minimum_required_version = skbuild_kw['cmake_minimum_required_version']
