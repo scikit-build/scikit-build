@@ -9,6 +9,6 @@ from .setuptools_wrap import setup  # noqa: F401
 
 __author__ = 'The scikit-build team'
 __email__ = 'scikit-build@googlegroups.com'
-__version__ = '0.7.0'
+__version__ = '0.7.1'
 
 __all__ = ["setup"]
