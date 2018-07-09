@@ -12,24 +12,37 @@ with the following advantages:
 - first-class :ref:`cross-compilation <cross_compilation>` support
 - location of dependencies and their associated build requirements
 
-=====
-Usage
-=====
+===========
+Basic Usage
+===========
 
-Basic usage
------------
+.. _basic_usage_example:
+
+Example of setup.py, CMakeLists.txt and pyproject.toml
+------------------------------------------------------
 
 To use scikit-build in a project, place the following in your project's
 `setup.py` file::
 
-    # This line replaces 'from setuptools import setup'
-    from skbuild import setup
+    from skbuild import setup  # This line replaces 'from setuptools import setup'
 
 Your project now uses scikit-build instead of setuptools.
 
-Next, add a ``CMakeLists.txt``
+Next, add a ``CMakeLists.txt`` to describe how to build your extension. In the following example,
+a C++ extension named ``_hello`` is built::
 
-.. note:: *To be documented.*
+    cmake_minimum_required(VERSION 3.11.0)
+    project(hello)
+    find_package(PythonExtensions REQUIRED)
+
+    add_library(_hello MODULE hello/_hello.cxx)
+    python_extension_module(_hello)
+    install(TARGETS _hello LIBRARY DESTINATION hello)
+
+Then, add a ``pyproject.toml`` to list the build system requirements::
+
+    [build-system]
+    requires = ["setuptools", "wheel", "scikit-build", "cmake", "ninja"]
 
 
 .. _usage-setup_options:
@@ -234,6 +247,10 @@ build tool options
 
 These are specific to the underlying build tool (e.g msbuild.exe, make, ninja).
 
+
+==============
+Advanced Usage
+==============
 
 .. _cross_compilation:
 

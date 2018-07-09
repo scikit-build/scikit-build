@@ -2,16 +2,17 @@
 scikit-build
 ===============================
 
-Improved build system generator for CPython C extensions.
+Improved build system generator for CPython C/C++/Fortran/Cython extensions.
 
 Better support is available for additional compilers, build systems, cross
 compilation, and locating dependencies and determining their build
-requirements. The **scikit-build** package is fundamentally just glue between
-the `setuptools` Python module and `CMake <https://cmake.org/>`_. Currently,
-the package is available to perform builds in a `setup.py` file. In the
-future, the project aims to be a build tool option in the `currently
-developing pyproject.toml build system specification
-<https://www.python.org/dev/peps/pep-0518/>`_.
+requirements.
+
+The **scikit-build** package is fundamentally just glue between
+the `setuptools` Python module and `CMake <https://cmake.org/>`_.
+
+To get started, see `this example <scikit-build.readthedocs.io/en/latest/usage.html#example-of-setup-py-cmakelists-txt-and-pyproject-toml>`_.
+
 
 Latest Release
 --------------

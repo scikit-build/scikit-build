@@ -139,6 +139,8 @@ Documentation
   * :mod:`skbuild.command.generate_source_manifest`
   * :mod:`skbuild.utils`
 
+* Split usage documentation into a `Basic Usage` and `Advanced Usage` sections.
+
 Cleanups
 --------
 
