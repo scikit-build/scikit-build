@@ -13,6 +13,12 @@ Documentation
 
 * README: Update overall download count.
 
+Tests
+-----
+
+* Skip `test_setup_requires_keyword_include_cmake` if running in conda test environment or
+  if https://pypi.org is not reachable. Suggested by :user:`Luthaf`.
+
 Scikit-build 0.7.1
 ==================
 
