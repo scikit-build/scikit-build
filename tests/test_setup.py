@@ -24,7 +24,7 @@ from skbuild.setuptools_wrap import strip_package
 from skbuild.utils import (push_dir, to_platform_path)
 
 from . import (_tmpdir, execute_setup_py,
-               initialize_git_repo_and_commit, push_argv)
+               initialize_git_repo_and_commit, is_site_reachable, push_argv)
 
 
 @pytest.mark.parametrize("distribution_type",
@@ -306,6 +306,10 @@ def test_cmake_minimum_required_version_keyword():
         assert "CMake version 99.98.97 or higher is required." in message
 
 
+@pytest.mark.skipif(os.environ.get("CONDA_BUILD", "0") == "1",
+                    reason="running tests expecting network connection in Conda is not possible")
+@pytest.mark.skipif(not is_site_reachable("https://pypi.org/simple/cmake/"),
+                    reason="pypi.org website not reachable")
 def test_setup_requires_keyword_include_cmake(mocker, capsys):
 
     mock_setup = mocker.patch('skbuild.setuptools_wrap.upstream_setup')

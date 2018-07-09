@@ -8,4 +8,5 @@ pytest-cov>=2.4.0
 pytest-mock>=1.4.0
 pytest-runner>=2.9
 pytest-virtualenv>=1.2.5
+requests
 six>=1.10.0
