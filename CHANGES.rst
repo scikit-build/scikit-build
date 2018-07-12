@@ -13,6 +13,8 @@ Documentation
 
 * README: Update overall download count.
 
+* Add logo and update sphinx configuration. Thanks :user:`SteveJordanKW` for the design work.
+
 Tests
 -----
 
