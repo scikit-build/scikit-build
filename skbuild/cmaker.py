@@ -414,7 +414,7 @@ class CMaker(object):
                 if os.path.splitext(filename)[1] != ".cmake":
                     continue
 
-                for line in open(os.path.join(root, filename)):
+                for line in open(os.path.join(root, filename), encoding="utf-8"):
                     match = RE_FILE_INSTALL.match(line)
                     if match is None:
                         continue
