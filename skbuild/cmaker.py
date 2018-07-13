@@ -5,6 +5,7 @@ This module provides an interface for invoking CMake executable.
 import argparse
 import distutils.sysconfig as du_sysconfig
 import glob
+import io
 import itertools
 import os
 import os.path
@@ -414,7 +415,7 @@ class CMaker(object):
                 if os.path.splitext(filename)[1] != ".cmake":
                     continue
 
-                for line in open(os.path.join(root, filename), encoding="utf-8"):
+                for line in io.open(os.path.join(root, filename), encoding="utf-8"):
                     match = RE_FILE_INSTALL.match(line)
                     if match is None:
                         continue
