@@ -8,6 +8,13 @@ details, see the commit logs at http://github.com/scikit-build/scikit-build
 Next Release
 ============
 
+Bug fixes
+---------
+
+* Fix reading of `.cmake` files having any character not available in
+  `CP-1252 <https://en.wikipedia.org/wiki/Windows-1252>`_ (the default code page on
+  windows). See :issue:`334` fixed by :user:`bgermann`.
+
 Documentation
 -------------
 
