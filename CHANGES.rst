@@ -11,6 +11,9 @@ Next Release
 Bug fixes
 ---------
 
+* Fix support for building project with CMake source directory outside of the
+  ``setup.py`` directory. See :issue:`335` fixed by :user:`massich`.
+
 * Fix reading of `.cmake` files having any character not available in
   `CP-1252 <https://en.wikipedia.org/wiki/Windows-1252>`_ (the default code page on
   windows). See :issue:`334` fixed by :user:`bgermann`.
@@ -24,6 +27,8 @@ Documentation
 
 Tests
 -----
+
+* Add ``check_wheel_content`` utility function.
 
 * Skip `test_setup_requires_keyword_include_cmake` if running in conda test environment or
   if https://pypi.org is not reachable. Suggested by :user:`Luthaf`.

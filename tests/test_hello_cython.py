@@ -10,12 +10,10 @@ Tries to build and test the `hello-cython` sample project.
 import glob
 import sysconfig
 import tarfile
-import wheel
 
-from pkg_resources import parse_version
 from zipfile import ZipFile
 
-from . import project_setup_py_test
+from . import check_wheel_content, project_setup_py_test
 
 
 @project_setup_py_test("hello-cython", ["build"])
@@ -61,25 +59,14 @@ def test_hello_cython_sdist():
 
 @project_setup_py_test("hello-cython", ["bdist_wheel"])
 def test_hello_cython_wheel():
-    whls = glob.glob('dist/*.whl')
-    assert len(whls) == 1
-    assert not whls[0].endswith('-none-any.whl')
-
     expected_content = [
-        'hello_cython-1.2.3.dist-info/top_level.txt',
-        'hello_cython-1.2.3.dist-info/WHEEL',
-        'hello_cython-1.2.3.dist-info/RECORD',
-        'hello_cython-1.2.3.dist-info/METADATA',
         'hello_cython/_hello%s' % (sysconfig.get_config_var('SO')),
         'hello_cython/__init__.py',
         'hello_cython/__main__.py'
     ]
 
-    if parse_version(wheel.__version__) < parse_version('0.31.0'):
-        expected_content += [
-            'hello_cython-1.2.3.dist-info/DESCRIPTION.rst',
-            'hello_cython-1.2.3.dist-info/metadata.json'
-        ]
+    expected_distribution_name = 'hello_cython-1.2.3'
 
-    member_list = ZipFile(whls[0]).namelist()
-    assert sorted(expected_content) == sorted(member_list)
+    whls = glob.glob('dist/*.whl')
+    assert len(whls) == 1
+    check_wheel_content(whls[0], expected_distribution_name, expected_content)
