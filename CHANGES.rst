@@ -76,6 +76,9 @@ Tests
 
   * Always install up-to-date `scikit-ci`_ and `scikit-ci-addons`_.
 
+  * Simplify release process managing `versioning` with `python-versioneer <https://github.com/warner/python-versioneer/>`_
+    and update :ref:`making_a_release` documentation.
+
 
 Scikit-build 0.7.1
 ==================

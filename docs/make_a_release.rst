@@ -1,59 +1,196 @@
-=====================
-How to Make a Release
-=====================
+.. _making_a_release:
+
+================
+Making a release
+================
 
 A core developer should use the following steps to create a release `X.Y.Z` of
-**scikit-build**.
+**scikit-build** on `PyPI`_.
 
-0. Configure `~/.pypirc` as described `here <https://packaging.python.org/distributing/#uploading-your-project-to-pypi>`_.
+-------------
+Prerequisites
+-------------
 
-1. Make sure that all CI tests are passing: `AppVeyor <https://ci.appveyor.com/project/scikit-build/scikit-build>`_,
-   `CircleCI <https://circleci.com/gh/scikit-build/scikit-build>`_
-   and `TravisCi <https://travis-ci.org/scikit-build/scikit-build>`_.
+* All CI tests are passing on `AppVeyor`_, `CircleCI`_ and `Travis CI`_.
 
-2. Update version numbers and download count:
+* You have a `GPG signing key <https://help.github.com/articles/generating-a-new-gpg-key/>`_.
 
-  * in `setup.py` and `skbuild/__init__.py`
+-------------------------
+Documentation conventions
+-------------------------
 
-  * in `CHANGES.rst` by changing ``Next Release`` section header with
-    ``Scikit-build X.Y.Z``.
+The commands reported below should be evaluated in the same terminal session.
 
-  * run `this big table query <https://bigquery.cloud.google.com/savedquery/280188050539:cab173ea774643c49e6f8f26234a3b08>`_
-    and update the pypi download count in ``README.rst``. To learn more about `pypi-stats`,
-    see `How to get PyPI download statistics <https://kirankoduru.github.io/python/pypi-stats.html>`_.
+Commands to evaluate starts with a dollar sign. For example::
 
-3. Commit the changes using title ``scikit-build X.Y.Z``.
+  $ echo "Hello"
+  Hello
 
-4. Create the source tarball and binary wheels::
+means that ``echo "Hello"`` should be copied and evaluated in the terminal.
 
-    git checkout master
-    git fetch upstream
-    git reset --hard upstream/master
-    rm -rf dist/
-    python setup.py sdist bdist_wheel
+----------------------
+Setting up environment
+----------------------
 
-5. Upload the packages to the testing PyPI instance::
+1. First, `register for an account on PyPI <https://pypi.org>`_.
 
-    twine upload --sign -r pypitest dist/*
 
-6. Check the `PyPI testing package page <https://testpypi.python.org/pypi/scikit-build/>`_.
+2. If not already the case, ask to be added as a ``Package Index Maintainer``.
 
-7. Tag the release. Requires a GPG key with signatures. For version *X.Y.Z*::
 
-    git tag -s -m "scikit-build X.Y.Z" X.Y.Z upstream/master
+3. Create a ``~/.pypirc`` file with your login credentials::
 
-8. Upload the packages to the PyPI instance::
+    [distutils]
+    index-servers =
+      pypi
+      pypitest
 
-    twine upload --sign dist/*
+    [pypi]
+    username=<your-username>
+    password=<your-password>
 
-9. Check the `PyPI package page <https://pypi.python.org/pypi/scikit-build/>`_.
+    [pypitest]
+    repository=https://test.pypi.org/legacy/
+    username=<your-username>
+    password=<your-password>
 
-10. Make sure the package can be installed::
+  where ``<your-username>`` and ``<your-password>`` correspond to your PyPI account.
 
-    mkvirtualenv skbuild-pip-install
-    pip install scikit-build
-    rmvirtualenv skbuild-pip-install
 
-11. Add a ``Next Release`` section back in `CHANGES.rst` and merge the result.
+---------------------
+`PyPI`_: Step-by-step
+---------------------
 
-12. Push local changes
+1. Make sure that all CI tests are passing on `AppVeyor`_, `CircleCI`_ and `Travis CI`_.
+
+
+2. Download the latest sources
+
+  .. code::
+
+    $ cd /tmp && \
+      git clone git@github.com:scikit-build/scikit-build && \
+      cd scikit-build
+
+
+3. List all tags sorted by version
+
+  .. code::
+
+    $ git fetch --tags && \
+      git tag -l | sort -V
+
+
+4. Choose the next release version number
+
+  .. code::
+
+    $ release=X.Y.Z
+
+  .. warning::
+
+      To ensure the packages are uploaded on `PyPI`_, tags must match this regular
+      expression: ``^[0-9]+(\.[0-9]+)*(\.post[0-9]+)?$``.
+
+
+5. In `README.rst`, update `PyPI`_ download count after running `this big table query <https://bigquery.cloud.google.com/savedquery/280188050539:cab173ea774643c49e6f8f26234a3b08>`_
+   and commit the changes.
+
+  .. code::
+
+    $ git add README.rst && \
+      git commit -m "README: Update download stats"
+
+  ..  note::
+
+    To learn more about `pypi-stats`, see `How to get PyPI download statistics <https://kirankoduru.github.io/python/pypi-stats.html>`_.
+
+
+6. In `CHANGES.rst` replace ``Next Release`` section header with
+   ``Scikit-build X.Y.Z`` and commit the changes.
+
+  .. code::
+
+    $ git add CHANGES.rst && \
+      git commit -m "Scikit-build ${release}"
+
+
+7. Tag the release
+
+  .. code::
+
+    $ git tag --sign -m "Scikit-build ${release}" ${release} origin/master
+
+  .. warning::
+
+      We recommend using a `GPG signing key <https://help.github.com/articles/generating-a-new-gpg-key/>`_
+      to sign the tag.
+
+
+8. Create the source distribution and wheel
+
+  .. code::
+
+    $ python setup.py sdist bdist_wheel
+
+
+9. Publish the release tag
+
+  .. code::
+
+    $ git push origin ${release}
+
+
+10. Upload the distributions on `PyPI`_
+
+  .. code::
+
+    twine upload dist/*
+
+  .. note::
+
+    To first upload on `TestPyPI`_ , do the following::
+
+        $ twine upload -r pypitest dist/*
+
+
+11. Create a clean testing environment to test the installation
+
+  .. code::
+
+    $ mkvirtualenv scikit-build-${release}-install-test && \
+      pip install scikit-build && \
+      pyhton -c "import skbuild"
+
+  .. note::
+
+    If the ``mkvirtualenv`` command is not available, this means you do not have `virtualenvwrapper`_
+    installed, in that case, you could either install it or directly use `virtualenv`_ or `venv`_.
+
+    To install from `TestPyPI`_, do the following::
+
+        $ pip install -i https://test.pypi.org/simple scikit-build
+
+
+12. Cleanup
+
+  .. code::
+
+    $ deactivate  && \
+      rm -rf dist/* && \
+      rmvirtualenv scikit-build-${release}-install-test
+
+
+13. Add a ``Next Release`` section back in `CHANGES.rst`, commit and push local changes.
+
+
+.. _virtualenvwrapper: https://virtualenvwrapper.readthedocs.io/
+.. _virtualenv: http://virtualenv.readthedocs.io
+.. _venv: https://docs.python.org/3/library/venv.html
+
+.. _AppVeyor: https://ci.appveyor.com/project/scikit-build/scikit-build/history
+.. _CircleCI: https://circleci.com/gh/scikit-build/scikit-build
+.. _Travis CI: https://travis-ci.org/scikit-build/scikit-build/builds
+
+.. _PyPI: https://pypi.org/project/scikit-build
+.. _TestPyPI: https://test.pypi.org/project/scikit-build
