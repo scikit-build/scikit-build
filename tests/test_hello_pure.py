@@ -9,15 +9,13 @@ Tries to build and test the `hello-pure` sample project.
 
 import glob
 import tarfile
-import wheel
 
 from skbuild.constants import SKBUILD_DIR
 from skbuild.utils import push_dir
 
-from pkg_resources import parse_version
 from zipfile import ZipFile
 
-from . import project_setup_py_test
+from . import check_wheel_content, project_setup_py_test
 
 
 @project_setup_py_test("hello-pure", ["build"], disable_languages_test=True)
@@ -63,26 +61,15 @@ def test_hello_pure_sdist():
 
 @project_setup_py_test("hello-pure", ["bdist_wheel"], disable_languages_test=True)
 def test_hello_pure_wheel():
-    whls = glob.glob('dist/*.whl')
-    assert len(whls) == 1
-    assert whls[0].endswith('-none-any.whl')
-
     expected_content = [
-        'hello_pure-1.2.3.dist-info/top_level.txt',
-        'hello_pure-1.2.3.dist-info/WHEEL',
-        'hello_pure-1.2.3.dist-info/RECORD',
-        'hello_pure-1.2.3.dist-info/METADATA',
         'hello/__init__.py'
     ]
 
-    if parse_version(wheel.__version__) < parse_version('0.31.0'):
-        expected_content += [
-            'hello_pure-1.2.3.dist-info/DESCRIPTION.rst',
-            'hello_pure-1.2.3.dist-info/metadata.json'
-        ]
+    expected_distribution_name = 'hello_pure-1.2.3'
 
-    member_list = ZipFile(whls[0]).namelist()
-    assert sorted(expected_content) == sorted(member_list)
+    whls = glob.glob('dist/*.whl')
+    assert len(whls) == 1
+    check_wheel_content(whls[0], expected_distribution_name, expected_content, pure=True)
 
 
 def test_hello_clean(capfd):

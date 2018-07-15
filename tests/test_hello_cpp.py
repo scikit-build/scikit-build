@@ -10,19 +10,15 @@ Tries to build and test the `hello-cpp` sample project.
 import glob
 import os
 import pytest
-import six
 import sysconfig
 import tarfile
-import wheel
 
-from skbuild import __version__ as skbuild_version
 from skbuild.constants import CMAKE_BUILD_DIR, CMAKE_INSTALL_DIR, SKBUILD_DIR
 from skbuild.utils import push_dir
 
-from pkg_resources import parse_version
 from zipfile import ZipFile
 
-from . import project_setup_py_test
+from . import check_wheel_content, project_setup_py_test
 from . import (_copy_dir, _tmpdir, SAMPLES_DIR)
 
 
@@ -89,10 +85,6 @@ def test_hello_sdist():
 
 def test_hello_wheel():
     expected_content = [
-        'hello-1.2.3.dist-info/top_level.txt',
-        'hello-1.2.3.dist-info/WHEEL',
-        'hello-1.2.3.dist-info/RECORD',
-        'hello-1.2.3.dist-info/METADATA',
         'hello/_hello%s' % (sysconfig.get_config_var('SO')),
         'hello/__init__.py',
         'hello/__main__.py',
@@ -105,35 +97,13 @@ def test_hello_wheel():
         'bonjourModule.py'
     ]
 
-    if parse_version(wheel.__version__) < parse_version('0.31.0'):
-        expected_content += [
-            'hello-1.2.3.dist-info/DESCRIPTION.rst',
-            'hello-1.2.3.dist-info/metadata.json'
-        ]
-
-    def check_whls(whls):
-        assert len(whls) == 1
-        assert not whls[0].endswith('-none-any.whl')
-
-        archive = ZipFile(whls[0])
-        member_list = archive.namelist()
-        assert sorted(expected_content) == sorted(member_list)
-
-        # PEP-0427: Generator is the name and optionally the version of the
-        # software that produced the archive.
-        # See https://www.python.org/dev/peps/pep-0427/#file-contents
-        current_generator = None
-        with archive.open("hello-1.2.3.dist-info/WHEEL") as wheel_file:
-            for line in wheel_file:
-                if line.startswith(b"Generator"):
-                    current_generator = line.split(b":")[1].strip()
-                    break
-        assert current_generator == six.b("skbuild %s" % skbuild_version)
+    expected_distribution_name = 'hello-1.2.3'
 
     @project_setup_py_test("hello-cpp", ["bdist_wheel"])
     def build_wheel():
         whls = glob.glob('dist/*.whl')
-        check_whls(whls)
+        assert len(whls) == 1
+        check_wheel_content(whls[0], expected_distribution_name, expected_content)
         os.remove(whls[0])
         assert not os.path.exists(whls[0])
 
@@ -146,7 +116,8 @@ def test_hello_wheel():
     def build_wheel_skip_cmake():
         assert not os.path.exists(os.path.join(CMAKE_BUILD_DIR, "CMakeCache.txt"))
         whls = glob.glob('dist/*.whl')
-        check_whls(whls)
+        assert len(whls) == 1
+        check_wheel_content(whls[0], expected_distribution_name, expected_content)
 
     build_wheel_skip_cmake()
 
