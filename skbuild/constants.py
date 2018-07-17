@@ -13,6 +13,9 @@ SKBUILD_DIR = os.path.join(
 )
 """Top-level directory where setuptools and CMake directories are generated."""
 
+CMAKE_DEFAULT_EXECUTABLE = "cmake"
+"""Default path to CMake executable."""
+
 CMAKE_BUILD_DIR = os.path.join(SKBUILD_DIR, "cmake-build")
 """CMake build directory."""
 

@@ -13,6 +13,7 @@ import pytest
 
 from subprocess import (check_output, CalledProcessError)
 
+from skbuild.constants import CMAKE_DEFAULT_EXECUTABLE
 from skbuild.exceptions import SKBuildError
 from skbuild.platform_specifics import CMakeGenerator, get_platform
 from skbuild.utils import push_dir
@@ -95,13 +96,13 @@ def test_invalid_cmake(exception, mocker):
 
     exceptions = {
         OSError: OSError('Unknown error'),
-        CalledProcessError: CalledProcessError(['cmake', '--version'], 1)
+        CalledProcessError: CalledProcessError([CMAKE_DEFAULT_EXECUTABLE, '--version'], 1)
     }
 
     check_output_original = check_output
 
     def check_output_mock(*args, **kwargs):
-        if args[0] == ['cmake', '--version']:
+        if args[0] == [CMAKE_DEFAULT_EXECUTABLE, '--version']:
             raise exceptions[exception]
         check_output_original(*args, **kwargs)
 

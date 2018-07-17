@@ -13,7 +13,7 @@ import re
 import textwrap
 
 from skbuild.cmaker import CMaker, has_cmake_cache_arg
-from skbuild.constants import CMAKE_BUILD_DIR, CMAKE_INSTALL_DIR
+from skbuild.constants import CMAKE_BUILD_DIR, CMAKE_DEFAULT_EXECUTABLE, CMAKE_INSTALL_DIR
 from skbuild.exceptions import SKBuildError
 from skbuild.utils import push_dir, to_unix_path
 
@@ -31,7 +31,7 @@ def test_get_python_library():
 
 
 def test_cmake_executable():
-    assert CMaker().cmake_executable == "cmake"
+    assert CMaker().cmake_executable == CMAKE_DEFAULT_EXECUTABLE
 
 
 def test_has_cmake_cache_arg():

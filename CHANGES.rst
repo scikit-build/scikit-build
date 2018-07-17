@@ -8,6 +8,13 @@ details, see the commit logs at http://github.com/scikit-build/scikit-build
 Next Release
 ============
 
+New Features
+------------
+
+* Introduced :const:`skbuild.constants.CMAKE_DEFAULT_EXECUTABLE` to facilitate distribution
+  of scikit-build in package manager like `Nixpkgs <https://github.com/NixOS/nixpkgs>`_ where
+  all paths to dependencies are hardcoded. Suggested by :user:`FRidh`.
+
 Bug fixes
 ---------
 

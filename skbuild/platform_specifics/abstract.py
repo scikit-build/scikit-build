@@ -8,6 +8,7 @@ import shutil
 import subprocess
 import textwrap
 
+from ..constants import CMAKE_DEFAULT_EXECUTABLE
 from ..exceptions import SKBuildGeneratorNotFoundError
 from ..utils import push_dir
 
@@ -69,7 +70,7 @@ class CMakePlatform(object):
     # renaming it?
     def get_best_generator(
             self, generator_name=None, languages=("CXX", "C"), cleanup=True,
-            cmake_executable='cmake', cmake_args=()):
+            cmake_executable=CMAKE_DEFAULT_EXECUTABLE, cmake_args=()):
         """Loop over generators to find one that works by configuring
         and compiling a test project.
 

@@ -17,6 +17,7 @@ import sys
 import sysconfig
 
 from .constants import (CMAKE_BUILD_DIR,
+                        CMAKE_DEFAULT_EXECUTABLE,
                         CMAKE_INSTALL_DIR,
                         SETUPTOOLS_INSTALL_DIR)
 from .platform_specifics import get_platform
@@ -69,7 +70,7 @@ def has_cmake_cache_arg(cmake_args, arg_name, arg_value=None):
     return False
 
 
-def get_cmake_version(cmake_executable='cmake'):
+def get_cmake_version(cmake_executable=CMAKE_DEFAULT_EXECUTABLE):
     """Runs CMake and extracts associated version information.
     Raises :class:`skbuild.exceptions.SKBuildError` if it failed to execute CMake.
     """
@@ -88,7 +89,7 @@ def get_cmake_version(cmake_executable='cmake'):
 class CMaker(object):
     """Interface to CMake executable."""
 
-    def __init__(self, cmake_executable='cmake'):
+    def __init__(self, cmake_executable=CMAKE_DEFAULT_EXECUTABLE):
         self.cmake_executable = cmake_executable
         self.cmake_version = get_cmake_version(self.cmake_executable)
         self.platform = get_platform()

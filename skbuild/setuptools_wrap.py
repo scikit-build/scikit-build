@@ -41,7 +41,9 @@ from .command import (build, build_py, clean,
                       install, install_lib, install_scripts,
                       bdist, bdist_wheel, egg_info,
                       sdist, generate_source_manifest, test)
-from .constants import CMAKE_INSTALL_DIR, CMAKE_SPEC_FILE
+from .constants import (CMAKE_DEFAULT_EXECUTABLE,
+                        CMAKE_INSTALL_DIR,
+                        CMAKE_SPEC_FILE)
 from .exceptions import SKBuildError, SKBuildGeneratorNotFoundError
 from .utils import (mkdir_p, parse_manifestin, PythonModuleFinder, to_platform_path, to_unix_path)
 
@@ -508,7 +510,7 @@ def setup(*args, **kw):  # noqa: C901
 
     try:
         if cmake_executable is None:
-            cmake_executable = 'cmake'
+            cmake_executable = CMAKE_DEFAULT_EXECUTABLE
         cmkr = cmaker.CMaker(cmake_executable)
         if not skip_cmake:
             cmake_minimum_required_version = skbuild_kw['cmake_minimum_required_version']
@@ -519,7 +521,7 @@ def setup(*args, **kw):  # noqa: C901
                             cmake_minimum_required_version, cmkr.cmake_version))
             # Used to confirm that the cmake executable is the same
             cmake_spec = {
-                'args': [which('cmake')] + cmake_args,
+                'args': [which(CMAKE_DEFAULT_EXECUTABLE)] + cmake_args,
                 'version': cmkr.cmake_version
             }
 
