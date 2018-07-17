@@ -66,6 +66,21 @@ version of CPython <https://docs.python.org/devguide/setup.html#windows>`_
 CMake
 ^^^^^
 
-`Download standard CMake binaries <https://cmake.org/download>`_ for your
-platform. Alternatively, build CMake from source with a C++ compiler if
-binaries are not available for your operating system.
+The easiest way to get `CMake <https://www.cmake.org/>`_ is :ref:`to add it to
+the pyproject.toml file <basic_usage_example>`.  With pip 10 or later, this
+will cause the CMake Python package to be downloaded and installed when your
+project is built.
+
+To manually install the *cmake* package from PyPI::
+
+    $ pip install cmake
+
+To install the *cmake* package in conda::
+
+    $ conda install -c conda-forge cmake
+
+You can also `download the standard CMake binaries
+<https://cmake.org/download>`_ for your platform.
+
+Alternatively, `build CMake from source <https://cmake.org/install/>`_ with a
+C++ compiler if binaries are not available for your operating system.
