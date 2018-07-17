@@ -25,6 +25,8 @@ Documentation
 
 * Add logo and update sphinx configuration. Thanks :user:`SteveJordanKW` for the design work.
 
+* Update :ref:`CMake installation <installation_cmake>` section. Thanks :user:`thewtex`.
+
 Tests
 -----
 
