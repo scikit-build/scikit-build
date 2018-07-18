@@ -548,7 +548,7 @@ def test_setup_inputs(
 
     tmp_dir = _tmpdir('test_setup_inputs')
 
-    package_base = 'base' if with_package_base else ''
+    package_base = 'to/the/base' if with_package_base else ''
     package_base_dir = package_base + '/' if package_base else ''
     cmake_source_dir = package_base
 
