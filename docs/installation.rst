@@ -63,6 +63,8 @@ packages for the system Python.
 On Windows, install `the version of Visual Studio used to create the target
 version of CPython <https://docs.python.org/devguide/setup.html#windows>`_
 
+.. _installation_cmake:
+
 CMake
 ^^^^^
 
