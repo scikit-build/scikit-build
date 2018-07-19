@@ -458,8 +458,14 @@ def setup(*args, **kw):  # noqa: C901
         for parent_dir, file_list in kw.get('data_files', [])
     }
 
-    if sys.platform == 'darwin':
+    # Since CMake arguments provided through the command line have more
+    # weight and when CMake is given multiple times a argument, only the last
+    # one is considered, let's prepend the one provided in the setup call.
+    cmake_args = skbuild_kw['cmake_args'] + cmake_args
 
+    # Set CMAKE_OSX_DEPLOYMENT_TARGET and CMAKE_OSX_ARCHITECTURES if not already
+    # specified
+    if sys.platform == 'darwin':
         if plat_name is None:
             # The following code is duplicated in bdist_wheel.finalize_options()
             plat_name = "macosx-10.6-x86_64"
@@ -499,11 +505,6 @@ def setup(*args, **kw):  # noqa: C901
                 os.chmod(executable, permissions)
             cmake_executable = os.path.join(cmake.CMAKE_BIN_DIR, 'cmake')
             break
-
-    # Since CMake arguments provided through the command line have more
-    # weight and when CMake is given multiple times a argument, only the last
-    # one is considered, let's prepend the one provided in the setup call.
-    cmake_args = skbuild_kw['cmake_args'] + cmake_args
 
     # Languages are used to determine a working generator
     cmake_languages = skbuild_kw['cmake_languages']
