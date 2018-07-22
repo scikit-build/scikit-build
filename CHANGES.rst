@@ -48,6 +48,9 @@ Tests
 
   * AppVeyor, CircleCI: Add testing for Python 3.7
 
+  * Always install up-to-date `scikit-ci`_ and `scikit-ci-addons`_.
+
+
 Scikit-build 0.7.1
 ==================
 
