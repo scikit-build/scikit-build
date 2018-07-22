@@ -46,6 +46,8 @@ Tests
 
   * TravisCI: Remove testing of linux now covered by CircleCI, add testing for Python 3.5, 3.6 and 3.7 on macOS.
 
+  * AppVeyor, CircleCI: Add testing for Python 3.7
+
 Scikit-build 0.7.1
 ==================
 
