@@ -48,6 +48,9 @@ Tests
 
   * AppVeyor, CircleCI: Add testing for Python 3.7
 
+  * Remove uses of unneeded ``$<RUN_ENV>`` command wrapper. scikit-build should already take care of
+    setting up the expected environment.
+
   * Always install up-to-date `scikit-ci`_ and `scikit-ci-addons`_.
 
 
