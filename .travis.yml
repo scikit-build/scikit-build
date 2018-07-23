@@ -8,10 +8,10 @@ language: python
 
 matrix:
   include:
-#    - os: osx
-#      language: generic
-#      env:
-#        - PYTHON_VERSION=3.7.0
+    - os: osx
+      language: generic
+      env:
+        - PYTHON_VERSION=3.7.0
 
     - os: osx
       language: generic
@@ -43,8 +43,9 @@ cache:
     - $HOME/downloads
 
 before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then mkdir $HOME/bin; ln -s $(which pip2) $HOME/bin/pip; fi
-  - pip install scikit-ci==0.12.0 scikit-ci-addons==0.11.0
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then mkdir $HOME/bin; ln -s $(which pip2) $HOME/bin/pip; ln -s $(which python2) $HOME/bin/python; fi
+  - python -m pip install --disable-pip-version-check --upgrade pip
+  - pip install -U scikit-ci scikit-ci-addons
   - ci_addons --install ../addons
 
 install:

@@ -5,7 +5,6 @@ before_install:
   appveyor:
     environment:
       PATH: $<PYTHON_DIR>;$<PYTHON_DIR>\\Scripts;$<PATH>
-      RUN_ENV: .\\..\\addons\\appveyor\\run-with-visual-studio.cmd
     commands:
       - python ../addons/appveyor/patch_vs2008.py
 
@@ -20,9 +19,9 @@ install:
 
   commands:
     - python -m pip install --disable-pip-version-check --upgrade pip
-    - $<RUN_ENV> pip install cmake
-    - $<RUN_ENV> pip install -r requirements.txt
-    - $<RUN_ENV> pip install -r requirements-dev.txt
+    - pip install cmake
+    - pip install -r requirements.txt
+    - pip install -r requirements-dev.txt
 
   circle:
     commands:
@@ -36,11 +35,11 @@ before_build:
 build:
   commands:
     - python setup.py sdist
-    - $<RUN_ENV> python setup.py bdist_wheel
+    - python setup.py bdist_wheel
 
 test:
   commands:
-    - $<RUN_ENV> python setup.py test
+    - python setup.py test
 
 after_test:
   commands:

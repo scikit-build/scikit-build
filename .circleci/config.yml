@@ -52,10 +52,10 @@ jobs:
     docker:
       - image: circleci/python:3.6.4-jessie
     <<: *ci-steps
-#  python37:
-#    docker:
-#      - image: circleci/python:3.7.0-stretch
-#    <<: *ci-steps
+  python37:
+    docker:
+      - image: circleci/python:3.7.0-stretch
+    <<: *ci-steps
 
 workflows:
   version: 2
@@ -64,4 +64,4 @@ workflows:
       - python27
       - python35
       - python36
-#      - python37
+      - python37

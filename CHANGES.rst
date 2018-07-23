@@ -44,7 +44,18 @@ Tests
 
 * Continuous Integration
 
-  * TravisCI: Remove testing of linux now covered by CircleCI, add testing for Python 3.5, 3.6 and 3.7 on macOS.
+  * TravisCI:
+
+    * Remove testing of linux now covered by CircleCI, add testing for Python 3.5, 3.6 and 3.7 on macOS.
+    * Ensure system python uses latest version of pip
+
+  * AppVeyor, CircleCI: Add testing for Python 3.7
+
+  * Remove uses of unneeded ``$<RUN_ENV>`` command wrapper. scikit-build should already take care of
+    setting up the expected environment.
+
+  * Always install up-to-date `scikit-ci`_ and `scikit-ci-addons`_.
+
 
 Scikit-build 0.7.1
 ==================
