@@ -47,11 +47,11 @@ def test_has_cmake_cache_arg():
     assert has_cmake_cache_arg(cmake_args, "CLIMBING", None)
     assert has_cmake_cache_arg(cmake_args, "CLIMBING", "ON")
 
-    override = ['-DOTHER:STRING=C','-DOVERRIDE:STRING=A', '-DOVERRIDE:STRING=B']
+    override = ['-DOTHER:STRING=C', '-DOVERRIDE:STRING=A', '-DOVERRIDE:STRING=B']
     assert has_cmake_cache_arg(override, 'OVERRIDE')
     assert has_cmake_cache_arg(override, 'OVERRIDE', 'B')
     assert not has_cmake_cache_arg(override, 'OVERRIDE', 'A')
-    # ensure overriding doesn't magically have side effects. 
+    # ensure overriding doesn't magically have side effects.
     assert has_cmake_cache_arg(override, 'OTHER')
     assert has_cmake_cache_arg(override, 'OTHER', 'C')
     assert not has_cmake_cache_arg(override, 'OTHER', 'A')
