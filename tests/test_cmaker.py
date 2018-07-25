@@ -47,6 +47,16 @@ def test_has_cmake_cache_arg():
     assert has_cmake_cache_arg(cmake_args, "CLIMBING", None)
     assert has_cmake_cache_arg(cmake_args, "CLIMBING", "ON")
 
+    override = ['-DOTHER:STRING=C', '-DOVERRIDE:STRING=A', '-DOVERRIDE:STRING=B']
+    assert has_cmake_cache_arg(override, 'OVERRIDE')
+    assert has_cmake_cache_arg(override, 'OVERRIDE', 'B')
+    assert not has_cmake_cache_arg(override, 'OVERRIDE', 'A')
+    # ensure overriding doesn't magically have side effects.
+    assert has_cmake_cache_arg(override, 'OTHER')
+    assert has_cmake_cache_arg(override, 'OTHER', 'C')
+    assert not has_cmake_cache_arg(override, 'OTHER', 'A')
+    assert not has_cmake_cache_arg(override, 'OTHER', 'B')
+
 
 def test_make_without_build_dir_fails():
     src_dir = _tmpdir('test_make_without_build_dir_fails')
