@@ -1,7 +1,6 @@
 [run]
 branch = True
 source = skbuild
-include = */skbuild/*
 
 [xml]
 output = tests/coverage.xml
