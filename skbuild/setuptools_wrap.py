@@ -612,6 +612,9 @@ def setup(*args, **kw):  # noqa: C901
         for parent_dir, file_set in data_files.items()
     ]
 
+    if 'zip_safe' not in kw:
+        kw['zip_safe'] = False
+
     # Adapted from espdev/ITKPythonInstaller/setup.py.in
     # pylint: disable=missing-docstring
     class BinaryDistribution(upstream_Distribution):
