@@ -25,8 +25,10 @@ Bug fixes
   `CP-1252 <https://en.wikipedia.org/wiki/Windows-1252>`_ (the default code page on
   windows). See :issue:`334` fixed by :user:`bgermann`.
 
-* Fix parsing of cmake arguments not overriding with later arguments. See
-  followup to :issue:`342` fixed by :user:`yonip`.
+* Fix parsing of macOS specific arguments like ``--plat-name macosx-X.Y-x86_64``
+  and ``-DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=X.Y`` and ensure that the ones specified as
+  command line arguments override the default values or the one hard-coded in the
+  ``cmake_args`` setup keyword. Thanks :user:`yonip` for the help addressing :issue:`342`.
 
 Documentation
 -------------
