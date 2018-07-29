@@ -15,6 +15,10 @@ New Features
   of scikit-build in package manager like `Nixpkgs <https://github.com/NixOS/nixpkgs>`_ where
   all paths to dependencies are hardcoded. Suggested by :user:`FRidh`.
 
+* Setup keywords:
+
+  * If not already set, ``zip_safe`` option is set to ``False``. Suggested by :user:`blowekamp`.
+
 Bug fixes
 ---------
 

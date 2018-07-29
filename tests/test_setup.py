@@ -1030,3 +1030,51 @@ def test_cmake_install_into_pure_package(with_cmake_source_dir, capsys):
     out, _ = capsys.readouterr()
     for message in messages:
         assert to_platform_path(message) in out
+
+
+@pytest.mark.parametrize("zip_safe", [None, False, True])
+def test_zip_safe_default(zip_safe, mocker):
+
+    mock_setup = mocker.patch('skbuild.setuptools_wrap.upstream_setup')
+
+    tmp_dir = _tmpdir('zip_safe_default')
+
+    setup_kwarg = ''
+    if zip_safe is not None:
+        setup_kwarg = 'zip_safe={}'.format(zip_safe)
+
+    tmp_dir.join('setup.py').write(textwrap.dedent(
+        """
+        from skbuild import setup
+        setup(
+            name="zip_safe_default",
+            version="1.2.3",
+            description="a minimal example package",
+            author='The scikit-build team',
+            license="MIT",
+            {setup_kwarg}
+        )
+        """.format(setup_kwarg=setup_kwarg)
+    ))
+    tmp_dir.join('CMakeLists.txt').write(textwrap.dedent(
+        """
+        cmake_minimum_required(VERSION 3.5.0)
+        project(test NONE)
+        install(CODE "execute_process(
+          COMMAND \${CMAKE_COMMAND} -E sleep 0)")
+        """
+    ))
+
+    with execute_setup_py(tmp_dir, ['build'], disable_languages_test=True):
+        pass
+
+    assert mock_setup.call_count == 1
+    setup_kw = mock_setup.call_args[1]
+
+    assert "zip_safe" in setup_kw
+    if zip_safe is None:
+        assert not setup_kw["zip_safe"]
+    elif zip_safe:
+        assert setup_kw["zip_safe"]
+    else:  # zip_safe is False
+        assert not setup_kw["zip_safe"]

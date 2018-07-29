@@ -92,6 +92,12 @@ The section below documents some of the options accepted by the ``setup()`` func
   More details in the `Installing Scripts <https://docs.python.org/3/distutils/setupscript.html#installing-scripts>`_ section
   of the distutils documentation.
 
+.. versionadded:: 0.8.0
+
+- ``zip_safe``: A boolean indicating if the Python packages may be run directly from a zip file. If not already
+  set, scikit-build sets this option to ``False``. See `Setting the zip_safe flag`_
+  section of the setuptools documentation.
+
 
 .. _Using find_package(): https://setuptools.readthedocs.io/en/latest/setuptools.html#using-find-packages
 .. _Including Data Files: https://setuptools.readthedocs.io/en/latest/setuptools.html#including-data-files
@@ -99,7 +105,7 @@ The section below documents some of the options accepted by the ``setup()`` func
 .. _Listing individual modules: https://docs.python.org/3/distutils/setupscript.html#listing-individual-modules
 .. _Dynamic Discovery of Services and Plugins: https://setuptools.readthedocs.io/en/latest/setuptools.html#dynamic-discovery-of-services-and-plugins
 .. _Automatic Script Creation: https://setuptools.readthedocs.io/en/latest/setuptools.html#automatic-script-creation
-
+.. _Setting the zip_safe flag: https://setuptools.readthedocs.io/en/latest/setuptools.html#setting-the-zip-safe-flag
 
 scikit-build options
 ^^^^^^^^^^^^^^^^^^^^
