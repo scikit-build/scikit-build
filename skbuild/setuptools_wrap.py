@@ -669,7 +669,6 @@ def _collect_package_prefixes(package_dir, packages):
     ))
 
 
-# pylint:disable=too-many-arguments, too-many-branches
 def _classify_installed_files(install_paths, package_data, package_prefixes,
                               py_modules, new_py_modules,
                               scripts, new_scripts,
@@ -677,8 +676,6 @@ def _classify_installed_files(install_paths, package_data, package_prefixes,
                               cmake_source_dir, cmake_install_dir):
     assert not os.path.isabs(cmake_source_dir)
     assert cmake_source_dir != "."
-
-    cmake_source_dir = to_unix_path(cmake_source_dir)
 
     install_root = os.path.join(os.getcwd(), CMAKE_INSTALL_DIR)
     for path in install_paths:
