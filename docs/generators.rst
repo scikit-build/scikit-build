@@ -71,10 +71,13 @@ Ninja
 - If `ninja executable <https://ninja-build.org>`_ is in the ``PATH``, the associated
   generator is used to setup the project build system based on ``ninja`` files.
 
+- In a given python environment, installing the `ninja python package <https://pypi.org/project/ninja/>`_
+  with ``pip install ninja`` will ensure that ninja is in the ``PATH``.
+
 .. note:: **Automatic parallelism**
 
     An advantage of ninja is that it automatically parallelizes the build based on the
-    number of CPUs.
+    number of CPUs. See :ref:`usage_enabling_parallel_build`.
 
 .. note:: **Ninja on Windows**
 
