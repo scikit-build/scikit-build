@@ -277,6 +277,86 @@ can be set using the following approach::
         setup_requires.append('cmake')
 
 
+.. _usage_enabling_parallel_build:
+
+Enabling parallel build
+-----------------------
+
+Ninja
+^^^^^
+
+If :ref:`Ninja` generator is used, the associated build tool (called ``ninja``)
+will automatically parallelize the build based on the number of available CPUs.
+
+To limit the number of parallel jobs, the build tool option ``-j N`` can be passed
+to ``ninja``.
+
+For example, to  limit the number of parallel jobs to `3`, the following could be done::
+
+    python setup.py bdist_wheel -- -- -j3
+
+For complex projects where more granularity is required, it is also possible to limit
+the number of simultaneous link jobs, or compile jobs, or both.
+
+Indeed, starting with CMake 3.11, it is possible to configure the project with these
+options:
+
+* `CMAKE_JOB_POOL_COMPILE <https://cmake.org/cmake/help/latest/variable/CMAKE_JOB_POOL_COMPILE.html>`_
+* `CMAKE_JOB_POOL_LINK <https://cmake.org/cmake/help/latest/variable/CMAKE_JOB_POOL_LINK.html>`_
+* `CMAKE_JOB_POOLS <https://cmake.org/cmake/help/latest/variable/CMAKE_JOB_POOLS.html>`_
+
+For example, to have at most `5` compile jobs and `2` link jobs, the following could be done::
+
+    python setup.py bdist_wheel -- \
+      -DCMAKE_JOB_POOL_COMPILE:STRING=compile \
+      -DCMAKE_JOB_POOL_LINK:STRING=link \
+      '-DCMAKE_JOB_POOLS:STRING=compile=5;link=2'
+
+Unix Makefiles
+^^^^^^^^^^^^^^
+
+If :ref:`Unix Makefiles` generator is used, the associated build tool (called ``make``)
+will **NOT** automatically parallelize the build, the user has to explicitly pass
+option like ``-j N``.
+
+For example, to limit the number of parallel jobs to `3`, the following could be done::
+
+    python setup.py bdist_wheel -- -- -j3
+
+
+Visual Studio IDE
+^^^^^^^^^^^^^^^^^
+
+If :ref:`Visual Studio` generator is used, there are two types of parallelism:
+
+* target level parallelism
+* object level parallelism
+
+.. warning::
+
+    Since finding the right combination of parallelism can be challenging, whenever
+    possible we recommend to use the `Ninja`_ generator.
+
+
+To adjust the object level parallelism, the compiler flag ``/MP[processMax]`` could
+be specified. To learn more, read `/MP (Build with Multiple Processes)
+<https://docs.microsoft.com/en-us/cpp/build/reference/mp-build-with-multiple-processes>`_.
+
+For example::
+
+    set CXXFLAGS=/MP4
+    python setup.py bdist_wheel
+
+Starting with Visual Studio 2010, the target level parallelism can be set from command line
+using ``/maxcpucount:N``. This defines the number of simultaneous ``MSBuild.exe`` processes.
+To learn more, read `Building Multiple Projects in Parallel with MSBuild
+<https://msdn.microsoft.com/en-us/library/bb651793.aspx>`_.
+
+For example::
+
+    python setup.py bdist_wheel -- -- /maxcpucount:4
+
+
 .. _cross_compilation:
 
 Cross-compilation
