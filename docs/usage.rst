@@ -293,9 +293,9 @@ to ``ninja``.
 
 For example, to  limit the number of parallel jobs to `3`, the following could be done::
 
-    python setup bdist_wheel -- -- -j3
+    python setup.py bdist_wheel -- -- -j3
 
-For complex projects where more granularity is required. It is also possible to limit
+For complex projects where more granularity is required, it is also possible to limit
 the number of simultaneous link jobs, or compile jobs, or both.
 
 Indeed, starting with CMake 3.11, it is possible to configure the project with these
@@ -321,7 +321,7 @@ option like ``-j N``.
 
 For example, to limit the number of parallel jobs to `3`, the following could be done::
 
-    python setup bdist_wheel -- -- -j3
+    python setup.py bdist_wheel -- -- -j3
 
 
 Visual Studio IDE
