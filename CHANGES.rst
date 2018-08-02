@@ -38,6 +38,9 @@ Bug fixes
   For example, specifying ``package_dir={'awesome': 'src/awesome/'},`` is now
   properly handled.
 
+* Fix support for isolated build environment ensuring the CMake project is reconfigured
+  when ``pip install -e .`` is called multiple times. See :issue:`352`.
+
 Documentation
 -------------
 
@@ -46,6 +49,10 @@ Documentation
 * Add logo and update sphinx configuration. Thanks :user:`SteveJordanKW` for the design work.
 
 * Update :ref:`CMake installation <installation_cmake>` section. Thanks :user:`thewtex`.
+
+* Add :ref:`support_isolated_build` section.
+
+* Add :ref:`optimized_incremental_build` section.
 
 Tests
 -----
