@@ -7,5 +7,6 @@ setup(
     author='The scikit-build team',
     license="MIT",
     packages=['hello_cython'],
-    package_dir={'hello_cython': 'hello'},
+    # The extra '/' was *only* added to check that scikit-build can handle it.
+    package_dir={'hello_cython': 'hello/'},
 )

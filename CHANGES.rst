@@ -34,6 +34,10 @@ Bug fixes
   command line arguments override the default values or the one hard-coded in the
   ``cmake_args`` setup keyword. Thanks :user:`yonip` for the help addressing :issue:`342`.
 
+* Support case where relative directory set in `package_dir` has an ending slash.
+  For example, specifying ``package_dir={'awesome': 'src/awesome/'},`` is now
+  properly handled.
+
 Documentation
 -------------
 

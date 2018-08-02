@@ -10,3 +10,4 @@ pytest-runner>=2.9
 pytest-virtualenv>=1.2.5
 requests
 six>=1.10.0
+virtualenv
