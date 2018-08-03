@@ -29,6 +29,8 @@ and a python wheel, it is possible to test for the variable ``SKBUILD``:
 Support for isolated build
 --------------------------
 
+.. versionadded:: 0.8.0
+
 As specified in `PEP 518`_, dependencies required at install time can be specified using a
 ``pyproject.toml`` file. Starting with pip 10.0, pip reads the ``pyproject.toml`` file and
 installs the associated dependencies in an isolated environment. See the `pip build system interface`_
@@ -41,8 +43,8 @@ scikit-build supports these use cases as well as the case where the isolated env
 is explicitly disabled using the pip option ``--no-build-isolation`` available with the `install`,
 `download` and `wheel` commands.
 
-.. _`PEP 518`: https://www.python.org/dev/peps/pep-0518/
-.. _'pip build system interface': https://pip.pypa.io/en/stable/reference/pip/#build-system-interface
+.. _PEP 518: https://www.python.org/dev/peps/pep-0518/
+.. _pip build system interface: https://pip.pypa.io/en/stable/reference/pip/#build-system-interface
 
 
 .. _optimized_incremental_build:
