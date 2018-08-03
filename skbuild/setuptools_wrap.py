@@ -520,10 +520,15 @@ def setup(*args, **kw):  # noqa: C901
                     raise SKBuildError(
                         "CMake version %s or higher is required. CMake version %s is being used" % (
                             cmake_minimum_required_version, cmkr.cmake_version))
-            # Used to confirm that the cmake executable is the same
+            # Used to confirm that the cmake executable is the same, and that the environment
+            # didn't change
             cmake_spec = {
                 'args': [which(CMAKE_DEFAULT_EXECUTABLE)] + cmake_args,
-                'version': cmkr.cmake_version
+                'version': cmkr.cmake_version,
+                'environment': {
+                    'PYTHONNOUSERSITE': os.environ.get("PYTHONNOUSERSITE"),
+                    'PYTHONPATH': os.environ.get("PYTHONPATH")
+                }
             }
 
             # skip the configure step for a cached build

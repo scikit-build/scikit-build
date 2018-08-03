@@ -23,7 +23,9 @@ CMAKE_INSTALL_DIR = os.path.join(SKBUILD_DIR, "cmake-install")
 """CMake install directory."""
 
 CMAKE_SPEC_FILE = os.path.join(CMAKE_BUILD_DIR, "CMakeSpec.json")
-"""CMake specification file storing CMake version and CMake configuration arguments."""
+"""CMake specification file storing CMake version, CMake configuration arguments and
+environment variables ``PYTHONNOUSERSITE`` and ``PYTHONPATH``.
+"""
 
 SETUPTOOLS_INSTALL_DIR = os.path.join(SKBUILD_DIR, "setuptools")
 """Setuptools install directory."""
