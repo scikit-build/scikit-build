@@ -98,6 +98,10 @@ The section below documents some of the options accepted by the ``setup()`` func
   set, scikit-build sets this option to ``False``. See `Setting the zip_safe flag`_
   section of the setuptools documentation.
 
+.. note::
+
+    As specified in the `Wheel documentation`_, the ``universal`` and ``python-tag`` options
+    have no effect.
 
 .. _Using find_package(): https://setuptools.readthedocs.io/en/latest/setuptools.html#using-find-packages
 .. _Including Data Files: https://setuptools.readthedocs.io/en/latest/setuptools.html#including-data-files
@@ -106,6 +110,7 @@ The section below documents some of the options accepted by the ``setup()`` func
 .. _Dynamic Discovery of Services and Plugins: https://setuptools.readthedocs.io/en/latest/setuptools.html#dynamic-discovery-of-services-and-plugins
 .. _Automatic Script Creation: https://setuptools.readthedocs.io/en/latest/setuptools.html#automatic-script-creation
 .. _Setting the zip_safe flag: https://setuptools.readthedocs.io/en/latest/setuptools.html#setting-the-zip-safe-flag
+.. _Wheel documentation: https://wheel.readthedocs.io/en/stable/
 
 scikit-build options
 ^^^^^^^^^^^^^^^^^^^^
@@ -213,6 +218,11 @@ scikit-build extends the global set of setuptools options with:
       [...]
       --force-cmake       always run CMake
       --skip-cmake        do not run CMake
+
+.. note::
+
+    As specified in the `Wheel documentation`_, the ``--universal`` and ``--python-tag`` options
+    have no effect.
 
 .. _usage_scikit-build_options:
 
