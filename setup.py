@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
+import versioneer
 
 try:
     from setuptools import setup
@@ -29,7 +30,8 @@ setup_requires = pytest_runner
 
 setup(
     name='scikit-build',
-    version='0.7.1',
+    version=versioneer.get_version(),
+    cmdclass=versioneer.get_cmdclass(),
     description='Improved build system generator for Python C/C++/Fortran/Cython extensions',
     long_description=readme + '\n\n' + history,
     author='The scikit-build team',

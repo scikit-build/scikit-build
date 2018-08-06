@@ -12,3 +12,5 @@ recursive-exclude * __pycache__
 recursive-exclude * *.py[co]
 
 recursive-include docs *.rst conf.py Makefile make.bat
+include versioneer.py
+include skbuild/_version.py
