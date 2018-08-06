@@ -54,6 +54,10 @@ Documentation
 
 * Add :ref:`optimized_incremental_build` section.
 
+* Update :ref:`usage documentation <usage-setuptools_options>` to specify that ``--universal`` and
+  ``--python-tags`` have no effect.
+  Thanks :user:`bgermann` for the suggestion. See :issue:`353`.
+
 Tests
 -----
 
