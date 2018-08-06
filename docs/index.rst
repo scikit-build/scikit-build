@@ -22,7 +22,6 @@ To get started, see :ref:`this example <basic_usage_example>`.
 
    installation
    usage
-   extension_build_system
    generators
    cmake-modules
    contributing

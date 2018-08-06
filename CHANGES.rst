@@ -58,6 +58,9 @@ Documentation
   ``--python-tags`` have no effect.
   Thanks :user:`bgermann` for the suggestion. See :issue:`353`.
 
+* Simplify documentation merging `Extension Build System` section with the `Advanced Usage` section.
+  Thanks :user:`thewtex` for the suggestion.
+
 Tests
 -----
 
