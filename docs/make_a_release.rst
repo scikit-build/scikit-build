@@ -99,7 +99,7 @@ Setting up environment
   .. code::
 
     $ git add README.rst && \
-      git commit -m "README: Update download stats"
+      git commit -m "README: Update download stats [ci skip]"
 
   ..  note::
 
