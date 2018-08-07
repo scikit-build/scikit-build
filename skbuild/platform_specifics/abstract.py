@@ -69,7 +69,8 @@ class CMakePlatform(object):
     # TODO: this method name is not great.  Does anyone have a better idea for
     # renaming it?
     def get_best_generator(
-            self, generator_name=None, languages=("CXX", "C"), cleanup=True,
+            self, generator_name=None, skip_generator_test=False,
+            languages=("CXX", "C"), cleanup=True,
             cmake_executable=CMAKE_DEFAULT_EXECUTABLE, cmake_args=()):
         """Loop over generators to find one that works by configuring
         and compiling a test project.
@@ -77,6 +78,11 @@ class CMakePlatform(object):
         :param generator_name: If provided, uses only provided generator, \
         instead of trying :attr:`default_generators`.
         :type generator_name: string or None
+
+        :param skip_generator_test: If set to True and if a generator name is \
+        specified, the generator test is skipped. If no generator_name is specified \
+        and the option is set to True, the first available generator is used.
+        :type skip_generator_test: bool
 
         :param languages: The languages you'll need for your project, in terms \
         that CMake recognizes.
@@ -118,8 +124,11 @@ class CMakePlatform(object):
 
         self.write_test_cmakelist(languages)
 
-        working_generator = self.compile_test_cmakelist(
-            cmake_executable, candidate_generators, cmake_args)
+        if skip_generator_test:
+            working_generator = candidate_generators[0]
+        else:
+            working_generator = self.compile_test_cmakelist(
+                cmake_executable, candidate_generators, cmake_args)
 
         if working_generator is None:
             raise SKBuildGeneratorNotFoundError(textwrap.dedent(

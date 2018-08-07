@@ -118,7 +118,7 @@ class CMaker(object):
 
         return None
 
-    def configure(self, clargs=(), generator_name=None,
+    def configure(self, clargs=(), generator_name=None, skip_generator_test=False,
                   cmake_source_dir='.', cmake_install_dir='',
                   languages=('C', 'CXX'), cleanup=True):
         """Calls cmake to generate the Makefile/VS Solution/XCode project.
@@ -129,6 +129,11 @@ class CMaker(object):
         generator_name: string
             The string representing the CMake generator to use.
             If None, uses defaults for your platform.
+
+        skip_generator_test: bool
+            If set to True and if a generator name is specified (either as a keyword
+            argument or as `clargs` using `-G <generator_name>`), the generator test
+            is skipped.
 
         cmake_source_dir: string
             Path to source tree containing a ``CMakeLists.txt``
@@ -165,7 +170,8 @@ class CMaker(object):
         # use the generator returned from the platform, with the current
         # generator_name as a suggestion
         generator = self.platform.get_best_generator(
-            generator_name, cmake_executable=self.cmake_executable, cmake_args=clargs,
+            generator_name, skip_generator_test=skip_generator_test,
+            cmake_executable=self.cmake_executable, cmake_args=clargs,
             languages=languages, cleanup=cleanup)
 
         if not os.path.exists(CMAKE_BUILD_DIR):
