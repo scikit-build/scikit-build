@@ -91,7 +91,7 @@ def parse_skbuild_args(args, cmake_args, build_tool_args):
     if namespace.jobs is not None:
         build_tool_args.extend(['-j', str(namespace.jobs)])
 
-    if namespace.generator is None and namespace.skip_generator_test is not None:
+    if namespace.generator is None and namespace.skip_generator_test is True:
         sys.exit("ERROR: Specifying --skip-generator-test requires --generator to also be specified.")
 
     return remaining_args, namespace.cmake_executable, namespace.skip_generator_test
