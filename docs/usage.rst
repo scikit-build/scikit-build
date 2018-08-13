@@ -253,6 +253,15 @@ scikit-build options
       --cmake-executable specify the path to the cmake executable
 
 
+.. versionadded:: 0.8.0
+
+::
+
+    scikit-build options:
+      [...]
+      --skip-generator-test  skip generator test when a generator is explicitly selected using --generator
+
+
 .. _usage_cmake_options:
 
 CMake options

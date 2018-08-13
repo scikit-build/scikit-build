@@ -19,6 +19,9 @@ New Features
 
   * If not already set, ``zip_safe`` option is set to ``False``. Suggested by :user:`blowekamp`.
 
+* Add support for ``--skip-generator-test`` when a generator is explicitly selected using
+  ``--generator``. This allows to speed up overall build when the build environment is known.
+
 Bug fixes
 ---------
 

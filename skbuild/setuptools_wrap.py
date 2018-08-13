@@ -65,6 +65,10 @@ def create_skbuild_argparser():
         '--cmake-executable', default=None, metavar='',
         help='specify the path to the cmake executable'
     )
+    parser.add_argument(
+        '--skip-generator-test', action='store_true',
+        help='skip generator test when a generator is explicitly selected using --generator'
+    )
     return parser
 
 
@@ -72,7 +76,7 @@ def parse_skbuild_args(args, cmake_args, build_tool_args):
     """
     Parse arguments in the scikit-build argument set. Convert specified
     arguments to proper format and append to cmake_args and build_tool_args.
-    Returns the tuple ``(remaining arguments, cmake executable)``.
+    Returns the tuple ``(remaining arguments, cmake executable, skip_generator_test)``.
     """
     parser = create_skbuild_argparser()
     namespace, remaining_args = parser.parse_known_args(args)
@@ -87,13 +91,16 @@ def parse_skbuild_args(args, cmake_args, build_tool_args):
     if namespace.jobs is not None:
         build_tool_args.extend(['-j', str(namespace.jobs)])
 
-    return remaining_args, namespace.cmake_executable
+    if namespace.generator is None and namespace.skip_generator_test is True:
+        sys.exit("ERROR: Specifying --skip-generator-test requires --generator to also be specified.")
+
+    return remaining_args, namespace.cmake_executable, namespace.skip_generator_test
 
 
 def parse_args():
     """This function parses the command-line arguments ``sys.argv`` and returns
-    the tuple ``(setuptools_args, cmake_executable, cmake_args, build_tool_args)`` where each
-    ``*_args`` element corresponds to a set of arguments separated by ``--``."""
+    the tuple ``(setuptools_args, cmake_executable, skip_generator_test, cmake_args, build_tool_args)``
+    where each ``*_args`` element corresponds to a set of arguments separated by ``--``."""
     dutils = []
     cmake = []
     make = []
@@ -112,9 +119,9 @@ def parse_args():
         else:
             argsets[i].append(arg)
 
-    dutils, cmake_executable = parse_skbuild_args(dutils, cmake, make)
+    dutils, cmake_executable, skip_generator_test = parse_skbuild_args(dutils, cmake, make)
 
-    return dutils, cmake_executable, cmake, make
+    return dutils, cmake_executable, skip_generator_test, cmake, make
 
 
 @contextmanager
@@ -338,7 +345,7 @@ def setup(*args, **kw):  # noqa: C901
     version in :const:`skbuild.constants.CMAKE_SPEC_FILE`: and (3) re-configuring only if either the generator or
     the CMake specs change.
     """
-    sys.argv, cmake_executable, cmake_args, make_args = parse_args()
+    sys.argv, cmake_executable, skip_generator_test, cmake_args, make_args = parse_args()
 
     # work around https://bugs.python.org/issue1011113
     # (patches provided, but no updates since 2014)
@@ -535,6 +542,7 @@ def setup(*args, **kw):  # noqa: C901
             env = cmkr.get_cached_generator_env()
             if env is None or cmake_spec != _load_cmake_spec():
                 env = cmkr.configure(cmake_args,
+                                     skip_generator_test=skip_generator_test,
                                      cmake_source_dir=cmake_source_dir,
                                      cmake_install_dir=skbuild_kw['cmake_install_dir'],
                                      languages=cmake_languages
