@@ -183,6 +183,12 @@ Setting up environment
 
 13. Add a ``Next Release`` section back in `CHANGES.rst`, commit and push local changes.
 
+  .. code::
+
+    $ git add CHANGES.rst && \
+      git commit -m "CHANGES.rst: Add \"Next Release\" section [ci skip]" && \
+      git push origin master
+
 
 .. _virtualenvwrapper: https://virtualenvwrapper.readthedocs.io/
 .. _virtualenv: http://virtualenv.readthedocs.io
