@@ -160,7 +160,7 @@ Setting up environment
 
     $ mkvirtualenv scikit-build-${release}-install-test && \
       pip install scikit-build && \
-      pyhton -c "import skbuild"
+      python -c "import skbuild"
 
   .. note::
 
