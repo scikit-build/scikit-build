@@ -158,7 +158,8 @@ Setting up environment
 
   .. code::
 
-    $ mkvirtualenv scikit-build-${release}-install-test && \
+    $ pushd $(mktemp -d) && \
+      mkvirtualenv scikit-build-${release}-install-test && \
       pip install scikit-build && \
       python -c "import skbuild"
 
@@ -176,7 +177,8 @@ Setting up environment
 
   .. code::
 
-    $ deactivate  && \
+    $ popd && \
+      deactivate  && \
       rm -rf dist/* && \
       rmvirtualenv scikit-build-${release}-install-test
 
