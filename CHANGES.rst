@@ -8,6 +8,13 @@ details, see the commit logs at http://github.com/scikit-build/scikit-build
 Next Release
 ============
 
+Bug fixes
+---------
+
+* Fix ``bdist_wheel`` command to support ``wheel >= 0.32.0``. Thanks :user:`fbudin69500` for reporting
+  issue :issue:`360`.
+
+
 Scikit-build 0.8.0
 ==================
 
