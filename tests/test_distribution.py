@@ -20,7 +20,7 @@ except ImportError:
 @pytest.mark.skipif(not HAS_PYTEST_VIRTUALENV,
                     reason="pytest_virtualenv not available. See #228")
 def test_source_distribution(virtualenv):
-    sdists = Path(DIST_DIR).files(pattern="*.tar.gz") if Path(DIST_DIR).exists() else []
+    sdists = Path(DIST_DIR).files(match="*.tar.gz") if Path(DIST_DIR).exists() else []
     if not sdists:
         pytest.skip("no source distribution available")
     assert len(sdists) == 1
@@ -37,7 +37,7 @@ def test_source_distribution(virtualenv):
 @pytest.mark.skipif(not HAS_PYTEST_VIRTUALENV,
                     reason="pytest_virtualenv not available. See #228")
 def test_wheel(virtualenv):
-    wheels = Path(DIST_DIR).files(pattern="*.whl") if Path(DIST_DIR).exists() else []
+    wheels = Path(DIST_DIR).files(match="*.whl") if Path(DIST_DIR).exists() else []
     if not wheels:
         pytest.skip("no wheel available")
     assert len(wheels) == 1
