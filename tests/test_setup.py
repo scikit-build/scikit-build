@@ -60,7 +60,7 @@ def test_distribution_is_pure(distribution_type, tmpdir):
             cmake_minimum_required(VERSION 3.5.0)
             project(test NONE)
             install(CODE "execute_process(
-              COMMAND \${CMAKE_COMMAND} -E sleep 0)")
+              COMMAND \\${CMAKE_COMMAND} -E sleep 0)")
             """
         )
     else:
@@ -120,7 +120,7 @@ def test_cmake_args_keyword(cmake_args, capfd):
         message(STATUS "VAR[${VAR}]")
         message(STATUS "VAR_WITH_SPACE[${VAR_WITH_SPACE}]")
         install(CODE "execute_process(
-          COMMAND \${CMAKE_COMMAND} -E sleep 0)")
+          COMMAND \\${CMAKE_COMMAND} -E sleep 0)")
         """
     ))
 
@@ -252,7 +252,7 @@ def test_cmake_with_sdist_keyword(cmake_with_sdist, capfd):
         cmake_minimum_required(VERSION 3.5.0)
         project(test NONE)
         install(CODE "execute_process(
-          COMMAND \${CMAKE_COMMAND} -E sleep 0)")
+          COMMAND \\${CMAKE_COMMAND} -E sleep 0)")
         """
     ))
 
@@ -290,7 +290,7 @@ def test_cmake_minimum_required_version_keyword():
         cmake_minimum_required(VERSION 3.5.0)
         project(test NONE)
         install(CODE "execute_process(
-          COMMAND \${CMAKE_COMMAND} -E sleep 0)")
+          COMMAND \\${CMAKE_COMMAND} -E sleep 0)")
         """
     ))
 
@@ -337,7 +337,7 @@ def test_setup_requires_keyword_include_cmake(mocker, capsys):
         cmake_minimum_required(VERSION 3.5.0)
         project(test NONE)
         install(CODE "execute_process(
-          COMMAND \${CMAKE_COMMAND} -E sleep 0)")
+          COMMAND \\${CMAKE_COMMAND} -E sleep 0)")
         """
     ))
 
@@ -1061,7 +1061,7 @@ def test_zip_safe_default(zip_safe, mocker):
         cmake_minimum_required(VERSION 3.5.0)
         project(test NONE)
         install(CODE "execute_process(
-          COMMAND \${CMAKE_COMMAND} -E sleep 0)")
+          COMMAND \\${CMAKE_COMMAND} -E sleep 0)")
         """
     ))
 

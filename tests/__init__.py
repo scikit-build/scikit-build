@@ -73,7 +73,7 @@ def _tmpdir(basename):
     the pytest settings."""
 
     # Adapted from _pytest.tmpdir.tmpdir()
-    basename = re.sub("[\W]", "_", basename)
+    basename = re.sub(r"[\W]", "_", basename)
     max_val = 30
     if len(basename) > max_val:
         basename = basename[:max_val]
