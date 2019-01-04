@@ -474,8 +474,31 @@ def setup(*args, **kw):  # noqa: C901
     # specified
     if sys.platform == 'darwin':
         if plat_name is None:
-            # The following code is duplicated in bdist_wheel.finalize_options()
-            plat_name = "macosx-10.6-x86_64"
+            # If cmake osx deployment args are set then set plat_name from them
+            user_set = False
+            if cmaker.has_cmake_cache_arg(
+                    cmake_args, 'CMAKE_OSX_DEPLOYMENT_TARGET'):
+                version = "".join(s for s in cmake_args
+                                  if 'CMAKE_OSX_DEPLOYMENT_TARGET'
+                                  in s).split('=')[1]
+                user_set = True
+            else:
+                version = '10.6'
+
+            if cmaker.has_cmake_cache_arg(
+                    cmake_args, 'CMAKE_OSX_ARCHITECTURES'):
+                machine = "".join(s for s in cmake_args
+                                  if 'CMAKE_OSX_ARCHITECTURES'
+                                  in s).split('=')[1]
+                user_set = True
+            else:
+                machine = 'x86_64'
+
+            plat_name = "macosx-{}-{}".format(version, machine)
+            # Set plat_name sys arg so that next command, e.g. bdist_wheel
+            # inherits this information.
+            if user_set:
+                sys.argv += ['--plat-name', plat_name]
 
         (_, version, machine) = plat_name.split('-')
         if not cmaker.has_cmake_cache_arg(
