@@ -340,7 +340,7 @@ function(_set_python_extension_symbol_visibility _target)
                "{global: ${_modinit_prefix}${_target}; local: *; };"
     )
     set_property(TARGET ${_target} APPEND_STRING PROPERTY LINK_FLAGS
-        " -Wl,--version-script=${_script_path}"
+        " -Wl,--version-script=\"${_script_path}\""
     )
   endif()
 endfunction()
