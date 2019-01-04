@@ -14,6 +14,10 @@ Bug fixes
 * Fix build of wheels if path includes spaces. See issue :issue:`375`. Thanks :user:`padraic-padraic`
   for the contribution.
 
+* Ensure wheel platform name is correctly set when providing custom ``CMAKE_OSX_DEPLOYMENT_TARGET``
+  and ``CMAKE_OSX_ARCHITECTURES`` values are provided. Thanks :user:`nonhermitian` for the contribution.
+  See :issue:`377`.
+
 Scikit-build 0.8.1
 ==================
 

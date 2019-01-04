@@ -43,7 +43,9 @@ from .command import (build, build_py, clean,
                       sdist, generate_source_manifest, test)
 from .constants import (CMAKE_DEFAULT_EXECUTABLE,
                         CMAKE_INSTALL_DIR,
-                        CMAKE_SPEC_FILE)
+                        CMAKE_SPEC_FILE,
+                        set_skbuild_plat_name,
+                        skbuild_plat_name)
 from .exceptions import SKBuildError, SKBuildGeneratorNotFoundError
 from .utils import (mkdir_p, parse_manifestin, PythonModuleFinder, to_platform_path, to_unix_path)
 
@@ -469,14 +471,33 @@ def setup(*args, **kw):  # noqa: C901
     # one is considered, let's prepend the one provided in the setup call.
     cmake_args = skbuild_kw['cmake_args'] + cmake_args
 
-    # Set CMAKE_OSX_DEPLOYMENT_TARGET and CMAKE_OSX_ARCHITECTURES if not already
-    # specified
     if sys.platform == 'darwin':
+        # Set plat-name based on CMAKE_OSX_* arguments
         if plat_name is None:
-            # The following code is duplicated in bdist_wheel.finalize_options()
-            plat_name = "macosx-10.6-x86_64"
+            # The following values are duplicated in bdist_wheel.finalize_options()
+            version = '10.6'
+            machine = 'x86_64'
+        else:
+            (_, version, machine) = plat_name.split('-')
 
-        (_, version, machine) = plat_name.split('-')
+        # The loop here allows for CMAKE_OSX_* command line arguments to overload
+        # values passed with either the ``--plat-name`` command-line argument
+        # or the ``cmake_args`` setup option.
+        for cmake_arg in cmake_args:
+            if 'CMAKE_OSX_DEPLOYMENT_TARGET' in cmake_arg:
+                version = cmake_arg.split('=')[1]
+            if 'CMAKE_OSX_ARCHITECTURES' in cmake_arg:
+                machine = cmake_arg.split('=')[1]
+
+        set_skbuild_plat_name("macosx-{}-{}".format(version, machine))
+
+        # Set plat-name argument so that commands (e.g. bdist_wheel)
+        # uses this information.
+        sys.argv += ['--plat-name', skbuild_plat_name()]
+
+        # Set CMAKE_OSX_DEPLOYMENT_TARGET and CMAKE_OSX_ARCHITECTURES if not already
+        # specified
+        (_, version, machine) = skbuild_plat_name().split('-')
         if not cmaker.has_cmake_cache_arg(
                 cmake_args, 'CMAKE_OSX_DEPLOYMENT_TARGET'):
             cmake_args.append(
