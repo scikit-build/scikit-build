@@ -474,22 +474,24 @@ def setup(*args, **kw):  # noqa: C901
     # specified
     if sys.platform == 'darwin':
         if plat_name is None:
-            # If cmake osx deployment args are set then set plat_name from them
+            # If cmake osx deployment args are set then set plat from them
             user_set = False
             if cmaker.has_cmake_cache_arg(
                     cmake_args, 'CMAKE_OSX_DEPLOYMENT_TARGET'):
-                version = "".join(s for s in cmake_args
-                                  if 'CMAKE_OSX_DEPLOYMENT_TARGET'
-                                  in s).split('=')[1]
+                # The loop here allows for cli flags to overload
+                # those set in the setup file.
+                for s in cmake_args:
+                    if 'CMAKE_OSX_DEPLOYMENT_TARGET' in s:
+                        version = s.split('=')[1]
                 user_set = True
             else:
                 version = '10.6'
 
             if cmaker.has_cmake_cache_arg(
                     cmake_args, 'CMAKE_OSX_ARCHITECTURES'):
-                machine = "".join(s for s in cmake_args
-                                  if 'CMAKE_OSX_ARCHITECTURES'
-                                  in s).split('=')[1]
+                for s in cmake_args:
+                    if 'CMAKE_OSX_ARCHITECTURES' in s:
+                        machine = s.split('=')[1]
                 user_set = True
             else:
                 machine = 'x86_64'
@@ -499,7 +501,7 @@ def setup(*args, **kw):  # noqa: C901
             # inherits this information.
             if user_set:
                 sys.argv += ['--plat-name', plat_name]
-
+        
         (_, version, machine) = plat_name.split('-')
         if not cmaker.has_cmake_cache_arg(
                 cmake_args, 'CMAKE_OSX_DEPLOYMENT_TARGET'):
