@@ -501,7 +501,7 @@ def setup(*args, **kw):  # noqa: C901
             # inherits this information.
             if user_set:
                 sys.argv += ['--plat-name', plat_name]
-        
+
         (_, version, machine) = plat_name.split('-')
         if not cmaker.has_cmake_cache_arg(
                 cmake_args, 'CMAKE_OSX_DEPLOYMENT_TARGET'):
