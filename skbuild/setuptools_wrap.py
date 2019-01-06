@@ -37,7 +37,7 @@ from setuptools import setup as upstream_setup
 from setuptools.dist import Distribution as upstream_Distribution
 
 from . import cmaker
-from .command import (build, build_py, clean,
+from .command import (build, build_ext, build_py, clean,
                       install, install_lib, install_scripts,
                       bdist, bdist_wheel, egg_info,
                       sdist, generate_source_manifest, test)
@@ -296,6 +296,7 @@ def _should_run_cmake(commands, cmake_with_sdist):
     is found in ``commands``."""
     for expected_command in [
         "build",
+        "build_ext",
         "develop",
         "install",
         "install_lib",
@@ -353,6 +354,7 @@ def setup(*args, **kw):  # noqa: C901
     cmdclass = kw.get('cmdclass', {})
     cmdclass['build'] = cmdclass.get('build', build.build)
     cmdclass['build_py'] = cmdclass.get('build_py', build_py.build_py)
+    cmdclass['build_ext'] = cmdclass.get('build_ext', build_ext.build_ext)
     cmdclass['install'] = cmdclass.get('install', install.install)
     cmdclass['install_lib'] = cmdclass.get('install_lib',
                                            install_lib.install_lib)
@@ -606,7 +608,9 @@ def setup(*args, **kw):  # noqa: C901
                            py_modules, new_py_modules,
                            scripts, new_scripts,
                            data_files)
-    if developer_mode:
+
+    # Is there a better way to check the command line args?
+    if developer_mode or '--inplace' in sys.argv:
         # Copy packages
         for package, package_file_list in package_data.items():
             for package_file in package_file_list:
@@ -614,6 +618,8 @@ def setup(*args, **kw):  # noqa: C901
                 cmake_file = os.path.join(CMAKE_INSTALL_DIR(), package_file)
                 if os.path.exists(cmake_file):
                     _copy_file(cmake_file, package_file, hide_listing)
+
+    if developer_mode:
         # Copy modules
         for py_module in py_modules:
             package_file = py_module + ".py"
