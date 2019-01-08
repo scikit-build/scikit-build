@@ -141,10 +141,9 @@ def _parse_setuptools_arguments(setup_attrs):
     """This function instantiates a Distribution object and
     parses the command line arguments.
 
-    It returns the tuple
-        ``(display_only, help_commands, commands,
-        hide_listing, force_cmake, skip_cmake, plat_name)``
+    It returns the tuple ``(display_only, help_commands, commands, hide_listing, force_cmake, skip_cmake, plat_name)``
     where
+
     - display_only is a boolean indicating if an argument like '--help',
       '--help-commands' or '--author' was passed.
     - help_commands is a boolean indicating if argument '--help-commands'
@@ -659,15 +658,17 @@ def _collect_package_prefixes(package_dir, packages):
     setup call was made with a package list featuring "top" and "top.bar", but
     not "top.not_a_subpackage".
 
-    top/                -> top/
-      __init__.py       -> top/__init__.py                 (parent: top)
-      foo.py            -> top/foo.py                      (parent: top)
-      bar/              -> top/bar/                        (parent: top)
-        __init__.py     -> top/bar/__init__.py             (parent: top.bar)
+    ::
 
-      not_a_subpackage/ -> top/not_a_subpackage/           (parent: top)
-        data_0.txt      -> top/not_a_subpackage/data_0.txt (parent: top)
-        data_1.txt      -> top/not_a_subpackage/data_1.txt (parent: top)
+        top/                -> top/
+          __init__.py       -> top/__init__.py                 (parent: top)
+          foo.py            -> top/foo.py                      (parent: top)
+          bar/              -> top/bar/                        (parent: top)
+            __init__.py     -> top/bar/__init__.py             (parent: top.bar)
+
+          not_a_subpackage/ -> top/not_a_subpackage/           (parent: top)
+            data_0.txt      -> top/not_a_subpackage/data_0.txt (parent: top)
+            data_1.txt      -> top/not_a_subpackage/data_1.txt (parent: top)
 
     The paths in the generated install manifest are matched to packages
     according to the parents indicated on the right.  Only packages that are
