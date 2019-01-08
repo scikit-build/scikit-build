@@ -426,7 +426,7 @@ To optimize the developer workflow, scikit-build reconfigures the CMake project 
 needed. It caches the environment associated with the generator as well as the CMake execution
 properties.
 
-The CMake properties are saved in a :const:`CMake spec file <skbuild.constants.CMAKE_SPEC_FILE>` responsible
+The CMake properties are saved in a :func:`CMake spec file <skbuild.constants.CMAKE_SPEC_FILE()>` responsible
 to store the CMake executable path, the CMake configuration arguments, the CMake version as well as the
 environment variables ``PYTHONNOUSERSITE`` and ``PYTHONPATH``.
 

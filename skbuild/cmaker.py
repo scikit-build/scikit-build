@@ -95,12 +95,12 @@ class CMaker(object):
         self.platform = get_platform()
 
     def get_cached_generator_name(self):
-        """Reads and returns the cached generator from the :const:`skbuild.constants.CMAKE_BUILD_DIR`:.
+        """Reads and returns the cached generator from the :func:`skbuild.constants.CMAKE_BUILD_DIR()`:.
         Returns None if not found.
         """
         try:
             cmake_generator = 'CMAKE_GENERATOR:INTERNAL='
-            with open(os.path.join(CMAKE_BUILD_DIR, 'CMakeCache.txt')) as fp:
+            with open(os.path.join(CMAKE_BUILD_DIR(), 'CMakeCache.txt')) as fp:
                 for line in fp:
                     if line.startswith(cmake_generator):
                         return line[len(cmake_generator):].strip()
@@ -140,7 +140,7 @@ class CMaker(object):
 
         cmake_install_dir: string
             Relative directory to append
-            to :const:`skbuild.constants.CMAKE_INSTALL_DIR`.
+            to :func:`skbuild.constants.CMAKE_INSTALL_DIR()`.
 
         languages: tuple
             List of languages required to configure the project and expected to
@@ -174,14 +174,14 @@ class CMaker(object):
             cmake_executable=self.cmake_executable, cmake_args=clargs,
             languages=languages, cleanup=cleanup)
 
-        if not os.path.exists(CMAKE_BUILD_DIR):
-            os.makedirs(CMAKE_BUILD_DIR)
+        if not os.path.exists(CMAKE_BUILD_DIR()):
+            os.makedirs(CMAKE_BUILD_DIR())
 
-        if not os.path.exists(CMAKE_INSTALL_DIR):
-            os.makedirs(CMAKE_INSTALL_DIR)
+        if not os.path.exists(CMAKE_INSTALL_DIR()):
+            os.makedirs(CMAKE_INSTALL_DIR())
 
-        if not os.path.exists(SETUPTOOLS_INSTALL_DIR):
-            os.makedirs(SETUPTOOLS_INSTALL_DIR)
+        if not os.path.exists(SETUPTOOLS_INSTALL_DIR()):
+            os.makedirs(SETUPTOOLS_INSTALL_DIR())
 
         python_version = CMaker.get_python_version()
         python_include_dir = CMaker.get_python_include_dir(python_version)
@@ -192,7 +192,7 @@ class CMaker(object):
             self.cmake_executable, cmake_source_dir, '-G', generator.name,
             ("-DCMAKE_INSTALL_PREFIX:PATH=" +
                 os.path.abspath(
-                    os.path.join(CMAKE_INSTALL_DIR, cmake_install_dir))),
+                    os.path.join(CMAKE_INSTALL_DIR(), cmake_install_dir))),
             ("-DPYTHON_EXECUTABLE:FILEPATH=" +
                 sys.executable),
             ("-DPYTHON_VERSION_STRING:STRING=" +
@@ -216,7 +216,7 @@ class CMaker(object):
 
         # changes dir to cmake_build and calls cmake's configure step
         # to generate makefile
-        rtn = subprocess.call(cmd, cwd=CMAKE_BUILD_DIR, env=generator.env)
+        rtn = subprocess.call(cmd, cwd=CMAKE_BUILD_DIR(), env=generator.env)
         if rtn != 0:
             raise SKBuildError(
                 "An error occurred while configuring with CMake.\n"
@@ -229,7 +229,7 @@ class CMaker(object):
                 "Please see CMake's output for more information.".format(
                     self._formatArgsForDisplay(cmd),
                     os.path.abspath(cmake_source_dir),
-                    os.path.abspath(CMAKE_BUILD_DIR)))
+                    os.path.abspath(CMAKE_BUILD_DIR())))
 
         CMaker.check_for_bad_installs()
 
@@ -408,16 +408,16 @@ class CMaker(object):
 
         Indeed, we can not wait for the manifest, so we try to extract the
         information (install destination) from the CMake build files
-        ``*.cmake`` found in :const:`skbuild.constants.CMAKE_BUILD_DIR`.
+        ``*.cmake`` found in :func:`skbuild.constants.CMAKE_BUILD_DIR()`.
 
         It raises :class:`skbuild.exceptions.SKBuildError` if it found install destination outside of
-        :const:`skbuild.constants.CMAKE_INSTALL_DIR`.
+        :func:`skbuild.constants.CMAKE_INSTALL_DIR()`.
         """
 
         bad_installs = []
-        install_dir = os.path.join(os.getcwd(), CMAKE_INSTALL_DIR)
+        install_dir = os.path.join(os.getcwd(), CMAKE_INSTALL_DIR())
 
-        for root, _, file_list in os.walk(CMAKE_BUILD_DIR):
+        for root, _, file_list in os.walk(CMAKE_BUILD_DIR()):
             for filename in file_list:
                 if os.path.splitext(filename)[1] != ".cmake":
                     continue
@@ -453,10 +453,10 @@ class CMaker(object):
         """Calls the system-specific make program to compile code.
         """
         clargs, config = pop_arg('--config', clargs, config)
-        if not os.path.exists(CMAKE_BUILD_DIR):
+        if not os.path.exists(CMAKE_BUILD_DIR()):
             raise SKBuildError(("CMake build folder ({}) does not exist. "
                                 "Did you forget to run configure before "
-                                "make?").format(CMAKE_BUILD_DIR))
+                                "make?").format(CMAKE_BUILD_DIR()))
 
         cmd = [self.cmake_executable, "--build", source_dir,
                "--target", "install", "--config", config, "--"]
@@ -466,7 +466,7 @@ class CMaker(object):
                    shlex.split(os.environ.get("SKBUILD_BUILD_OPTIONS", "")))
         )
 
-        rtn = subprocess.call(cmd, cwd=CMAKE_BUILD_DIR, env=env)
+        rtn = subprocess.call(cmd, cwd=CMAKE_BUILD_DIR(), env=env)
         if rtn != 0:
             raise SKBuildError(
                 "An error occurred while building with CMake.\n"
@@ -479,7 +479,7 @@ class CMaker(object):
                 "Please see CMake's output for more information.".format(
                     self._formatArgsForDisplay(cmd),
                     os.path.abspath(source_dir),
-                    os.path.abspath(CMAKE_BUILD_DIR)))
+                    os.path.abspath(CMAKE_BUILD_DIR())))
 
     def install(self):
         """Returns a list of file paths to install via setuptools that is
@@ -489,7 +489,7 @@ class CMaker(object):
 
     def _parse_manifests(self):
         paths = \
-            glob.glob(os.path.join(CMAKE_BUILD_DIR, "install_manifest*.txt"))
+            glob.glob(os.path.join(CMAKE_BUILD_DIR(), "install_manifest*.txt"))
         try:
             return [self._parse_manifest(path) for path in paths][0]
         except IndexError:

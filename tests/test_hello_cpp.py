@@ -107,14 +107,14 @@ def test_hello_wheel():
         os.remove(whls[0])
         assert not os.path.exists(whls[0])
 
-        assert os.path.exists(os.path.join(CMAKE_BUILD_DIR, "CMakeCache.txt"))
-        os.remove(os.path.join(CMAKE_BUILD_DIR, "CMakeCache.txt"))
+        assert os.path.exists(os.path.join(CMAKE_BUILD_DIR(), "CMakeCache.txt"))
+        os.remove(os.path.join(CMAKE_BUILD_DIR(), "CMakeCache.txt"))
 
     tmp_dir = build_wheel()[0]
 
     @project_setup_py_test("hello-cpp", ["--skip-cmake", "bdist_wheel"], tmp_dir=tmp_dir)
     def build_wheel_skip_cmake():
-        assert not os.path.exists(os.path.join(CMAKE_BUILD_DIR, "CMakeCache.txt"))
+        assert not os.path.exists(os.path.join(CMAKE_BUILD_DIR(), "CMakeCache.txt"))
         whls = glob.glob('dist/*.whl')
         assert len(whls) == 1
         check_wheel_content(whls[0], expected_distribution_name, expected_content)
@@ -134,7 +134,7 @@ def test_hello_clean(dry_run, capfd):
 
         tmp_dir = run_build()[0]
 
-        assert tmp_dir.join(SKBUILD_DIR).exists()
+        assert tmp_dir.join(SKBUILD_DIR()).exists()
 
         # XXX Since using capfd.disabled() context manager prevents
         # the output from being captured atfer it exits, we display
@@ -152,9 +152,9 @@ def test_hello_clean(dry_run, capfd):
         run_clean()
 
         if not dry_run:
-            assert not tmp_dir.join(SKBUILD_DIR).exists()
+            assert not tmp_dir.join(SKBUILD_DIR()).exists()
         else:
-            assert tmp_dir.join(SKBUILD_DIR).exists()
+            assert tmp_dir.join(SKBUILD_DIR()).exists()
 
         build_out, clean_out = capfd.readouterr()[0].split('<<-->>')
         assert 'Build files have been written to' in build_out
@@ -190,9 +190,9 @@ def test_hello_cleans(capfd):
     clean2_out = clean2_out.strip()
 
     assert "running clean" == clean1_out.splitlines()[0]
-    assert "removing '{}'".format(CMAKE_INSTALL_DIR) == clean1_out.splitlines()[1]
-    assert "removing '{}'".format(CMAKE_BUILD_DIR) == clean1_out.splitlines()[2]
-    assert "removing '{}'".format(SKBUILD_DIR) == clean1_out.splitlines()[3]
+    assert "removing '{}'".format(CMAKE_INSTALL_DIR()) == clean1_out.splitlines()[1]
+    assert "removing '{}'".format(CMAKE_BUILD_DIR()) == clean1_out.splitlines()[2]
+    assert "removing '{}'".format(SKBUILD_DIR()) == clean1_out.splitlines()[3]
 
     assert "running clean" == clean2_out
 
