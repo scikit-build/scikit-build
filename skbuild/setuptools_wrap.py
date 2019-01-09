@@ -474,7 +474,7 @@ def setup(*args, **kw):  # noqa: C901
     if sys.platform == 'darwin':
         # Set plat-name based on CMAKE_OSX_* arguments
         if plat_name is None:
-            # The following values are duplicated in bdist_wheel.finalize_options()
+            # These default values are duplicated in bdist_wheel.finalize_options()
             version = '10.6'
             machine = 'x86_64'
         else:
@@ -491,9 +491,10 @@ def setup(*args, **kw):  # noqa: C901
 
         set_skbuild_plat_name("macosx-{}-{}".format(version, machine))
 
-        # Set plat-name argument so that commands (e.g. bdist_wheel)
-        # uses this information.
-        sys.argv += ['--plat-name', skbuild_plat_name()]
+        # Set platform env. variable so that commands (e.g. bdist_wheel)
+        # uses this information. The _PYTHON_HOST_PLATFORM env. variable is
+        # used in distutils.util.get_platform() function.
+        os.environ['_PYTHON_HOST_PLATFORM'] = skbuild_plat_name()
 
         # Set CMAKE_OSX_DEPLOYMENT_TARGET and CMAKE_OSX_ARCHITECTURES if not already
         # specified
