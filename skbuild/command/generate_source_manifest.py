@@ -8,10 +8,8 @@ import sys
 from distutils.cmd import Command
 
 from . import set_build_base_mixin
-from ..constants import SKBUILD_DIR
+from ..constants import SKBUILD_DIR, SKBUILD_MARKER_FILE
 from ..utils import new_style
-
-SKBUILD_MARKER_FILE = os.path.join(SKBUILD_DIR, "_skbuild_MANIFEST")
 
 
 class generate_source_manifest(set_build_base_mixin, new_style(Command)):
@@ -45,7 +43,7 @@ class generate_source_manifest(set_build_base_mixin, new_style(Command)):
             and not os.path.exists('MANIFEST')  # ... or ...
 
             # ... (if there is one,) that we created it
-            or os.path.exists(SKBUILD_MARKER_FILE)
+            or os.path.exists(SKBUILD_MARKER_FILE())
         )
 
         if do_generate:
@@ -74,10 +72,10 @@ class generate_source_manifest(set_build_base_mixin, new_style(Command)):
                 )
                 raise
 
-            if not os.path.exists(SKBUILD_DIR):
-                os.makedirs(SKBUILD_DIR)
+            if not os.path.exists(SKBUILD_DIR()):
+                os.makedirs(SKBUILD_DIR())
 
-            with open(SKBUILD_MARKER_FILE, 'w'):  # touch
+            with open(SKBUILD_MARKER_FILE(), 'w'):  # touch
                 pass
 
     def finalize_options(self, *args, **kwargs):

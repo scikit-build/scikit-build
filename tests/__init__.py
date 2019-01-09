@@ -201,6 +201,11 @@ def execute_setup_py(project_dir, setup_args, disable_languages_test=False):
     # See https://stackoverflow.com/questions/9160227/dir-util-copy-tree-fails-after-shutil-rmtree
     distutils.dir_util._path_created = {}
 
+    # Clear _PYTHON_HOST_PLATFORM to ensure value sets in skbuild.setuptools_wrap.setup() does not
+    # influence other tests.
+    if '_PYTHON_HOST_PLATFORM' in os.environ:
+        del os.environ['_PYTHON_HOST_PLATFORM']
+
     with push_dir(str(project_dir)), push_argv(["setup.py"] + setup_args), prepend_sys_path([str(project_dir)]):
 
         # Restore master working set that is reset following call to "python setup.py test"

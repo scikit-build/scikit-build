@@ -81,7 +81,7 @@ def test_hello_clean(capfd):
 
         tmp_dir = run_build()[0]
 
-        assert tmp_dir.join(SKBUILD_DIR).exists()
+        assert tmp_dir.join(SKBUILD_DIR()).exists()
 
         @project_setup_py_test("hello-pure", ["clean"], tmp_dir=tmp_dir, disable_languages_test=True)
         def run_clean():
@@ -89,7 +89,7 @@ def test_hello_clean(capfd):
 
         run_clean()
 
-        assert not tmp_dir.join(SKBUILD_DIR).exists()
+        assert not tmp_dir.join(SKBUILD_DIR()).exists()
 
         out = capfd.readouterr()[0]
         assert 'Build files have been written to' not in out

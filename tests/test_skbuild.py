@@ -122,7 +122,7 @@ def test_generator(generator, expected_make_program):
 
     with push_env(CMAKE_GENERATOR=generator):
         tmp_dir = run_build()[0]
-        cmakecache = tmp_dir.join(CMAKE_BUILD_DIR).join("CMakeCache.txt")
+        cmakecache = tmp_dir.join(CMAKE_BUILD_DIR()).join("CMakeCache.txt")
         assert cmakecache.exists()
         variables = get_cmakecache_variables(str(cmakecache))
         make_program = (variables["CMAKE_MAKE_PROGRAM"][1]

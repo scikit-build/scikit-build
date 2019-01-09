@@ -67,7 +67,7 @@ def test_make_without_build_dir_fails():
 
 def test_make_without_configure_fails(capfd):
     src_dir = _tmpdir('test_make_without_configure_fails')
-    src_dir.ensure(CMAKE_BUILD_DIR, dir=1)
+    src_dir.ensure(CMAKE_BUILD_DIR(), dir=1)
     with push_dir(str(src_dir)), pytest.raises(SKBuildError) as excinfo:
         CMaker().make()
     _, err = capfd.readouterr()
@@ -92,7 +92,7 @@ def test_make(configure_with_cmake_source_dir, capfd):
             message(STATUS "CMAKE_BINARY_DIR:${CMAKE_BINARY_DIR}")
             """
         ))
-        src_dir.ensure(CMAKE_BUILD_DIR, dir=1)
+        src_dir.ensure(CMAKE_BUILD_DIR(), dir=1)
 
         with push_dir(str(src_dir)
                       if not configure_with_cmake_source_dir
@@ -109,14 +109,14 @@ def test_make(configure_with_cmake_source_dir, capfd):
         if configure_with_cmake_source_dir:
             messages += [
                 "/SRC",
-                "/BUILD/{}".format(to_unix_path(CMAKE_BUILD_DIR)),
-                "/BUILD/{}/./foo.txt".format(to_unix_path(CMAKE_INSTALL_DIR))
+                "/BUILD/{}".format(to_unix_path(CMAKE_BUILD_DIR())),
+                "/BUILD/{}/./foo.txt".format(to_unix_path(CMAKE_INSTALL_DIR()))
             ]
         else:
             messages += [
                 "/SRC",
-                "/SRC/{}".format(to_unix_path(CMAKE_BUILD_DIR)),
-                "/SRC/{}/./foo.txt".format(to_unix_path(CMAKE_INSTALL_DIR)),
+                "/SRC/{}".format(to_unix_path(CMAKE_BUILD_DIR())),
+                "/SRC/{}/./foo.txt".format(to_unix_path(CMAKE_INSTALL_DIR())),
             ]
 
         out, _ = capfd.readouterr()

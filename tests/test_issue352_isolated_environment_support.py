@@ -35,7 +35,7 @@ def test_isolated_env_trigger_reconfigure(mocker):
     #
     def fake_configure(*args, **kwargs):
         # Simulate a successful configuration creating a CMakeCache.txt
-        tmp_dir.ensure(CMAKE_BUILD_DIR, dir=1).join('CMakeCache.txt').write(textwrap.dedent(
+        tmp_dir.ensure(CMAKE_BUILD_DIR(), dir=1).join('CMakeCache.txt').write(textwrap.dedent(
             """
             //Name of generator.
             CMAKE_GENERATOR:INTERNAL=Ninja

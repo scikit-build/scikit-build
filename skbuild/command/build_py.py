@@ -90,8 +90,8 @@ class build_py(set_build_base_mixin, new_style(_build_py)):
 
             # skbuild: prepend CMAKE_INSTALL_DIR if file exists in the
             # CMake install tree.
-            if os.path.exists(os.path.join(CMAKE_INSTALL_DIR, module_file)):
-                module_file = os.path.join(CMAKE_INSTALL_DIR, module_file)
+            if os.path.exists(os.path.join(CMAKE_INSTALL_DIR(), module_file)):
+                module_file = os.path.join(CMAKE_INSTALL_DIR(), module_file)
 
             if not self.check_module(module, module_file):
                 continue

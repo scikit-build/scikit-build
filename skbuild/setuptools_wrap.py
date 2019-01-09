@@ -43,7 +43,9 @@ from .command import (build, build_py, clean,
                       sdist, generate_source_manifest, test)
 from .constants import (CMAKE_DEFAULT_EXECUTABLE,
                         CMAKE_INSTALL_DIR,
-                        CMAKE_SPEC_FILE)
+                        CMAKE_SPEC_FILE,
+                        set_skbuild_plat_name,
+                        skbuild_plat_name)
 from .exceptions import SKBuildError, SKBuildGeneratorNotFoundError
 from .utils import (mkdir_p, parse_manifestin, PythonModuleFinder, to_platform_path, to_unix_path)
 
@@ -141,10 +143,9 @@ def _parse_setuptools_arguments(setup_attrs):
     """This function instantiates a Distribution object and
     parses the command line arguments.
 
-    It returns the tuple
-        ``(display_only, help_commands, commands,
-        hide_listing, force_cmake, skip_cmake, plat_name)``
+    It returns the tuple ``(display_only, help_commands, commands, hide_listing, force_cmake, skip_cmake, plat_name)``
     where
+
     - display_only is a boolean indicating if an argument like '--help',
       '--help-commands' or '--author' was passed.
     - help_commands is a boolean indicating if argument '--help-commands'
@@ -317,18 +318,18 @@ def _save_cmake_spec(args):
     """Save the CMake spec to disk"""
     # We use JSON here because readability is more important than performance
     try:
-        os.makedirs(os.path.dirname(CMAKE_SPEC_FILE))
+        os.makedirs(os.path.dirname(CMAKE_SPEC_FILE()))
     except OSError:
         pass
 
-    with open(CMAKE_SPEC_FILE, 'w+') as fp:
+    with open(CMAKE_SPEC_FILE(), 'w+') as fp:
         json.dump(args, fp)
 
 
 def _load_cmake_spec():
     """Load and return the CMake spec from disk"""
     try:
-        with open(CMAKE_SPEC_FILE) as fp:
+        with open(CMAKE_SPEC_FILE()) as fp:
             return json.load(fp)
     except (OSError, IOError, ValueError):
         return None
@@ -342,7 +343,7 @@ def setup(*args, **kw):  # noqa: C901
 
     The CMake project is re-configured only if needed. This is achieved by (1) retrieving the environment mapping
     associated with the generator set in the ``CMakeCache.txt`` file, (2) saving the CMake configure arguments and
-    version in :const:`skbuild.constants.CMAKE_SPEC_FILE`: and (3) re-configuring only if either the generator or
+    version in :func:`skbuild.constants.CMAKE_SPEC_FILE()`: and (3) re-configuring only if either the generator or
     the CMake specs change.
     """
     sys.argv, cmake_executable, skip_generator_test, cmake_args, make_args = parse_args()
@@ -470,14 +471,34 @@ def setup(*args, **kw):  # noqa: C901
     # one is considered, let's prepend the one provided in the setup call.
     cmake_args = skbuild_kw['cmake_args'] + cmake_args
 
-    # Set CMAKE_OSX_DEPLOYMENT_TARGET and CMAKE_OSX_ARCHITECTURES if not already
-    # specified
     if sys.platform == 'darwin':
+        # Set plat-name based on CMAKE_OSX_* arguments
         if plat_name is None:
-            # The following code is duplicated in bdist_wheel.finalize_options()
-            plat_name = "macosx-10.6-x86_64"
+            # These default values are duplicated in bdist_wheel.finalize_options()
+            version = '10.6'
+            machine = 'x86_64'
+        else:
+            (_, version, machine) = plat_name.split('-')
 
-        (_, version, machine) = plat_name.split('-')
+        # The loop here allows for CMAKE_OSX_* command line arguments to overload
+        # values passed with either the ``--plat-name`` command-line argument
+        # or the ``cmake_args`` setup option.
+        for cmake_arg in cmake_args:
+            if 'CMAKE_OSX_DEPLOYMENT_TARGET' in cmake_arg:
+                version = cmake_arg.split('=')[1]
+            if 'CMAKE_OSX_ARCHITECTURES' in cmake_arg:
+                machine = cmake_arg.split('=')[1]
+
+        set_skbuild_plat_name("macosx-{}-{}".format(version, machine))
+
+        # Set platform env. variable so that commands (e.g. bdist_wheel)
+        # uses this information. The _PYTHON_HOST_PLATFORM env. variable is
+        # used in distutils.util.get_platform() function.
+        os.environ['_PYTHON_HOST_PLATFORM'] = skbuild_plat_name()
+
+        # Set CMAKE_OSX_DEPLOYMENT_TARGET and CMAKE_OSX_ARCHITECTURES if not already
+        # specified
+        (_, version, machine) = skbuild_plat_name().split('-')
         if not cmaker.has_cmake_cache_arg(
                 cmake_args, 'CMAKE_OSX_DEPLOYMENT_TARGET'):
             cmake_args.append(
@@ -590,13 +611,13 @@ def setup(*args, **kw):  # noqa: C901
         for package, package_file_list in package_data.items():
             for package_file in package_file_list:
                 package_file = os.path.join(package_dir[package], package_file)
-                cmake_file = os.path.join(CMAKE_INSTALL_DIR, package_file)
+                cmake_file = os.path.join(CMAKE_INSTALL_DIR(), package_file)
                 if os.path.exists(cmake_file):
                     _copy_file(cmake_file, package_file, hide_listing)
         # Copy modules
         for py_module in py_modules:
             package_file = py_module + ".py"
-            cmake_file = os.path.join(CMAKE_INSTALL_DIR, package_file)
+            cmake_file = os.path.join(CMAKE_INSTALL_DIR(), package_file)
             if os.path.exists(cmake_file):
                 _copy_file(cmake_file, package_file, hide_listing)
     else:
@@ -607,20 +628,20 @@ def setup(*args, **kw):  # noqa: C901
         _consolidate_package_data_files(original_package_data, package_prefixes, hide_listing)
 
         for data_file in original_manifestin_data_files:
-            dest_data_file = os.path.join(CMAKE_INSTALL_DIR, data_file)
+            dest_data_file = os.path.join(CMAKE_INSTALL_DIR(), data_file)
             _copy_file(data_file, dest_data_file, hide_listing)
 
     kw['package_data'] = package_data
     kw['package_dir'] = {
         package: (
-            os.path.join(CMAKE_INSTALL_DIR, prefix)
-            if os.path.exists(os.path.join(CMAKE_INSTALL_DIR, prefix))
+            os.path.join(CMAKE_INSTALL_DIR(), prefix)
+            if os.path.exists(os.path.join(CMAKE_INSTALL_DIR(), prefix))
             else prefix)
         for prefix, package in package_prefixes
     }
 
     kw['scripts'] = [
-        os.path.join(CMAKE_INSTALL_DIR, script) if mask else script
+        os.path.join(CMAKE_INSTALL_DIR(), script) if mask else script
         for script, mask in new_scripts.items()
     ]
 
@@ -659,15 +680,17 @@ def _collect_package_prefixes(package_dir, packages):
     setup call was made with a package list featuring "top" and "top.bar", but
     not "top.not_a_subpackage".
 
-    top/                -> top/
-      __init__.py       -> top/__init__.py                 (parent: top)
-      foo.py            -> top/foo.py                      (parent: top)
-      bar/              -> top/bar/                        (parent: top)
-        __init__.py     -> top/bar/__init__.py             (parent: top.bar)
+    ::
 
-      not_a_subpackage/ -> top/not_a_subpackage/           (parent: top)
-        data_0.txt      -> top/not_a_subpackage/data_0.txt (parent: top)
-        data_1.txt      -> top/not_a_subpackage/data_1.txt (parent: top)
+        top/                -> top/
+          __init__.py       -> top/__init__.py                 (parent: top)
+          foo.py            -> top/foo.py                      (parent: top)
+          bar/              -> top/bar/                        (parent: top)
+            __init__.py     -> top/bar/__init__.py             (parent: top.bar)
+
+          not_a_subpackage/ -> top/not_a_subpackage/           (parent: top)
+            data_0.txt      -> top/not_a_subpackage/data_0.txt (parent: top)
+            data_1.txt      -> top/not_a_subpackage/data_1.txt (parent: top)
 
     The paths in the generated install manifest are matched to packages
     according to the parents indicated on the right.  Only packages that are
@@ -694,11 +717,11 @@ def _classify_installed_files(install_paths, package_data, package_prefixes,
     assert not os.path.isabs(cmake_source_dir)
     assert cmake_source_dir != "."
 
-    install_root = os.path.join(os.getcwd(), CMAKE_INSTALL_DIR)
+    install_root = os.path.join(os.getcwd(), CMAKE_INSTALL_DIR())
     for path in install_paths:
         # if this installed file is not within the project root, complain and
         # exit
-        if not to_platform_path(path).startswith(CMAKE_INSTALL_DIR):
+        if not to_platform_path(path).startswith(CMAKE_INSTALL_DIR()):
             raise SKBuildError((
                 "\n  CMake-installed files must be within the project root.\n"
                 "    Project Root  : {}\n"
@@ -706,7 +729,7 @@ def _classify_installed_files(install_paths, package_data, package_prefixes,
                     install_root, to_platform_path(path)))
 
         # peel off the 'skbuild' prefix
-        path = to_unix_path(os.path.relpath(path, CMAKE_INSTALL_DIR))
+        path = to_unix_path(os.path.relpath(path, CMAKE_INSTALL_DIR()))
 
         _classify_file(path, package_data, package_prefixes,
                        py_modules, new_py_modules,
@@ -774,7 +797,7 @@ def _classify_file(path, package_data, package_prefixes,
     if file_set is None:
         file_set = set()
         data_files[parent_dir] = file_set
-    file_set.add(os.path.join(CMAKE_INSTALL_DIR, path))
+    file_set.add(os.path.join(CMAKE_INSTALL_DIR(), path))
 
 
 def _copy_file(src_file, dest_file, hide_listing=True):
@@ -807,7 +830,7 @@ def _consolidate_package_modules(
     both the source tree and the CMake install tree into one location.
 
     The one location is the CMake install tree
-    (see data::`.constants.CMAKE_INSTALL_DIR`).
+    (see :func:`.constants.CMAKE_INSTALL_DIR()`).
 
     Why ? This is a necessary evil because ``Setuptools`` keeps track of
     packages and modules files to install using a dictionary of lists where
@@ -822,7 +845,7 @@ def _consolidate_package_modules(
     one are either already included or missing from the distribution.
 
     Once a module has been identified as ``missing``, it is both copied
-    into the data::`.constants.CMAKE_INSTALL_DIR` and added to the
+    into the :func:`.constants.CMAKE_INSTALL_DIR()` and added to the
     ``package_data`` dictionary so that it can be considered by
     the upstream setup function.
     """
@@ -832,7 +855,7 @@ def _consolidate_package_modules(
         # and cmake install tree.
         modules = PythonModuleFinder(
             packages, package_dir, py_modules,
-            alternative_build_base=CMAKE_INSTALL_DIR
+            alternative_build_base=CMAKE_INSTALL_DIR()
         ).find_all_modules()
     except DistutilsError as msg:
         raise SystemExit("error: {}".format(str(msg)))
@@ -849,7 +872,7 @@ def _consolidate_package_modules(
 
         # Copy missing module file
         if os.path.exists(src_module_file):
-            dest_module_file = os.path.join(CMAKE_INSTALL_DIR, src_module_file)
+            dest_module_file = os.path.join(CMAKE_INSTALL_DIR(), src_module_file)
             _copy_file(src_module_file, dest_module_file, hide_listing)
 
         # Since the mapping in package_data expects the package to be associated
@@ -874,7 +897,7 @@ def _consolidate_package_modules(
 
 def _consolidate_package_data_files(original_package_data, package_prefixes, hide_listing):
     """This function copies package data files specified using the ``package_data`` keyword
-    into data::`.constants.CMAKE_INSTALL_DIR`.
+    into :func:`.constants.CMAKE_INSTALL_DIR()`.
 
     ::
 
@@ -887,7 +910,7 @@ def _consolidate_package_data_files(original_package_data, package_prefixes, hid
     Considering that (1) the packages associated with modules located in both the source tree and
     the CMake install tree are consolidated into the CMake install tree, and (2) the consolidated
     package path set in the ``package_dir`` dictionary and later used by setuptools to package
-    (or install) modules and data files is data::`.constants.CMAKE_INSTALL_DIR`, copying the data files
+    (or install) modules and data files is :func:`.constants.CMAKE_INSTALL_DIR()`, copying the data files
     is required to ensure setuptools can find them when it uses the package directory.
     """
     project_root = os.getcwd()
@@ -900,5 +923,5 @@ def _consolidate_package_data_files(original_package_data, package_prefixes, hid
             for src_data_file in glob(expanded_package_dir):
                 full_prefix_length = len(os.path.join(project_root, prefix)) + 1
                 data_file = src_data_file[full_prefix_length:]
-                dest_data_file = os.path.join(CMAKE_INSTALL_DIR, prefix, data_file)
+                dest_data_file = os.path.join(CMAKE_INSTALL_DIR(), prefix, data_file)
                 _copy_file(src_data_file, dest_data_file, hide_listing)

@@ -14,6 +14,10 @@ Bug fixes
 * Fix build of wheels if path includes spaces. See issue :issue:`375`. Thanks :user:`padraic-padraic`
   for the contribution.
 
+* Ensure wheel platform name is correctly set when providing custom ``CMAKE_OSX_DEPLOYMENT_TARGET``
+  and ``CMAKE_OSX_ARCHITECTURES`` values are provided. Thanks :user:`nonhermitian` for the contribution.
+  See :issue:`377`.
+
 Scikit-build 0.8.1
 ==================
 
@@ -131,7 +135,7 @@ New Features
 
 * Faster incremental build by re-configuring the project only if needed. This was achieved by (1) adding support
   to retrieve the environment mapping associated with the generator set in the ``CMakeCache.txt`` file, (2) introducing
-  a :const:`CMake spec file <skbuild.constants.CMAKE_SPEC_FILE>` storing the CMake version as well as the
+  a :func:`CMake spec file <skbuild.constants.CMAKE_SPEC_FILE()>` storing the CMake version as well as the
   the CMake arguments and (3) re-configuring only if either the generator or the CMake specs change.
   Thanks :user:`xoviat` for the contribution. See :issue:`301`.
 
