@@ -8,6 +8,12 @@ details, see the commit logs at http://github.com/scikit-build/scikit-build
 Next Release
 ============
 
+Bug fixes
+---------
+
+* Fix build of wheels if path includes spaces. See issue :issue:`375`. Thanks :user:`padraic-padraic`
+  for the contribution.
+
 Scikit-build 0.8.1
 ==================
 
