@@ -37,7 +37,7 @@ from setuptools import setup as upstream_setup
 from setuptools.dist import Distribution as upstream_Distribution
 
 from . import cmaker
-from .command import (build, build_py, clean,
+from .command import (build, build_ext, build_py, clean,
                       install, install_lib, install_scripts,
                       bdist, bdist_wheel, egg_info,
                       sdist, generate_source_manifest, test)
@@ -158,6 +158,8 @@ def _parse_setuptools_arguments(setup_attrs):
       explicitly be skipped.
     - plat_name is a string identifying the platform name to embed in generated
       filenames. It defaults to ``distutils.util.get_platform()``.
+    - build_ext_inplace is a boolean indicating if ``build_ext`` command was
+      specified along with the --inplace argument.
 
     Otherwise it raises DistutilsArgError exception if there are
     any error on the command-line, and it raises DistutilsGetoptError
@@ -217,9 +219,11 @@ def _parse_setuptools_arguments(setup_attrs):
             "--plat-name is ambiguous: %s" % ", ".join(plat_names))
     plat_name = list(plat_names)[0]
 
+    build_ext_inplace = dist.get_command_obj('build_ext').inplace
+
     return (display_only, dist.help_commands, dist.commands,
             dist.hide_listing, dist.force_cmake, dist.skip_cmake,
-            plat_name)
+            plat_name, build_ext_inplace)
 
 
 def _check_skbuild_parameters(skbuild_kw):
@@ -296,6 +300,7 @@ def _should_run_cmake(commands, cmake_with_sdist):
     is found in ``commands``."""
     for expected_command in [
         "build",
+        "build_ext",
         "develop",
         "install",
         "install_lib",
@@ -353,6 +358,7 @@ def setup(*args, **kw):  # noqa: C901
     cmdclass = kw.get('cmdclass', {})
     cmdclass['build'] = cmdclass.get('build', build.build)
     cmdclass['build_py'] = cmdclass.get('build_py', build_py.build_py)
+    cmdclass['build_ext'] = cmdclass.get('build_ext', build_ext.build_ext)
     cmdclass['install'] = cmdclass.get('install', install.install)
     cmdclass['install_lib'] = cmdclass.get('install_lib',
                                            install_lib.install_lib)
@@ -415,7 +421,7 @@ def setup(*args, **kw):  # noqa: C901
     try:
         (display_only, help_commands, commands,
          hide_listing, force_cmake, skip_cmake,
-         plat_name) = \
+         plat_name, build_ext_inplace) = \
             _parse_setuptools_arguments(kw)
     except (DistutilsArgError, DistutilsGetoptError):
         has_invalid_arguments = True
@@ -449,7 +455,7 @@ def setup(*args, **kw):  # noqa: C901
             print('')
         return upstream_setup(*args, **kw)
 
-    developer_mode = "develop" in commands or "test" in commands
+    developer_mode = "develop" in commands or "test" in commands or build_ext_inplace
 
     packages = kw.get('packages', [])
     package_dir = kw.get('package_dir', {})
@@ -606,6 +612,7 @@ def setup(*args, **kw):  # noqa: C901
                            py_modules, new_py_modules,
                            scripts, new_scripts,
                            data_files)
+
     if developer_mode:
         # Copy packages
         for package, package_file_list in package_data.items():
@@ -614,6 +621,7 @@ def setup(*args, **kw):  # noqa: C901
                 cmake_file = os.path.join(CMAKE_INSTALL_DIR(), package_file)
                 if os.path.exists(cmake_file):
                     _copy_file(cmake_file, package_file, hide_listing)
+
         # Copy modules
         for py_module in py_modules:
             package_file = py_module + ".py"
