@@ -8,6 +8,13 @@ details, see the commit logs at http://github.com/scikit-build/scikit-build
 Next Release
 ============
 
+New Features
+------------
+
+* Add support for building distutils based extensions associated with ``ext_modules`` setup keyword along
+  side skbuild based extensions. This means using ``build_ext`` command (and associated ``--inplace``
+  argument) is supported. Thanks :user:`Erotemic` for the contribution. See :issue:`284`.
+
 Bug fixes
 ---------
 
