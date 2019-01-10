@@ -158,6 +158,8 @@ def _parse_setuptools_arguments(setup_attrs):
       explicitly be skipped.
     - plat_name is a string identifying the platform name to embed in generated
       filenames. It defaults to ``distutils.util.get_platform()``.
+    - build_ext_inplace is a boolean indicating if ``build_ext`` command was
+      specified along with the --inplace argument.
 
     Otherwise it raises DistutilsArgError exception if there are
     any error on the command-line, and it raises DistutilsGetoptError
@@ -217,9 +219,11 @@ def _parse_setuptools_arguments(setup_attrs):
             "--plat-name is ambiguous: %s" % ", ".join(plat_names))
     plat_name = list(plat_names)[0]
 
+    build_ext_inplace = dist.get_command_obj('build_ext').inplace
+
     return (display_only, dist.help_commands, dist.commands,
             dist.hide_listing, dist.force_cmake, dist.skip_cmake,
-            plat_name)
+            plat_name, build_ext_inplace)
 
 
 def _check_skbuild_parameters(skbuild_kw):
@@ -417,7 +421,7 @@ def setup(*args, **kw):  # noqa: C901
     try:
         (display_only, help_commands, commands,
          hide_listing, force_cmake, skip_cmake,
-         plat_name) = \
+         plat_name, build_ext_inplace) = \
             _parse_setuptools_arguments(kw)
     except (DistutilsArgError, DistutilsGetoptError):
         has_invalid_arguments = True
@@ -451,7 +455,7 @@ def setup(*args, **kw):  # noqa: C901
             print('')
         return upstream_setup(*args, **kw)
 
-    developer_mode = "develop" in commands or "test" in commands
+    developer_mode = "develop" in commands or "test" in commands or build_ext_inplace
 
     packages = kw.get('packages', [])
     package_dir = kw.get('package_dir', {})
@@ -609,8 +613,7 @@ def setup(*args, **kw):  # noqa: C901
                            scripts, new_scripts,
                            data_files)
 
-    # Is there a better way to check the command line args?
-    if developer_mode or '--inplace' in sys.argv:
+    if developer_mode:
         # Copy packages
         for package, package_file_list in package_data.items():
             for package_file in package_file_list:
@@ -619,7 +622,6 @@ def setup(*args, **kw):  # noqa: C901
                 if os.path.exists(cmake_file):
                     _copy_file(cmake_file, package_file, hide_listing)
 
-    if developer_mode:
         # Copy modules
         for py_module in py_modules:
             package_file = py_module + ".py"
