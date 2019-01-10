@@ -1,0 +1,33 @@
+trigger:
+  - master
+
+jobs:
+  - job: Windows
+
+    pool:
+      vmImage: 'vs2017-win2016'
+
+    steps:
+
+      - task: UsePythonVersion@0
+        inputs:
+          versionSpec: '3.7' 
+          addToPath: true
+          architecture: 'x64'
+
+      # Init
+      - script: python -m pip install -U scikit-ci scikit-ci-addons
+      - script: python -m ci_addons --install ../addons
+      - powershell: ../addons/appveyor/rolling-build.ps1
+
+      # install
+      - script: python -m ci install
+
+      # build_script
+      - script: python -m ci build
+
+      # test_script
+      - script: python -m ci test
+
+      # after_test
+      - script: python -m ci after_test
