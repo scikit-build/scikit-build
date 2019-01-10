@@ -7,17 +7,28 @@ jobs:
     pool:
       vmImage: 'vs2017-win2016'
 
+    strategy:
+      matrix:
+        Python37:
+          python.arch: 'x86'
+          python.version: '3.7'
+        Python37-x64:
+          python.arch: 'x64'
+          python.version: '3.7'
+      maxParallel: 2
+
     steps:
 
       - task: UsePythonVersion@0
         inputs:
-          versionSpec: '3.7' 
+          versionSpec: '$(python.version)'
           addToPath: true
-          architecture: 'x64'
+          architecture: '$(python.arch)'
 
       # Init
-      - script: python -m pip install -U scikit-ci scikit-ci-addons
-      - script: python -m ci_addons --install ../addons
+      - script: |
+          python -m pip install -U scikit-ci scikit-ci-addons
+          python -m ci_addons --install ../addons
       - powershell: ../addons/appveyor/rolling-build.ps1
 
       # install
