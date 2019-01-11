@@ -25,20 +25,19 @@ jobs:
           addToPath: true
           architecture: '$(python.arch)'
 
-      # Init
       - script: |
           python -m pip install -U scikit-ci scikit-ci-addons
           python -m ci_addons --install ../addons
-      - powershell: ../addons/appveyor/rolling-build.ps1
+        displayName: Prerequisites
 
-      # install
       - script: python -m ci install
+        displayName: Install
 
-      # build_script
       - script: python -m ci build
+        displayName: Build
 
-      # test_script
       - script: python -m ci test
+        displayName: Test
 
-      # after_test
       - script: python -m ci after_test
+        displayName: After Test
