@@ -25,6 +25,9 @@ Bug fixes
   and ``CMAKE_OSX_ARCHITECTURES`` values are provided. Thanks :user:`nonhermitian` for the contribution.
   See :issue:`377`.
 
+* Fix testing with recent version of pytest by updating the pytest-runner requirements expression in `setup.py`.
+  Thanks :user:`mackelab` for the contribution.
+
 Scikit-build 0.8.1
 ==================
 
