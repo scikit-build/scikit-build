@@ -21,6 +21,7 @@ install:
     - python -m pip install --disable-pip-version-check --upgrade pip
     - pip install cmake
     - pip install -r requirements.txt
+    - pip install pytest-virtualenv -f https://github.com/jcfr/pytest-plugins/releases/tag/v1.7.0.dev15 --pre
     - pip install -r requirements-dev.txt
 
   circle:
