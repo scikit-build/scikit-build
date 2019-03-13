@@ -19,6 +19,17 @@ jobs:
 
     steps:
 
+      - powershell: |
+          $environmentVars = get-childitem -path env:*
+          foreach($var in $environmentVars)
+          {
+            $keyname = $var.Key
+            $keyvalue = $var.Value
+
+            Write-Output "${keyname}: $keyvalue"
+          }
+        displayName: Display env. variables
+
       - task: UsePythonVersion@0
         inputs:
           versionSpec: '$(python.version)'
