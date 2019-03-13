@@ -15,6 +15,12 @@ before_install:
       commands:
         - python ../addons/travis/install_pyenv.py
 
+  commands:
+    - python: |
+              import os
+              from pprint import pprint as pp
+              pp(os.environ["PATH"].split(os.pathsep))
+
 install:
 
   commands:
