@@ -209,7 +209,7 @@
 #
 #    # module3 -- loaded at runtime
 #    add_cython_target(module3a.pyx)
-#    add_library(module1 MODULE ${module3a} module3b.cxx)
+#    add_library(module3 MODULE ${module3a} module3b.cxx)
 #    target_link_libraries(module3 ${Boost_LIBRARIES})
 #    python_extension_module(module3
 #                            LINKED_MODULES_VAR linked_module_list

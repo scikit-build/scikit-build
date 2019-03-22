@@ -8,6 +8,12 @@ details, see the commit logs at http://github.com/scikit-build/scikit-build
 Next Release
 ============
 
+Documentation
+-------------
+
+* Fix typo in example associated with :doc:`/cmake-modules/PythonExtensions`.
+  Thanks :user:`eirrgang` for the contribution.
+
 Tests
 -----
 
