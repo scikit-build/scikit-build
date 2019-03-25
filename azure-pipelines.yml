@@ -30,14 +30,6 @@ jobs:
           }
         displayName: Display env. variables
 
-      - powershell: |
-          $path = [System.Environment]::GetEnvironmentVariable('PATH')
-          [System.Collections.ArrayList]$paths = $path.Split(';')
-          $paths.Remove('C:\\Program Files\\Git\\mingw64\\bin')
-          $paths.Remove('C:\\ProgramData\\Chocolatey\\bin')
-          $paths.Remove('C:\\Strawberry\\c\\bin')
-          [System.Environment]::SetEnvironmentVariable('PATH', $paths -join ';')
-        displayName: Update PATH removing directory with compiler executables (e.g gcc.exe)
 
       - task: UsePythonVersion@0
         inputs:
