@@ -10,6 +10,7 @@ Tests for `skbuild.setup` function.
 import textwrap
 import os
 import pprint
+import py.path
 import pytest
 
 from distutils.core import Distribution as distutils_Distribution
@@ -141,7 +142,7 @@ def test_cmake_args_keyword(cmake_args, capfd):
     "cmake_install_dir, expected_failed, error_code_type", (
         (None, True, str),
         ('', True, str),
-        (os.getcwd(), True, SKBuildError),
+        (str(py.path.local.get_temproot().join('scikit-build')), True, SKBuildError),
         ('banana', False, str)
     )
 )
