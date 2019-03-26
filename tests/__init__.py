@@ -352,6 +352,9 @@ def find_visual_studio_2017():
         return None
 
     try:
+        extra_args = {}
+        if sys.version_info[:3] >= (3, 6, 0):
+            extra_args = {'encoding': 'mbcs', 'errors': 'strict'}
         path = subprocess.check_output([
             os.path.join(root, "Microsoft Visual Studio", "Installer", "vswhere.exe"),
             "-latest",
@@ -359,7 +362,7 @@ def find_visual_studio_2017():
             "-requires", "Microsoft.VisualStudio.Component.VC.Tools.x86.x64",
             "-property", "installationPath",
             "-products", "*",
-        ], encoding="mbcs", errors="strict").strip()
+        ], **extra_args).strip()
     except (subprocess.CalledProcessError, OSError, UnicodeDecodeError):
         return None
 
