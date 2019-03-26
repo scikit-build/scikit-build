@@ -83,9 +83,13 @@ def test_generator_selection():
         # If environment exists, update the expected generator
         if (
                     os.path.exists(vs_for_python_vcvars_path) or
-                    os.path.exists(vs_ide_vcvars_path) or
-                    has_vs_2017
+                    os.path.exists(vs_ide_vcvars_path)
         ) and which("ninja.exe"):
+            generator = "Ninja"
+
+        elif has_vs_2017:
+            # ninja is provided by the CMake extension bundled with Visual Studio 2017
+            # C:/Program Files (x86)/Microsoft Visual Studio/2017/Professional/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe  # noqa: E501
             generator = "Ninja"
 
         elif os.path.exists(vs_ide_vcvars_path) or has_vs_2017:
