@@ -87,6 +87,14 @@ Ninja
     or ``vcvarsall.bat amd64``).
 
 
+    When Visual Studio >= 2017 is used, ninja is available by default thanks to
+    the Microsoft CMake extension:
+
+    ::
+
+        C:/Program Files (x86)/Microsoft Visual Studio/2017/Professional/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe
+
+
 .. _Unix Makefiles:
 
 Unix Makefiles

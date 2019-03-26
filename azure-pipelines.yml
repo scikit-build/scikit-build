@@ -1,0 +1,55 @@
+trigger:
+  - master
+
+jobs:
+  - job: Windows
+
+    pool:
+      vmImage: 'vs2017-win2016'
+
+    strategy:
+      matrix:
+        Python37:
+          python.arch: 'x86'
+          python.version: '3.7'
+        Python37-x64:
+          python.arch: 'x64'
+          python.version: '3.7'
+      maxParallel: 2
+
+    steps:
+
+      - powershell: |
+          $environmentVars = get-childitem -path env:*
+          foreach($var in $environmentVars)
+          {
+            $keyname = $var.Key
+            $keyvalue = $var.Value
+
+            Write-Output "${keyname}: $keyvalue"
+          }
+        displayName: Display env. variables
+
+
+      - task: UsePythonVersion@0
+        inputs:
+          versionSpec: '$(python.version)'
+          addToPath: true
+          architecture: '$(python.arch)'
+
+      - script: |
+          python -m pip install -U scikit-ci scikit-ci-addons
+          python -m ci_addons --install ../addons
+        displayName: Prerequisites
+
+      - script: python -m ci install
+        displayName: Install
+
+      - script: python -m ci build
+        displayName: Build
+
+      - script: python -m ci test
+        displayName: Test
+
+      - script: python -m ci after_test
+        displayName: After Test

@@ -15,12 +15,28 @@ before_install:
       commands:
         - python ../addons/travis/install_pyenv.py
 
+  azure:
+    Windows_NT:
+      commands:
+        - python: |
+                  import os
+                  paths = os.environ['PATH'].split(os.pathsep)
+                  paths.remove('C:\\Program Files\\Git\\mingw64\\bin')
+                  paths.remove('C:\\ProgramData\\Chocolatey\\bin')
+                  paths.remove('C:\\Strawberry\\c\\bin')
+                  os.environ['PATH'] = os.pathsep.join(paths)
+
+                  import ci.driver
+                  ci.driver.Driver.save_env(os.environ)
+
 install:
 
   commands:
+    - python -c "import os; from pprint import pprint as pp; pp(os.environ['PATH'].split(os.pathsep))"
     - python -m pip install --disable-pip-version-check --upgrade pip
     - pip install cmake
     - pip install -r requirements.txt
+    - pip install pytest-virtualenv -f https://github.com/jcfr/pytest-plugins/releases/tag/v1.7.0.dev15 --pre
     - pip install -r requirements-dev.txt
 
   circle:

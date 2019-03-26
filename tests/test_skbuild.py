@@ -16,7 +16,7 @@ from skbuild.constants import CMAKE_BUILD_DIR
 from skbuild.exceptions import SKBuildError
 from skbuild.platform_specifics import get_platform
 
-from . import (get_cmakecache_variables, project_setup_py_test,
+from . import (find_visual_studio_2017, get_cmakecache_variables, project_setup_py_test,
                push_dir, push_env, which)
 
 
@@ -50,6 +50,9 @@ def test_generator_selection():
 
         assert(len(tuple(filter(bool, (py_27_32, py_33_34, py_35)))) == 1)
 
+        has_vs_2017 = find_visual_studio_2017()
+
+        # Apply to VS <= 14 (2015)
         vs_ide_vcvars_path_pattern = \
             "C:/Program Files (x86)/" \
             "Microsoft Visual Studio %.1f/VC/vcvarsall.bat"
@@ -84,7 +87,12 @@ def test_generator_selection():
         ) and which("ninja.exe"):
             generator = "Ninja"
 
-        elif os.path.exists(vs_ide_vcvars_path):
+        elif has_vs_2017:
+            # ninja is provided by the CMake extension bundled with Visual Studio 2017
+            # C:/Program Files (x86)/Microsoft Visual Studio/2017/Professional/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe  # noqa: E501
+            generator = "Ninja"
+
+        elif os.path.exists(vs_ide_vcvars_path) or has_vs_2017:
             generator = vs_generator
 
         elif os.path.exists(vs_for_python_vcvars_path):
