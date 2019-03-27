@@ -50,18 +50,7 @@ def test_generator_selection():
 
         assert(len(tuple(filter(bool, (py_27_32, py_33_34, py_35)))) == 1)
 
-        has_vs_2017 = find_visual_studio_2017()
-
-        # Apply to VS <= 14 (2015)
-        vs_ide_vcvars_path_pattern = \
-            "C:/Program Files (x86)/" \
-            "Microsoft Visual Studio %.1f/VC/vcvarsall.bat"
-
-        # As of Dec 2016, this is available only for VS 9.0
-        vs_for_python_vcvars_path_pattern = \
-            "~/AppData/Local/Programs/Common/" \
-            "Microsoft/Visual C++ for Python/%.1f/vcvarsall.bat"
-
+        # Expected Visual Studio version
         if py_27_32:
             vs_generator = "Visual Studio 9 2008"
             vs_version = 9
@@ -71,19 +60,33 @@ def test_generator_selection():
         else:
             vs_generator = "Visual Studio 14 2015"
             vs_version = 14
-
         vs_generator += (" Win64" if arch == "64bit" else "")
 
-        vs_ide_vcvars_path = vs_ide_vcvars_path_pattern % vs_version
-        vs_for_python_vcvars_path = os.path.expanduser(
-            vs_for_python_vcvars_path_pattern % vs_version)
+        has_vs_2017 = find_visual_studio_2017()
+
+        # Apply to VS <= 14 (2015)
+        has_vs_ide_vcvars = any([
+            os.path.exists(path_pattern % vs_version)
+            for path_pattern in [
+                "C:/Program Files (x86)/Microsoft Visual Studio %.1f/VC/vcvarsall.bat"
+            ]
+        ])
+
+        # As of Dec 2016, this is available only for VS 9.0
+        has_vs_for_python_vcvars = any([
+            os.path.exists(os.path.expanduser(path_pattern % vs_version))
+            for path_pattern in [
+                "~/AppData/Local/Programs/Common/Microsoft/Visual C++ for Python/%.1f/vcvarsall.bat",
+                "C:/Program Files (x86)/Common Files/Microsoft/Visual C++ for Python/%.1f/vcvarsall.bat"
+
+            ]
+        ])
 
         generator = None
 
         # If environment exists, update the expected generator
         if (
-                    os.path.exists(vs_for_python_vcvars_path) or
-                    os.path.exists(vs_ide_vcvars_path)
+                has_vs_for_python_vcvars or has_vs_ide_vcvars
         ) and which("ninja.exe"):
             generator = "Ninja"
 
@@ -92,10 +95,10 @@ def test_generator_selection():
             # C:/Program Files (x86)/Microsoft Visual Studio/2017/Professional/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe  # noqa: E501
             generator = "Ninja"
 
-        elif os.path.exists(vs_ide_vcvars_path) or has_vs_2017:
+        elif has_vs_ide_vcvars or has_vs_2017:
             generator = vs_generator
 
-        elif os.path.exists(vs_for_python_vcvars_path):
+        elif has_vs_for_python_vcvars:
             generator = "NMake Makefiles"
 
         assert (get_best_generator().name == generator)

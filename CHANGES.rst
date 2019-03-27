@@ -8,6 +8,26 @@ details, see the commit logs at http://github.com/scikit-build/scikit-build
 Next Release
 ============
 
+Tests
+-----
+
+* Fix `test_skbuild/test_generator_selection` when building with "Visual C++ for Python 2.7"
+  installed for all users. This addresses failure associated with `win_c_compilervs2008cxx_compilervs2008python2.7`
+  when running test in [scikit-build-feedstock](https://github.com/conda-forge/scikit-build-feedstock) where
+  "Visual C++ for Python 2.7" is installed using ([vcpython27](https://chocolatey.org/packages/vcpython27) chocolatey
+  package.
+
+* Continuous Integration
+
+  * Add support for Azure Pipelines for Python 3.7 32-bit and 64-bit
+
+  * AppVeyor: Disable test for Python 3.7 32-bit and 64-bit.
+
+  * CircleCI: Update version of docker images from jessie to stretch. This fixes
+    `sudo apt-get update` issues. See https://lists.debian.org/debian-devel-announce/2019/03/msg00006.html
+    and https://github.com/circleci/circleci-images/issues/370#issuecomment-476611431
+
+
 Scikit-build 0.9.0
 ==================
 
