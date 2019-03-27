@@ -11,6 +11,12 @@ Next Release
 Tests
 -----
 
+* Fix `test_skbuild/test_generator_selection` when building with "Visual C++ for Python 2.7"
+  installed for all users. This addresses failure associated with `win_c_compilervs2008cxx_compilervs2008python2.7`
+  when running test in [scikit-build-feedstock](https://github.com/conda-forge/scikit-build-feedstock) where
+  "Visual C++ for Python 2.7" is installed using ([vcpython27](https://chocolatey.org/packages/vcpython27) chocolatey
+  package.
+
 * Continuous Integration
 
   * Add support for Azure Pipelines for Python 3.7 32-bit and 64-bit
