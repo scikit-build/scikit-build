@@ -29,15 +29,16 @@ environment:
       PYTHON_ARCH: "64"
       BLOCK: "0"
 
-    - PYTHON_DIR: "C:\\Python37"
-      PYTHON_VERSION: "3.7.x"
-      PYTHON_ARCH: "32"
-      BLOCK: "0"
-
-    - PYTHON_DIR: "C:\\Python37-x64"
-      PYTHON_VERSION: "3.7.x"
-      PYTHON_ARCH: "64"
-      BLOCK: "0"
+# Disabled because done using azure-pipelines
+#    - PYTHON_DIR: "C:\\Python37"
+#      PYTHON_VERSION: "3.7.x"
+#      PYTHON_ARCH: "32"
+#      BLOCK: "0"
+#
+#    - PYTHON_DIR: "C:\\Python37-x64"
+#      PYTHON_VERSION: "3.7.x"
+#      PYTHON_ARCH: "64"
+#      BLOCK: "0"
 
 cache:
   - C:\\cmake-3.6.2
