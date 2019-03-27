@@ -27,6 +27,8 @@ Tests
     `sudo apt-get update` issues. See https://lists.debian.org/debian-devel-announce/2019/03/msg00006.html
     and https://github.com/circleci/circleci-images/issues/370#issuecomment-476611431
 
+  * TravisCI: Remove obsolete Python 3.4 testing. It reached [end-of-life on March 18 2019](https://devguide.python.org/devcycle/?highlight=end%20of%20life#end-of-life-branches).
+
 
 Scikit-build 0.9.0
 ==================
