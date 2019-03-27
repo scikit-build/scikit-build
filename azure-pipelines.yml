@@ -53,3 +53,5 @@ jobs:
 
       - script: python -m ci after_test
         displayName: After Test
+        env:
+          CODECOV_TOKEN: $(codecov_token)
