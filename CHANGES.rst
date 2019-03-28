@@ -14,6 +14,8 @@ Documentation
 * Fix typo in example associated with :doc:`/cmake-modules/PythonExtensions`.
   Thanks :user:`eirrgang` for the contribution.
 
+* Update :doc:`/make_a_release` section to include `Conda: Step-by-step` release guide.
+
 Tests
 -----
 
