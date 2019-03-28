@@ -17,6 +17,14 @@ environment:
       PYTHON_VERSION: "2.7.x"
       PYTHON_ARCH: "64"
       BLOCK: "0"
+      # Used in 'test_platform_windows_find_visual_studio'
+      # See https://www.appveyor.com/docs/windows-images-software/#visual-studio-2008
+      SKBUILD_TEST_FIND_VS2008_INSTALLATION_EXPECTED: "0"
+      SKBUILD_TEST_FIND_VS2010_INSTALLATION_EXPECTED: "1"
+      SKBUILD_TEST_FIND_VS2012_INSTALLATION_EXPECTED: "1"
+      SKBUILD_TEST_FIND_VS2013_INSTALLATION_EXPECTED: "1"
+      SKBUILD_TEST_FIND_VS2015_INSTALLATION_EXPECTED: "1"
+      SKBUILD_TEST_FIND_VS2017_INSTALLATION_EXPECTED: "0"
 
 # Disabled due to appveyor timeout
 #    - PYTHON_DIR: "C:\\Python35"

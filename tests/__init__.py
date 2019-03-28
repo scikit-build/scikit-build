@@ -337,37 +337,3 @@ def check_wheel_content(wheel_archive, expected_distribution_name, expected_cont
                 current_generator = line.split(b":")[1].strip()
                 break
     assert current_generator == six.b("skbuild %s" % skbuild_version)
-
-
-def find_visual_studio_2017():
-    """Adapted from https://github.com/python/cpython/blob/3.7/Lib/distutils/_msvccompiler.py
-
-    Returns "path" based on the result of invoking vswhere.exe
-    If no install is found, returns "None"
-    If vswhere.exe is not available, by definition, VS 2017 is not
-    installed.
-    """
-    root = os.environ.get("ProgramFiles(x86)") or os.environ.get("ProgramFiles")
-    if not root:
-        return None
-
-    try:
-        extra_args = {}
-        if sys.version_info[:3] >= (3, 6, 0):
-            extra_args = {'encoding': 'mbcs', 'errors': 'strict'}
-        path = subprocess.check_output([
-            os.path.join(root, "Microsoft Visual Studio", "Installer", "vswhere.exe"),
-            "-latest",
-            "-prerelease",
-            "-requires", "Microsoft.VisualStudio.Component.VC.Tools.x86.x64",
-            "-property", "installationPath",
-            "-products", "*",
-        ], **extra_args).strip()
-    except (subprocess.CalledProcessError, OSError, UnicodeDecodeError):
-        return None
-
-    path = os.path.join(path, "VC", "Auxiliary", "Build")
-    if os.path.isdir(path):
-        return path
-
-    return None
