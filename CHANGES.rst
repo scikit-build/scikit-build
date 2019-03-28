@@ -8,13 +8,19 @@ details, see the commit logs at http://github.com/scikit-build/scikit-build
 Next Release
 ============
 
+Documentation
+-------------
+
+* Fix typo in example associated with :doc:`/cmake-modules/PythonExtensions`.
+  Thanks :user:`eirrgang` for the contribution.
+
 Tests
 -----
 
-* Fix `test_skbuild/test_generator_selection` when building with "Visual C++ for Python 2.7"
-  installed for all users. This addresses failure associated with `win_c_compilervs2008cxx_compilervs2008python2.7`
-  when running test in [scikit-build-feedstock](https://github.com/conda-forge/scikit-build-feedstock) where
-  "Visual C++ for Python 2.7" is installed using ([vcpython27](https://chocolatey.org/packages/vcpython27) chocolatey
+* Fix ``test_generator_selection`` when building with "Visual C++ for Python 2.7"
+  installed for all users. This addresses failure associated with ``win_c_compilervs2008cxx_compilervs2008python2.7``
+  when running test in `scikit-build-feedstock <https://github.com/conda-forge/scikit-build-feedstock>`_ where
+  "Visual C++ for Python 2.7" is installed using (`vcpython27 <https://chocolatey.org/packages/vcpython27>`_ chocolatey
   package.
 
 * Continuous Integration
@@ -23,11 +29,10 @@ Tests
 
   * AppVeyor: Disable test for Python 3.7 32-bit and 64-bit.
 
-  * CircleCI: Update version of docker images from jessie to stretch. This fixes
-    `sudo apt-get update` issues. See https://lists.debian.org/debian-devel-announce/2019/03/msg00006.html
-    and https://github.com/circleci/circleci-images/issues/370#issuecomment-476611431
+  * CircleCI: Update version of docker images from jessie to stretch. This addresses
+    issue `circleci/circleci-images#370 <https://github.com/circleci/circleci-images/issues/370#issuecomment-476611431>`_.
 
-  * TravisCI: Remove obsolete Python 3.4 testing. It reached [end-of-life on March 18 2019](https://devguide.python.org/devcycle/?highlight=end%20of%20life#end-of-life-branches).
+  * TravisCI: Remove obsolete Python 3.4 testing. It reached `end-of-life on March 18 2019 <https://devguide.python.org/devcycle/?highlight=end%20of%20life#end-of-life-branches>`_.
 
 
 Scikit-build 0.9.0
@@ -176,15 +181,15 @@ New Features
 
 * CMake modules:
 
-  * CMake module :doc:`\cmake-modules/PythonExtensions`: Set symbol visibility to export only the module init function.
+  * CMake module :doc:`/cmake-modules/PythonExtensions`: Set symbol visibility to export only the module init function.
     This applies to GNU and MSVC compilers. Thanks :user:`xoviat`. See :issue:`299`.
 
-  * Add CMake module :doc:`\cmake-modules/F2PY` useful to find the ``f2py`` executable for building Python
+  * Add CMake module :doc:`/cmake-modules/F2PY` useful to find the ``f2py`` executable for building Python
     extensions with Fortran. Thanks to :user:`xoviat` for moving forward with the integration. Concept for the
     module comes from the work of :user:`scopatz` done in `PyNE <https://github.com/pyne/pyne>`_ project.
     See :issue:`273`.
 
-  * Update CMake module :doc:`\cmake-modules/NumPy` setting variables ``NumPy_CONV_TEMPLATE_EXECUTABLE``
+  * Update CMake module :doc:`/cmake-modules/NumPy` setting variables ``NumPy_CONV_TEMPLATE_EXECUTABLE``
     and ``NumPy_FROM_TEMPLATE_EXECUTABLE``. Thanks :user:`xoviat` for the contribution. See :issue:`278`.
 
 * Setup keywords:
@@ -214,7 +219,7 @@ Bug fixes
 
 * Fix support of ``--hide-listing`` when building wheel.
 
-* CMake module :doc:`\cmake-modules/Cython`: Fix escaping of spaces associated with ``CYTHON_FLAGS`` when
+* CMake module :doc:`/cmake-modules/Cython`: Fix escaping of spaces associated with ``CYTHON_FLAGS`` when
   provided as command line arguments to the cython executable through CMake cache entries. See :issue:`265`
   fixed by :user:`neok-m4700`.
 
@@ -341,7 +346,7 @@ Bug fixes
   ``foo/__init__.py`` and a module ``fooConfig.py``, and only package ``foo``
   was listed in ``setup.py``, ``fooConfig.py`` is not installed anymore.
 
-* CMake module :doc:`\cmake-modules/targetLinkLibrariesWithDynamicLookup`: Fix the
+* CMake module :doc:`/cmake-modules/targetLinkLibrariesWithDynamicLookup`: Fix the
   caching of *dynamic lookup* variables. See :issue:`240` fixed by :user:`blowekamp`.
 
 Requirements
