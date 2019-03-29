@@ -192,4 +192,4 @@ def test_platform_windows_find_visual_studio(vs_year):
     if valid_path_expected:
         assert os.path.exists(find_visual_studio(VS_YEAR_TO_VERSION[vs_year]))
     else:
-        assert find_visual_studio(VS_YEAR_TO_VERSION[vs_year]) is None
+        assert find_visual_studio(VS_YEAR_TO_VERSION[vs_year]) == ""

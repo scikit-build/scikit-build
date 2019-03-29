@@ -142,6 +142,7 @@ def _find_visual_studio_2010_to_2015(vs_version):
 
     Return Visual Studio installation path found by looking up all key/value pairs
     associated with the ``Software\\Microsoft\\VisualStudio\\SxS\\VC7`` registry key.
+    If no install is found, returns an empty string.
 
     Each key/value pair is the visual studio version (e.g `14.0`) and the installation
     path (e.g `C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/`).
@@ -154,7 +155,7 @@ def _find_visual_studio_2010_to_2015(vs_version):
         try:
             import _winreg as winreg
         except ImportError:
-            return None
+            return ""
 
     # get registry key associated with Visual Studio installations
     try:
@@ -165,7 +166,7 @@ def _find_visual_studio_2010_to_2015(vs_version):
             winreg.KEY_READ | winreg.KEY_WOW64_32KEY
         )
     except OSError:
-        return None
+        return ""
 
     with key:
         for i in count():
@@ -181,7 +182,7 @@ def _find_visual_studio_2010_to_2015(vs_version):
                     continue
                 if version == vs_version:
                     return vc_dir
-    return None
+    return ""
 
 
 def _find_visual_studio_2017_or_newer(vs_version):
@@ -191,7 +192,7 @@ def _find_visual_studio_2017_or_newer(vs_version):
     See :data:`VS_YEAR_TO_VERSION`.
 
     Returns `path` based on the result of invoking ``vswhere.exe``.
-    If no install is found, returns `None`.
+    If no install is found, returns an empty string.
 
     ..note:
 
@@ -199,7 +200,7 @@ def _find_visual_studio_2017_or_newer(vs_version):
     """
     root = os.environ.get("ProgramFiles(x86)") or os.environ.get("ProgramFiles")
     if not root:
-        return None
+        return ""
 
     try:
         extra_args = {}
@@ -214,17 +215,17 @@ def _find_visual_studio_2017_or_newer(vs_version):
             "-products", "*",
         ], **extra_args).strip()
     except (subprocess.CalledProcessError, OSError, UnicodeDecodeError):
-        return None
+        return ""
 
     path = os.path.join(path, "VC", "Auxiliary", "Build")
     if os.path.isdir(path):
         return path
 
-    return None
+    return ""
 
 
 def find_visual_studio(vs_version):
-    """Return Visual Studio installation path associated with ``vs_version`` or None if any.
+    """Return Visual Studio installation path associated with ``vs_version`` or an empty string if any.
 
     The ``vs_version`` corresponds to the `Visual Studio` version to lookup.
     See :data:`VS_YEAR_TO_VERSION`.
@@ -244,7 +245,7 @@ def find_visual_studio(vs_version):
     elif 10 <= vs_version <= 14:
         return _find_visual_studio_2010_to_2015(vs_version)
     else:
-        return None
+        return ""
 
 
 # To avoid multiple slow calls to ``query_vcvarsall`` or ``_get_vc_env``, results
