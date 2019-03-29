@@ -191,8 +191,9 @@ class CMakePlatform(object):
             with push_dir('build', make_directory=True):
                 # call cmake to see if the compiler specified by this
                 # generator works for the specified languages
-                cmake_execution_string = '{:s} ../ -G "{:s}" {:s}'.format(
-                    cmake_exe_path, generator.name, cmake_args_as_str)
+                toolset_arg = "-T %s" % generator.toolset if generator.toolset else ""
+                cmake_execution_string = '{:s} ../ -G "{:s}" {:s} {:s}'.format(
+                    cmake_exe_path, generator.name, toolset_arg, cmake_args_as_str)
                 status = subprocess.call(
                     cmake_execution_string, shell=True, env=generator.env)
 
@@ -215,19 +216,28 @@ class CMakeGenerator(object):
     .. automethod:: __init__
     """
 
-    def __init__(self, name, env=None):
+    def __init__(self, name, env=None, toolset=None):
         """Instantiate a generator object with the given ``name``.
 
         By default, ``os.environ`` is associated with the generator. Dictionary
         passed as ``env`` parameter will be merged with ``os.environ``. If an
         environment variable is set in both ``os.environ`` and ``env``, the
         variable in ``env`` is used.
+
+        Some CMake generators support a ``toolset`` specification to tell the native
+        build system how to choose a compiler.
         """
         self._generator_name = name
         self.env = dict(
             list(os.environ.items()) + list(env.items() if env else []))
+        self._generator_toolset = toolset
 
     @property
     def name(self):
         """Name of CMake generator."""
         return self._generator_name
+
+    @property
+    def toolset(self):
+        """Toolset specification associated with the CMake generator."""
+        return self._generator_toolset
