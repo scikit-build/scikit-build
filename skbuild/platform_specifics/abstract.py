@@ -115,10 +115,10 @@ class CMakePlatform(object):
             # Lookup CMakeGenerator by name. Doing this allow to get a
             # generator object with its ``env`` property appropriately
             # initialized.
+            candidate_generators = []
             for default_generator in self.default_generators:
                 if default_generator.name == generator_name:
-                    candidate_generators = [default_generator]
-                    break
+                    candidate_generators.append(default_generator)
             if not candidate_generators:
                 candidate_generators = [CMakeGenerator(generator_name)]
 
