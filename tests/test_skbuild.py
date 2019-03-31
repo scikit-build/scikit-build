@@ -15,8 +15,9 @@ import sys
 from skbuild.constants import CMAKE_BUILD_DIR
 from skbuild.exceptions import SKBuildError
 from skbuild.platform_specifics import get_platform
+from skbuild.platform_specifics.windows import find_visual_studio, VS_YEAR_TO_VERSION
 
-from . import (find_visual_studio_2017, get_cmakecache_variables, project_setup_py_test,
+from . import (get_cmakecache_variables, project_setup_py_test,
                push_dir, push_env, which)
 
 
@@ -62,7 +63,7 @@ def test_generator_selection():
             vs_version = 14
         vs_generator += (" Win64" if arch == "64bit" else "")
 
-        has_vs_2017 = find_visual_studio_2017()
+        has_vs_2017 = find_visual_studio(vs_version=VS_YEAR_TO_VERSION["2017"])
 
         # Apply to VS <= 14 (2015)
         has_vs_ide_vcvars = any([
@@ -170,3 +171,25 @@ def test_invalid_generator(generator_args):
         assert failed
         assert "scikit-build could not get a working generator " \
                "for your system. Aborting build." in message
+
+
+@pytest.mark.parametrize(
+    "vs_year", ["2008", "2010", "2012", "2013", "2015", "2017"]
+)
+def test_platform_windows_find_visual_studio(vs_year):
+    """If the environment variable ``SKBUILD_TEST_FIND_VS<vs_year>_INSTALLATION_EXPECTED`` is set,
+    this test asserts the value returned by :func:`skbuild.platforms.windows.find_visual_studio()`.
+    It skips the test otherwise.
+
+    Setting the environment variable to 1 means that the corresponding Visual Studio version
+    is expected to be installed. Setting it to 0, means otherwise.
+    """
+    env_var = 'SKBUILD_TEST_FIND_VS%s_INSTALLATION_EXPECTED' % vs_year
+    if env_var not in os.environ:
+        pytest.skip("env. variable %s is not set" % env_var)
+
+    valid_path_expected = bool(int(os.environ[env_var]))
+    if valid_path_expected:
+        assert os.path.exists(find_visual_studio(VS_YEAR_TO_VERSION[vs_year]))
+    else:
+        assert find_visual_studio(VS_YEAR_TO_VERSION[vs_year]) == ""

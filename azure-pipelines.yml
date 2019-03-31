@@ -50,6 +50,15 @@ jobs:
 
       - script: python -m ci test
         displayName: Test
+        env:
+          # Used in 'test_platform_windows_find_visual_studio'
+          # See https://github.com/Microsoft/azure-pipelines-image-generation/blob/master/images/win/Vs2017-Server2016-Readme.md
+          SKBUILD_TEST_FIND_VS2008_INSTALLATION_EXPECTED: 0
+          SKBUILD_TEST_FIND_VS2010_INSTALLATION_EXPECTED: 0
+          SKBUILD_TEST_FIND_VS2012_INSTALLATION_EXPECTED: 0
+          SKBUILD_TEST_FIND_VS2013_INSTALLATION_EXPECTED: 0
+          SKBUILD_TEST_FIND_VS2015_INSTALLATION_EXPECTED: 1
+          SKBUILD_TEST_FIND_VS2017_INSTALLATION_EXPECTED: 1
 
       - script: python -m ci after_test
         displayName: After Test
