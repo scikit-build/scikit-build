@@ -8,12 +8,14 @@ environment:
   matrix:
 
     # Visual Studio (Python 2 & 3, 32 & 64 bit)
-    - PYTHON_DIR: "C:\\Python27"
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      PYTHON_DIR: "C:\\Python27"
       PYTHON_VERSION: "2.7.x"
       PYTHON_ARCH: "32"
       BLOCK: "0"
 
-    - PYTHON_DIR: "C:\\Python27-x64"
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      PYTHON_DIR: "C:\\Python27-x64"
       PYTHON_VERSION: "2.7.x"
       PYTHON_ARCH: "64"
       BLOCK: "0"
@@ -27,23 +29,27 @@ environment:
       SKBUILD_TEST_FIND_VS2017_INSTALLATION_EXPECTED: "0"
 
 # Disabled due to appveyor timeout
-#    - PYTHON_DIR: "C:\\Python35"
+#    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+#      PYTHON_DIR: "C:\\Python35"
 #      PYTHON_VERSION: "3.5.x"
 #      PYTHON_ARCH: "32"
 #      BLOCK: "0"
 
-    - PYTHON_DIR: "C:\\Python35-x64"
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      PYTHON_DIR: "C:\\Python35-x64"
       PYTHON_VERSION: "3.5.x"
       PYTHON_ARCH: "64"
       BLOCK: "0"
 
 # Disabled because done using azure-pipelines
-#    - PYTHON_DIR: "C:\\Python37"
+#    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+#      PYTHON_DIR: "C:\\Python37"
 #      PYTHON_VERSION: "3.7.x"
 #      PYTHON_ARCH: "32"
 #      BLOCK: "0"
 #
-#    - PYTHON_DIR: "C:\\Python37-x64"
+#    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+#      PYTHON_DIR: "C:\\Python37-x64"
 #      PYTHON_VERSION: "3.7.x"
 #      PYTHON_ARCH: "64"
 #      BLOCK: "0"

@@ -216,6 +216,8 @@ def _find_visual_studio_2017_or_newer(vs_version):
             "-property", "installationPath",
             "-products", "*",
         ], **extra_args).strip()
+        if (3, 0) <= sys.version_info[:2] <= (3, 5):
+            path = path.decode()
     except (subprocess.CalledProcessError, OSError, UnicodeDecodeError):
         return ""
 
