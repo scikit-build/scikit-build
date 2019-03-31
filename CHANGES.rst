@@ -8,6 +8,13 @@ details, see the commit logs at http://github.com/scikit-build/scikit-build
 Next Release
 ============
 
+New Features
+------------
+
+* Improve message displayed when discovering a working environment for building projects.
+  For example, instead of displaying ``-- Trying "Ninja" generator``, it now displays a message
+  like ``-- Trying "Ninja (Visual Studio 15 2017 Win64 v140)" generator``.
+
 Internal API
 ------------
 

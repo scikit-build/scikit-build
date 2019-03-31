@@ -177,7 +177,7 @@ class CMakePlatform(object):
             outer = "-" * 80
             inner = ["-" * ((idx * 5) - 3) for idx in range(1, 8)]
             print(outer if suffix == "" else "\n".join(inner))
-            print("-- Trying \"%s\" generator%s" % (_generator.name, suffix))
+            print("-- Trying \"%s\" generator%s" % (_generator.description, suffix))
             print(outer if suffix != "" else "\n".join(inner[::-1]))
 
         for generator in candidate_generators:
@@ -231,6 +231,10 @@ class CMakeGenerator(object):
         self.env = dict(
             list(os.environ.items()) + list(env.items() if env else []))
         self._generator_toolset = toolset
+        if toolset is None:
+            self._description = name
+        else:
+            self._description = "%s %s" % (name, toolset)
 
     @property
     def name(self):
@@ -241,3 +245,8 @@ class CMakeGenerator(object):
     def toolset(self):
         """Toolset specification associated with the CMake generator."""
         return self._generator_toolset
+
+    @property
+    def description(self):
+        """Name of CMake generator with properties describing the environment (e.g toolset)"""
+        return self._description

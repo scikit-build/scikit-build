@@ -357,3 +357,4 @@ class CMakeVisualStudioCommandLineGenerator(CMakeGenerator):
         vc_env = _get_msvc_compiler_env(VS_YEAR_TO_VERSION[year], toolset)
         env = {str(key.upper()): str(value) for key, value in vc_env.items()}
         super(CMakeVisualStudioCommandLineGenerator, self).__init__(name, env)
+        self._description = "%s (%s)" % (self.name, CMakeVisualStudioIDEGenerator(year, toolset).description)
