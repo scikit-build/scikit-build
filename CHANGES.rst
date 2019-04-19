@@ -18,6 +18,11 @@ New Features
 Bug fixes
 ---------
 
+* Checking generator candidates can now handle handle paths and binaries with
+  spaces, so that ``setup.py --cmake-executable "C:/Program Files
+  (x86)/cmake/cmake.exe"`` works as expected.
+  Contributed by :user:`jokva`. See :issue:`400`.
+
 * Fix sdist command to ensure symlinks in original source tree are maintained.
   Contributed by :user:`anibali`. See :issue:`401`.
 

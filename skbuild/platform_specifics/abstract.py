@@ -170,9 +170,6 @@ class CMakePlatform(object):
         # Do not complain about unused CMake arguments
         cmake_args.insert(0, "--no-warn-unused-cli")
 
-        cmake_args_as_str = " ".join(
-            ['"{:s}"'.format(arg) for arg in cmake_args])
-
         def _generator_discovery_status_msg(_generator, suffix=""):
             outer = "-" * 80
             inner = ["-" * ((idx * 5) - 3) for idx in range(1, 8)]
@@ -191,11 +188,16 @@ class CMakePlatform(object):
             with push_dir('build', make_directory=True):
                 # call cmake to see if the compiler specified by this
                 # generator works for the specified languages
-                toolset_arg = "-T %s" % generator.toolset if generator.toolset else ""
-                cmake_execution_string = '{:s} ../ -G "{:s}" {:s} {:s}'.format(
-                    cmake_exe_path, generator.name, toolset_arg, cmake_args_as_str)
-                status = subprocess.call(
-                    cmake_execution_string, shell=True, env=generator.env)
+                if generator.toolset:
+                    toolset_arg = ['-T', generator.toolset]
+                else:
+                    toolset_arg = []
+
+                cmd = [cmake_exe_path, '../', '-G', generator.name]
+                cmd.extend(toolset_arg)
+                cmd.extend(cmake_args)
+
+                status = subprocess.call(cmd, env=generator.env)
 
             _generator_discovery_status_msg(
                 generator, " - %s" % ("success" if status == 0 else "failure"))
