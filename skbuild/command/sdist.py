@@ -1,5 +1,6 @@
 """This module defines custom implementation of ``sdist`` setuptools command."""
 
+import contextlib
 import os
 
 from distutils import log as distutils_log
@@ -12,12 +13,40 @@ from ..utils import distribution_hide_listing, new_style
 class sdist(set_build_base_mixin, new_style(_sdist)):
     """Custom implementation of ``sdist`` setuptools command."""
 
+    def make_distribution(self):
+        """This function was originally re-implemented in setuptools to workaround
+        https://github.com/pypa/setuptools/issues/516 and later ported to scikit-build
+        to ensure symlinks are maintained.
+        """
+        with self._remove_os_link():
+            super(sdist, self).make_distribution()
+
+    @staticmethod
+    @contextlib.contextmanager
+    def _remove_os_link():
+        """In a context, remove and restore ``os.link`` if it exists.
+        """
+        # copied from setuptools.sdist
+
+        class NoValue:
+            pass
+
+        orig_val = getattr(os, 'link', NoValue)
+        try:
+            del os.link
+        except Exception:
+            pass
+        try:
+            yield
+        finally:
+            if orig_val is not NoValue:
+                setattr(os, 'link', orig_val)
+
     def make_release_tree(self, base_dir, files):
         """Handle --hide-listing option."""
         with distribution_hide_listing(self.distribution):
             super(sdist, self).make_release_tree(base_dir, files)
-        distutils_log.info("%s %d files" % (
-            "hard-linked" if hasattr(os, 'link') else "copied", len(files)))
+        distutils_log.info("copied %d files" % len(files))
 
     # pylint:disable=too-many-arguments, unused-argument
     def make_archive(self, base_name, _format, root_dir=None, base_dir=None,

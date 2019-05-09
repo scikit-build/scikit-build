@@ -15,6 +15,12 @@ New Features
   For example, instead of displaying ``-- Trying "Ninja" generator``, it now displays a message
   like ``-- Trying "Ninja (Visual Studio 15 2017 Win64 v140)" generator``.
 
+Bug fixes
+---------
+
+* Fix sdist command to ensure symlinks in original source tree are maintained.
+  Contributed by :user:`anibali`. See :issue:`401`.
+
 Internal API
 ------------
 
