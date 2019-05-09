@@ -180,7 +180,7 @@ def test_hide_listing(action, hide_listing, capfd, caplog):
         assert to_platform_path("bonjour/__init__.py") in out
 
     if action == "sdist":
-        assert "copied 10 files" in out
+        assert "copied 15 files" in out
     elif action == "bdist_wheel":
         assert "copied 6 files" in out  # build_py
         assert "copied 9 files" in out  # install_lib

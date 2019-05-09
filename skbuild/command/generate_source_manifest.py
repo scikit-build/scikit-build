@@ -26,7 +26,7 @@ class generate_source_manifest(set_build_base_mixin, new_style(Command)):
     def run(self):
         """
         If neither a `MANIFEST`, nor a `MANIFEST.in` file is provided, and
-        we are in a git repo, try to create a `MANIFEST` file from the output of
+        we are in a git repo, try to create a `MANIFEST.in` file from the output of
         `git ls-tree --name-only -r HEAD`.
 
         We need a reliable way to tell if an existing `MANIFEST` file is one
@@ -49,22 +49,26 @@ class generate_source_manifest(set_build_base_mixin, new_style(Command)):
         if do_generate:
 
             try:
-                with open('MANIFEST', 'wb') as manifest_file:
+                with open('MANIFEST.in', 'wb') as manifest_in_file:
                     # Since Git < 2.11 does not support --recurse-submodules option, fallback to
                     # regular listing.
                     try:
-                        manifest_file.write(
-                            subprocess.check_output(['git', 'ls-files', '--recurse-submodules'])
-                        )
+                        cmd_out = subprocess.check_output(['git', 'ls-files', '--recurse-submodules'])
                     except subprocess.CalledProcessError:
-                        manifest_file.write(
-                             subprocess.check_output(['git', 'ls-files'])
-                         )
+                        cmd_out = subprocess.check_output(['git', 'ls-files'])
+                    git_files = [git_file.strip() for git_file in cmd_out.split(b'\n')]
+                    manifest_text = b'\n'.join([
+                        b'include %s' % git_file.strip()
+                        for git_file in git_files
+                        if git_file
+                    ])
+                    manifest_text += b'\nexclude MANIFEST.in'
+                    manifest_in_file.write(manifest_text)
             except subprocess.CalledProcessError:
                 sys.stderr.write(
                     '\n\n'
                     'Since scikit-build could not find MANIFEST.in or '
-                    'MANIFEST, it tried to generate a MANIFEST file '
+                    'MANIFEST, it tried to generate a MANIFEST.in file '
                     'automatically, but could not because it could not '
                     'determine which source files to include.\n\n'
                     'The command used was "git ls-files"\n'
