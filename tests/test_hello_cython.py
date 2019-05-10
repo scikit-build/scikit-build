@@ -13,7 +13,8 @@ import tarfile
 
 from zipfile import ZipFile
 
-from . import check_wheel_content, project_setup_py_test
+from . import project_setup_py_test
+from .pytest_helpers import check_wheel_content
 
 
 @project_setup_py_test("hello-cython", ["build"])
