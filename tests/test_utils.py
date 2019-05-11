@@ -213,10 +213,10 @@ def test_to_unix_path(input_path, expected_path):
     "input_path, expected_ancestors", (
         ('', []),
         ('.', []),
-        ('part1/part2/part3/part4', ['part1/part2/part3/', 'part1/part2/', 'part1/']),
+        ('part1/part2/part3/part4', ['part1/part2/part3', 'part1/part2', 'part1']),
         ('part1\\part2\\part3\\part4', []),
-        ('/part1/part2/part3/part4', ['/part1/part2/part3/', '/part1/part2/', '/part1/', '/']),
-        ('C:/part1/part2/part3/part4', ['C:/part1/part2/part3/', 'C:/part1/part2/', 'C:/part1/', 'C:/']),
+        ('/part1/part2/part3/part4', ['/part1/part2/part3', '/part1/part2', '/part1', '/']),
+        ('C:/part1/part2/part3/part4', ['C:/part1/part2/part3', 'C:/part1/part2', 'C:/part1', 'C:']),
     )
 )
 def test_list_ancestors(input_path, expected_ancestors):

@@ -5,6 +5,12 @@ import distutils
 import os
 import os.path
 import pkg_resources
+
+try:
+    import pathlib
+except ImportError:
+    import pathlib2 as pathlib  # Python 2.7
+
 import py.path
 import re
 import requests
@@ -292,10 +298,4 @@ def is_site_reachable(url):
 def list_ancestors(path):
     """Return logical ancestors of the path.
     """
-    path = os.path.split(path)[0]
-    if not path:
-        return []
-    elif path == "/":
-        return ["/"]
-    else:
-        return [path + "/"] + list_ancestors(path)
+    return [str(parent) for parent in pathlib.PurePosixPath(path).parents if str(parent) != "."]

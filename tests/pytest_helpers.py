@@ -40,7 +40,7 @@ def check_wheel_content(wheel_archive, expected_distribution_name, expected_cont
         # See https://github.com/pypa/wheel/issues/287
         directories = set()
         for entry in expected_content:
-            directories = directories.union(list_ancestors(entry))
+            directories = directories.union([entry + "/" for entry in list_ancestors(entry)])
         expected_content += directories
 
     if pure:
