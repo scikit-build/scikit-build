@@ -37,8 +37,9 @@ Tests
   adds directory entries to ZIP files created by distutils. Thanks :user:`anibali` for the
   contribution. See :issue:`404`.
 
-* Fix ``check_wheel_content()`` to consider change in ``wheel > 0.33.1`` where directory
-  entries are included when building wheel.
+* Fix ``check_wheel_content()`` to consider changes in ``0.33.1 < wheel.__version__ < 0.33.4``
+  where directory entries are included when building wheel.
+  See _`pypa/wheel#294 <https://github.com/pypa/wheel/issues/294>`.
 
 * Fix reporting of ``AssertionError`` raised in ``check_wheel_content()`` function by relocating the
   source code into a dedicated module ``tests.pytest_helpers`` and by adding a ``conftest.py``

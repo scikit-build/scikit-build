@@ -73,9 +73,9 @@ def check_wheel_content(wheel_archive, expected_distribution_name, expected_cont
             '%s.dist-info/metadata.json' % expected_distribution_name
         ]
 
-    if parse_version(wheel.__version__) > parse_version('0.33.1'):
+    if parse_version('0.33.1') < parse_version(wheel.__version__) < parse_version('0.33.4'):
         # Include directory entries when building wheel
-        # See https://github.com/pypa/wheel/issues/287
+        # See https://github.com/pypa/wheel/issues/287 and https://github.com/pypa/wheel/issues/294
         directories = set()
         for entry in expected_content:
             directories = directories.union([entry + "/" for entry in list_ancestors(entry)])
