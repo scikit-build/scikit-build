@@ -14,7 +14,7 @@ from skbuild.utils import (ContextDecorator, mkdir_p,
                            PythonModuleFinder, push_dir,
                            to_platform_path, to_unix_path)
 
-from . import (push_env, SAMPLES_DIR)
+from . import (list_ancestors, push_env, SAMPLES_DIR)
 
 saved_cwd = os.getcwd()
 
@@ -207,3 +207,17 @@ def test_to_platform_path(input_path, expected_path):
 )
 def test_to_unix_path(input_path, expected_path):
     assert to_unix_path(input_path) == expected_path
+
+
+@pytest.mark.parametrize(
+    "input_path, expected_ancestors", (
+        ('', []),
+        ('.', []),
+        ('part1/part2/part3/part4', ['part1/part2/part3/', 'part1/part2/', 'part1/']),
+        ('part1\\part2\\part3\\part4', []),
+        ('/part1/part2/part3/part4', ['/part1/part2/part3/', '/part1/part2/', '/part1/', '/']),
+        ('C:/part1/part2/part3/part4', ['C:/part1/part2/part3/', 'C:/part1/part2/', 'C:/part1/', 'C:/']),
+    )
+)
+def test_list_ancestors(input_path, expected_ancestors):
+    assert list_ancestors(input_path) == expected_ancestors

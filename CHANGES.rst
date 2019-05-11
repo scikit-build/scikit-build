@@ -31,6 +31,9 @@ Documentation
 Tests
 -----
 
+* Fix ``check_wheel_content()`` to consider change in ``wheel > 0.33.1`` where directory
+  entries are included when building wheel.
+
 * Fix reporting of ``AssertionError`` raised in ``check_wheel_content()`` function by relocating the
   source code into a dedicated module ``tests.pytest_helpers`` and by adding a ``conftest.py``
   configuration file registering it for pytest assertion rewriting.

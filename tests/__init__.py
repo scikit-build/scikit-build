@@ -287,3 +287,15 @@ def is_site_reachable(url):
         return request.status_code == 200
     except requests.exceptions.ConnectionError:
         return False
+
+
+def list_ancestors(path):
+    """Return logical ancestors of the path.
+    """
+    path = os.path.split(path)[0]
+    if not path:
+        return []
+    elif path == "/":
+        return ["/"]
+    else:
+        return [path + "/"] + list_ancestors(path)
