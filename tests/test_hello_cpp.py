@@ -11,16 +11,13 @@ import glob
 import os
 import pytest
 import sysconfig
-import tarfile
 
 from skbuild.constants import CMAKE_BUILD_DIR, CMAKE_INSTALL_DIR, SKBUILD_DIR
 from skbuild.utils import push_dir
 
-from zipfile import ZipFile
-
 from . import project_setup_py_test
 from . import (_copy_dir, _tmpdir, SAMPLES_DIR)
-from .pytest_helpers import check_wheel_content
+from .pytest_helpers import check_sdist_content, check_wheel_content
 
 
 def test_hello_builds():
@@ -64,24 +61,13 @@ def test_hello_sdist():
         'hello-1.2.3/hello/__init__.py',
         'hello-1.2.3/hello/__main__.py',
         'hello-1.2.3/setup.py',
-        'hello-1.2.3/PKG-INFO'
     ]
 
-    member_list = None
+    sdist_archive = 'dist/hello-1.2.3.zip'
     if sdists_tar:
-        expected_content.extend([
-            'hello-1.2.3',
-            'hello-1.2.3/bonjour',
-            'hello-1.2.3/bonjour/data',
-            'hello-1.2.3/hello'
-        ])
-        member_list = tarfile.open('dist/hello-1.2.3.tar.gz').getnames()
+        sdist_archive = 'dist/hello-1.2.3.tar.gz'
 
-    elif sdists_zip:
-        member_list = ZipFile('dist/hello-1.2.3.zip').namelist()
-
-    assert expected_content and member_list
-    assert sorted(expected_content) == sorted(member_list)
+    check_sdist_content(sdist_archive, 'hello-1.2.3', expected_content)
 
 
 def test_hello_wheel():

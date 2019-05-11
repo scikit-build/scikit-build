@@ -31,6 +31,12 @@ Documentation
 Tests
 -----
 
+* Introduce ``check_sdist_content()`` and fix tests that are checking content of sdist to
+  account for changes introduced in Python 3.8 and backported to python 2.7, 3.6 and 3.7.
+  The changes introduced in `python/cpython#9419 <https://github.com/python/cpython/pull/9419>`_
+  adds directory entries to ZIP files created by distutils. Thanks :user:`anibali` for the
+  contribution. See :issue:`404`.
+
 * Fix ``check_wheel_content()`` to consider change in ``wheel > 0.33.1`` where directory
   entries are included when building wheel.
 

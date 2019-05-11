@@ -1,5 +1,7 @@
 
 import six
+import sys
+import tarfile
 import wheel
 
 from pkg_resources import parse_version
@@ -8,6 +10,42 @@ from zipfile import ZipFile
 from skbuild import __version__ as skbuild_version
 
 from . import list_ancestors
+
+
+def check_sdist_content(sdist_archive, expected_distribution_name, expected_content):
+    """This function raises an AssertionError if the given sdist_archive
+    does not have the expected content.
+    """
+    sdist_zip = sdist_archive.endswith('.zip')
+    sdist_tar = sdist_archive.endswith('.tar.gz')
+    assert sdist_zip or sdist_tar
+
+    expected_content = list(expected_content)
+
+    expected_content += [
+       '%s/PKG-INFO' % expected_distribution_name,
+    ]
+
+    if sdist_zip and (
+            (2, 7, 15) < sys.version_info[:3] < (3, 0, 0)
+            or (3, 6, 7) < sys.version_info[:3] < (3, 7, 0)
+            or (3, 7, 1) < sys.version_info[:3]
+    ):
+        # Add directory entries in ZIP files created by distutils.
+        # See https://github.com/python/cpython/pull/9419
+        directories = set()
+        for entry in expected_content:
+            directories = directories.union([entry + "/" for entry in list_ancestors(entry)])
+        expected_content += directories
+
+    member_list = []
+    if sdist_zip:
+        member_list = ZipFile(sdist_archive).namelist()
+    elif sdist_tar:
+        with tarfile.open(sdist_archive) as tf:
+            member_list = [member.name for member in tf.getmembers() if not member.isdir()]
+
+    assert sorted(expected_content) == sorted(member_list)
 
 
 def check_wheel_content(wheel_archive, expected_distribution_name, expected_content, pure=False):

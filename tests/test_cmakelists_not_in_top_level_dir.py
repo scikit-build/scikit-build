@@ -11,14 +11,12 @@ keyword works.
 
 import glob
 import pytest
-import tarfile
 import textwrap
-
-from zipfile import ZipFile
 
 from skbuild.exceptions import SKBuildError
 
 from . import (_tmpdir, execute_setup_py, project_setup_py_test)
+from .pytest_helpers import check_sdist_content
 
 
 @project_setup_py_test("cmakelists-not-in-top-level-dir", ["build"], disable_languages_test=True)
@@ -76,19 +74,12 @@ def test_hello_sdist():
         'hello-1.2.3/hello/__init__.py',
         'hello-1.2.3/hello/__main__.py',
         'hello-1.2.3/setup.py',
-        'hello-1.2.3/PKG-INFO'
     ]
 
-    member_list = None
+    sdist_archive = None
     if sdists_tar:
-        expected_content.extend([
-            'hello-1.2.3',
-            'hello-1.2.3/hello'
-        ])
-        member_list = tarfile.open('dist/hello-1.2.3.tar.gz').getnames()
-
+        sdist_archive = 'dist/hello-1.2.3.tar.gz'
     elif sdists_zip:
-        member_list = ZipFile('dist/hello-1.2.3.zip').namelist()
+        sdist_archive = 'dist/hello-1.2.3.zip'
 
-    assert expected_content and member_list
-    assert sorted(expected_content) == sorted(member_list)
+    check_sdist_content(sdist_archive, 'hello-1.2.3', expected_content)
