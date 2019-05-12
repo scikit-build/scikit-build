@@ -9,11 +9,9 @@ Tries to build and test the `hello-cython` sample project.
 
 import glob
 import sysconfig
-import tarfile
 
-from zipfile import ZipFile
-
-from . import check_wheel_content, project_setup_py_test
+from . import project_setup_py_test
+from .pytest_helpers import check_sdist_content, check_wheel_content
 
 
 @project_setup_py_test("hello-cython", ["build"])
@@ -39,22 +37,13 @@ def test_hello_cython_sdist():
         'hello-cython-1.2.3/hello/__init__.py',
         'hello-cython-1.2.3/hello/__main__.py',
         'hello-cython-1.2.3/setup.py',
-        'hello-cython-1.2.3/PKG-INFO'
     ]
 
-    member_list = None
+    sdist_archive = 'dist/hello-cython-1.2.3.zip'
     if sdists_tar:
-        expected_content.extend([
-            'hello-cython-1.2.3',
-            'hello-cython-1.2.3/hello'
-        ])
-        member_list = tarfile.open('dist/hello-cython-1.2.3.tar.gz').getnames()
+        sdist_archive = 'dist/hello-cython-1.2.3.tar.gz'
 
-    elif sdists_zip:
-        member_list = ZipFile('dist/hello-cython-1.2.3.zip').namelist()
-
-    assert expected_content and member_list
-    assert sorted(expected_content) == sorted(member_list)
+    check_sdist_content(sdist_archive, 'hello-cython-1.2.3', expected_content)
 
 
 @project_setup_py_test("hello-cython", ["bdist_wheel"])

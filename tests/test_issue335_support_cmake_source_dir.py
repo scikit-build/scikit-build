@@ -2,8 +2,9 @@
 import glob
 
 from . import (
-    _tmpdir, check_wheel_content, execute_setup_py, initialize_git_repo_and_commit, prepare_project
+    _tmpdir, execute_setup_py, initialize_git_repo_and_commit, prepare_project
 )
+from .pytest_helpers import check_wheel_content
 
 
 def test_bdist_wheel_command():

@@ -31,6 +31,21 @@ Documentation
 Tests
 -----
 
+* Introduce ``check_sdist_content()`` and fix tests that are checking content of sdist to
+  account for changes introduced in Python 3.8 and backported to python 2.7, 3.6 and 3.7.
+  The changes introduced in `python/cpython#9419 <https://github.com/python/cpython/pull/9419>`_
+  adds directory entries to ZIP files created by distutils. Thanks :user:`anibali` for the
+  contribution. See :issue:`404`.
+
+* Fix ``check_wheel_content()`` to consider changes in ``0.33.1 < wheel.__version__ < 0.33.4``
+  where directory entries are included when building wheel.
+  See _`pypa/wheel#294 <https://github.com/pypa/wheel/issues/294>`.
+
+* Fix reporting of ``AssertionError`` raised in ``check_wheel_content()`` function by relocating the
+  source code into a dedicated module ``tests.pytest_helpers`` and by adding a ``conftest.py``
+  configuration file registering it for pytest assertion rewriting.
+  See https://docs.pytest.org/en/latest/writing_plugins.html#assertion-rewriting and :issue:`403`.
+
 * Fix ``test_generator_selection`` when building with "Visual C++ for Python 2.7"
   installed for all users. This addresses failure associated with ``win_c_compilervs2008cxx_compilervs2008python2.7``
   when running test in `scikit-build-feedstock <https://github.com/conda-forge/scikit-build-feedstock>`_ where

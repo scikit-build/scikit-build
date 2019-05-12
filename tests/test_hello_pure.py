@@ -8,14 +8,12 @@ Tries to build and test the `hello-pure` sample project.
 """
 
 import glob
-import tarfile
 
 from skbuild.constants import SKBUILD_DIR
 from skbuild.utils import push_dir
 
-from zipfile import ZipFile
-
-from . import check_wheel_content, project_setup_py_test
+from . import project_setup_py_test
+from .pytest_helpers import check_sdist_content, check_wheel_content
 
 
 @project_setup_py_test("hello-pure", ["build"], disable_languages_test=True)
@@ -29,34 +27,22 @@ def test_hello_pure_builds(capsys):
 #     pass
 
 
-@project_setup_py_test("hello-pure", ["sdist"], disable_languages_test=True)
-def test_hello_pure_sdist():
+@project_setup_py_test("hello-pure", ["sdist"])
+def test_hello_cython_sdist():
     sdists_tar = glob.glob('dist/*.tar.gz')
     sdists_zip = glob.glob('dist/*.zip')
     assert sdists_tar or sdists_zip
 
-    member_list = None
-    expected_content = None
+    expected_content = [
+        'hello-pure-1.2.3/hello/__init__.py',
+        'hello-pure-1.2.3/setup.py',
+    ]
+
+    sdist_archive = 'dist/hello-pure-1.2.3.zip'
     if sdists_tar:
-        expected_content = [
-            'hello-pure-1.2.3',
-            'hello-pure-1.2.3/hello',
-            'hello-pure-1.2.3/hello/__init__.py',
-            'hello-pure-1.2.3/setup.py',
-            'hello-pure-1.2.3/PKG-INFO'
-        ]
-        member_list = tarfile.open('dist/hello-pure-1.2.3.tar.gz').getnames()
+        sdist_archive = 'dist/hello-pure-1.2.3.tar.gz'
 
-    elif sdists_zip:
-        expected_content = [
-            'hello-pure-1.2.3/hello/__init__.py',
-            'hello-pure-1.2.3/setup.py',
-            'hello-pure-1.2.3/PKG-INFO'
-        ]
-        member_list = ZipFile('dist/hello-pure-1.2.3.zip').namelist()
-
-    assert expected_content and member_list
-    assert sorted(expected_content) == sorted(member_list)
+    check_sdist_content(sdist_archive, 'hello-pure-1.2.3', expected_content)
 
 
 @project_setup_py_test("hello-pure", ["bdist_wheel"], disable_languages_test=True)

@@ -1,14 +1,10 @@
 import glob
 import os
-import tarfile
-import wheel
-
-from pkg_resources import parse_version
-from zipfile import ZipFile
 
 from skbuild.utils import to_unix_path
 
 from . import project_setup_py_test
+from .pytest_helpers import check_sdist_content, check_wheel_content
 
 
 def check_whls(project_name):
@@ -17,10 +13,6 @@ def check_whls(project_name):
     assert not whls[0].endswith('-none-any.whl')
 
     expected_content = [
-        '%s.dist-info/top_level.txt' % project_name,
-        '%s.dist-info/WHEEL' % project_name,
-        '%s.dist-info/RECORD' % project_name,
-        '%s.dist-info/METADATA' % project_name,
         'hello/__init__.py',
         'hello/cmake_generated_module.py',
         'hello/data/subdata/hello_data1_include_from_manifest.txt',
@@ -37,15 +29,10 @@ def check_whls(project_name):
         'hello2/data2/subdata2/hello2_data2_include_from_manifest.txt',
         'hello2/hello2_include_from_manifest.txt',
     ]
-    if parse_version(wheel.__version__) < parse_version('0.31.0'):
-        expected_content += [
-            '%s.dist-info/DESCRIPTION.rst' % project_name,
-            '%s.dist-info/metadata.json' % project_name
-        ]
 
-    archive = ZipFile(whls[0])
-    member_list = archive.namelist()
-    assert sorted(expected_content) == sorted(member_list)
+    expected_distribution_name = project_name
+
+    check_wheel_content(whls[0], expected_distribution_name, expected_content)
 
 
 def check_sdist(proj, base=''):
@@ -66,30 +53,14 @@ def check_sdist(proj, base=''):
         to_unix_path(os.path.join(proj, base, 'hello2/data2/subdata2/hello2_data2_include_from_manifest.txt')),
         to_unix_path(os.path.join(
             proj, base, 'hello2/data2/subdata2/hello2_data4_include_from_manifest_and_exclude_from_setup.txt')),
-        to_unix_path(os.path.join(proj, base, 'hello2/hello2_include_from_manifest.txt')),
-        to_unix_path(os.path.join(proj, 'PKG-INFO'))
+        to_unix_path(os.path.join(proj, base, 'hello2/hello2_include_from_manifest.txt'))
     ]
 
-    member_list = None
+    sdist_archive = 'dist/%s.zip' % proj
     if sdists_tar:
-        if base != '':
-            expected_content.extend([to_unix_path(os.path.join(proj, base))])
-        expected_content.extend([
-            proj,
-            to_unix_path(os.path.join(proj, base, 'hello')),
-            to_unix_path(os.path.join(proj, base, 'hello/data')),
-            to_unix_path(os.path.join(proj, base, 'hello/data/subdata')),
-            to_unix_path(os.path.join(proj, base, 'hello2')),
-            to_unix_path(os.path.join(proj, base, 'hello2/data2')),
-            to_unix_path(os.path.join(proj, base, 'hello2/data2/subdata2'))
-        ])
-        member_list = tarfile.open('dist/%s.tar.gz' % proj).getnames()
+        sdist_archive = 'dist/%s.tar.gz' % proj
 
-    elif sdists_zip:
-        member_list = ZipFile('dist/%s.zip' % proj).namelist()
-
-    assert expected_content and member_list
-    assert sorted(expected_content) == sorted(member_list)
+    check_sdist_content(sdist_archive, proj, expected_content)
 
 
 @project_setup_py_test("test-include-exclude-data", ["bdist_wheel"])
