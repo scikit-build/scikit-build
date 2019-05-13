@@ -144,10 +144,7 @@ def test_hide_listing(action, hide_listing, capfd):
         assert to_platform_path("bonjour/__init__.py") in out
 
     if action == "sdist":
-        what = "copied"
-        if hasattr(os, 'link'):
-            what = "hard-linked"
-        assert "%s 10 files" % what in out
+        assert "copied 10 files" in out
     elif action == "bdist_wheel":
         assert "copied 6 files" in out  # build_py
         assert "copied 9 files" in out  # install_lib
