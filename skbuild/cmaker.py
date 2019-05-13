@@ -341,10 +341,14 @@ class CMaker(object):
         python_library = sysconfig.get_config_var('LIBRARY')
 
         # if static (or nonexistent), try to find a suitable dynamic libpython
-        if (python_library is None or
+        if (not python_library or
                 os.path.splitext(python_library)[1][-2:] == '.a'):
 
             candidate_lib_prefixes = ['', 'lib']
+
+            candidate_implementations = ['python']
+            if hasattr(sys, "pypy_version_info"):
+                candidate_implementations = ['pypy-c', 'pypy3-c']
 
             candidate_extensions = ['.lib', '.so', '.a']
             if sysconfig.get_config_var('WITH_DYLD'):
@@ -381,10 +385,11 @@ class CMaker(object):
             candidates = (
                 os.path.join(
                     libdir,
-                    ''.join((pre, 'python', ver, abi, ext))
+                    ''.join((pre, impl, ver, abi, ext))
                 )
-                for (pre, ext, ver, abi) in itertools.product(
+                for (pre, impl, ext, ver, abi) in itertools.product(
                     candidate_lib_prefixes,
+                    candidate_implementations,
                     candidate_extensions,
                     candidate_versions,
                     candidate_abiflags

@@ -14,6 +14,9 @@ New Features
 * Add support for passing :ref:`CMake configure options <usage_cmake_configure_options>` like `-DFOO:STRING:bar`
   as global `setuptools` or `pip` options.
 
+* Add support for building project using PyPy or PyPy3. See https://pypy.org
+  Thanks :user:`mattip` for the contribution. See :issue:`407`.
+
 Bug fixes
 ---------
 
