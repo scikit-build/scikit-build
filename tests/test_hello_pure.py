@@ -27,8 +27,8 @@ def test_hello_pure_builds(capsys):
 #     pass
 
 
-@project_setup_py_test("hello-pure", ["sdist"])
-def test_hello_cython_sdist():
+@project_setup_py_test("hello-pure", ["sdist"], disable_languages_test=True)
+def test_hello_pure_sdist():
     sdists_tar = glob.glob('dist/*.tar.gz')
     sdists_zip = glob.glob('dist/*.zip')
     assert sdists_tar or sdists_zip
