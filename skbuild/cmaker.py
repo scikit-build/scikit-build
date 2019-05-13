@@ -315,9 +315,10 @@ class CMaker(object):
                 candidate_versions += ('',)
 
             candidates = (
-                os.path.join(prefix, ''.join(('python', ver)))
-                for (prefix, ver) in itertools.product(
+                os.path.join(prefix, ''.join((impl, ver)))
+                for (prefix, impl, ver) in itertools.product(
                     candidate_prefixes,
+                    ('python', 'pypy', 'pypy-c'),
                     candidate_versions
                 )
             )
@@ -381,10 +382,11 @@ class CMaker(object):
             candidates = (
                 os.path.join(
                     libdir,
-                    ''.join((pre, 'python', ver, abi, ext))
+                    ''.join((pre, impl, ver, abi, ext))
                 )
-                for (pre, ext, ver, abi) in itertools.product(
+                for (pre, impl, ext, ver, abi) in itertools.product(
                     candidate_lib_prefixes,
+                    ('python', 'pypy', 'pypy-c'),
                     candidate_extensions,
                     candidate_versions,
                     candidate_abiflags
