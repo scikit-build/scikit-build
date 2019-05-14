@@ -103,40 +103,58 @@ def _tmpdir(basename):
                                            lock_timeout=None)
 
 
-def _copy_dir(target_dir, entry, on_duplicate='exception', keep_top_dir=False):
+def _copy(src, target):
+    """
+    Copies a single entry (file, dir) named 'src' to 'target'. Softlinks are
+    processed properly as well.
 
-    if isinstance(entry, six.string_types):
-        entry = py.path.local(entry)
+    Copied from pytest-datafiles/pytest_datafiles.py (MIT License)
+    """
+    if not src.exists():
+        raise ValueError("'%s' does not exist!" % src)
 
-    # Copied from pytest-datafiles/pytest_datafiles.py (MIT License)
-    basename = entry.basename
+    if src.isdir():
+        src.copy(target / src.basename)
+    elif src.islink():
+        (target / src.basename).mksymlinkto(src.realpath())
+    else:  # file
+        src.copy(target)
+
+
+def _copy_dir(target_dir, src_dir, on_duplicate='exception', keep_top_dir=False):
+    """
+    Copies all entries (files, dirs) from 'src_dir' to 'target_dir' taking
+    into account the 'on_duplicate' option (which defines what should happen if
+    an entry already exists: raise an exception, overwrite it or ignore it).
+
+    Adapted from pytest-datafiles/pytest_datafiles.py (MIT License)
+    """
+    src_files = []
+
+    if isinstance(src_dir, six.string_types):
+        src_dir = py.path.local(src_dir)
+
     if keep_top_dir:
-        if on_duplicate == 'overwrite' or not (target_dir / basename).exists():
-            entry.copy(target_dir / basename)
+        src_files = src_dir
+    else:
+        if src_dir.isdir():
+            src_files.extend(src_dir.listdir())
+        else:
+            src_files.append(src_dir)
+
+    for entry in src_files:
+        target_entry = target_dir / entry.basename
+        if not target_entry.exists() or on_duplicate == 'overwrite':
+            _copy(entry, target_dir)
         elif on_duplicate == 'exception':
             raise ValueError(
-                "'%s' already exists (entry %s)" % (basename, entry)
+                "'%s' already exists (src %s)" % (
+                    target_entry,
+                    entry,
                 )
-        # else: on_duplicate == 'ignore': do nothing with entry
-    else:
-        # Regular directory (no keep_top_dir). Need to check every file
-        # for duplicates
-        if on_duplicate == 'overwrite':
-            entry.copy(target_dir)
-            return
-        for sub_entry in entry.listdir():
-            if not (target_dir / sub_entry.basename).exists():
-                sub_entry.copy(target_dir / sub_entry.basename)
-                continue
-            if on_duplicate == 'exception':
-                # target exists
-                raise ValueError(
-                    "'%s' already exists (entry %s)" % (
-                        (target_dir / sub_entry.basename),
-                        sub_entry,
-                        )
-                    )
-            # on_duplicate == 'ignore': do nothing with e2
+            )
+        else:  # ignore
+            continue
 
 
 def initialize_git_repo_and_commit(project_dir, verbose=True):
