@@ -306,7 +306,7 @@ def _should_run_cmake(commands, cmake_with_sdist):
         "install_lib",
         "bdist",
         "bdist_dumb",
-        "bdist_egg"
+        "bdist_egg",
         "bdist_rpm",
         "bdist_wininst",
         "bdist_wheel",

@@ -21,6 +21,8 @@ Bug fixes
 * Fix sdist command to ensure symlinks in original source tree are maintained.
   Contributed by :user:`anibali`. See :issue:`401`.
 
+* Ensure use of `bdist_egg` or `bdist_rpm` commands trigger build using cmake.
+
 Internal API
 ------------
 
