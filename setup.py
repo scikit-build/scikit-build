@@ -33,6 +33,7 @@ setup(
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
     description='Improved build system generator for Python C/C++/Fortran/Cython extensions',
+    long_description_content_type='text/x-rst; charset=UTF-8',
     long_description=readme + '\n\n' + history,
     author='The scikit-build team',
     author_email='scikit-build@googlegroups.com',
