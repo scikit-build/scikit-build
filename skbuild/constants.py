@@ -3,6 +3,7 @@ This module defines constants commonly used in scikit-build.
 """
 
 import os
+import platform
 import sys
 
 from distutils.util import get_platform
@@ -10,7 +11,26 @@ from distutils.util import get_platform
 CMAKE_DEFAULT_EXECUTABLE = "cmake"
 """Default path to CMake executable."""
 
-_SKBUILD_PLAT_NAME = get_platform()
+
+def _default_skbuild_plat_name():
+    """Get default platform name.
+
+    On linux and windows, it corresponds to :func:`distutils.util.get_platform()`.
+
+    On macOS, it corresponds to the version and machine associated with :func:`platform.mac_ver()`.
+    """
+    if sys.platform == 'darwin':
+        # distutils.util.get_platform() returns the release based on the value
+        # of MACOSX_DEPLOYMENT_TARGET on which Python was built, which may
+        # be significantly older than the user's current machine.
+        release, _, machine = platform.mac_ver()
+        split_ver = release.split('.')
+        return 'macosx-{}.{}-{}'.format(split_ver[0], split_ver[1], machine)
+    else:
+        return get_platform()
+
+
+_SKBUILD_PLAT_NAME = _default_skbuild_plat_name()
 
 
 def set_skbuild_plat_name(plat_name):
@@ -28,10 +48,12 @@ def set_skbuild_plat_name(plat_name):
 
 
 def skbuild_plat_name():
-    """Get platform name.
+    """Get platform name formatted as `<operating_system>[-<operating_system_version>]-<machine_architecture>`.
 
-    Default value corresponds to :func:`distutils.util.get_platform()` and can be overridden
+    Default value corresponds to :func:`_default_skbuild_plat_name()` and can be overridden
     with :func:`set_skbuild_plat_name()`.
+
+    Examples of values are `macosx-10.6-x86_64`, `linux-x86_64`, `linux-i686` or `win-am64`.
     """
     return _SKBUILD_PLAT_NAME
 

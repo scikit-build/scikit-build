@@ -28,6 +28,9 @@ Bug fixes
 
 * Ensure use of `bdist_egg` or `bdist_rpm` commands trigger build using cmake.
 
+* Fix default value returned by :func:`skbuild.constants.skbuild_plat_name()` on macOS.
+  See :issue:`417`.
+
 Internal API
 ------------
 
