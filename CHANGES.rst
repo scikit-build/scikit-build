@@ -14,12 +14,19 @@ New Features
 * Add support for passing :ref:`CMake configure options <usage_cmake_configure_options>` like `-DFOO:STRING:bar`
   as global `setuptools` or `pip` options.
 
-
 Bug fixes
 ---------
 
 * Fix unclosed file resource in :meth:`skbuild.cmaker.CMaker.check_for_bad_installs`.
   Thanks :user:`Nic30` for the suggestion. See :issue:`429`.
+
+Tests
+-----
+
+* Continuous Integration
+
+  * Update Azure Pipelines configuration for running tests using `PyPy3 <https://pypy.org/>`_ on Linux.
+    Thanks :user:`mattip` for the contribution. See :issue:`418`.
 
 Scikit-build 0.10.0
 ===================
