@@ -2,6 +2,8 @@ import pytest
 import sys
 import textwrap
 
+import skbuild.constants
+
 from . import _tmpdir, execute_setup_py
 
 
@@ -108,12 +110,15 @@ def test_cmake_args_keyword_osx_default(
         # allow to run the test on any platform
         saved_platform = sys.platform
         sys.platform = "darwin"
+        saved_SKBUILD_PLAT_NAME = skbuild.constants._SKBUILD_PLAT_NAME
+        skbuild.constants._SKBUILD_PLAT_NAME = "macosx-10.6-x84_64"
 
         with pytest.raises(RuntimeError, match="exit skbuild"):
             with execute_setup_py(tmp_dir, ['build'] + cli_setup_args + ['--'] + cli_cmake_args):
                 pass
     finally:
         sys.platform = saved_platform
+        skbuild.constants._SKBUILD_PLAT_NAME = saved_SKBUILD_PLAT_NAME
 
     assert mock_configure.call_count == 1
 

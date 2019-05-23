@@ -157,7 +157,7 @@ def _parse_setuptools_arguments(setup_attrs):
     - skip_cmake is a boolean indicating if the execution of CMake should
       explicitly be skipped.
     - plat_name is a string identifying the platform name to embed in generated
-      filenames. It defaults to ``distutils.util.get_platform()``.
+      filenames. It defaults to :func:`skbuild.constants.skbuild_plat_name()`.
     - build_ext_inplace is a boolean indicating if ``build_ext`` command was
       specified along with the --inplace argument.
 
@@ -478,13 +478,12 @@ def setup(*args, **kw):  # noqa: C901
     cmake_args = skbuild_kw['cmake_args'] + cmake_args
 
     if sys.platform == 'darwin':
-        # Set plat-name based on CMAKE_OSX_* arguments
+
+        # If no ``--plat-name`` argument was passed, set default value.
         if plat_name is None:
-            # These default values are duplicated in bdist_wheel.finalize_options()
-            version = '10.6'
-            machine = 'x86_64'
-        else:
-            (_, version, machine) = plat_name.split('-')
+            plat_name = skbuild_plat_name()
+
+        (_, version, machine) = plat_name.split('-')
 
         # The loop here allows for CMAKE_OSX_* command line arguments to overload
         # values passed with either the ``--plat-name`` command-line argument
