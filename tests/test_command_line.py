@@ -10,10 +10,17 @@ Tests for various command line functionality.
 import os
 import pytest
 
+from skbuild.constants import CMAKE_BUILD_DIR
 from skbuild.exceptions import SKBuildError
 from skbuild.utils import push_dir, to_platform_path
 
-from . import project_setup_py_test
+from . import (
+    execute_setup_py,
+    get_cmakecache_variables,
+    initialize_git_repo_and_commit,
+    prepare_project,
+    project_setup_py_test,
+)
 
 
 @project_setup_py_test("hello-no-language", ["--help"], disable_languages_test=True)
@@ -100,6 +107,33 @@ def test_cmake_args(capfd):
     out, err = capfd.readouterr()
     assert "Manually-specified variables were not used by the project" in err
     assert "MY_CMAKE_VARIABLE" in err
+
+
+@project_setup_py_test("hello-no-language",
+                       ["-DMY_CMAKE_VARIABLE:BOOL=1", "build"], disable_languages_test=True)
+def test_cmake_cache_entry_as_global_option(capfd):
+    out, err = capfd.readouterr()
+    assert "Manually-specified variables were not used by the project" in err
+    assert "MY_CMAKE_VARIABLE" in err
+
+
+def test_cmake_initial_cache_as_global_option(tmpdir):
+    project = "hello-no-language"
+    prepare_project(project, tmpdir)
+    initialize_git_repo_and_commit(tmpdir, verbose=True)
+
+    initial_cache = tmpdir.join("initial-cache.txt")
+    initial_cache.write("""set(MY_CMAKE_VARIABLE "1" CACHE BOOL "My cache variable")""")
+
+    try:
+        with execute_setup_py(tmpdir, ["-C%s" % str(initial_cache), "build"], disable_languages_test=True):
+            pass
+    except SystemExit as exc:
+        assert exc.code == 0
+
+    cmakecache_txt = tmpdir.join(CMAKE_BUILD_DIR(), "CMakeCache.txt")
+    assert cmakecache_txt.exists()
+    assert get_cmakecache_variables(str(cmakecache_txt)).get('MY_CMAKE_VARIABLE', (None, None)) == ('BOOL', '1')
 
 
 def test_cmake_executable_arg():
