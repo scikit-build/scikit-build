@@ -4,10 +4,10 @@ cython>=0.25.1
 flake8>=3.0.4
 pathlib2; python_version < '3.0'
 path.py>=11.5.0
-pytest>=3.0.3
-pytest-cov>=2.4.0
-pytest-mock>=1.4.0
-pytest-runner>=2.9
+pytest>=4.5.0
+pytest-cov>=2.7.1
+pytest-mock>=1.10.4
+pytest-runner>=5.1
 pytest-virtualenv>=1.2.5
 requests
 six>=1.10.0
