@@ -351,7 +351,7 @@ def test_setup_requires_keyword_include_cmake(mocker, capsys):
 
         out, _ = capsys.readouterr()
         if "Searching for cmake>=3.10" in out:
-            assert cmake.__file__.startswith(str(tmp_dir))
+            assert cmake.__file__.lower().startswith(str(tmp_dir).lower())
 
 
 @pytest.mark.parametrize("distribution_type", ('pure', 'skbuild'))
