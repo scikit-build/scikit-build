@@ -172,31 +172,34 @@ Command line options
 
 ::
 
-    usage: setup.py [global_opts] cmd1 [cmd1_opts] [cmd2 [cmd2_opts] ...] [skbuild_opts] [-- [cmake_opts] [-- [build_tool_opts]]]
+    usage: setup.py [global_opts] cmd1 [cmd1_opts] [cmd2 [cmd2_opts] ...] [skbuild_opts] [cmake_configure_opts] [-- [cmake_opts] [-- [build_tool_opts]]]
     or: setup.py --help [cmd1 cmd2 ...]
     or: setup.py --help-commands
     or: setup.py cmd --help
 
 
-There are four types of options:
+There are few types of options:
 
-- setuptools options:
+- :ref:`setuptools options <usage-setuptools_options>`:
 
   - ``[global_opts] cmd1 [cmd1_opts] [cmd2 [cmd2_opts] ...]``
   - ``--help [cmd1 cmd2 ...]``
   - ``cmd --help``
 
-- scikit-build options: ``[skbuild_opts]``
+- :ref:`scikit-build options <usage_scikit-build_options>`: ``[skbuild_opts]``
 
-- CMake options: ``[cmake_opts]``
+- :ref:`CMake configure options <usage_cmake_configure_options>`: ``[cmake_configure_opts]``
 
-- build tool options :``[build_tool_opts]``
+- :ref:`CMake options <usage_cmake_options>`: ``[cmake_opts]``
 
-setuptools and scikit-build options can be passed normally, the cmake and
+- :ref:`build tool options<usage_build_tool_options>`:``[build_tool_opts]``
+
+setuptools, scikit-build and CMake configure options can be passed normally, the cmake and
 build_tool set of options needs to be separated by ``--``::
 
-    Arguments following a "--" are passed directly to CMake (e.g. -DMY_VAR:BOOL=TRUE).
+    Arguments following a "--" are passed directly to CMake (e.g. -DSOME_FEATURE:BOOL=ON).
     Arguments following a second "--" are passed directly to  the build tool.
+
 
 .. _usage-setuptools_options:
 
@@ -230,6 +233,7 @@ scikit-build extends the global set of setuptools options with:
     As specified in the `Wheel documentation`_, the ``--universal`` and ``--python-tag`` options
     have no effect.
 
+
 .. _usage_scikit-build_options:
 
 scikit-build options
@@ -262,16 +266,43 @@ scikit-build options
       --skip-generator-test  skip generator test when a generator is explicitly selected using --generator
 
 
+.. _usage_cmake_configure_options:
+
+CMake Configure options
+^^^^^^^^^^^^^^^^^^^^^^^
+
+.. versionadded:: 0.10.1
+
+These options are relevant when configuring a project and can be passed as global options using `setup.py`
+or `pip install`.
+
+The CMake options accepted as global options are any of the following:
+
+::
+
+    -C<initial-cache>            = Pre-load a script to populate the cache.
+    -D<var>[:<type>]=<value>     = Create or update a cmake cache entry.
+
+
+.. warning::
+
+    The CMake configure option should be passed without spaces. For example, use `-DSOME_FEATURE:BOOL=ON` instead
+    of `-D SOME_FEATURE:BOOL=ON`.
+
+
 .. _usage_cmake_options:
 
 CMake options
 ^^^^^^^^^^^^^
 
-These are specific to CMake. See list of `CMake options <https://cmake.org/cmake/help/v3.6/manual/cmake.1.html#options>`_.
+These are any specific to CMake. See list of `CMake options <https://cmake.org/cmake/help/v3.6/manual/cmake.1.html#options>`_.
 
 For example::
 
   -DSOME_FEATURE:BOOL=OFF
+
+
+.. _usage_build_tool_options:
 
 build tool options
 ^^^^^^^^^^^^^^^^^^

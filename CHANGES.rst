@@ -5,6 +5,16 @@ Release Notes
 This is the list of changes to scikit-build between each release. For full
 details, see the commit logs at http://github.com/scikit-build/scikit-build
 
+Next Release
+============
+
+New Features
+------------
+
+* Add support for passing :ref:`CMake configure options <usage_cmake_configure_options>` like `-DFOO:STRING:bar`
+  as global `setuptools` or `pip` options.
+
+
 Scikit-build 0.10.0
 ===================
 

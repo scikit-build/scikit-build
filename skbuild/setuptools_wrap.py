@@ -74,6 +74,18 @@ def create_skbuild_argparser():
     return parser
 
 
+def _is_cmake_configure_argument(arg):
+    """Return True if ``arg`` is a relevant argument to pass to cmake when configuring a project."""
+
+    for cmake_arg in (
+            '-C',  # initial-cache
+            '-D',  # <var>[:<type>]=<value>
+    ):
+        if arg.startswith(cmake_arg):
+            return True
+    return False
+
+
 def parse_skbuild_args(args, cmake_args, build_tool_args):
     """
     Parse arguments in the scikit-build argument set. Convert specified
@@ -81,6 +93,12 @@ def parse_skbuild_args(args, cmake_args, build_tool_args):
     Returns the tuple ``(remaining arguments, cmake executable, skip_generator_test)``.
     """
     parser = create_skbuild_argparser()
+
+    # Consider CMake arguments passed as global setuptools options
+    cmake_args.extend([arg for arg in args if _is_cmake_configure_argument(arg)])
+    # ... and remove them from the list
+    args = [arg for arg in args if not _is_cmake_configure_argument(arg)]
+
     namespace, remaining_args = parser.parse_known_args(args)
 
     # Construct CMake argument list
@@ -177,18 +195,12 @@ def _parse_setuptools_arguments(setup_attrs):
     # Update class attribute to also ensure the argument is processed
     # when ``upstream_setup`` is called.
     # pylint:disable=no-member
-    upstream_Distribution.global_options.append(
+    upstream_Distribution.global_options.extend([
         ('hide-listing', None, "do not display list of files being "
-                               "included in the distribution")
-    )
-    # pylint:disable=no-member
-    upstream_Distribution.global_options.append(
-        ('force-cmake', None, "always run CMake")
-    )
-    # pylint:disable=no-member
-    upstream_Distribution.global_options.append(
-        ('skip-cmake', None, "do not run CMake")
-    )
+                               "included in the distribution"),
+        ('force-cmake', None, "always run CMake"),
+        ('skip-cmake', None, "do not run CMake"),
+    ])
 
     # Find and parse the config file(s): they will override options from
     # the setup script, but be overridden by the command line.
