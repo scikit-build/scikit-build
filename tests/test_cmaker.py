@@ -164,3 +164,15 @@ def test_configure_with_cmake_args(capfd):
         unexpected = "Manually-specified variables were not used by the project"
         _, err = capfd.readouterr()
         assert unexpected not in err
+
+
+def test_check_for_bad_installs(tmpdir):
+    with push_dir(str(tmpdir)):
+        tmpdir.ensure(CMAKE_BUILD_DIR(), "cmake_install.cmake").write(textwrap.dedent(
+            """
+            file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/../hello" TYPE FILE FILES "/path/to/hello/world.py")
+            """
+        ))
+        with pytest.raises(SKBuildError) as excinfo:
+            CMaker.check_for_bad_installs()
+        assert "CMake-installed files must be within the project root" in str(excinfo.value)
