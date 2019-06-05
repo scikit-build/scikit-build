@@ -24,6 +24,12 @@ def test_get_python_version():
     assert re.match(r'^[23](\.?)[0-9]$', CMaker.get_python_version())
 
 
+def test_get_python_include_dir():
+    python_include_dir = CMaker.get_python_include_dir(CMaker.get_python_version())
+    assert python_include_dir
+    assert os.path.exists(python_include_dir)
+
+
 def test_get_python_library():
     python_library = CMaker.get_python_library(CMaker.get_python_version())
     assert python_library
