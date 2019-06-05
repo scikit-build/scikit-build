@@ -73,7 +73,7 @@ jobs:
         displayName: Display env. variables
       - script: |
           sudo apt-get -yq update
-          sudo apt-get -yq install libxml2-dev libxslt-dev
+          sudo apt-get -yq install libxml2-dev libxslt-dev gfortran
         displayName: 'Install packages needed for source builds'
       - script: |
           wget -q http://buildbot.pypy.org/nightly/py3.6/pypy-c-jit-latest-linux64.tar.bz2 -O ../pypy.tar.bz2
