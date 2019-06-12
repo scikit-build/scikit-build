@@ -254,7 +254,6 @@ import os
 import os.path
 import site
 import sys
-import sysconfig
 
 result = None
 rel_result = None
@@ -282,13 +281,17 @@ for candidate in candidates:
         rel_result = rel_candidate
         break
 
+ext_suffix_var = 'SO'
+if sys.version_info[:2] >= (3, 5):
+    ext_suffix_var = 'EXT_SUFFIX'
+
 sys.stdout.write(\";\".join((
     os.sep,
     os.pathsep,
     sys.prefix,
     result,
     rel_result,
-    sysconfig.get_config_var('SO')
+    distutils.sysconfig.get_config_var(ext_suffix_var)
 )))
 ")
 

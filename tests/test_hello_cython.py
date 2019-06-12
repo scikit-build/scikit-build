@@ -8,9 +8,8 @@ Tries to build and test the `hello-cython` sample project.
 """
 
 import glob
-import sysconfig
 
-from . import project_setup_py_test
+from . import get_ext_suffix, project_setup_py_test
 from .pytest_helpers import check_sdist_content, check_wheel_content
 
 
@@ -49,7 +48,7 @@ def test_hello_cython_sdist():
 @project_setup_py_test("hello-cython", ["bdist_wheel"])
 def test_hello_cython_wheel():
     expected_content = [
-        'hello_cython/_hello%s' % (sysconfig.get_config_var('SO')),
+        'hello_cython/_hello%s' % get_ext_suffix(),
         'hello_cython/__init__.py',
         'hello_cython/__main__.py'
     ]

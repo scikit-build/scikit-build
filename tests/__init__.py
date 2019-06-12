@@ -317,3 +317,12 @@ def list_ancestors(path):
     """Return logical ancestors of the path.
     """
     return [str(parent) for parent in pathlib.PurePosixPath(path).parents if str(parent) != "."]
+
+
+def get_ext_suffix():
+    """Return python extension suffix.
+    """
+    ext_suffix_var = 'SO'
+    if sys.version_info[:2] >= (3, 5):
+        ext_suffix_var = 'EXT_SUFFIX'
+    return distutils.sysconfig.get_config_var(ext_suffix_var)
