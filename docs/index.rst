@@ -36,6 +36,7 @@ To get started, see :ref:`this example <basic_usage_example>`.
    :caption: For maintainers
 
    make_a_release
+   notes
 
 Indices and tables
 ==================

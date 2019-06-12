@@ -23,6 +23,12 @@ Bug fixes
 * Fix unclosed file resource in :meth:`skbuild.cmaker.CMaker.check_for_bad_installs`.
   Thanks :user:`Nic30` for the suggestion. See :issue:`429`.
 
+Documentation
+-------------
+
+* Add :doc:`/notes` section to the `For maintainers` top-level category that includes a comparison between
+  `sysconfig` and `distutils.sysconfig` modules.
+
 Tests
 -----
 
