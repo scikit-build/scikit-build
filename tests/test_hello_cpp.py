@@ -10,12 +10,11 @@ Tries to build and test the `hello-cpp` sample project.
 import glob
 import os
 import pytest
-import sysconfig
 
 from skbuild.constants import CMAKE_BUILD_DIR, CMAKE_INSTALL_DIR, SKBUILD_DIR
 from skbuild.utils import push_dir
 
-from . import project_setup_py_test
+from . import get_ext_suffix, project_setup_py_test
 from . import (_copy_dir, _tmpdir, SAMPLES_DIR)
 from .pytest_helpers import check_sdist_content, check_wheel_content
 
@@ -72,7 +71,7 @@ def test_hello_sdist():
 
 def test_hello_wheel():
     expected_content = [
-        'hello/_hello%s' % (sysconfig.get_config_var('SO')),
+        'hello/_hello%s' % get_ext_suffix(),
         'hello/__init__.py',
         'hello/__main__.py',
         'hello/world.py',
@@ -198,7 +197,7 @@ def test_hello_develop():
         'hello/CMakeLists.txt',
         # These files are "generated" by CMake and
         # are copied from CMAKE_INSTALL_DIR
-        'hello/_hello%s' % (sysconfig.get_config_var('SO')),
+        'hello/_hello%s' % get_ext_suffix(),
         'hello/world.py',
         'helloModule.py'
     ]:

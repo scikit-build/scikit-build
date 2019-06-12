@@ -23,6 +23,12 @@ Bug fixes
 * Fix unclosed file resource in :meth:`skbuild.cmaker.CMaker.check_for_bad_installs`.
   Thanks :user:`Nic30` for the suggestion. See :issue:`429`.
 
+* Update CMake module :doc:`/cmake-modules/PythonExtensions`:
+
+  * Ensure correct suffix is used for compiled python module on windows. See :issue:`383`.
+
+  * Fix warning using `EXT_SUFFIX` config variable instead of deprecated `SO` variable. See :issue:`381`.
+
 Documentation
 -------------
 
