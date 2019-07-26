@@ -167,8 +167,6 @@ class CMaker(object):
         if cli_generator_name is not None:
             generator_name = cli_generator_name
 
-        # use the generator returned from the platform, with the current
-        # generator_name as a suggestion
         generator = self.platform.get_best_generator(
             generator_name, skip_generator_test=skip_generator_test,
             cmake_executable=self.cmake_executable, cmake_args=clargs,
