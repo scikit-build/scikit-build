@@ -1,15 +1,21 @@
 import pytest
 import sys
 import textwrap
+import platform
 
 import skbuild.constants
 
-from . import _tmpdir, execute_setup_py
+from . import _tmpdir, execute_setup_py, push_env
+
+params = "osx_deployment_target_env_var,cli_setup_args," \
+    "keyword_cmake_args,cli_cmake_args,expected_cmake_osx_deployment_target"
 
 
-@pytest.mark.parametrize("cli_setup_args,keyword_cmake_args,cli_cmake_args,expected_cmake_osx_deployment_target", [
+@pytest.mark.parametrize(params, [
     # default plat_name is 'macosx-10.6-x86_64'
     (
+            # osx_deployment_target_env_var
+            None,
             # cli_setup_args
             [],
             # keyword_cmake_args
@@ -20,6 +26,32 @@ from . import _tmpdir, execute_setup_py
             "10.6"
     ),
     (
+            # osx_deployment_target_env_var
+            "10.7",
+            # cli_setup_args
+            [],
+            # keyword_cmake_args
+            [],
+            # cli_cmake_args
+            [],
+            # expected_cmake_osx_deployment_target
+            "10.7"
+    ),
+    (
+            # osx_deployment_target_env_var
+            "10.7",
+            # cli_setup_args
+            ['--plat-name', 'macosx-10.9-x86_64'],
+            # keyword_cmake_args
+            [],
+            # cli_cmake_args
+            [],
+            # expected_cmake_osx_deployment_target
+            "10.9"
+    ),
+    (
+            # osx_deployment_target_env_var
+            None,
             # cli_setup_args
             ['--plat-name', 'macosx-10.6-x86_64'],
             # keyword_cmake_args
@@ -30,6 +62,8 @@ from . import _tmpdir, execute_setup_py
             "10.6"
     ),
     (
+            # osx_deployment_target_env_var
+            None,
             # cli_setup_args
             ['--plat-name', 'macosx-10.7-x86_64'],
             # keyword_cmake_args
@@ -40,6 +74,8 @@ from . import _tmpdir, execute_setup_py
             "10.7"
     ),
     (
+            # osx_deployment_target_env_var
+            None,
             # cli_setup_args
             [],
             # keyword_cmake_args
@@ -50,6 +86,8 @@ from . import _tmpdir, execute_setup_py
             "10.7"
     ),
     (
+            # osx_deployment_target_env_var
+            None,
             # cli_setup_args
             ['--plat-name', 'macosx-10.12-x86_64'],
             # keyword_cmake_args
@@ -60,6 +98,8 @@ from . import _tmpdir, execute_setup_py
             "10.7"
     ),
     (
+            # osx_deployment_target_env_var
+            None,
             # cli_setup_args
             [],
             # keyword_cmake_args
@@ -70,6 +110,8 @@ from . import _tmpdir, execute_setup_py
             "10.8"
     ),
     (
+            # osx_deployment_target_env_var
+            None,
             # cli_setup_args
             ['--plat-name', 'macosx-10.12-x86_64'],
             # keyword_cmake_args
@@ -81,6 +123,7 @@ from . import _tmpdir, execute_setup_py
     ),
 ])
 def test_cmake_args_keyword_osx_default(
+        osx_deployment_target_env_var,
         cli_setup_args, keyword_cmake_args, cli_cmake_args, expected_cmake_osx_deployment_target, mocker):
 
     tmp_dir = _tmpdir('cmake_args_keyword_osx_default')
@@ -110,14 +153,23 @@ def test_cmake_args_keyword_osx_default(
         # allow to run the test on any platform
         saved_platform = sys.platform
         sys.platform = "darwin"
-        saved_SKBUILD_PLAT_NAME = skbuild.constants._SKBUILD_PLAT_NAME
-        skbuild.constants._SKBUILD_PLAT_NAME = "macosx-10.6-x84_64"
 
-        with pytest.raises(RuntimeError, match="exit skbuild"):
-            with execute_setup_py(tmp_dir, ['build'] + cli_setup_args + ['--'] + cli_cmake_args):
-                pass
+        def mock_mac_ver():
+            return "10.6", None, "x84_64"
+
+        saved_mac_ver = platform.mac_ver
+        platform.mac_ver = mock_mac_ver
+
+        saved_SKBUILD_PLAT_NAME = skbuild.constants._SKBUILD_PLAT_NAME
+
+        with push_env(MACOSX_DEPLOYMENT_TARGET=osx_deployment_target_env_var):
+            skbuild.constants._SKBUILD_PLAT_NAME = skbuild.constants._default_skbuild_plat_name()
+            with pytest.raises(RuntimeError, match="exit skbuild"):
+                with execute_setup_py(tmp_dir, ['build'] + cli_setup_args + ['--'] + cli_cmake_args):
+                    pass
     finally:
         sys.platform = saved_platform
+        platform.mac_ver = saved_mac_ver
         skbuild.constants._SKBUILD_PLAT_NAME = saved_SKBUILD_PLAT_NAME
 
     assert mock_configure.call_count == 1
