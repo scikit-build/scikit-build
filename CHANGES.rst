@@ -35,6 +35,8 @@ Documentation
 * Add :doc:`/notes` section to the `For maintainers` top-level category that includes a comparison between
   `sysconfig` and `distutils.sysconfig` modules.
 
+* Remove obsolete comment in `cmaker.py`. See :issue:`439`. Thanks :user:`isuruf`
+
 Tests
 -----
 
