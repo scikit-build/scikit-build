@@ -29,6 +29,9 @@ Bug fixes
 
   * Fix warning using `EXT_SUFFIX` config variable instead of deprecated `SO` variable. See :issue:`381`.
 
+* Honor the `MACOSX_DEPLOYMENT_TARGET` environment variable if it is defined on
+  macOS. Thanks :user:`certik` for the contribution. See :issue`441`.
+
 Documentation
 -------------
 

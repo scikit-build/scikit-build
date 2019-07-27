@@ -266,6 +266,11 @@ If needed, this can be overridden by explicitly passing the CMake option
 Customizing Deployment Target and Architecture
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+.. versionadded:: 0.11.0
+
+Deployment target can be customized by setting the `MACOSX_DEPLOYMENT_TARGET`
+environment variable.
+
 .. versionadded:: 0.7.0
 
 Deployment target and architecture can be customized by associating the
