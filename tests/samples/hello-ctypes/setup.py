@@ -1,5 +1,6 @@
 from skbuild import setup
 import sys
+from os.path import normpath
 
 
 def _get_lib_ext():
@@ -20,5 +21,8 @@ setup(
     author='The scikit-build team',
     license="MIT",
     packages=['hello'],
-    package_data={'hello': ['*' + _get_lib_ext()]},
+    package_data={'hello': [
+        '*' + _get_lib_ext()
+        normpath('bin/*' + _get_lib_ext())
+    ]},
 )
