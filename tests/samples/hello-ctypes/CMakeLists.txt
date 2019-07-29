@@ -5,7 +5,8 @@ project(hello LANGUAGES C CXX)
 set(SOURCE_FILES
     src/hello.cxx)
 
-add_library(hello SHARED ${SOURCE_FILES})
+#add_library(hello SHARED ${SOURCE_FILES})
+add_library(hello MODULE ${SOURCE_FILES})
 
 # set compiler-specific flags
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
