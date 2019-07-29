@@ -22,7 +22,7 @@ setup(
     license="MIT",
     packages=['hello'],
     package_data={'hello': [
-        '*' + _get_lib_ext()
-        normpath('bin/*' + _get_lib_ext())
+        '*' + _get_lib_ext(),
+        normpath('bin/*' + _get_lib_ext()),
     ]},
 )
