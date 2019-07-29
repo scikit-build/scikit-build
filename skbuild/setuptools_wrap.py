@@ -733,6 +733,8 @@ def _classify_installed_files(install_paths, package_data, package_prefixes,
                               scripts, new_scripts,
                               data_files,
                               cmake_source_dir, cmake_install_dir):
+
+    print('-- CLASSIFY INSTALLED FILES --')
     assert not os.path.isabs(cmake_source_dir)
     assert cmake_source_dir != "."
 
@@ -754,12 +756,16 @@ def _classify_installed_files(install_paths, package_data, package_prefixes,
                        py_modules, new_py_modules,
                        scripts, new_scripts,
                        data_files)
+    print('-- DONE CLASSIFY INSTALLED FILES --')
 
 
 def _classify_file(path, package_data, package_prefixes,
                    py_modules, new_py_modules,
                    scripts, new_scripts,
                    data_files):
+    print('-- CLASSIFY FILE --')
+    print(' * package_data = {!r}'.format(package_data))
+    print(' * path = {!r}'.format(path))
     found_package = False
     found_module = False
     found_script = False
@@ -780,6 +786,7 @@ def _classify_file(path, package_data, package_prefixes,
             break
 
     if found_package:
+        print(' * found_package = {!r}'.format(found_package))
         return
     # If control reaches this point, then this installed file is not part of
     # a package.
@@ -792,6 +799,7 @@ def _classify_file(path, package_data, package_prefixes,
             break
 
     if found_module:
+        print(' * found_module = {!r}'.format(found_module))
         return
     # If control reaches this point, then this installed file is not a
     # module
@@ -804,6 +812,7 @@ def _classify_file(path, package_data, package_prefixes,
             break
 
     if found_script:
+        print(' * found_script = {!r}'.format(found_script))
         return
     # If control reaches this point, then this installed file is not a
     # script
@@ -817,6 +826,7 @@ def _classify_file(path, package_data, package_prefixes,
         file_set = set()
         data_files[parent_dir] = file_set
     file_set.add(os.path.join(CMAKE_INSTALL_DIR(), path))
+    print(' * fallback to generic data file')
 
 
 def _copy_file(src_file, dest_file, hide_listing=True):
