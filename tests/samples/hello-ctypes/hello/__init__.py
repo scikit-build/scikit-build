@@ -33,7 +33,6 @@ def _find_ctypes_lib(libname, root_dir):
     if len(candidates) > 1:
         raise Exception('Too many matching libs: {}'.format(candidates))
 
-    print('candidates = {!r}'.format(candidates))
     lib_fpath = candidates[0]
     return lib_fpath
 
