@@ -20,6 +20,9 @@ New Features
 * Add support for OS/400 (now known as IBM i).
   Thanks :user:`jwoehr` for the contribution. See :issue:`444`.
 
+* Display CMake command used to configure the project.
+  Thanks :user:`native-api` for the contribution. See :issue:`443`.
+
 * CMake modules:
 
   * Improve CMake module :doc:`/cmake-modules/F2PY` adding `add_f2py_target()` CMake function
