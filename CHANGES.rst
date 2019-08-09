@@ -15,7 +15,10 @@ New Features
   as global `setuptools` or `pip` options.
 
 * Add support for building project using PyPy or PyPy3. See https://pypy.org
-  Thanks :user:`mattip` for the contribution. See :issue:`407`.
+  See :issue:`407`.
+
+* Add support for OS/400 (now known as IBM i).
+  Thanks :user:`jwoehr` for the contribution. See :issue:`444`.
 
 Bug fixes
 ---------
