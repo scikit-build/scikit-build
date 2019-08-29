@@ -11,7 +11,7 @@ requirements.
 The **scikit-build** package is fundamentally just glue between
 the `setuptools` Python module and `CMake <https://cmake.org/>`_.
 
-To get started, see `this example <https://scikit-build.readthedocs.io/en/latest/usage.html#example-of-setup-py-cmakelists-txt-and-pyproject-toml>`_.
+To get started, see `this example <https://scikit-build.readthedocs.io/en/latest/usage.html#example-of-setup-py-cmakelists-txt-and-pyproject-toml>`_ and `scikit-build-sample-projects <https://github.com/scikit-build/scikit-build-sample-projects>`_.
 
 
 Latest Release

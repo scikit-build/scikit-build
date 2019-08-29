@@ -15,6 +15,7 @@ The **scikit-build** package is fundamentally just glue between
 the `setuptools` Python module and `CMake <https://cmake.org/>`_.
 
 To get started, see :ref:`this example <basic_usage_example>`.
+For more examples, see `scikit-build-sample-projects <https://github.com/scikit-build/scikit-build-sample-projects>`_.
 
 .. toctree::
    :maxdepth: 2
