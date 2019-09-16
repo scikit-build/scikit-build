@@ -41,6 +41,7 @@ from os.path import exists
 from os.path import join
 from os.path import sys
 
+
 __all__ = ['find_packages', 'parse_authors', 'parse_long_description',
            'parse_requirements', 'parse_version']
 
@@ -190,55 +191,13 @@ def parse_requirements(fpath='requirements.txt', text=None):
         ['Cython', "pyqt5;python_version>'2.7'", 'numpy', 'skbuild']
     """
 
-    def parse_line(line):
-        """
-        Parse a single line from a requirements file and return a dictionary of
-        information. Lines starting with `-r` may produce multiple results.
-        """
-        if line.startswith('-r '):
-            # Allow specifying requirements in other files
-            target_fpath = line.split(' ')[1]
-            lines = list(open(target_fpath, 'r').readlines())
-            for info in parse_lines(lines):
-                yield info
-        elif line.startswith('-e '):
-            info = {}
-            info['package'] = line.split('#egg=')[1]
-            yield info
-        else:
-            # Remove versioning from the package
-            pat = '(' + '|'.join(['>=', '==', '>']) + ')'
-            parts = re.split(pat, line, maxsplit=1)
-            parts = [p.strip() for p in parts]
-
-            info = {}
-            info['package'] = parts[0]
-            if len(parts) > 1:
-                op, rest = parts[1:]
-                if ';' in rest:
-                    # Handle platform specific dependencies
-                    # http://setuptools.readthedocs.io/en/latest/setuptools.html#declaring-platform-specific-dependencies
-                    version, platform_deps = map(str.strip, rest.split(';'))
-                    info['platform_deps'] = platform_deps
-                else:
-                    version = rest
-                info['version'] = (op, version)
-            yield info
-
-    def parse_lines(lines):
-        for line in lines:
-            line = line.strip()
-            if line and not line.startswith('#'):
-                for info in parse_line(line):
-                    yield info
-
     if text is not None:
         lines = text.splitlines()
     elif exists(fpath):
         lines = list(open(fpath, 'r').readlines())
 
     packages = []
-    for info in parse_lines(lines):
+    for info in _parse_requirement_lines(lines):
         package = info['package']
         if not sys.version.startswith('3.4'):
             # apparently package_deps are broken in 3.4
@@ -247,3 +206,47 @@ def parse_requirements(fpath='requirements.txt', text=None):
                 package += ';' + platform_deps
         packages.append(package)
     return packages
+
+
+def _parse_requirements_line(line):
+    """
+    Parse a single line from a requirements file and return a dictionary of
+    information. Lines starting with `-r` may produce multiple results.
+    """
+    if line.startswith('-r '):
+        # Allow specifying requirements in other files
+        target_fpath = line.split(' ')[1]
+        lines = list(open(target_fpath, 'r').readlines())
+        for info in _parse_requirement_lines(lines):
+            yield info
+    elif line.startswith('-e '):
+        info = {}
+        info['package'] = line.split('#egg=')[1]
+        yield info
+    else:
+        # Remove versioning from the package
+        pat = '(' + '|'.join(['>=', '==', '>']) + ')'
+        parts = re.split(pat, line, maxsplit=1)
+        parts = [p.strip() for p in parts]
+
+        info = {}
+        info['package'] = parts[0]
+        if len(parts) > 1:
+            op, rest = parts[1:]
+            if ';' in rest:
+                # Handle platform specific dependencies
+                # http://setuptools.readthedocs.io/en/latest/setuptools.html#declaring-platform-specific-dependencies
+                version, platform_deps = map(str.strip, rest.split(';'))
+                info['platform_deps'] = platform_deps
+            else:
+                version = rest
+            info['version'] = (op, version)
+        yield info
+
+
+def _parse_requirement_lines(lines):
+    for line in lines:
+        line = line.strip()
+        if line and not line.startswith('#'):
+            for info in _parse_requirements_line(line):
+                yield info
