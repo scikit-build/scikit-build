@@ -66,7 +66,7 @@
 #   case, CMake is not used to find the compiler and configure the associated build system.
 #
 
-find_program(F2PY_EXECUTABLE NAMES f2py f2py${PYTHON_VERSION_MAJOR})
+find_program(F2PY_EXECUTABLE NAMES f2py${PYTHON_VERSION_MAJOR} f2py)
 
 if(F2PY_EXECUTABLE)
   # extract the version string

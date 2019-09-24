@@ -30,7 +30,11 @@ Bug fixes
   * Fix warning using `EXT_SUFFIX` config variable instead of deprecated `SO` variable. See :issue:`381`.
 
 * Honor the `MACOSX_DEPLOYMENT_TARGET` environment variable if it is defined on
-  macOS. Thanks :user:`certik` for the contribution. See :issue`441`.
+  macOS. Thanks :user:`certik` for the contribution. See :issue:`441`.
+
+* Fix CMake module :doc:`/cmake-modules/F2PY` to ensure the `f2py` executable specific to
+  the python version being used is found. See :issue:`449`. Thanks :user:`bnavigator` for
+  the contribution.
 
 Documentation
 -------------
