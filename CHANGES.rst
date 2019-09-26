@@ -17,6 +17,12 @@ New Features
 * Add support for building project using PyPy or PyPy3. See https://pypy.org
   Thanks :user:`mattip` for the contribution. See :issue:`407`.
 
+* CMake modules:
+
+  * Improve CMake module :doc:`/cmake-modules/F2PY` adding `add_f2py_target()` CMake function
+    allowing to generate `*-f2pywrappers.f` and `*module.c` files from `*.pyf` files.
+    Thanks :user:`xoviat` for the contribution.
+
 Bug fixes
 ---------
 
