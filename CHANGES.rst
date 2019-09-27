@@ -26,6 +26,10 @@ New Features
     allowing to generate `*-f2pywrappers.f` and `*module.c` files from `*.pyf` files.
     Thanks :user:`xoviat` for the contribution.
 
+  * Update CMake module :doc:`/cmake-modules/PythonExtensions` adding `add_python_library()`
+    and `add_python_extension()`.
+    Thanks :user:`xoviat` for the contribution.
+
 Bug fixes
 ---------
 

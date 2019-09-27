@@ -104,9 +104,10 @@
 #                         [HEADER_OUTPUT_VAR <HeaderOutputVar>]
 #                         [INCLUDE_DIR_OUTPUT_VAR <IncludeDirOutputVar>])
 #
+# without the extension is used as the logical name.  If only ``<Name>`` is
+#
 # If only ``<Name>`` is provided, and it ends in the ".h" extension, then it
 # is assumed to be the ``<HeaderFilename>``.  The filename of the header file
-# without the extension is used as the logical name.  If only ``<Name>`` is
 # provided, and it does not end in the ".h" extension, then the
 # ``<HeaderFilename>`` is assumed to ``<Name>.h``.
 #
