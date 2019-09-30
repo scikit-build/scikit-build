@@ -2,6 +2,7 @@
 This module provides an interface for invoking CMake executable.
 """
 
+from __future__ import print_function
 import argparse
 import distutils.sysconfig as du_sysconfig
 import glob
@@ -214,6 +215,15 @@ class CMaker(object):
 
         # changes dir to cmake_build and calls cmake's configure step
         # to generate makefile
+        print(
+            "Configuring Project\n"
+            "  Working directory:\n"
+            "    {}\n"
+            "  Command:\n"
+            "    {}\n".format(
+                os.path.abspath(CMAKE_BUILD_DIR()),
+                self._formatArgsForDisplay(cmd)
+            ))
         rtn = subprocess.call(cmd, cwd=CMAKE_BUILD_DIR(), env=generator.env)
         if rtn != 0:
             raise SKBuildError(
@@ -517,4 +527,9 @@ class CMaker(object):
         Currently, the only formatting is naively surrounding each argument with
         quotation marks.
         """
-        return ' '.join("\"{}\"".format(arg) for arg in args)
+        try:
+            from shlex import quote
+        except ImportError:
+            from pipes import quote
+
+        return ' '.join(quote(arg) for arg in args)
