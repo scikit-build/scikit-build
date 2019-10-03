@@ -9,6 +9,8 @@ pytest-cov>=2.7.1
 pytest-mock>=1.10.4
 pytest-runner>=5.1
 pytest-virtualenv>=1.2.5
+xdoctest>=0.10.0
+ubelt >= 0.8.2
 requests
 six>=1.10.0
 virtualenv
