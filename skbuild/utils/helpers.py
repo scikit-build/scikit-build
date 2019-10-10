@@ -87,6 +87,10 @@ def parse_version(fpath=None, sourcecode=None):
         fpath (str): path to the file that contains the __version__ attribute.
         sourcecode (str, default=None): overrides the text that is parsed
 
+    Notes:
+        This function is implemented using static analysis, which means that
+        this will not work for version strings that are built dynamically.
+
     Example:
         >>> sourcecode = '__version__ = "0.0.1"'
         >>> parse_version(sourcecode=sourcecode)
@@ -98,8 +102,10 @@ def parse_version(fpath=None, sourcecode=None):
         with open(fpath) as file_:
             sourcecode = file_.read()
 
+    # The advantage of using an AST to statically parse values is that setup.py
+    # wont need to import your module. AST is also more robust than regex based
+    # parsers.
     pt = ast.parse(sourcecode)
-
     class VersionVisitor(ast.NodeVisitor):
         def visit_Assign(self, node):
             for target in node.targets:
@@ -115,13 +121,15 @@ def parse_long_description(fpath='README.rst'):
     Parse the description in the README file
 
     Used for parsing the readme and passing it to the `long_description`
-    argument of `skbuild.setup`.
+    argument of `skbuild.setup`. If the specified file doesn't exist then the
+    empty string is returned. This ensures the setup works in bare bones
+    installs where the readme might not exist.
 
     Args:
         fpath (PathLike): path to the readme file.
 
     Returns:
-        str: contents of readme
+        str: contents of readme or the empty string if the file doesn't exist
     """
     # This breaks on pip install, so check that it exists.
     if exists(fpath):
