@@ -75,16 +75,16 @@ def find_packages(where='.', exclude=(), include=('*',)):
     return find_packages(where, exclude, include)
 
 
-def parse_version(package=None, sourcecode=None):
+def parse_version(fpath=None, sourcecode=None):
     """
-    Statically parse the version number from __init__.py
+    Statically parse the version number from a source file.
 
     This is meant to be used for parsing the version attribute in the your
     module's root `__init__.py` file. This information should then passed to
     the `version` argument of `setup`.
 
     Args:
-        package (str): name of the package that is being setup
+        fpath (str): path to the file that contains the __version__ attribute.
         sourcecode (str, default=None): overrides the text that is parsed
 
     Example:
@@ -93,21 +93,9 @@ def parse_version(package=None, sourcecode=None):
         0.0.1
     """
     if sourcecode is None:
-        if package is None:
-            raise ValueError('must specify package if sourcecode is None')
-        # Check if the package is a single-file or multi-file package
-        _candiates = [
-            package + '.py',
-            join(package, '__init__.py'),
-        ]
-        _found = [init_fpath for init_fpath in _candiates if exists(init_fpath)]
-        if len(_found) > 0:
-            init_fpath = _found[0]
-        elif len(_found) > 1:
-            raise Exception('parse_version found multiple init files')
-        elif len(_found) == 0:
-            raise Exception('Cannot find package init file')
-        with open(init_fpath) as file_:
+        if fpath is None:
+            raise ValueError('must specify fpath if sourcecode is None')
+        with open(fpath) as file_:
             sourcecode = file_.read()
 
     pt = ast.parse(sourcecode)
