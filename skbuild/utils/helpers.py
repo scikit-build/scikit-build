@@ -10,7 +10,7 @@ Example:
     >>> import skbuild
     >>> import os
     >>> package = 'mymodule'
-    >>> version = skbuild.parse_version(package)
+    >>> version = skbuild.parse_version(package + '/__init__.py')
     >>> if __name__ == '__main__':
     >>>     setup(
     >>>         name=package,
