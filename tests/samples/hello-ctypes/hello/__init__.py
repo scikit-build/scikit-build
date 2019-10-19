@@ -16,6 +16,7 @@ def _get_lib_ext():
         raise Exception('Unknown operating system: %s' % sys.platform)
     return ext
 
+
 def _find_ctypes_lib(libname, root_dir):
     ext = _get_lib_ext()
     import glob
