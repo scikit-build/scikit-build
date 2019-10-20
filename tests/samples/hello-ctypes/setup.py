@@ -13,6 +13,7 @@ def _get_lib_ext():
         raise Exception('Unknown operating system: %s' % sys.platform)
     return ext
 
+
 setup(
     name="hello",
     version="1.2.3",
