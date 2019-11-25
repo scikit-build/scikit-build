@@ -52,6 +52,10 @@ Bug fixes
   the python version being used is found. See :issue:`449`. Thanks :user:`bnavigator` for
   the contribution.
 
+* Replace `platform.linux_distribution()` which was removed in Python 3.8 by a call to
+  `distro.id()`. This adds the `distro` package as dependency. See :issue:`458`. Thanks
+  :user:`bnavigator` for the contribution.
+
 Documentation
 -------------
 

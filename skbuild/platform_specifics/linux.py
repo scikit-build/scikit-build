@@ -1,5 +1,6 @@
 """This module defines object specific to Linux platform."""
 
+import distro
 import platform
 import sys
 import textwrap
@@ -24,7 +25,7 @@ class LinuxPlatform(unix.UnixPlatform):
         """
         # gentoo, slackware: Compiler is available by default.
 
-        distribution_name = platform.linux_distribution()[0]
+        distribution_name = distro.id()
         cmd = ""
         if distribution_name in [
                 'debian', 'Ubuntu', 'mandrake', 'mandriva']:
