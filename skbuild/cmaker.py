@@ -268,7 +268,7 @@ class CMaker(object):
         # if Python.h not found (or python_include_dir is None), try to find a
         # suitable include dir
         found_python_h = (
-            python_include_dir is not None or
+            python_include_dir is not None and
             os.path.exists(os.path.join(python_include_dir, 'Python.h'))
         )
 
