@@ -390,12 +390,35 @@ class CMaker(object):
                 libdir = os.path.abspath(os.path.join(
                     sysconfig.get_config_var('LIBDEST'), "..", "libs"))
 
+            try:
+                stdlib = sysconfig.get_path('stdlib')
+            except (AttributeError, KeyError):
+                pass
+
+            try:
+                platlib = sysconfig.get_path('platlib')
+            except (AttributeError, KeyError):
+                pass
+
+            if stdlib is not None:
+                stdlib = os.path.dirname(stdlib)
+
+            if platlib is not None:
+                platlib = os.path.dirname(platlib)
+
+            candidate_dir = list(filter(bool, (
+                libdir,
+                stdlib,
+                platlib,
+            )))
+
             candidates = (
                 os.path.join(
-                    libdir,
+                    dir,
                     ''.join((pre, impl, ver, abi, ext))
                 )
-                for (pre, impl, ext, ver, abi) in itertools.product(
+                for (dir, pre, impl, ext, ver, abi) in itertools.product(
+                    candidate_dir,
                     candidate_lib_prefixes,
                     candidate_implementations,
                     candidate_extensions,
