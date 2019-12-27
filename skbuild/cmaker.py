@@ -322,6 +322,15 @@ class CMaker(object):
             if python_version:
                 candidate_versions += ('',)
 
+                pymalloc = None
+                try:
+                    pymalloc = bool(sysconfig.get_config_var('WITH_PYMALLOC'))
+                except AttributeError:
+                    pass
+
+                if pymalloc:
+                    candidate_versions += (python_version + 'm',)
+
             candidates = (
                 os.path.join(prefix, ''.join(('python', ver)))
                 for (prefix, ver) in itertools.product(
