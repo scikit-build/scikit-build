@@ -268,7 +268,7 @@ class CMaker(object):
         # if Python.h not found (or python_include_dir is None), try to find a
         # suitable include dir
         found_python_h = (
-            python_include_dir is not None or
+            python_include_dir is not None and
             os.path.exists(os.path.join(python_include_dir, 'Python.h'))
         )
 
@@ -321,6 +321,15 @@ class CMaker(object):
             candidate_versions = (python_version,)
             if python_version:
                 candidate_versions += ('',)
+
+                pymalloc = None
+                try:
+                    pymalloc = bool(sysconfig.get_config_var('WITH_PYMALLOC'))
+                except AttributeError:
+                    pass
+
+                if pymalloc:
+                    candidate_versions += (python_version + 'm',)
 
             candidates = (
                 os.path.join(prefix, ''.join(('python', ver)))
