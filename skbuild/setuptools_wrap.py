@@ -49,6 +49,48 @@ from .constants import (CMAKE_DEFAULT_EXECUTABLE,
 from .exceptions import SKBuildError, SKBuildGeneratorNotFoundError
 from .utils import (mkdir_p, parse_manifestin, PythonModuleFinder, to_platform_path, to_unix_path)
 
+import logging
+from pprint import pformat
+
+# Option 1
+# logger = logging.getLogger(__name__)
+# logger.setLevel(logging.DEBUG)
+
+# Option 2
+
+
+def _create_local_logger():
+    """
+    Having the logger declared globally means that logging needs to be
+    configured before this module is imported. That seems undesirable, but I'm
+    not sure how to best handle it.
+
+    Logging References:
+        https://stackoverflow.com/questions/15727420/using-python-logging-in-multiple-modules
+        https://fangpenlin.com/posts/2012/08/26/good-logging-practice-in-python/
+    """
+    print('creating local skbuild logger')
+    logger = logging.getLogger(__name__)
+    # Set propogate to False, because we are rolling our own our own Handler
+    # This means messages are not passed to and handled by the root handler.
+    logger.propagate = False
+    stdout_handler = logging.StreamHandler(stream=sys.stdout)
+    stdout_handler.setFormatter(
+        logging.Formatter('%(levelname)s : %(message)s')
+    )
+    # hack: is there a more consistent way to handle parsing CLI args?
+    if '-v' in sys.argv or '--verbose' in sys.argv:
+        print('setting logger to debug mode')
+        level = logging.DEBUG
+    else:
+        level = logging.INFO
+    stdout_handler.setLevel(level)
+    logger.addHandler(stdout_handler)
+    return logger
+
+
+logger = _create_local_logger()
+
 
 def create_skbuild_argparser():
     """Create and return a scikit-build argument parser.
@@ -363,6 +405,7 @@ def setup(*args, **kw):  # noqa: C901
     version in :func:`skbuild.constants.CMAKE_SPEC_FILE()`: and (3) re-configuring only if either the generator or
     the CMake specs change.
     """
+    logger.debug('parsing args')
     sys.argv, cmake_executable, skip_generator_test, cmake_args, make_args = parse_args()
 
     # work around https://bugs.python.org/issue1011113
@@ -408,7 +451,7 @@ def setup(*args, **kw):  # noqa: C901
         _check_skbuild_parameters(skbuild_kw)
     except SKBuildError as ex:
         import traceback
-        print("Traceback (most recent call last):")
+        logging.error("Traceback (most recent call last):")
         traceback.print_tb(sys.exc_info()[2])
         print('')
         sys.exit(ex)
@@ -453,6 +496,7 @@ def setup(*args, **kw):  # noqa: C901
             # Prepend scikit-build help. Generate option descriptions using
             # argparse.
             skbuild_parser = create_skbuild_argparser()
+            print('skbuild_parser = {!r}'.format(skbuild_parser))
             arg_descriptions = [
                 line for line in skbuild_parser.format_help().split('\n')
                 if line.startswith('  ')
@@ -554,6 +598,26 @@ def setup(*args, **kw):  # noqa: C901
     # Languages are used to determine a working generator
     cmake_languages = skbuild_kw['cmake_languages']
 
+    # If scikit-build is in "development" mode, then we need to set it
+    # up to find FindPythonExtensions.cmake
+    if True:
+        skbuild_modpath = os.path.dirname(__file__)
+        cmake_script_dpath = os.path.join(skbuild_modpath, 'resources', 'cmake')
+
+        if os.path.exists(cmake_script_dpath):
+            print('HACKING Python Extensions Dir for develop mode')
+            cmake_args.append(
+                '-DPythonExtensions_DIR={}'.format(cmake_script_dpath)
+            )
+            # env['CMAKE_PREFIX_PATH'] = os.pathsep.join([
+            #     cmake_script_dpath,
+            #     env.get('CMAKE_PREFIX_PATH', '')
+            # ])
+            # print('CMAKE_PREFIX_PATH = {}'.format(env['CMAKE_PREFIX_PATH']))
+
+    logger.debug('CREATE CMAKER')
+    logger.debug(' * cmake_args = {}'.format(pformat(cmake_args)))
+
     try:
         if cmake_executable is None:
             cmake_executable = CMAKE_DEFAULT_EXECUTABLE
@@ -578,6 +642,7 @@ def setup(*args, **kw):  # noqa: C901
 
             # skip the configure step for a cached build
             env = cmkr.get_cached_generator_env()
+
             if env is None or cmake_spec != _load_cmake_spec():
                 env = cmkr.configure(cmake_args,
                                      skip_generator_test=skip_generator_test,
@@ -586,6 +651,7 @@ def setup(*args, **kw):  # noqa: C901
                                      languages=cmake_languages
                                      )
                 _save_cmake_spec(cmake_spec)
+
             cmkr.make(make_args, env=env)
     except SKBuildGeneratorNotFoundError as ex:
         sys.exit(ex)
@@ -607,8 +673,22 @@ def setup(*args, **kw):  # noqa: C901
             if '' in package_dir:
                 package_dir[package] = to_unix_path(os.path.join(package_dir[''], package_dir[package]))
 
-    package_prefixes = _collect_package_prefixes(package_dir, packages)
+    logger.debug(' * package_dir = {}'.format(pformat(package_dir)))
+    logger.debug(' * packages = {}'.format(pformat(packages)))
+    logger.debug(' * package_data = {}'.format(pformat(package_data)))
+    logger.debug(' * py_modules = {}'.format(pformat(py_modules)))
+    logger.debug(' * scripts = {}'.format(pformat(scripts)))
+    logger.debug(' * data_files = {}'.format(pformat(data_files)))
+    logger.debug(' * cmake_source_dir = {}'.format(pformat(cmake_source_dir)))
 
+    logger.debug(' * new_py_modules = {}'.format(pformat(new_py_modules)))
+    logger.debug(' * new_scripts = {}'.format(pformat(new_scripts)))
+
+    logger.debug('COLLECT PACKAGE PREFIXES')
+    package_prefixes = _collect_package_prefixes(package_dir, packages)
+    logger.debug(' * package_prefixes = {}'.format(pformat(package_prefixes)))
+
+    logger.debug('CLASSIFY INSTALLED FILES')
     _classify_installed_files(cmkr.install(), package_data, package_prefixes,
                               py_modules, new_py_modules,
                               scripts, new_scripts,
@@ -617,15 +697,21 @@ def setup(*args, **kw):  # noqa: C901
 
     original_manifestin_data_files = []
     if kw.get("include_package_data", False):
+        logger.debug('INCLUDE PACKAGE DATA')
         original_manifestin_data_files = parse_manifestin(os.path.join(os.getcwd(), "MANIFEST.in"))
         for path in original_manifestin_data_files:
             _classify_file(path, package_data, package_prefixes,
                            py_modules, new_py_modules,
                            scripts, new_scripts,
-                           data_files)
+                           data_files, package_data)
+    else:
+        logger.debug('NOT INCLUDING PACKAGE DATA')
 
     if developer_mode:
         # Copy packages
+        logger.debug('IN DEVELOPER MODE')
+        logger.debug('DEVELOP COPY PACKAGE DATA')
+        logger.debug('package_data = {!r}'.format(package_data))
         for package, package_file_list in package_data.items():
             for package_file in package_file_list:
                 package_file = os.path.join(package_dir[package], package_file)
@@ -634,18 +720,23 @@ def setup(*args, **kw):  # noqa: C901
                     _copy_file(cmake_file, package_file, hide_listing)
 
         # Copy modules
+        logger.debug('DEVELOP COPY PYTHON FILES')
         for py_module in py_modules:
             package_file = py_module + ".py"
             cmake_file = os.path.join(CMAKE_INSTALL_DIR(), package_file)
             if os.path.exists(cmake_file):
                 _copy_file(cmake_file, package_file, hide_listing)
     else:
+        logger.debug('NOT IN DEVELOPER MODE')
+        logger.debug('CONSOLIDATE PACKAGE MODULES')
         _consolidate_package_modules(
             cmake_source_dir, packages, package_dir, py_modules, package_data, hide_listing)
 
+        logger.debug('CONSOLIDATE PACKAGE DATA MODULES')
         original_package_data = kw.get('package_data', {}).copy()
         _consolidate_package_data_files(original_package_data, package_prefixes, hide_listing)
 
+        logger.debug('COPY MANIFEST FILES')
         for data_file in original_manifestin_data_files:
             dest_data_file = os.path.join(CMAKE_INSTALL_DIR(), data_file)
             _copy_file(data_file, dest_data_file, hide_listing)
@@ -680,6 +771,8 @@ def setup(*args, **kw):  # noqa: C901
     kw['distclass'] = BinaryDistribution
 
     print("")
+
+    logger.debug(' * FINAL SETUP KW = {}'.format(pformat(kw)))
 
     return upstream_setup(*args, **kw)
 
@@ -760,63 +853,66 @@ def _classify_file(path, package_data, package_prefixes,
                    py_modules, new_py_modules,
                    scripts, new_scripts,
                    data_files):
-    found_package = False
-    found_module = False
-    found_script = False
+    """
+    Used in two places, to determine how to handle / where to put
+    (1) files installed by cmake
+    (2) files listed in the python distribution manifest
+    """
+    found_type = None
 
     path = to_unix_path(path)
 
     # check to see if path is part of a package
     for prefix, package in package_prefixes:
         if path.startswith(prefix + "/"):
+            found_type = 'package'
+
             # peel off the package prefix
-            path = to_unix_path(os.path.relpath(path, prefix))
+            relpath = to_unix_path(os.path.relpath(path, prefix))
 
             package_file_list = package_data.get(package, [])
-            package_file_list.append(path)
+            package_file_list.append(relpath)
             package_data[package] = package_file_list
-
-            found_package = True
             break
 
-    if found_package:
-        return
-    # If control reaches this point, then this installed file is not part of
-    # a package.
+    if found_type is None:
+        # If control reaches this point, then this installed file is not part of
+        # a package.
 
-    # check if path is a module
-    for module in py_modules:
-        if path.replace("/", ".") == ".".join((module, "py")):
-            new_py_modules[module] = True
-            found_module = True
-            break
+        # check if path is a module
+        for module in py_modules:
+            if path.replace("/", ".") == ".".join((module, "py")):
+                found_type = 'module'
+                new_py_modules[module] = True
+                break
 
-    if found_module:
-        return
-    # If control reaches this point, then this installed file is not a
-    # module
+    if found_type is None:
+        # If control reaches this point, then this installed file is not a
+        # module
 
-    # if the file is a script, mark the corresponding script
-    for script in scripts:
-        if path == script:
-            new_scripts[script] = True
-            found_script = True
-            break
+        # if the file is a script, mark the corresponding script
+        for script in scripts:
+            if path == script:
+                found_type = 'script'
+                new_scripts[script] = True
+                break
 
-    if found_script:
-        return
-    # If control reaches this point, then this installed file is not a
-    # script
+    if found_type is None:
+        # If control reaches this point, then this installed file is not a
+        # script
 
-    # If control reaches this point, then we have installed files that are
-    # not part of a package, not a module, nor a script.  Without any other
-    # information, we can only treat it as a generic data file.
-    parent_dir = os.path.dirname(path)
-    file_set = data_files.get(parent_dir)
-    if file_set is None:
-        file_set = set()
-        data_files[parent_dir] = file_set
-    file_set.add(os.path.join(CMAKE_INSTALL_DIR(), path))
+        # If control reaches this point, then we have installed files that are
+        # not part of a package, not a module, nor a script.  Without any other
+        # information, we can only treat it as a generic data file.
+        found_type = 'data'
+        parent_dir = os.path.dirname(path)
+        file_set = data_files.get(parent_dir)
+        if file_set is None:
+            file_set = set()
+            data_files[parent_dir] = file_set
+        file_set.add(os.path.join(CMAKE_INSTALL_DIR(), path))
+
+    logger.debug('CLASSIFY {!r} as {!r}'.format(path, found_type))
 
 
 def _copy_file(src_file, dest_file, hide_listing=True):
@@ -831,12 +927,12 @@ def _copy_file(src_file, dest_file, hide_listing=True):
     dest_dir = os.path.dirname(dest_file)
     if dest_dir != "" and not os.path.exists(dest_dir):
         if not hide_listing:
-            print("creating directory {}".format(dest_dir))
+            logging.info("creating directory {}".format(dest_dir))
         mkdir_p(dest_dir)
 
     # Copy file
     if not hide_listing:
-        print("copying {} -> {}".format(src_file, dest_file))
+        logging.info("copying {} -> {}".format(src_file, dest_file))
     copyfile(src_file, dest_file)
     copymode(src_file, dest_file)
 
