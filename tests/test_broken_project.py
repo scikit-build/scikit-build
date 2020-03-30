@@ -16,10 +16,9 @@ from subprocess import (check_output, CalledProcessError)
 from skbuild.constants import CMAKE_DEFAULT_EXECUTABLE
 from skbuild.exceptions import SKBuildError
 from skbuild.platform_specifics import CMakeGenerator, get_platform
-from skbuild.utils import push_dir
+from skbuild.utils import push_dir, push_env
 
 from . import project_setup_py_test
-from . import push_env
 
 
 def test_cmakelists_with_fatalerror_fails(capfd):

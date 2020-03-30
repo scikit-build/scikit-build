@@ -225,3 +225,24 @@ def parse_manifestin(template):
         return file_list.files
     finally:
         template.close()
+
+
+class push_env(ContextDecorator):
+    """This context manager allow to set/unset environment variables.
+    """
+    def __init__(self, **kwargs):
+        self.saved_env = dict(os.environ)
+        self.pushed_env = dict(kwargs)
+
+    def __enter__(self):
+        for var, value in self.pushed_env.items():
+            if value is not None:
+                os.environ[var] = value
+            elif var in os.environ:
+                del os.environ[var]
+        return self
+
+    def __exit__(self, typ, val, traceback):
+        os.environ.clear()
+        for (saved_var, saved_value) in self.saved_env.items():
+            os.environ[saved_var] = saved_value
