@@ -112,6 +112,10 @@ Scikit-build 0.11.0
 
 New Features
 ------------
+* Add support for `--install-target` scikit-build command line option.
+  And `cmake_install_target` in `setup.py`. Allowing to
+  provide an install target different than the default `install`.
+  Thanks :user:`phcerdan` for the contribution. See :issue:`477`.
 
 * Add a hook to process the cmake install manifest building the wheel. The hook
   function can be specified as an argument to the `setup()` function. This can be used e.g.

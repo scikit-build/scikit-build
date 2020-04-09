@@ -130,6 +130,55 @@ def test_make(configure_with_cmake_source_dir, capfd):
             assert message in out
 
 
+@pytest.mark.parametrize("install_target", ("", "install", "install-runtime", "nonexistant-install-target"))
+def test_make_with_install_target(install_target, capfd):
+    tmp_dir = _tmpdir('test_make_with_install_target')
+    with push_dir(str(tmp_dir)):
+
+        tmp_dir.join('CMakeLists.txt').write(textwrap.dedent(
+            """
+            cmake_minimum_required(VERSION 3.5.0)
+            project(foobar NONE)
+            file(WRITE "${CMAKE_BINARY_DIR}/foo.txt" "# foo")
+            file(WRITE "${CMAKE_BINARY_DIR}/runtime.txt" "# runtime")
+            install(FILES "${CMAKE_BINARY_DIR}/foo.txt" DESTINATION ".")
+            install(CODE "message(STATUS \\"Project has been installed\\")")
+            install(FILES "${CMAKE_BINARY_DIR}/runtime.txt" DESTINATION "." COMPONENT runtime)
+            install(CODE "message(STATUS \\"Runtime component has been installed\\")" COMPONENT runtime)
+
+            # Add custom target to only install component: runtime (libraries)
+            add_custom_target(install-runtime
+              ${CMAKE_COMMAND}
+              -DCMAKE_INSTALL_COMPONENT=runtime
+              -P "${PROJECT_BINARY_DIR}/cmake_install.cmake"
+              )
+            """
+        ))
+
+        with push_dir(str(tmp_dir)):
+            cmkr = CMaker()
+            env = cmkr.configure()
+            if install_target in ["", "install", "install-runtime"]:
+                cmkr.make(install_target=install_target, env=env)
+            else:
+                with pytest.raises(SKBuildError) as excinfo:
+                    cmkr.make(install_target=install_target, env=env)
+                assert "check the install target is valid" in str(excinfo.value)
+
+        out, err = capfd.readouterr()
+        # This message appears with both install_targets: default 'install' and
+        # 'install-runtime'
+        message = "Runtime component has been installed"
+        if install_target in ["install", "install-runtime"]:
+            assert message in out
+
+        # One of these error appears with install_target: nonexistant-install-target
+        err_message1 = "No rule to make target"
+        err_message2 = "unknown target"
+        if install_target == "nonexistant-install-target":
+            assert err_message1 in err or err_message2 in err
+
+
 def test_configure_with_cmake_args(capfd):
     tmp_dir = _tmpdir('test_configure_with_cmake_args')
     with push_dir(str(tmp_dir)):

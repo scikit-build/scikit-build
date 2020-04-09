@@ -175,6 +175,21 @@ For example::
 - ``cmake_minimum_required_version``: String identifying the minimum version of CMake required
   to configure the project.
 
+- ``cmake_install_target``: Name of the target to "build" for installing the artifacts into the wheel.
+  By default, this option is set to ``install``, which is always provided by CMake.
+  This can be used to only install certain components.
+
+For example::
+
+    install(TARGETS foo COMPONENT runtime)
+    add_custom_target(foo-install-runtime
+        ${CMAKE_COMMAND}
+        -DCMAKE_INSTALL_COMPONENT=runtime
+        -P "${PROJECT_BINARY_DIR}/cmake_install.cmake"
+        DEPENDS foo
+        )
+
+
 Scikit-build changes the following options:
 
 .. versionadded:: 0.7.0
