@@ -140,6 +140,21 @@ For example::
 - ``cmake_source_dir``: Relative directory containing the project ``CMakeLists.txt``.
   By default, it is set to the top-level directory where ``setup.py`` is found.
 
+- ``cmake_manifest_process_hook`: Python function consumming the list of files to be
+  installed produced by cmake. For example, `cmake_manifest_process_hook` can be used
+  to exclude static libraries from the built wheel.
+
+For example::
+
+    def exclude_static_libraries(cmake_manifest):
+        return list(filter(lambda name: not (name.endswith('.a')), cmake_manifest))
+
+    setup(
+      [...]
+      cmake_process_manifest_hook=exclude_static_libraries
+      [...]
+    )
+
 .. _usage-cmake_with_sdist:
 
 .. versionadded:: 0.5.0
