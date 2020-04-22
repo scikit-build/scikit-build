@@ -40,6 +40,8 @@ New Features
 Bug fixes
 ---------
 
+* Fix python 2.7 installation ensuring setuptools < 45 is required. See :issue:`478`.
+
 * Fix unclosed file resource in :meth:`skbuild.cmaker.CMaker.check_for_bad_installs`.
   Thanks :user:`Nic30` for the suggestion. See :issue:`429`.
 
