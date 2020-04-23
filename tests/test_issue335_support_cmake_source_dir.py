@@ -13,7 +13,7 @@ def test_bdist_wheel_command():
     expected_content = [
         'hello/__init__.py',
         'hello/swig_mwe.py',
-        'hello/_swig_mwe.so',
+        'hello/_swig_mwe.pyd',
         'hello-1.2.3.data/data/bin/hello',
         'hello-1.2.3.data/data/lib/static/libbar.a',
         'hello-1.2.3.data/data/lib/static/libfoo.a',
