@@ -11,6 +11,11 @@ Next Release
 New Features
 ------------
 
+* Add a hook to process the cmake install manifest building the wheel. The hook
+  function can be specified as an argument to the `setup()` function. This can be used e.g.
+  to prevent installing cmake configuration files, headers, or static libraries with the wheel.
+  Thanks :user:`SylvainCorlay` for the contribution. See :issue:`473`.
+
 * Add support for passing :ref:`CMake configure options <usage_cmake_configure_options>` like `-DFOO:STRING:bar`
   as global `setuptools` or `pip` options.
 
@@ -35,6 +40,8 @@ New Features
 
 Bug fixes
 ---------
+
+* Fix python 2.7 installation ensuring setuptools < 45 is required. See :issue:`478`.
 
 * Fix unclosed file resource in :meth:`skbuild.cmaker.CMaker.check_for_bad_installs`.
   Thanks :user:`Nic30` for the suggestion. See :issue:`429`.
@@ -71,6 +78,9 @@ Tests
 
   * Update Azure Pipelines configuration for running tests using `PyPy3 <https://pypy.org/>`_ on Linux.
     Thanks :user:`mattip` for the contribution. See :issue:`418`.
+
+* Update :func:`initialize_git_repo_and_commit` to prevent signing message on system with commit signing
+  enabled globally.
 
 Scikit-build 0.10.0
 ===================

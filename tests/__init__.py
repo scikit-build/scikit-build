@@ -178,6 +178,7 @@ def initialize_git_repo_and_commit(project_dir, verbose=True):
             ['git', 'init'],
             ['git', 'config', 'user.name', 'scikit-build'],
             ['git', 'config', 'user.email', 'test@test'],
+            ['git', 'config', 'commit.gpgsign', 'false'],
             ['git', 'add', '-A'],
             ['git', 'reset', '.gitignore'],
             ['git', 'commit', '-m', 'Initial commit']

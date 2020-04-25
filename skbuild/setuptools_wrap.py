@@ -609,7 +609,13 @@ def setup(*args, **kw):  # noqa: C901
 
     package_prefixes = _collect_package_prefixes(package_dir, packages)
 
-    _classify_installed_files(cmkr.install(), package_data, package_prefixes,
+    # This hook enables custom processing of the cmake manifest
+    cmake_manifest = cmkr.install()
+    process_manifest = kw.get('cmake_process_manifest_hook')
+    if callable(process_manifest):
+        cmake_manifest = process_manifest(cmake_manifest)
+
+    _classify_installed_files(cmake_manifest, package_data, package_prefixes,
                               py_modules, new_py_modules,
                               scripts, new_scripts,
                               data_files,
