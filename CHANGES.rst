@@ -14,6 +14,7 @@ New Features
 * Add a hook to process the cmake install manifest building the wheel. The hook
   function can be specified as an argument to the `setup()` function. This can be used e.g.
   to prevent installing cmake configuration files, headers, or static libraries with the wheel.
+  Thanks :user:`SylvainCorlay` for the contribution. See :issue:`473`.
 
 * Add support for passing :ref:`CMake configure options <usage_cmake_configure_options>` like `-DFOO:STRING:bar`
   as global `setuptools` or `pip` options.
