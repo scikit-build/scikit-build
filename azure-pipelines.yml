@@ -65,49 +65,49 @@ jobs:
         env:
           CODECOV_TOKEN: $(codecov_token)
 
-  - job: Linux_PyPy3
-    pool:
-      vmIMage: 'ubuntu-16.04'
-    steps:
-      - script: printenv
-        displayName: Display env. variables
-      - script: |
-          sudo apt-get -yq update
-          sudo apt-get -yq install libxml2-dev libxslt-dev gfortran
-        displayName: 'Install packages needed for source builds'
-      - script: |
-          wget -q http://buildbot.pypy.org/nightly/py3.6/pypy-c-jit-latest-linux64.tar.bz2 -O ../pypy.tar.bz2
-          mkdir -p ../pypy3
-          (cd ../pypy3; tar --strip-components=1 -xf ../pypy.tar.bz2)
-          ../pypy3/bin/pypy3 -m ensurepip
-          ../pypy3/bin/pypy3 -m pip install virtualenv
-          ../pypy3/bin/virtualenv ../pypy-venv
-        displayName: 'Get PyPy'
+#  - job: Linux_PyPy3
+#    pool:
+#      vmIMage: 'ubuntu-16.04'
+#    steps:
+#      - script: printenv
+#        displayName: Display env. variables
+#      - script: |
+#          sudo apt-get -yq update
+#          sudo apt-get -yq install libxml2-dev libxslt-dev gfortran
+#        displayName: 'Install packages needed for source builds'
+#      - script: |
+#          wget -q http://buildbot.pypy.org/nightly/py3.6/pypy-c-jit-latest-linux64.tar.bz2 -O ../pypy.tar.bz2
+#          mkdir -p ../pypy3
+#          (cd ../pypy3; tar --strip-components=1 -xf ../pypy.tar.bz2)
+#          ../pypy3/bin/pypy3 -m ensurepip
+#          ../pypy3/bin/pypy3 -m pip install virtualenv
+#          ../pypy3/bin/virtualenv ../pypy-venv
+#        displayName: 'Get PyPy'
 
-      - script: |
-          source ../pypy-venv/bin/activate
-          python -m pip install -U scikit-ci scikit-ci-addons
-          python -m ci_addons --install ../addons
-        displayName: Prerequisites
+#      - script: |
+#          source ../pypy-venv/bin/activate
+#          python -m pip install -U scikit-ci scikit-ci-addons
+#          python -m ci_addons --install ../addons
+#        displayName: Prerequisites
 
-      - script: |
-          source ../pypy-venv/bin/activate
-          python -m ci install
-        displayName: Install
+#      - script: |
+#          source ../pypy-venv/bin/activate
+#          python -m ci install
+#        displayName: Install
 
-      - script: |
-          source ../pypy-venv/bin/activate
-          python -m ci build
-        displayName: Build
+#      - script: |
+#          source ../pypy-venv/bin/activate
+#          python -m ci build
+#        displayName: Build
 
-      - script: |
-          source ../pypy-venv/bin/activate
-          python -m ci test
-        displayName: Test
+#      - script: |
+#          source ../pypy-venv/bin/activate
+#          python -m ci test
+#        displayName: Test
 
-      - script: |
-          source ../pypy-venv/bin/activate
-          python -m ci after_test
-        displayName: After Test
-        env:
-          CODECOV_TOKEN: $(codecov_token)
+#      - script: |
+#          source ../pypy-venv/bin/activate
+#          python -m ci after_test
+#        displayName: After Test
+#        env:
+#          CODECOV_TOKEN: $(codecov_token)
