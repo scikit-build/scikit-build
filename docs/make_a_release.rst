@@ -93,7 +93,7 @@ Setting up environment
       expression: ``^[0-9]+(\.[0-9]+)*(\.post[0-9]+)?$``.
 
 
-5. In `README.rst`, update `PyPI`_ download count after running `this big table query <https://bigquery.cloud.google.com/savedquery/280188050539:cab173ea774643c49e6f8f26234a3b08>`_
+5. In `README.rst`, update `PyPI`_ download count after running `this big table query <https://console.cloud.google.com/bigquery?sq=280188050539:6571a5b49fd1426395e4beea055d2b1b>`_
    and commit the changes.
 
   .. code::
