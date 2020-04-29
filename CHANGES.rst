@@ -74,11 +74,6 @@ Documentation
 Tests
 -----
 
-* Continuous Integration
-
-  * Update Azure Pipelines configuration for running tests using `PyPy3 <https://pypy.org/>`_ on Linux.
-    Thanks :user:`mattip` for the contribution. See :issue:`418`.
-
 * Update :func:`initialize_git_repo_and_commit` to prevent signing message on system with commit signing
   enabled globally.
 
