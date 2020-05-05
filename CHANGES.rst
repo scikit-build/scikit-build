@@ -8,6 +8,13 @@ details, see the commit logs at http://github.com/scikit-build/scikit-build
 Next Release
 ============
 
+Bug fixes
+---------
+
+* Support using scikit-build with conan where ``distro<1.2.0`` is required.
+  Thanks :user:`AntoinePrv` and :user:`Chrismarsh` for reporting issue :issue:`472`
+  and :issue:`488`.
+
 Documentation
 -------------
 
