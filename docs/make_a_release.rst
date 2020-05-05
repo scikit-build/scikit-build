@@ -252,7 +252,8 @@ conda-forge, follow the steps below:
   .. code::
 
     $ cd /tmp && \
-      wget https://github.com/NeurodataWithoutBorders/scikit-build/releases/download/$release/scikit-build-$release.tar.gz
+      wget https://github.com/scikit-build/scikit-build/archive/$release.tar.gz
+
 
 5. Create a new branch
 

@@ -8,6 +8,11 @@ details, see the commit logs at http://github.com/scikit-build/scikit-build
 Next Release
 ============
 
+Documentation
+-------------
+
+* Fix link in `Conda: Step-by-step` release guide available in :doc:`/make_a_release` section.
+
 Scikit-build 0.11.0
 ===================
 
