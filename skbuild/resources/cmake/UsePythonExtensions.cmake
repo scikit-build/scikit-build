@@ -105,7 +105,7 @@ function(add_python_library _name)
   # Generate targets for all *.src files
   set(_processed )
   foreach(_source IN LISTS _sources)
-    if(${_source} MATCHES .pyf.src$ OR ${_source} MATCHES \\.f\\.src$)
+    if(${_source} MATCHES ".pyf.src$" OR ${_source} MATCHES "\\.f\\.src$")
       if(NOT NumPy_FOUND)
         message(
           FATAL_ERROR
@@ -122,7 +122,7 @@ function(add_python_library _name)
         COMMENT "Generating ${_source_we} from template ${_source}"
       )
       list(APPEND _processed ${_source_we})
-    elseif(${_source} MATCHES \\.c\\.src$)
+    elseif(${_source} MATCHES "\\.c\\.src$")
       if(NOT NumPy_FOUND)
         message(
           FATAL_ERROR
@@ -139,7 +139,7 @@ function(add_python_library _name)
         COMMENT "Generating ${_source_we} from template ${_source}"
       )
       list(APPEND _processed ${_source_we})
-    elseif(${_source} MATCHES \\.pyx\\.in$)
+    elseif(${_source} MATCHES "\\.pyx\\.in$")
       if(NOT Cython_FOUND)
         message(
           FATAL_ERROR
@@ -191,7 +191,10 @@ function(add_python_library _name)
     endif()
     set(_sources_abs )
     foreach(_source IN LISTS _sources)
-      list(APPEND _sources_abs ${CMAKE_CURRENT_SOURCE_DIR}/${_source})
+      if(NOT IS_ABSOLUTE ${_source})
+        set(_source ${CMAKE_CURRENT_SOURCE_DIR}/${_source})
+      endif()
+      list(APPEND _sources_abs ${_source})
     endforeach()
     add_custom_command(
         OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_name}.pyf
@@ -305,6 +308,10 @@ function(add_python_extension _name)
   python_extension_module(${_name})
 
   file(RELATIVE_PATH _relative "${CMAKE_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}")
+  if(_relative STREQUAL "")
+    set(_relative ".")
+  endif()
+
   install(
     TARGETS ${_name}
     LIBRARY DESTINATION "${_relative}"
