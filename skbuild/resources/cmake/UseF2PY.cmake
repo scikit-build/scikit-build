@@ -107,18 +107,21 @@ function(add_f2py_target _name)
   set(extension "c")
 
   set(generated_file "${CMAKE_CURRENT_BINARY_DIR}/${_name}module.${extension}")
-  set(generated_wrapper "${CMAKE_CURRENT_BINARY_DIR}/${_name}-f2pywrappers.f")
+  set(generated_wrappers
+    "${CMAKE_CURRENT_BINARY_DIR}/${_name}-f2pywrappers.f"
+    "${CMAKE_CURRENT_BINARY_DIR}/${_name}-f2pywrappers2.f90"
+    )
 
   get_filename_component(generated_file_dir ${generated_file} DIRECTORY)
 
   set_source_files_properties(${generated_file} PROPERTIES GENERATED TRUE)
-  set_source_files_properties(${generated_wrapper} PROPERTIES GENERATED TRUE)
+  set_source_files_properties(${generated_wrappers} PROPERTIES GENERATED TRUE)
 
   set(_output_var ${_name})
   if(_args_OUTPUT_VAR)
       set(_output_var ${_args_OUTPUT_VAR})
   endif()
-  set(${_output_var} ${generated_file} ${generated_wrapper} PARENT_SCOPE)
+  set(${_output_var} ${generated_file} ${generated_wrappers} PARENT_SCOPE)
 
   file(RELATIVE_PATH generated_file_relative
       ${CMAKE_BINARY_DIR} ${generated_file})
@@ -133,9 +136,8 @@ function(add_f2py_target _name)
   file(MAKE_DIRECTORY ${generated_file_dir})
 
   # Add the command to run the compiler.
-  add_custom_command(OUTPUT ${generated_file} ${generated_wrapper}
+  add_custom_command(OUTPUT ${generated_file} ${generated_wrappers}
                      COMMAND ${F2PY_EXECUTABLE} ${pyf_location}
-                     COMMAND ${CMAKE_COMMAND} -E touch ${generated_wrapper}
                      DEPENDS ${_source_file}
                              ${_args_DEPENDS}
                      WORKING_DIRECTORY ${generated_file_dir}

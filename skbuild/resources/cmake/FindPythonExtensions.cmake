@@ -575,3 +575,5 @@ function(python_modules_header _name)
   endif()
   set(${_include_dirs_var} ${CMAKE_CURRENT_BINARY_DIR} PARENT_SCOPE)
 endfunction()
+
+include(UsePythonExtensions)
