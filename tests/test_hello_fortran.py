@@ -25,6 +25,9 @@ def test_hello_fortran_sdist():
     assert sdists_tar or sdists_zip
 
     expected_content = [
+        'hello-fortran-1.2.3/bonjour/_bonjour.f90',
+        'hello-fortran-1.2.3/bonjour/_bonjour.pyf',
+        'hello-fortran-1.2.3/bonjour/CMakeLists.txt',
         'hello-fortran-1.2.3/CMakeLists.txt',
         'hello-fortran-1.2.3/hello/_hello.f90',
         'hello-fortran-1.2.3/hello/CMakeLists.txt',
@@ -43,6 +46,7 @@ def test_hello_fortran_sdist():
 @project_setup_py_test("hello-fortran", ["bdist_wheel"])
 def test_hello_fortran_wheel():
     expected_content = [
+        'hello_fortran/_bonjour%s' % get_ext_suffix(),
         'hello_fortran/_hello%s' % get_ext_suffix(),
         'hello_fortran/__init__.py',
         'hello_fortran/__main__.py'

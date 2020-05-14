@@ -1,5 +1,3 @@
-find_package(F2PY REQUIRED)
-
 set(f2py_module_name "_hello")
 set(fortran_src_file "${CMAKE_CURRENT_SOURCE_DIR}/_hello.f90")
 
