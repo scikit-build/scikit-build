@@ -8,6 +8,12 @@ details, see the commit logs at http://github.com/scikit-build/scikit-build
 Next Release
 ============
 
+Bug fixes
+---------
+
+* Fixed a regression that caused setuptools to complain about unknown setup option
+  (`cmake_process_manifest_hook`).
+
 Documentation
 -------------
 
