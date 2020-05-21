@@ -398,7 +398,8 @@ def setup(*args, **kw):  # noqa: C901
         'cmake_source_dir': '',
         'cmake_with_sdist': False,
         'cmake_languages': ('C', 'CXX'),
-        'cmake_minimum_required_version': None
+        'cmake_minimum_required_version': None,
+        'cmake_process_manifest_hook': None
     }
     skbuild_kw = {param: kw.pop(param, parameters[param])
                   for param in parameters}
@@ -611,7 +612,7 @@ def setup(*args, **kw):  # noqa: C901
 
     # This hook enables custom processing of the cmake manifest
     cmake_manifest = cmkr.install()
-    process_manifest = kw.get('cmake_process_manifest_hook')
+    process_manifest = skbuild_kw.get('cmake_process_manifest_hook')
     if process_manifest is not None:
         if callable(process_manifest):
             cmake_manifest = process_manifest(cmake_manifest)
