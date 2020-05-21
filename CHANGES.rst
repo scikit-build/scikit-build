@@ -13,6 +13,11 @@ Documentation
 
 * Update `Conda: Step-by-step` release guide available in :doc:`/make_a_release` section.
 
+Tests
+-----
+
+* Fix linting error `F522 <https://flake8.pycqa.org/en/latest/user/error-codes.html>`_ reported with flake8 >= 3.8.x. Thanks :user:`benbovy` for the contribution. See :issue:`494`.
+
 Scikit-build 0.11.1
 ===================
 

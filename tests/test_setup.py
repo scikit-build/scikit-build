@@ -737,7 +737,6 @@ def test_setup_inputs(
             c_off='' if has_cmake_package else '#',
             cm_off='' if has_cmake_module else '#',
             h_off='' if has_hybrid_package else '#',
-            p_off='' if has_pure_package else '#'
         )
     ))
 
