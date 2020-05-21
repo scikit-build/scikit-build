@@ -235,7 +235,7 @@ conda-forge, follow the steps below:
 2. Fork scikit-build-feedstock
 
  First step is to fork `scikit-build-feedstock`_ repository.
- This is the recommended `best practice <https://conda-forge.org/docs/conda-forge_gotchas.html#using-a-fork-vs-a-branch-when-updating-a-recipe>`_  by conda.
+ This is the recommended `best practice <https://conda-forge.org/docs/maintainer/updating_pkgs.html>`_  by conda.
 
 
 3. Clone forked feedstock
@@ -244,7 +244,8 @@ conda-forge, follow the steps below:
 
    .. code::
 
-      $ cd /tmp && git clone https://github.com/YOURGITHUBUSER/scikit-build-feedstock.git
+      $ YOURGITHUBUSER=user
+      $ cd /tmp && git clone https://github.com/$YOURGITHUBUSER/scikit-build-feedstock.git
 
 
 4. Download corresponding source for the release version
@@ -274,18 +275,23 @@ conda-forge, follow the steps below:
 
    .. code::
 
-      $ sed -i "2s/.*/{% set version = \"$release\" %}/" recipe/meta.yaml
-      $ sha=$(openssl sha256 /tmp/scikit-build-$release.tar.gz | awk '{print $2}')
-      $ sed -i "3s/.*/{$ set sha256 = \"$sha\" %}/" recipe/meta.yaml
+      $ sed -i "1s/.*/{% set version = \"$release\" %}/" recipe/meta.yaml && \
+        sha=$(openssl sha256 /tmp/$release.tar.gz | awk '{print $2}') && \
+        sed -i "2s/.*/{% set sha256 = \"$sha\" %}/" recipe/meta.yaml
 
    For macOS:
 
    .. code::
 
-      $ sed -i -- "2s/.*/{% set version = \"$release\" %}/" recipe/meta.yaml
-      $ sha=$(openssl sha256 /tmp/scikit-build-$release.tar.gz | awk '{print $2}')
-      $ sed -i -- "3s/.*/{$ set sha256 = \"$sha\" %}/" recipe/meta.yaml
+      $ sed -i -- "1s/.*/{% set version = \"$release\" %}/" recipe/meta.yaml && \
+        sha=$(openssl sha256 /tmp/$release.tar.gz | awk '{print $2}') && \
+        sed -i -- "2s/.*/{% set sha256 = \"$sha\" %}/" recipe/meta.yaml
 
+   Commit local changes.
+
+   .. code::
+      $ git add recipe/meta.yaml && \
+          git commit -m "scikit-build v$release version"
 
 
 7. Push the changes
