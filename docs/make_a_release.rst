@@ -290,6 +290,7 @@ conda-forge, follow the steps below:
    Commit local changes.
 
    .. code::
+
       $ git add recipe/meta.yaml && \
           git commit -m "scikit-build v$release version"
 
