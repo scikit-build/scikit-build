@@ -41,7 +41,7 @@ Since scikit-build simply provides glue between `setuptools`
 and `CMake`, it needs to choose a `CMake generator`_ to configure the build
 system allowing to build of CPython C extensions.
 
-.. _CMake generator: https://cmake.org/cmake/help/v3.7/manual/cmake-generators.7.html
+.. _CMake generator: https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html
 
 The table below lists the generator supported by scikit-build:
 
@@ -59,7 +59,7 @@ The table below lists the generator supported by scikit-build:
 When building a project, scikit-build iteratively tries each generator (in
 the order listed in the table) until it finds a working one.
 
-For more details about CMake generators, see `CMake documentation <https://cmake.org/cmake/help/v3.7/manual/cmake-generators.7.html>`_.
+For more details about CMake generators, see `CMake documentation <https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html>`_.
 
 .. _Ninja:
 
