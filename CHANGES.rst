@@ -18,6 +18,7 @@ Documentation
 -------------
 
 * Update `Conda: Step-by-step` release guide available in :doc:`/make_a_release` section.
+* Update links to CMake documentation pages in :doc:/`generators`.
 
 Tests
 -----
