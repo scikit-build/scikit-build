@@ -20,6 +20,10 @@ def get_platform():
     elif this_platform == "freebsd":
         from . import bsd
         return bsd.BSDPlatform()
+    
+    elif this_platform == "openbsd":
+        from . import bsd
+        return bsd.BSDPlatform()
 
     elif this_platform == "darwin":
         from . import osx
