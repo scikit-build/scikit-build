@@ -121,7 +121,7 @@ class CMaker(object):
 
     def configure(self, clargs=(), generator_name=None, skip_generator_test=False,
                   cmake_source_dir='.', cmake_install_dir='',
-                  languages=('C', 'CXX'), cleanup=True):
+                  languages=('C', 'CXX'), cleanup=True, findpython=False):
         """Calls cmake to generate the Makefile/VS Solution/XCode project.
 
         clargs: tuple
@@ -152,6 +152,10 @@ class CMaker(object):
             If True, cleans up temporary folder used to test
             generators. Set to False for debugging to see CMake's
             output files.
+
+        findpython: bool
+            Set needed FindPython variables instead of classic
+            FindPythonLibs/FindPythonInterp.
 
         Return a mapping of the environment associated with the
         selected :class:`skbuild.platform_specifics.abstract.CMakeGenerator`.
@@ -187,24 +191,34 @@ class CMaker(object):
         python_library = CMaker.get_python_library(python_version)
 
         cmake_source_dir = os.path.abspath(cmake_source_dir)
+        cmake_install_prefix = os.path.abspath(os.path.join(CMAKE_INSTALL_DIR(), cmake_install_dir))
+        cmake_module_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "resources", "cmake"))
+
         cmd = [
             self.cmake_executable, cmake_source_dir, '-G', generator.name,
             ("-DCMAKE_INSTALL_PREFIX:PATH=" +
                 os.path.abspath(
                     os.path.join(CMAKE_INSTALL_DIR(), cmake_install_dir))),
-            ("-DPYTHON_EXECUTABLE:FILEPATH=" +
-                sys.executable),
-            ("-DPYTHON_VERSION_STRING:STRING=" +
-                sys.version.split(' ')[0]),
-            ("-DPYTHON_INCLUDE_DIR:PATH=" +
-                python_include_dir),
-            ("-DPYTHON_LIBRARY:FILEPATH=" +
-                python_library),
             ("-DSKBUILD:INTERNAL=" +
                 "TRUE"),
             ("-DCMAKE_MODULE_PATH:PATH=" +
                 os.path.join(os.path.dirname(__file__), "resources", "cmake"))
         ]
+
+
+        if findpython:
+            cmd += [
+                "-DPython_EXECUTABLE:FILEPATH=" + sys.executable,
+                "-DPython_INCLUDE_DIR:PATH=" + python_include_dir,
+                "-DPython_LIBRARY:FILEPATH=" + python_library,
+            ]
+        else:
+            cmd += [
+                "-DPYTHON_EXECUTABLE:FILEPATH=" + sys.executable,
+                "-DPYTHON_VERSION_STRING:STRING=" + sys.version.split(' ')[0],
+                "-DPYTHON_INCLUDE_DIR:PATH=" + python_include_dir,
+                "-DPYTHON_LIBRARY:FILEPATH=" + python_library,
+            ]
 
         if generator.toolset:
             cmd.extend(['-T', generator.toolset])

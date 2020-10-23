@@ -399,7 +399,8 @@ def setup(*args, **kw):  # noqa: C901
         'cmake_with_sdist': False,
         'cmake_languages': ('C', 'CXX'),
         'cmake_minimum_required_version': None,
-        'cmake_process_manifest_hook': None
+        'cmake_process_manifest_hook': None,
+        'cmake_findpython': False,
     }
     skbuild_kw = {param: kw.pop(param, parameters[param])
                   for param in parameters}
@@ -587,7 +588,8 @@ def setup(*args, **kw):  # noqa: C901
                                      skip_generator_test=skip_generator_test,
                                      cmake_source_dir=cmake_source_dir,
                                      cmake_install_dir=skbuild_kw['cmake_install_dir'],
-                                     languages=cmake_languages
+                                     languages=cmake_languages,
+                                     findpython=skbuild_kw['cmake_findpython'],
                                      )
                 _save_cmake_spec(cmake_spec)
             cmkr.make(make_args, env=env)
