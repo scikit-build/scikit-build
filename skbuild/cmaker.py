@@ -200,7 +200,7 @@ class CMaker(object):
                 python_include_dir),
             ("-DPYTHON_LIBRARY:FILEPATH=" +
                 python_library),
-            ("-DSKBUILD:BOOL=" +
+            ("-DSKBUILD:INTERNAL=" +
                 "TRUE"),
             ("-DCMAKE_MODULE_PATH:PATH=" +
                 os.path.join(os.path.dirname(__file__), "resources", "cmake"))
