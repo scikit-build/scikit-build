@@ -76,7 +76,7 @@ class WindowsPlatform(abstract.CMakePlatform):
 
         # For Python 3.6 and above: VS2017
         elif version.major == 3 and version.minor >= 6:
-            supported_vs_years = [("2017", "v141")]
+            supported_vs_years = [("2019", "v142"), ("2017", "v141")]
             self._vs_help = vs_help_template % (
                 supported_vs_years[0][0],
                 "Visual Studio 2017",
@@ -106,7 +106,8 @@ VS_YEAR_TO_VERSION = {
     "2012": 11,
     "2013": 12,
     "2015": 14,
-    "2017": 15
+    "2017": 15,
+    "2019": 16
 }
 """Describes the version of `Visual Studio` supported by
 :class:`CMakeVisualStudioIDEGenerator` and
