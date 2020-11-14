@@ -56,21 +56,23 @@
 # ``<OutputVar>``
 #   The path of the generated source file.
 #
-# Cache variables that effect the behavior include:
+# Cache variables that affect the behavior include:
 #
 # ``CYTHON_ANNOTATE``
-#   whether to create an annotated .html file when compiling
+#   Whether to create an annotated .html file when compiling.
 #
 # ``CYTHON_FLAGS``
-#   additional flags to pass to the Cython compiler
+#   Additional flags to pass to the Cython compiler.
 #
 # ``CYTHON_WITH_NO_DOCSTRINGS_ARG``
-#   Whether to define the Cython flag --no-docstrings. If not set, this option
-#   defaults to true for Release and MinSizeRel build configurations.
+#   Whether to define the Cython flag ``--no-docstrings``. If not set, this
+#   option defaults to true for ``Release`` and ``MinSizeRel`` build
+#   configurations.
 #
 # ``CYTHON_WITH_EMBED_POSITIONS_ARG``
-#   Whether to define the Cython flag --embed-positions. If not set, this
-#   option defaults to true for Debug and RelWithDebInfo build configurations.
+#   Whether to define the Cython flag ``--embed-positions``. If not set, this
+#   option defaults to true for ``Debug`` and ``RelWithDebInfo`` build
+#   configurations.
 #
 # Example usage
 # ^^^^^^^^^^^^^
