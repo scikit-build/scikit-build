@@ -8,6 +8,15 @@ details, see the commit logs at http://github.com/scikit-build/scikit-build
 Next Release
 ============
 
+New Features
+------------
+
+* CMake module :doc:`/cmake-modules/Cython`: Added options
+  ``CYTHON_WITH_NO_DOCSTRINGS_ARG`` and ``CYTHON_WITH_EMBED_POSITIONS_ARG`` to
+  override the default argument behavior inferred from the build type.
+  Setting ``CYTHON_WITH_NO_DOCSTRINGS_ARG`` to False allows docstrings to be
+  retained in Release builds. See :issue:`518`.
+
 Bug fixes
 ---------
 
