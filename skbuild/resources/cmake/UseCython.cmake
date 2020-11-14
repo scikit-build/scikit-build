@@ -116,8 +116,15 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR
   set(is_debug TRUE)
 endif()
 
-set(CYTHON_WITH_NO_DOCSTRINGS_ARG ${is_release} CACHE BOOL "Whether to use Cython --no-docstrings argument. Defaults to True for Release or MinSizeRel builds.")
-set(CYTHON_WITH_EMBED_POSITIONS_ARG ${is_debug} CACHE BOOL "Whether to use Cython --embed-positions argument. Defaults to True for Debug or RelWithDebInfo builds.")
+if(NOT DEFINED CYTHON_WITH_NO_DOCSTRINGS_ARG)
+  set(CYTHON_WITH_NO_DOCSTRINGS_ARG ${is_release} CACHE BOOL
+      "Whether to use Cython --no-docstrings argument. Defaults to True for Release or MinSizeRel builds.")
+endif()
+
+if(NOT DEFINED CYTHON_WITH_EMBED_POSITIONS_ARG)
+  set(CYTHON_WITH_EMBED_POSITIONS_ARG ${is_debug} CACHE BOOL
+      "Whether to use Cython --embed-positions argument. Defaults to True for Debug or RelWithDebInfo builds.")
+endif()
 
 set(CYTHON_FLAGS "" CACHE STRING
     "Extra flags to the cython compiler.")
