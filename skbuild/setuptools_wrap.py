@@ -598,7 +598,7 @@ def setup(*args, **kw):  # noqa: C901
         sys.exit(ex)
 
     # If any, strip ending slash from each package directory
-    package_dir = {package: prefix[:-1] if prefix[-1] == "/" else prefix
+    package_dir = {package: prefix[:-1] if prefix and prefix[-1] == "/" else prefix
                    for package, prefix in package_dir.items()}
 
     # If needed, set reasonable defaults for package_dir
