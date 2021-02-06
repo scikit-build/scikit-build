@@ -506,6 +506,8 @@ def setup(*args, **kw):  # noqa: C901
                 version = cmake_arg.split('=')[1]
             if 'CMAKE_OSX_ARCHITECTURES' in cmake_arg:
                 machine = cmake_arg.split('=')[1]
+                if set(machine.split(';')) == {'x86_64', 'arm64'}:
+                    machine = 'universal2'
 
         set_skbuild_plat_name("macosx-{}-{}".format(version, machine))
 
@@ -524,8 +526,9 @@ def setup(*args, **kw):  # noqa: C901
             )
         if not cmaker.has_cmake_cache_arg(
                 cmake_args, 'CMAKE_OSX_ARCHITECTURES'):
+            machine_archs = 'x86_64;arm64' if machine == 'universal2' else machine
             cmake_args.append(
-                '-DCMAKE_OSX_ARCHITECTURES:STRING=%s' % machine
+                '-DCMAKE_OSX_ARCHITECTURES:STRING=%s' % machine_archs
             )
 
     # Install cmake if listed in `setup_requires`

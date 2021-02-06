@@ -31,6 +31,9 @@ def _default_skbuild_plat_name():
         release, _, machine = platform.mac_ver()
         release = os.environ.get("MACOSX_DEPLOYMENT_TARGET", release)
         split_ver = release.split('.')
+        machine = os.environ.get("CMAKE_OSX_ARCHITECTURES", machine)
+        if set(machine.split(';')) == {'x86_64', 'arm64'}:
+            machine = 'universal2'
         return 'macosx-{}.{}-{}'.format(split_ver[0], split_ver[1], machine)
     else:
         return get_platform()
