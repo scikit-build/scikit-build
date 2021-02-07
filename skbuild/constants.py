@@ -32,8 +32,18 @@ def _default_skbuild_plat_name():
         release = os.environ.get("MACOSX_DEPLOYMENT_TARGET", release)
         split_ver = release.split('.')
         machine = os.environ.get("CMAKE_OSX_ARCHITECTURES", machine)
+
+        # Handle universal2 wheels, if two architectures are requested.
         if set(machine.split(';')) == {'x86_64', 'arm64'}:
             machine = 'universal2'
+
+        # If Apple Silicon ARM64 wheels are requested, the minimum version is 11.0.
+        # Ignore if ``release``` cannot be parsed to an int.
+        try:
+            if machine == 'arm64' and int(split_ver[0]) < 11:
+                split_ver = [11, 0]
+        except ValueError:
+            pass
         return 'macosx-{}.{}-{}'.format(split_ver[0], split_ver[1], machine)
     else:
         return get_platform()

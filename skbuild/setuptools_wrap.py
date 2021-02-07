@@ -509,6 +509,14 @@ def setup(*args, **kw):  # noqa: C901
                 if set(machine.split(';')) == {'x86_64', 'arm64'}:
                     machine = 'universal2'
 
+        # If Apple Silicon ARM64 wheels are requested, the minimum version is 11.0.
+        # Ignore if ``version``` cannot be parsed to an int.
+        try:
+            if machine == 'arm64' and int(version.split('.')[0]) < 11:
+                version = '11.0'
+        except ValueError:
+            pass
+
         set_skbuild_plat_name("macosx-{}-{}".format(version, machine))
 
         # Set platform env. variable so that commands (e.g. bdist_wheel)
