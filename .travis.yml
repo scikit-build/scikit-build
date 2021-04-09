@@ -11,35 +11,53 @@ matrix:
     - os: osx
       language: generic
       env:
-        - PYTHON_VERSION=3.7.0
+        - PYTHON_VERSION=3.7.9
 
     - os: osx
       language: generic
       env:
-        - PYTHON_VERSION=3.6.5
+        - PYTHON_VERSION=3.6.8
 
     - os: osx
       language: generic
       env:
-        - PYTHON_VERSION=3.5.5
+        - PYTHON_VERSION=3.5.4
 
     - os: osx
       language: generic
       env:
-        - PYTHON_VERSION=2.7.15
+        - PYTHON_VERSION=2.7.18
 
 cache:
   directories:
-    - $HOME/.pyenv/versions/3.7.0
-    - $HOME/.pyenv/versions/3.6.5
-    - $HOME/.pyenv/versions/3.5.5
-    - $HOME/.pyenv/versions/3.4.8
-    - $HOME/.pyenv/versions/2.7.15
+    # scikit-ci-addons
     - $HOME/downloads
 
 before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then mkdir $HOME/bin; ln -s $(which pip2) $HOME/bin/pip; ln -s $(which python2) $HOME/bin/python; fi
-  - python -m pip install --disable-pip-version-check --upgrade pip
+  - |
+    # Install official python distribution
+    PYTHON_VERSION2=${PYTHON_VERSION%.*}
+    PYTHON_VERSION1=${PYTHON_VERSION2%.*}
+    sdk_version=10.9
+    if [[ ${PYTHON_VERSION2} == "3.5" ]]; then
+      sdk_version=10.6
+    fi
+    curl -fsSLo /tmp/Python.pkg "https://www.python.org/ftp/python/${PYTHON_VERSION}/python-${PYTHON_VERSION}-macosx${sdk_version}.pkg"
+    sudo installer -pkg /tmp/Python.pkg -target /
+    python_executable=/Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION2}/bin/python${PYTHON_VERSION1}
+
+    # Install SSL certificates
+    curl -fsSLo /tmp/install_certifi.py https://github.com/joerick/cibuildwheel/raw/v1.10.0/cibuildwheel/resources/install_certifi.py
+    sudo ${python_executable} /tmp/install_certifi.py
+
+    # Install packages
+    ${python_executable} -m pip install --disable-pip-version-check --upgrade pip
+    ${python_executable} -m pip install virtualenv
+
+    # Create and activate virtual environment
+    ${python_executable} -m virtualenv ${HOME}/.pyenv/versions/${PYTHON_VERSION}
+    source ${HOME}/.pyenv/versions/${PYTHON_VERSION}/bin/activate
+
   - pip install -U scikit-ci scikit-ci-addons
   - ci_addons --install ../addons
 

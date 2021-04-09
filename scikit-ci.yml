@@ -12,8 +12,6 @@ before_install:
     osx:
       environment:
         PATH: $<HOME>/.pyenv/versions/$<PYTHON_VERSION>/bin:$<PATH>
-      commands:
-        - python ../addons/travis/install_pyenv.py
 
   azure:
     Windows_NT:
