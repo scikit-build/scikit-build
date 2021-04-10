@@ -21,11 +21,6 @@ matrix:
     - os: osx
       language: generic
       env:
-        - PYTHON_VERSION=3.5.4
-
-    - os: osx
-      language: generic
-      env:
         - PYTHON_VERSION=2.7.18
 
 cache:
@@ -38,11 +33,7 @@ before_install:
     # Install official python distribution
     PYTHON_VERSION2=${PYTHON_VERSION%.*}
     PYTHON_VERSION1=${PYTHON_VERSION2%.*}
-    sdk_version=10.9
-    if [[ ${PYTHON_VERSION2} == "3.5" ]]; then
-      sdk_version=10.6
-    fi
-    curl -fsSLo /tmp/Python.pkg "https://www.python.org/ftp/python/${PYTHON_VERSION}/python-${PYTHON_VERSION}-macosx${sdk_version}.pkg"
+    curl -fsSLo /tmp/Python.pkg "https://www.python.org/ftp/python/${PYTHON_VERSION}/python-${PYTHON_VERSION}-macosx10.9.pkg"
     sudo installer -pkg /tmp/Python.pkg -target /
     python_executable=/Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION2}/bin/python${PYTHON_VERSION1}
 
