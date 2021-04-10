@@ -44,7 +44,8 @@ before_install:
 
     # Install packages
     ${python_executable} -m pip install --disable-pip-version-check --upgrade pip
-    ${python_executable} -m pip install virtualenv
+    # See issue https://github.com/pypa/virtualenv/issues/1638#issuecomment-587007356
+    ${python_executable} -m pip install "virtualenv < 20; python_version < '3'" "virtualenv; python_version >= '3'"
 
     # Create and activate virtual environment
     ${python_executable} -m virtualenv ${HOME}/.pyenv/versions/${PYTHON_VERSION}
