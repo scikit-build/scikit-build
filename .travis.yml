@@ -47,6 +47,7 @@ before_install:
     python_executable=/Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION2}/bin/python${PYTHON_VERSION1}
 
     # Install SSL certificates
+    ${python_executable} -c "import ssl; print(ssl.OPENSSL_VERSION)"
     curl -fsSLo /tmp/install_certifi.py https://github.com/joerick/cibuildwheel/raw/v1.10.0/cibuildwheel/resources/install_certifi.py
     sudo ${python_executable} /tmp/install_certifi.py
 
