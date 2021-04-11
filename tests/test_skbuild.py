@@ -193,3 +193,45 @@ def test_platform_windows_find_visual_studio(vs_year):
         assert os.path.exists(find_visual_studio(VS_YEAR_TO_VERSION[vs_year]))
     else:
         assert find_visual_studio(VS_YEAR_TO_VERSION[vs_year]) == ""
+
+
+@pytest.mark.skipif(sys.platform != 'win32', reason='Requires Visual Studio and ')
+def test_toolset():
+    version = sys.version_info
+    py_35 = (
+        version.major == 3 and
+        version.minor == 5
+    )
+    py_36_and_above = (
+        version.major == 3 and
+        version.minor >= 6
+    )
+
+    if not any([py_35, py_36_and_above]):
+        pytest.skip("python version < 3.5")
+
+    has_vs_2017 = find_visual_studio(vs_version=VS_YEAR_TO_VERSION["2017"])
+    if not has_vs_2017:
+        pytest.skip("Visual Studio 15 2017 is not found")
+
+    arch = platform.architecture()[0]
+    vs_generator = "Visual Studio 15 2017"
+    vs_generator += (" Win64" if arch == "64bit" else "")
+
+    @project_setup_py_test("hello-cpp", ["build", "-G", vs_generator])
+    def run_build():
+        pass
+
+    tmp_dir = run_build()[0]
+
+    cmakecache = tmp_dir.join(CMAKE_BUILD_DIR()).join("CMakeCache.txt")
+    variables = get_cmakecache_variables(str(cmakecache))
+
+    generator = variables['CMAKE_GENERATOR'][1]
+    assert generator == vs_generator
+
+    toolset = variables['CMAKE_GENERATOR_TOOLSET'][1]
+    if py_35:
+        assert toolset == "v140"
+    elif py_36_and_above:
+        assert toolset == "v141"
