@@ -13,7 +13,11 @@ Bug fixes
 
 * Fixed a regression that caused setuptools to complain about unknown setup option
   (`cmake_process_manifest_hook`).
+
 * Hide the warning that shows up when `SKBUILD` is unused.
+
+* If it applies, ensure generator toolset is used to configure the project.
+  Thanks :user:`YannickJadoul` for the contribution. See :issue:`526`.
 
 Documentation
 -------------

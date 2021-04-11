@@ -206,6 +206,9 @@ class CMaker(object):
                 os.path.join(os.path.dirname(__file__), "resources", "cmake"))
         ]
 
+        if generator.toolset:
+            cmd.extend(['-T', generator.toolset])
+
         cmd.extend(clargs)
 
         cmd.extend(
