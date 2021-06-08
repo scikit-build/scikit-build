@@ -506,13 +506,15 @@ def setup(*args, **kw):  # noqa: C901
                 version = cmake_arg.split('=')[1]
             if 'CMAKE_OSX_ARCHITECTURES' in cmake_arg:
                 machine = cmake_arg.split('=')[1]
+                if set(machine.split(';')) == {'x86_64', 'arm64'}:
+                    machine = 'universal2'
 
         set_skbuild_plat_name("macosx-{}-{}".format(version, machine))
 
         # Set platform env. variable so that commands (e.g. bdist_wheel)
         # uses this information. The _PYTHON_HOST_PLATFORM env. variable is
         # used in distutils.util.get_platform() function.
-        os.environ['_PYTHON_HOST_PLATFORM'] = skbuild_plat_name()
+        os.environ.setdefault('_PYTHON_HOST_PLATFORM', skbuild_plat_name())
 
         # Set CMAKE_OSX_DEPLOYMENT_TARGET and CMAKE_OSX_ARCHITECTURES if not already
         # specified
@@ -524,8 +526,9 @@ def setup(*args, **kw):  # noqa: C901
             )
         if not cmaker.has_cmake_cache_arg(
                 cmake_args, 'CMAKE_OSX_ARCHITECTURES'):
+            machine_archs = 'x86_64;arm64' if machine == 'universal2' else machine
             cmake_args.append(
-                '-DCMAKE_OSX_ARCHITECTURES:STRING=%s' % machine
+                '-DCMAKE_OSX_ARCHITECTURES:STRING=%s' % machine_archs
             )
 
     # Install cmake if listed in `setup_requires`
