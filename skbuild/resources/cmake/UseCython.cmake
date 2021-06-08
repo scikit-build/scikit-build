@@ -101,7 +101,6 @@ set(CYTHON_ANNOTATE OFF
 set(CYTHON_FLAGS "" CACHE STRING
     "Extra flags to the cython compiler.")
 mark_as_advanced(CYTHON_ANNOTATE CYTHON_FLAGS)
-string(REGEX REPLACE " " ";" CYTHON_FLAGS_LIST "${CYTHON_FLAGS}")
 
 find_package(PythonLibs REQUIRED)
 
@@ -357,6 +356,8 @@ function(add_cython_target _name)
 
   list(REMOVE_DUPLICATES pxd_dependencies)
   list(REMOVE_DUPLICATES c_header_dependencies)
+
+  string(REGEX REPLACE " " ";" CYTHON_FLAGS_LIST "${CYTHON_FLAGS}")
 
   # Add the command to run the compiler.
   add_custom_command(OUTPUT ${generated_file}
