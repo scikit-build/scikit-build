@@ -1,6 +1,5 @@
 docutils
 pygments
-sphinx<=1.8.5; python_version <= '3.5'
-sphinx>1.8.5; python_version > '3.5'
+sphinx<4
 sphinx-issues
 sphinx_rtd_theme

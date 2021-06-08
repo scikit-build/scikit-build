@@ -60,17 +60,20 @@ Get Started
 Ready to contribute? Here's how to set up `scikit-build` for local development.
 
 1. Fork the `scikit-build` repo on GitHub.
+
 2. Clone your fork locally::
 
     $ git clone git@github.com:your_name_here/scikit-build.git
 
-3. Install your local copy into a virtualenv. Assuming you have
-   virtualenvwrapper installed (`pip install virtualenvwrapper`), this is how
-   you set up your cloned fork for local development::
+   You can use the ``gh`` command line application to do these last two steps,
+   as well.
 
-    $ mkvirtualenv scikit-build
-    $ cd scikit-build/
-    $ python setup.py develop
+3. Make sure you have ``nox`` installed using ``pipx install nox``. If you
+   don't have pipx, you can install it with ``pip install pipx``. (You can
+   install ``nox`` with ``pip`` instead, but nox is an application, not a
+   library, and applications should always use pipx.) You can install both of
+   these packages from brew on macOS/linux. You can also use ``pipx run nox``
+   instead.
 
 4. Create a branch for local development::
 
@@ -78,23 +81,23 @@ Ready to contribute? Here's how to set up `scikit-build` for local development.
 
    Now you can make your changes locally.
 
-5. When you're done making changes, check that your changes pass flake8 and
-   the tests, including testing other Python versions with tox::
+5. When you're done making changes, check that your changes pass our linters and
+   the tests:
 
-    $ flake8
-    $ python setup.py test
-    $ tox
+    $ nox
 
-   If needed, you can get flake8 and tox by using `pip install` to install
-   them into your virtualenv.
+   If you would like to check all Python versions and you don't happen to have them
+   all installed locally, you can use the manylinux docker image instead:
+
+   $ docker run --rm -itv $PWD:/src -w /src quay.io/pypa/manylinux_2_24_x86_64:latest pipx run nox
 
 6. Commit your changes and push your branch to GitHub::
 
-    $ git add .
+    $ git add -u .
     $ git commit -m "Your detailed description of your changes."
     $ git push origin name-of-your-bugfix-or-feature
 
-7. Submit a pull request through the GitHub website.
+7. Submit a pull request through the GitHub website or the ``gh`` command line application.
 
 
 Pull Request Guidelines
@@ -108,9 +111,8 @@ Before you submit a pull request, check that it meets these guidelines:
    your new functionality into a function with a docstring, and add the
    feature to the list in `README.rst`.
 
-3. The pull request should work for Python 2.7, and 3.3, 3.4, 3.5 and PyPy.
-   Check https://travis-ci.org/scikit-build/scikit-build/pull_requests
-   and make sure that the tests pass for all supported Python versions.
+3. The pull request should work for Python 2.7, 3.5+, and PyPy.  Make sure that
+   the tests pass for all supported Python versions in CI on your PR.
 
 
 Tips
@@ -118,4 +120,12 @@ Tips
 
 To run a subset of tests::
 
-	$ pytest tests/test_skbuild.py
+	$ nox -s tests -- tests/test_skbuild.py
+
+You can build and serve the docs::
+
+    $ nox -s docs -- serve
+
+You can build an SDist and a wheel in the ``dist`` folder::
+
+    $ nox -s build
