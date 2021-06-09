@@ -6,4 +6,3 @@ cpdef void hello(str strArg):
 cpdef long size():
     "Returns elevation of Nevado Sajama."
     return 21463L
-

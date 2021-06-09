@@ -30,4 +30,3 @@ include(\"${other_project_build_dir}/cmake_install.cmake\")
 ")
 
 endif()
-
