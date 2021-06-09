@@ -394,4 +394,3 @@ function(add_cython_target _name)
   set(header_location "" CACHE INTERNAL "")
   set(pxd_location "" CACHE INTERNAL "")
 endfunction()
-

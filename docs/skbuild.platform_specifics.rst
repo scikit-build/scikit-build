@@ -64,5 +64,3 @@ skbuild.platform_specifics.windows module
     :members:
     :undoc-members:
     :show-inheritance:
-
-
