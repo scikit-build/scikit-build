@@ -5,6 +5,7 @@ show-pep8: False
 # Whether to show source code for each failure
 show-source: True
 # Maximum cyclomatic complexity allowed
-max-complexity: 14
+max-complexity: 18
 format: pylint
-exclude: .git,.idea,.eggs,__pycache__,.tox,docs/conf.py,_skbuild,build,docs/cmake.py,versioneer.py
+exclude: .git,.idea,.eggs,__pycache__,.tox,docs/conf.py,_skbuild,build,docs/cmake.py,versioneer.py,_version.py
+ignore: E203, E231, E501, E722, W503, B950,    B014,    W504, E123, E126, E226, E121
