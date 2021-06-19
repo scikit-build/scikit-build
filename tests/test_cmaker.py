@@ -21,7 +21,7 @@ from . import _tmpdir, get_cmakecache_variables
 
 
 def test_get_python_version():
-    assert re.match(r'^[23](\.?)[0-9]$', CMaker.get_python_version())
+    assert re.match(r'^[23](\.?)\d+$', CMaker.get_python_version())
 
 
 def test_get_python_include_dir():
