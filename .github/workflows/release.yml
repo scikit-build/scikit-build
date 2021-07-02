@@ -1,0 +1,21 @@
+name: CD
+
+on:
+  release:
+    types:
+    - published
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Build SDist and wheel
+      run: pipx run build
+
+    - uses: pypa/gh-action-pypi-publish@v1.4.2
+      with:
+        password: ${{ secrets.pypa_password }}

@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+    - master
+    - main
+
+jobs:
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2
+    - uses: pre-commit/action@v2.0.3
+
+  tests:
+    runs-on: ${{ matrix.runs-on }}
+    needs: [lint]
+    strategy:
+      fail-fast: false
+      matrix:
+        runs-on: [ubuntu-latest, macos-latest, windows-2016]
+
+
+    name: Tests on ${{ matrix.runs-on }}
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Setup nox
+      uses: excitedleigh/setup-nox@v2.0.0
+
+    # We check all Python's on Linux, because it's fast.
+    # We check Python 2.7 on Linux and macOS, it's not supported on Windows.
+    # We check minimum Python 3, and maximum Python 3 on all OS's.
+
+    - name: Test on 🐍 2.7
+      if: runner.os != 'Windows'
+      run: nox --forcecolor -s tests-2.7
+    - name: Test on 🐍 3.5
+      run: nox --forcecolor -s tests-3.5
+    - name: Test on 🐍 3.6
+      if: runner.os == 'Linux'
+      run: nox --forcecolor -s tests-3.6
+    - name: Test on 🐍 3.7
+      if: runner.os == 'Linux'
+      run: nox --forcecolor -s tests-3.7
+    - name: Test on 🐍 3.8
+      if: runner.os == 'Linux'
+      run: nox --forcecolor -s tests-3.8
+    - name: Test on 🐍 3.9
+      run: nox --forcecolor -s tests-3.9
+
+
+  dist:
+    name: Distribution
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Build SDist and wheel
+      run: pipx run build
+
+    - uses: actions/upload-artifact@v2
+      with:
+        path: dist/*
+
+    - name: Check metadata
+      run: pipx run twine check dist/*

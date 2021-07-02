@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import sys
 import versioneer
 
 try:
@@ -20,13 +19,6 @@ with open('requirements.txt', 'r') as fp:
 
 with open('requirements-dev.txt', 'r') as fp:
     dev_requirements = list(filter(bool, (line.strip() for line in fp)))
-
-# Require pytest-runner only when running tests
-pytest_runner = (['pytest-runner>=2.9']
-                 if any(arg in sys.argv for arg in ('pytest', 'test'))
-                 else [])
-
-setup_requires = pytest_runner
 
 setup(
     name='scikit-build',
@@ -67,7 +59,5 @@ setup(
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
     ],
-    tests_require=dev_requirements,
-    setup_requires=setup_requires,
     extras_require={"test": dev_requirements},
 )
