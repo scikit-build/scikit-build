@@ -192,16 +192,14 @@ class CMaker(object):
             ("-DCMAKE_INSTALL_PREFIX:PATH=" +
                 os.path.abspath(
                     os.path.join(CMAKE_INSTALL_DIR(), cmake_install_dir))),
-            ("-DPYTHON_EXECUTABLE:FILEPATH=" +
-                sys.executable),
-            ("-DPYTHON_VERSION_STRING:STRING=" +
-                sys.version.split(' ')[0]),
-            ("-DPYTHON_INCLUDE_DIR:PATH=" +
-                python_include_dir),
-            ("-DPYTHON_LIBRARY:FILEPATH=" +
-                python_library),
-            ("-DSKBUILD:INTERNAL=" +
-                "TRUE"),
+            ("-DPYTHON_EXECUTABLE:INTERNAL=" + sys.executable),
+            ("-DPYTHON_VERSION_STRING:INTERNAL=" + sys.version.split(' ')[0]),
+            ("-DPYTHON_INCLUDE_DIR:INTERNAL=" + python_include_dir),
+            ("-DPYTHON_LIBRARY:INTERNAL=" + python_library),
+            ("-DPython_EXECUTABLE:INTERNAL=" + sys.executable),
+            ("-DPython_INCLUDE_DIR:INTERNAL=" + python_include_dir),
+            ("-DPython_LIBRARY:INTERNAL=" + python_library),
+            ("-DSKBUILD:INTERNAL=TRUE"),
             ("-DCMAKE_MODULE_PATH:PATH=" +
                 os.path.join(os.path.dirname(__file__), "resources", "cmake"))
         ]
