@@ -19,25 +19,37 @@ def _default_skbuild_plat_name():
 
     On macOS, it corresponds to the version and machine associated with :func:`platform.mac_ver()`.
     """
-    if sys.platform == 'darwin':
-        # If the MACOSX_DEPLOYMENT_TARGET environment variable is defined, use
-        # it, as it will be the most accurate. Otherwise use the value returned
-        # by platform.mac_ver() provided by the platform module available in
-        # the Python standard library.
-        #
-        # Note that on macOS, distutils.util.get_platform() is not used because
-        # it returns the macOS version on which Python was built which may be
-        # significantly older than the user's current machine.
-        release, _, machine = platform.mac_ver()
-        release = os.environ.get("MACOSX_DEPLOYMENT_TARGET", release)
-        split_ver = release.split('.')
-        machine = os.environ.get("CMAKE_OSX_ARCHITECTURES", machine)
-        # Handle universal2 wheels, if those two architectures are requested.
-        if set(machine.split(';')) == {'x86_64', 'arm64'}:
-            machine = 'universal2'
-        return 'macosx-{}.{}-{}'.format(split_ver[0], split_ver[1], machine)
-    else:
+    if sys.platform != 'darwin':
         return get_platform()
+
+    release, _, machine = platform.mac_ver()
+
+    # If the MACOSX_DEPLOYMENT_TARGET environment variable is defined, use
+    # it, as it will be the most accurate. Otherwise use the value returned by
+    # platform.mac_ver() provided by the platform module available in the
+    # Python standard library.
+    #
+    # Note that on macOS, distutils.util.get_platform() is not used because
+    # it returns the macOS version on which Python was built which may be
+    # significantly older than the user's current machine.
+    release = os.environ.get("MACOSX_DEPLOYMENT_TARGET", release)
+    major_macos, minor_macos = release.split('.')[:2]
+
+    # On macOS 11+, only the major version matters.
+    if int(major_macos) >= 11:
+        minor_macos = "0"
+
+    # Use CMAKE_OSX_ARCHITECTURES if that is set, otherwise use ARCHFLAGS,
+    # which is the variable used by Setuptools. Fall back to the machine arch
+    # if neither of those is given.
+    machine = os.environ.get("ARCHFLAGS", machine)
+    machine = os.environ.get("CMAKE_OSX_ARCHITECTURES", machine)
+
+    # Handle universal2 wheels, if those two architectures are requested.
+    if set(machine.split(';')) == {'x86_64', 'arm64'}:
+        machine = 'universal2'
+
+    return 'macosx-{}.{}-{}'.format(major_macos, minor_macos, machine)
 
 
 _SKBUILD_PLAT_NAME = _default_skbuild_plat_name()
