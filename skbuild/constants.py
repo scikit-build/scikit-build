@@ -33,7 +33,7 @@ def _default_skbuild_plat_name():
     # it returns the macOS version on which Python was built which may be
     # significantly older than the user's current machine.
     release = os.environ.get("MACOSX_DEPLOYMENT_TARGET", release)
-    major_macos, minor_macos = release.split('.')[:2]
+    major_macos, minor_macos = release.split(".")[:2]
 
     # On macOS 11+, only the major version matters.
     if int(major_macos) >= 11:
@@ -42,14 +42,17 @@ def _default_skbuild_plat_name():
     # Use CMAKE_OSX_ARCHITECTURES if that is set, otherwise use ARCHFLAGS,
     # which is the variable used by Setuptools. Fall back to the machine arch
     # if neither of those is given.
-    machine = os.environ.get("ARCHFLAGS", machine)
+    archflags = os.environ.get("ARCHFLAGS")
+    if archflags is not None:
+        machine = ";".join(set(archflags.split()) & {"x86_64", "arm64"})
+
     machine = os.environ.get("CMAKE_OSX_ARCHITECTURES", machine)
 
     # Handle universal2 wheels, if those two architectures are requested.
-    if set(machine.split(';')) == {'x86_64', 'arm64'}:
-        machine = 'universal2'
+    if set(machine.split(";")) == {"x86_64", "arm64"}:
+        machine = "universal2"
 
-    return 'macosx-{}.{}-{}'.format(major_macos, minor_macos, machine)
+    return "macosx-{}.{}-{}".format(major_macos, minor_macos, machine)
 
 
 _SKBUILD_PLAT_NAME = _default_skbuild_plat_name()
