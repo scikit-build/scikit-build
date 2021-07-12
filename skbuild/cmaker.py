@@ -208,6 +208,8 @@ class CMaker(object):
 
         if generator.toolset:
             cmd.extend(['-T', generator.toolset])
+        if generator.architecture:
+            cmd.extend(['-A', generator.architecture])
 
         cmd.extend(clargs)
 

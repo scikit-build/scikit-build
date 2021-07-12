@@ -66,6 +66,13 @@ class CMakePlatform(object):
 
         return CMakeGenerator(generator_name)
 
+    def get_generators(self, generator_name):
+        """Loop over generators and return all that match the given name.
+        """
+        return [default_generator
+                for default_generator in self.default_generators
+                if default_generator.name == generator_name]
+
     # TODO: this method name is not great.  Does anyone have a better idea for
     # renaming it?
     def get_best_generator(
@@ -191,6 +198,8 @@ class CMakePlatform(object):
                 cmd = [cmake_exe_path, '../', '-G', generator.name]
                 if generator.toolset:
                     cmd.extend(['-T', generator.toolset])
+                if generator.architecture:
+                    cmd.extend(['-A', generator.architecture])
                 cmd.extend(cmake_args)
 
                 status = subprocess.call(cmd, env=generator.env)
@@ -214,7 +223,7 @@ class CMakeGenerator(object):
     .. automethod:: __init__
     """
 
-    def __init__(self, name, env=None, toolset=None):
+    def __init__(self, name, env=None, toolset=None, arch=None):
         """Instantiate a generator object with the given ``name``.
 
         By default, ``os.environ`` is associated with the generator. Dictionary
@@ -229,10 +238,15 @@ class CMakeGenerator(object):
         self.env = dict(
             list(os.environ.items()) + list(env.items() if env else []))
         self._generator_toolset = toolset
-        if toolset is None:
-            self._description = name
+        self._generator_architecture = arch
+        if arch is None:
+            description_arch = name
         else:
-            self._description = "%s %s" % (name, toolset)
+            description_arch = "%s %s" % (name, arch)
+        if toolset is None:
+            self._description = description_arch
+        else:
+            self._description = "%s %s" % (description_arch, toolset)
 
     @property
     def name(self):
@@ -243,6 +257,11 @@ class CMakeGenerator(object):
     def toolset(self):
         """Toolset specification associated with the CMake generator."""
         return self._generator_toolset
+
+    @property
+    def architecture(self):
+        """Architecture associated with the CMake generator."""
+        return self._generator_architecture
 
     @property
     def description(self):
