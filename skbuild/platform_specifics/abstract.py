@@ -122,6 +122,16 @@ class CMakePlatform(object):
             # Lookup CMakeGenerator by name. Doing this allow to get a
             # generator object with its ``env`` property appropriately
             # initialized.
+
+            # MSVC should be used in "-A arch" form
+            if generator_name.startswith("Visual Studio"):
+                if generator_name.endswith(" Win64"):
+                    self.architecture = "x64"
+                    generator_name = generator_name[:-6]
+                elif generator_name.endswith(" ARM"):
+                    self.architecture = "ARM"
+                    generator_name = generator_name[:-4]
+
             candidate_generators = []
             for default_generator in self.default_generators:
                 if default_generator.name == generator_name:
