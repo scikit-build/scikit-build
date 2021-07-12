@@ -230,7 +230,9 @@ def test_toolset():
     generator = variables['CMAKE_GENERATOR'][1]
     assert generator == vs_generator
 
-    toolset = variables['CMAKE_GENERATOR_TOOLSET'][1]
+    var_toolset = variables['CMAKE_GENERATOR_TOOLSET']
+    toolset = var_toolset[1]
+
     if py_35:
         assert toolset == "v140"
     elif py_36_and_above:
