@@ -22,7 +22,8 @@ class CMakePlatform(object):
     Derived class should at least set :attr:`default_generators`.
     """
     def __init__(self):
-        self._default_generators = list()
+        self._default_generators = []
+        self.architecture = None
 
     @property
     def default_generators(self):
@@ -126,14 +127,9 @@ class CMakePlatform(object):
             # MSVC should be used in "-A arch" form
             if architecture is not None:
                 self.architecture = architecture
-            # Support classic names for MSVC generators
-            elif generator_name.startswith("Visual Studio"):
-                if generator_name.endswith(" Win64"):
-                    self.architecture = "x64"
-                    generator_name = generator_name[:-6]
-                elif generator_name.endswith(" ARM"):
-                    self.architecture = "ARM"
-                    generator_name = generator_name[:-4]
+
+            # Support classic names for generators
+            generator_name, self.architecture = _parse_legacy_generator_name(generator_name, self.architecture)
 
             candidate_generators = []
             for default_generator in self.default_generators:
@@ -280,3 +276,22 @@ class CMakeGenerator(object):
     def description(self):
         """Name of CMake generator with properties describing the environment (e.g toolset)"""
         return self._description
+
+
+def _parse_legacy_generator_name(generator_name, arch):
+    # type: (str, str | None) -> tuple[str, str | None]
+    """
+    Support classic names for MSVC generators. Architecture is stripped from
+    the name and "arch" is replaced with the arch string if a legacy name is
+    given.
+    """
+
+    if generator_name.startswith("Visual Studio"):
+        if generator_name.endswith(" Win64"):
+            arch = "x64"
+            generator_name = generator_name[:-6]
+        elif generator_name.endswith(" ARM"):
+            arch = "ARM"
+            generator_name = generator_name[:-4]
+
+    return generator_name, arch
