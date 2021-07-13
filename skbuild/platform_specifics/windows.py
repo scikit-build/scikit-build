@@ -130,10 +130,11 @@ class CMakeVisualStudioIDEGenerator(CMakeGenerator):
         """
         vs_version = VS_YEAR_TO_VERSION[year]
         vs_base = "Visual Studio %s %s" % (vs_version, year)
-        # Python is Win64, build a Win64 module
         if platform.architecture()[0] == "64bit":
-            vs_base += " Win64"
-        super(CMakeVisualStudioIDEGenerator, self).__init__(vs_base, toolset=toolset)
+            vs_arch = "x64"
+        else:
+            vs_arch = "Win32"
+        super(CMakeVisualStudioIDEGenerator, self).__init__(vs_base, toolset=toolset, arch=vs_arch)
 
 
 def _find_visual_studio_2010_to_2015(vs_version):
@@ -312,8 +313,9 @@ def _get_msvc_compiler_env(vs_version, vs_toolset=None):
                 'cmd /u /c "{}" {} {} && set'.format(vcvarsall, arch, vcvars_ver),
                 stderr=subprocess.STDOUT,
             )
-            if sys.version_info[0] >= 3:
-                out = out.decode('utf-16le', errors='replace')
+            out = out.decode('utf-16le', errors='replace')
+            if sys.version_info[0] < 3:
+                out = out.encode('utf-8')
 
             vc_env = {
                 key.lower(): value

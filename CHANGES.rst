@@ -8,8 +8,16 @@ details, see the commit logs at http://github.com/scikit-build/scikit-build
 Next Release
 ============
 
+Features
+--------
+
 Bug fixes
 ---------
+
+* Support ``-A`` and ``-T`` internally when setting up MSVC generators.
+  Architecture now always passed through ``-A`` to MSVC generators. Thanks
+  :user:`henryiii` and :user:`YannickJadoul` for the contribution. See
+  :issue:`557` and :issue:`536`.
 
 * Fixed a regression that caused setuptools to complain about unknown setup option
   (`cmake_process_manifest_hook`).
