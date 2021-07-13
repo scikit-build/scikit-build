@@ -78,7 +78,7 @@ class CMakePlatform(object):
     def get_best_generator(
             self, generator_name=None, skip_generator_test=False,
             languages=("CXX", "C"), cleanup=True,
-            cmake_executable=CMAKE_DEFAULT_EXECUTABLE, cmake_args=()):
+            cmake_executable=CMAKE_DEFAULT_EXECUTABLE, cmake_args=(), architecture=None):
         """Loop over generators to find one that works by configuring
         and compiling a test project.
 
@@ -124,7 +124,10 @@ class CMakePlatform(object):
             # initialized.
 
             # MSVC should be used in "-A arch" form
-            if generator_name.startswith("Visual Studio"):
+            if architecture is not None:
+                self.architecture = architecture
+            # Support classic names for MSVC generators
+            elif generator_name.startswith("Visual Studio"):
                 if generator_name.endswith(" Win64"):
                     self.architecture = "x64"
                     generator_name = generator_name[:-6]

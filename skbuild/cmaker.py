@@ -168,10 +168,13 @@ class CMaker(object):
         if cli_generator_name is not None:
             generator_name = cli_generator_name
 
+        # if arch is provided on command line, use it
+        clargs, cli_arch = pop_arg('-A', clargs)
+
         generator = self.platform.get_best_generator(
             generator_name, skip_generator_test=skip_generator_test,
             cmake_executable=self.cmake_executable, cmake_args=clargs,
-            languages=languages, cleanup=cleanup)
+            languages=languages, cleanup=cleanup, architecture=cli_arch)
 
         if not os.path.exists(CMAKE_BUILD_DIR()):
             os.makedirs(CMAKE_BUILD_DIR())
