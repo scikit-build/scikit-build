@@ -22,6 +22,9 @@ def _default_skbuild_plat_name():
     if sys.platform != 'darwin':
         return get_platform()
 
+    supported_macos_architectures = {"x86_64", "arm64"}
+    macos_universal2_architectures = {"x86_64", "arm64"}
+
     release, _, machine = platform.mac_ver()
 
     # If the MACOSX_DEPLOYMENT_TARGET environment variable is defined, use
@@ -42,14 +45,15 @@ def _default_skbuild_plat_name():
     # Use CMAKE_OSX_ARCHITECTURES if that is set, otherwise use ARCHFLAGS,
     # which is the variable used by Setuptools. Fall back to the machine arch
     # if neither of those is given.
+
     archflags = os.environ.get("ARCHFLAGS")
     if archflags is not None:
-        machine = ";".join(set(archflags.split()) & {"x86_64", "arm64"})
+        machine = ";".join(set(archflags.split()) & supported_macos_architectures)
 
     machine = os.environ.get("CMAKE_OSX_ARCHITECTURES", machine)
 
     # Handle universal2 wheels, if those two architectures are requested.
-    if set(machine.split(";")) == {"x86_64", "arm64"}:
+    if set(machine.split(";")) == macos_universal2_architectures:
         machine = "universal2"
 
     return "macosx-{}.{}-{}".format(major_macos, minor_macos, machine)
