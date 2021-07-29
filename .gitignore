@@ -50,6 +50,7 @@ docs/_build
 .idea/*
 *.swp
 .vscode/*
+*~
 
 # build output (testing)
 skbuild/_cmake_test_compile/*
