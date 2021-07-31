@@ -14,8 +14,8 @@ def lint(session):
     """
     Run the linters.
     """
-    session.install("flake8")
-    session.run("flake8")
+    session.install("pre-commit")
+    session.run("pre-commit", "run", "-a")
 
 
 @nox.session(python=PYTHON_ALL_VERSIONS)
