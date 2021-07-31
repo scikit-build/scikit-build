@@ -46,7 +46,7 @@ class CMakePlatform(object):
         if not os.path.exists(test_folder):
             os.makedirs(test_folder)
         with open("{:s}/{:s}".format(test_folder, "CMakeLists.txt"), "w") as f:
-            f.write("cmake_minimum_required(VERSION 2.8)\n")
+            f.write("cmake_minimum_required(VERSION 2.8.12)\n")
             f.write("PROJECT(compiler_test NONE)\n")
             for language in languages:
                 f.write("ENABLE_LANGUAGE({:s})\n".format(language))
