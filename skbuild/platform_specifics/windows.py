@@ -58,9 +58,9 @@ class WindowsPlatform(abstract.CMakePlatform):
                 "https://www.microsoft.com/download/details.aspx?id=8279"
             )
 
-        # For Python 3.5: VS2017, VS2015
+        # For Python 3.5: VS2019, VS2017, VS2015
         elif version.major == 3 and version.minor == 5:
-            supported_vs_years = [("2017", "v140"), ("2015", None)]
+            supported_vs_years = [("2019", "v142"), ("2017", "v140"), ("2015", None)]
             self._vs_help = vs_help_template % (
                 supported_vs_years[0][0],
                 "Visual Studio 2015",
@@ -68,21 +68,27 @@ class WindowsPlatform(abstract.CMakePlatform):
             )
             self._vs_help += "\n\n" + textwrap.dedent(
                 """
-                Or with "Visual Studio 2017":
+                Or with "Visual Studio 2017" or "Visual Studio 2019":
 
                   https://visualstudio.microsoft.com/vs/
                 """
             ).strip()
 
-        # For Python 3.6 and above: VS2017
+        # For Python 3.6 and above: VS2019, VS2017
         elif version.major == 3 and version.minor >= 6:
-            supported_vs_years = [("2017", "v141")]
+            supported_vs_years = [("2019", "v142"), ("2017", "v141")]
             self._vs_help = vs_help_template % (
                 supported_vs_years[0][0],
                 "Visual Studio 2017",
                 "https://visualstudio.microsoft.com/vs/"
             )
+            self._vs_help += "\n\n" + textwrap.dedent(
+                """
+                Or with "Visual Studio 2019":
 
+                  https://visualstudio.microsoft.com/vs/
+                """
+            ).strip()
         else:
             raise RuntimeError("Only Python >= 2.7 is supported on Windows.")
 
@@ -91,7 +97,6 @@ class WindowsPlatform(abstract.CMakePlatform):
                 CMakeVisualStudioCommandLineGenerator("Ninja", vs_year, vs_toolset),
                 CMakeVisualStudioIDEGenerator(vs_year, vs_toolset),
                 CMakeVisualStudioCommandLineGenerator("NMake Makefiles", vs_year, vs_toolset),
-                CMakeVisualStudioCommandLineGenerator("NMake Makefiles JOM", vs_year, vs_toolset)
             ])
 
     @property
@@ -106,7 +111,8 @@ VS_YEAR_TO_VERSION = {
     "2012": 11,
     "2013": 12,
     "2015": 14,
-    "2017": 15
+    "2017": 15,
+    "2019": 16,
 }
 """Describes the version of `Visual Studio` supported by
 :class:`CMakeVisualStudioIDEGenerator` and
