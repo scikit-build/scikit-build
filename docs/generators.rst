@@ -123,7 +123,10 @@ Visual Studio IDE
     +-------------------+------------------------+-----------------------------+
     | CPython Version   | x86 (32-bit)           | x64 (64-bit)                |
     +===================+========================+=============================+
-    | **3.5 and above** | Visual Studio 15 2017  | Visual Studio 15 2017 Win64 |
+    | **3.6 and above** | Visual Studio 16 2019  | Visual Studio 16 2019 Win64 |
+    |                   | Visual Studio 15 2017  | Visual Studio 15 2017 Win64 |
+    +-------------------+------------------------+-----------------------------+
+    | **3.5 **          | Visual Studio 15 2017  | Visual Studio 15 2017 Win64 |
     |                   | Visual Studio 14 2015  | Visual Studio 14 2015 Win64 |
     +-------------------+------------------------+-----------------------------+
     | **3.3 to 3.4**    | Visual Studio 10 2010  | Visual Studio 10 2010 Win64 |

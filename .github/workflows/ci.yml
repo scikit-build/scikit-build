@@ -22,7 +22,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runs-on: [ubuntu-latest, macos-latest, windows-2016]
+        runs-on: [ubuntu-latest, macos-latest, windows-2016, windows-latest]
 
     name: Tests on ${{ matrix.runs-on }}
     steps:
@@ -39,6 +39,16 @@ jobs:
         echo "SKBUILD_TEST_FIND_VS2015_INSTALLATION_EXPECTED=1" >> $GITHUB_ENV
         echo "SKBUILD_TEST_FIND_VS2017_INSTALLATION_EXPECTED=1" >> $GITHUB_ENV
 
+    - name: Set environment for available GHA MSVCs
+      if: matrix.runs-on == 'windows-2016'
+      run: |
+        echo "SKBUILD_TEST_FIND_VS2019_INSTALLATION_EXPECTED=0" >> $GITHUB_ENV
+
+    - name: Set environment for available GHA MSVCs
+      if: matrix.runs-on == 'windows-latest'
+      run: |
+        echo "SKBUILD_TEST_FIND_VS2019_INSTALLATION_EXPECTED=1" >> $GITHUB_ENV
+
     - name: Setup nox
       uses: excitedleigh/setup-nox@v2.0.0
 
@@ -50,6 +60,7 @@ jobs:
       if: runner.os != 'Windows'
       run: nox --forcecolor -s tests-2.7
     - name: Test on 🐍 3.5
+      if: matrix.runs-on != 'windows-latest'
       run: nox --forcecolor -s tests-3.5
     - name: Test on 🐍 3.6
       if: runner.os == 'Linux'
@@ -62,6 +73,32 @@ jobs:
       run: nox --forcecolor -s tests-3.8
     - name: Test on 🐍 3.9
       run: nox --forcecolor -s tests-3.9
+
+  # Split out due to a bug in our test suite requiring a clean run for Windows Ninja
+  tests-win-extra:
+    name: Tests on 🐍 3.5 • windows-latest
+    runs-on: windows-latest
+    needs: [lint]
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Set environment for available GHA MSVCs
+      run: |
+        echo "SKBUILD_TEST_FIND_VS2008_INSTALLATION_EXPECTED=0" >> $GITHUB_ENV
+        echo "SKBUILD_TEST_FIND_VS2010_INSTALLATION_EXPECTED=0" >> $GITHUB_ENV
+        echo "SKBUILD_TEST_FIND_VS2012_INSTALLATION_EXPECTED=0" >> $GITHUB_ENV
+        echo "SKBUILD_TEST_FIND_VS2015_INSTALLATION_EXPECTED=1" >> $GITHUB_ENV
+        echo "SKBUILD_TEST_FIND_VS2017_INSTALLATION_EXPECTED=1" >> $GITHUB_ENV
+        echo "SKBUILD_TEST_FIND_VS2019_INSTALLATION_EXPECTED=1" >> $GITHUB_ENV
+
+    - name: Setup nox
+      uses: excitedleigh/setup-nox@v2.0.0
+
+    - name: Test on 🐍 3.5
+      run: nox --forcecolor -s tests-3.5
 
 
   dist:
