@@ -41,11 +41,11 @@ setup(
                  'skbuild.platform_specifics': 'skbuild/platform_specifics',
                  'skbuild.command': 'skbuild/command'},
     project_urls={
-        "Documentation" = "https://scikit-build.readthedocs.io/",
-        "Bug Tracker" = "https://github.com/scikit-build/scikit-build/issues",
-        "Changelog" = "https://scikit-build.readthedocs.io/en/latest/changes.html",
-        "Mailing List" = "https://groups.google.com/forum/#!forum/scikit-build",
-        "Examples" = "https://github.com/scikit-build/scikit-build-sample-projects",
+        "Documentation": "https://scikit-build.readthedocs.io/",
+        "Bug Tracker": "https://github.com/scikit-build/scikit-build/issues",
+        "Changelog": "https://scikit-build.readthedocs.io/en/latest/changes.html",
+        "Mailing List": "https://groups.google.com/forum/#!forum/scikit-build",
+        "Examples": "https://github.com/scikit-build/scikit-build-sample-projects",
     }
     package_data={'skbuild': ['resources/cmake/*.cmake']},
     include_package_data=True,
