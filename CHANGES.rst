@@ -11,6 +11,14 @@ Next Release
 Features
 --------
 
+* Support Apple Silicon, including producing Universal2 wheels (:pr:`530`) and
+  respecting standard setuptools cross-compile variables (:pr:`555`). Thanks to
+  :user:`YannickJadoul` and :user:`henryiii` for the contributions.
+
+* Support MSVC 2019 without having to run it with the MSVC activation
+  variables, just like 2017 and earlier versions. Thanks to :user:`henryiii`
+  and :user:`YannickJadoul` for the contribution in :pr:`526`.
+
 Bug fixes
 ---------
 
@@ -27,16 +35,30 @@ Bug fixes
 * If it applies, ensure generator toolset is used to configure the project.
   Thanks :user:`YannickJadoul` for the contribution. See :issue:`526`.
 
+* Read ``CYTHON_FLAGS`` where needed, instead of once, allowing the user to
+  define multiple modules with different flags. Thanks :user:`oiffrig` for the
+  contribution in :pr:`536`.
+
+* Avoid an IndexError if prefix was empty. Thanks to :user:`dfaure` for the contribution
+  in :pr:`522`.
+
 Documentation
 -------------
 
 * Update `Conda: Step-by-step` release guide available in :doc:`/make_a_release` section.
+
 * Update links to CMake documentation pages in :doc:/`generators`.
 
 Tests
 -----
 
+* Support nox for running the tests locally (:pr:`540`), and use GitHub Actions for
+  Continuous Integration (:pr:`549`). Style checking handled by pre-commit (:pr:`541`).
+
 * Fix linting error `F522 <https://flake8.pycqa.org/en/latest/user/error-codes.html>`_ reported with flake8 >= 3.8.x. Thanks :user:`benbovy` for the contribution. See :issue:`494`.
+gv
+
+* Fix regex in tests to support Python 3.10. Thanks to :user:`mgorny` for the contribution in :pr:`544`.
 
 Scikit-build 0.11.1
 ===================
