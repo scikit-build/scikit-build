@@ -52,6 +52,11 @@ jobs:
     - name: Setup nox
       uses: excitedleigh/setup-nox@v2.0.0
 
+    - name: Setup Python 3.10 dev
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.10-dev
+
     # We check all Python's on Linux, because it's fast.
     # We check Python 2.7 on Linux and macOS, it's not supported on Windows.
     # We check minimum Python 3, and maximum Python 3 on all OS's.
@@ -73,6 +78,8 @@ jobs:
       run: nox --forcecolor -s tests-3.8
     - name: Test on 🐍 3.9
       run: nox --forcecolor -s tests-3.9
+    - name: Test on 🐍 3.10
+      run: nox --forcecolor -s tests-3.10
 
   # Split out due to a bug in our test suite requiring a clean run for Windows Ninja
   tests-win-extra:
