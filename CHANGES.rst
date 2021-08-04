@@ -24,20 +24,20 @@ Bug fixes
 
 * Support ``-A`` and ``-T`` internally when setting up MSVC generators.
   Architecture now always passed through ``-A`` to MSVC generators. Thanks
-  :user:`henryiii` and :user:`YannickJadoul` for the contribution. See
-  :issue:`557` and :issue:`536`.
+  :user:`henryiii`, :user:`YannickJadoul` and :user:`jcfr` for the contribution. See
+  :pr:`557` and :pr:`536`.
 
 * Fixed a regression that caused setuptools to complain about unknown setup option
-  (`cmake_process_manifest_hook`).
+  (`cmake_process_manifest_hook`). Thanks :user:`Jmennius` for the contribution. See :pr:`498`.
 
 * If it applies, ensure generator toolset is used to configure the project.
-  Thanks :user:`YannickJadoul` for the contribution. See :issue:`526`.
+  Thanks :user:`YannickJadoul` and :user:`jcfr` for the contributions. See :pr:`526`.
 
 * Read ``CYTHON_FLAGS`` where needed, instead of once, allowing the user to
   define multiple modules with different flags. Thanks :user:`oiffrig` for the
-  contribution in :pr:`536`.
+  contributions in :pr:`536`.
 
-* Avoid an IndexError if prefix was empty. Thanks to :user:`dfaure` for the contribution
+* Avoid an IndexError if prefix was empty. Thanks :user:`dfaure` for the contributions
   in :pr:`522`.
 
 Documentation
@@ -45,17 +45,24 @@ Documentation
 
 * Update `Conda: Step-by-step` release guide available in :doc:`/make_a_release` section.
 
-* Update links to CMake documentation pages in :doc:/`generators`.
+* Update links to CMake documentation pages in :doc:/`generators`. Thanks :user:`Eothred` for the contributions in :pr:`508`.
 
 Tests
 -----
 
-* Support nox for running the tests locally (:pr:`540`), and use GitHub Actions for
-  Continuous Integration (:pr:`549`). Style checking handled by pre-commit (:pr:`541`).
+* Improve and simplify Continuous Integration infrastructure. Thanks :user:`henryiii` for the contributions.
 
-* Fix linting error `F522 <https://flake8.pycqa.org/en/latest/user/error-codes.html>`_ reported with flake8 >= 3.8.x. Thanks :user:`benbovy` for the contribution. See :issue:`494`.
+  * Support `nox` for running the tests locally. See :pr:`540`.
 
-* Fix regex in tests to support Python 3.10. Thanks to :user:`mgorny` for the contribution in :pr:`544`.
+  * Use GitHub Actions for Continuous Integration and remove use of scikit-ci, tox, TravisCI, AppVeyor and CircleCI. See :pr:`549`, :pr:`551` and :pr:`552`.
+
+  * Add support for testing against Python 3.10. See :pr:`565`.
+
+  * Style checking handled by pre-commit. See :pr:`541`.
+
+* Fix linting error `F522 <https://flake8.pycqa.org/en/latest/user/error-codes.html>`_ reported with flake8 >= 3.8.x. Thanks :user:`benbovy` for the contributions. See :issue:`494`.
+
+* Fix regex in tests to support Python 3.10. Thanks :user:`mgorny` for the contributions in :pr:`544`.
 
 Scikit-build 0.11.1
 ===================
@@ -64,7 +71,7 @@ Bug fixes
 ---------
 
 * Support using scikit-build with conan where ``distro<1.2.0`` is required.
-  Thanks :user:`AntoinePrv` and :user:`Chrismarsh` for reporting issue :issue:`472`
+  Thanks :user:`AntoinePrv` and :user:`Chrismarsh` for reporting issues :issue:`472`
   and :issue:`488`.
 
 Documentation
