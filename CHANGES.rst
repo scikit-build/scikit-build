@@ -8,8 +8,8 @@ details, see the commit logs at http://github.com/scikit-build/scikit-build
 Scikit-build 0.12.0
 ===================
 
-Features
---------
+New Features
+------------
 
 * Support Apple Silicon, including producing Universal2 wheels (:pr:`530`) and
   respecting standard setuptools cross-compile variables (:pr:`555`). Thanks to
@@ -29,8 +29,6 @@ Bug fixes
 
 * Fixed a regression that caused setuptools to complain about unknown setup option
   (`cmake_process_manifest_hook`).
-
-* Hide the warning that shows up when `SKBUILD` is unused.
 
 * If it applies, ensure generator toolset is used to configure the project.
   Thanks :user:`YannickJadoul` for the contribution. See :issue:`526`.
@@ -56,7 +54,6 @@ Tests
   Continuous Integration (:pr:`549`). Style checking handled by pre-commit (:pr:`541`).
 
 * Fix linting error `F522 <https://flake8.pycqa.org/en/latest/user/error-codes.html>`_ reported with flake8 >= 3.8.x. Thanks :user:`benbovy` for the contribution. See :issue:`494`.
-gv
 
 * Fix regex in tests to support Python 3.10. Thanks to :user:`mgorny` for the contribution in :pr:`544`.
 
