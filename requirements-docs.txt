@@ -1,5 +1,5 @@
 docutils
 pygments
-sphinx<4
+sphinx<4  # rq.filter: <4
 sphinx-issues
 sphinx_rtd_theme
