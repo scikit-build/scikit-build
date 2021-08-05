@@ -13,25 +13,24 @@ New Features
 
 * Support Apple Silicon, including producing Universal2 wheels (:pr:`530`) and
   respecting standard setuptools cross-compile variables (:pr:`555`). Thanks to
-  :user:`YannickJadoul` and :user:`henryiii` for the contributions.
+  :user:`YannickJadoul` for the contributions.
 
 * Support MSVC 2019 without having to run it with the MSVC activation
-  variables, just like 2017 and earlier versions. Thanks to :user:`henryiii`
-  and :user:`YannickJadoul` for the contribution in :pr:`526`.
+  variables, just like 2017 and earlier versions. Thanks to :user:`YannickJadoul` for the contribution in :pr:`526`.
 
 Bug fixes
 ---------
 
 * Support ``-A`` and ``-T`` internally when setting up MSVC generators.
   Architecture now always passed through ``-A`` to MSVC generators. Thanks
-  :user:`henryiii`, :user:`YannickJadoul` and :user:`jcfr` for the contribution. See
+  :user:`YannickJadoul` for the contribution. See
   :pr:`557` and :pr:`536`.
 
 * Fixed a regression that caused setuptools to complain about unknown setup option
   (`cmake_process_manifest_hook`). Thanks :user:`Jmennius` for the contribution. See :pr:`498`.
 
 * If it applies, ensure generator toolset is used to configure the project.
-  Thanks :user:`YannickJadoul` and :user:`jcfr` for the contributions. See :pr:`526`.
+  Thanks :user:`YannickJadoul` for the contributions. See :pr:`526`.
 
 * Read ``CYTHON_FLAGS`` where needed, instead of once, allowing the user to
   define multiple modules with different flags. Thanks :user:`oiffrig` for the
@@ -50,7 +49,7 @@ Documentation
 Tests
 -----
 
-* Improve and simplify Continuous Integration infrastructure. Thanks :user:`henryiii` for the contributions.
+* Improve and simplify Continuous Integration infrastructure.
 
   * Support `nox` for running the tests locally. See :pr:`540`.
 
