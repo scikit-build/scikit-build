@@ -8,6 +8,18 @@ details, see the commit logs at http://github.com/scikit-build/scikit-build
 Scikit-build 0.12.0
 ===================
 
+The scikit-build GitHub organization welcomes :user:`henryiii` and :user:`mayeut` as core contributors
+and maintainers. Both are also maintainers of `cibuildwheel <https://cibuildwheel.readthedocs.io>`_.
+
+:user:`henryiii` is a `pybind11 <https://pybind11.readthedocs.io>`_ and `pypa/build <https://pypa-build.readthedocs.io>`_ maintainer, has been instrumental in adding Apple Silicon support, adding support for Visual Studio 2019, updating
+the Continuous Integration infrastructure, as well as helping review & integrate contributions, and addressing
+miscellaneous issues. Additionally, :user:`henryiii` has worked on an `example project <https://github.com/pybind/scikit_build_example>`_  to build with ``pybind11`` and ``scikit-build``.
+
+:user:`mayeut` is a `manylinux <https://github.com/pypa/manylinux>`_ maintainer and
+focused his effort on updating the ``cmake-python-distributions`` and ``ninja-python-distributions`` so
+that the corresponding wheels are available on all supported platforms including Apple Silicon and all flavors
+of manylinux.
+
 New Features
 ------------
 
@@ -62,6 +74,7 @@ Tests
 * Fix linting error `F522 <https://flake8.pycqa.org/en/latest/user/error-codes.html>`_ reported with flake8 >= 3.8.x. Thanks :user:`benbovy` for the contributions. See :issue:`494`.
 
 * Fix regex in tests to support Python 3.10. Thanks :user:`mgorny` for the contributions in :pr:`544`.
+
 
 Scikit-build 0.11.1
 ===================
