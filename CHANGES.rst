@@ -58,7 +58,8 @@ Documentation
 
 * Update links to CMake documentation pages in :doc:`/generators`. Thanks :user:`Eothred` for the contributions in :pr:`508`.
 
-* Update :doc:`/make_a_release` to include creation of the GitHub release.
+* Update :doc:`/make_a_release` to include creation of the GitHub release and sending of announcements on
+  the `scikit-build mailing list <https://groups.google.com/g/scikit-build>`_.
 
 Tests
 -----
