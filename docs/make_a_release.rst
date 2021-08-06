@@ -201,6 +201,23 @@ Setting up environment
     For examples of releases, see https://github.com/scikit-build/scikit-build/releases
 
 
+15. Send an email to the `scikit-build mailing list`_ based on the following template:
+
+  ::
+
+    On behalf of the scikit-build team, I am pleased to announce that the version X.Y.Z is available for download:
+
+      pip install --upgrade scikit-build   <--- This line should be formatted using fixed size font
+
+    Thank you to everyone who contributed their time to test, write issue reports and contribute patches !
+
+    <copy here content of the changelog for release X.Y.X including the release name>
+
+  .. note::
+
+    For examples of announcements, see https://groups.google.com/g/scikit-build/search?q=announce%20subject%3Ascikit-build
+
+
 .. _virtualenvwrapper: https://virtualenvwrapper.readthedocs.io/
 .. _virtualenv: http://virtualenv.readthedocs.io
 .. _venv: https://docs.python.org/3/library/venv.html
@@ -212,6 +229,8 @@ Setting up environment
 
 .. _PyPI: https://pypi.org/project/scikit-build
 .. _TestPyPI: https://test.pypi.org/project/scikit-build
+
+.. _scikit-build mailing list: https://groups.google.com/g/scikit-build
 
 -----------------------
 `Conda`_: Step-by-step
