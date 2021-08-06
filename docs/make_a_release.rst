@@ -193,6 +193,14 @@ Setting up environment
       git push origin master
 
 
+14. Create a GitHub release named ``Scikit-build X.Y.Z`` based on tag ``X.Y.Z`` and reference
+    the newly added `CHANGES.rst` entry in the description.
+
+  .. note::
+
+    For examples of releases, see https://github.com/scikit-build/scikit-build/releases
+
+
 .. _virtualenvwrapper: https://virtualenvwrapper.readthedocs.io/
 .. _virtualenv: http://virtualenv.readthedocs.io
 .. _venv: https://docs.python.org/3/library/venv.html
