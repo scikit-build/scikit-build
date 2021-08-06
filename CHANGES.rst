@@ -71,6 +71,8 @@ Tests
 
   * Style checking handled by pre-commit. See :pr:`541`.
 
+  * Check for misspellings adding GitHub Actions workflow using codespell. See :pr:`541`.
+
 * Fix linting error `F522 <https://flake8.pycqa.org/en/latest/user/error-codes.html>`_ reported with flake8 >= 3.8.x. Thanks :user:`benbovy` for the contributions. See :issue:`494`.
 
 * Fix regex in tests to support Python 3.10. Thanks :user:`mgorny` for the contributions in :pr:`544`.
