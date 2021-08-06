@@ -201,7 +201,7 @@
 #                            FORWARD_DECL_MODULES_VAR fdecl_module_list)
 #
 #    # module2 -- dynamically linked
-#    include_directories({Boost_INCLUDE_DIRS})
+#    include_directories(${Boost_INCLUDE_DIRS})
 #    add_library(module2 SHARED boost_module2.cxx)
 #    target_link_libraries(module2 ${Boost_LIBRARIES})
 #    python_extension_module(module2
