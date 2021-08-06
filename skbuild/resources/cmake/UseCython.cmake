@@ -43,7 +43,7 @@
 # ``PY2 | PY3``
 #   Force compilation using either Python-2 or Python-3 syntax and code
 #   semantics.  By default, Python-2 syntax and semantics are used if the major
-#   version of Python found is 2.  Otherwise, Python-3 syntax and sematics are
+#   version of Python found is 2.  Otherwise, Python-3 syntax and semantics are
 #   used.
 #
 # ``OUTPUT_VAR <OutputVar>``
