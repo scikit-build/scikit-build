@@ -200,7 +200,7 @@ function(add_python_library _name)
         ARGS -h ${_name}.pyf -m ${_name} --overwrite-signature
              ${_sources_abs}
         DEPENDS ${_sources} ${_args_DEPENDS}
-        COMMENT "Generating ${_name} Fortan interface file"
+        COMMENT "Generating ${_name} Fortran interface file"
     )
     list(APPEND _sources ${_name}.pyf)
   endif()
