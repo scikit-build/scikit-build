@@ -18,3 +18,10 @@ repos:
   hooks:
   - id: flake8
     additional_dependencies: [flake8-bugbear]
+
+- repo: https://github.com/codespell-project/codespell
+  rev: v2.1.0
+  hooks:
+  - id: codespell
+    exclude: "(^.git|^.pylintrc|.png|.svg|^_version.py|^versioneer.py)$"
+    args: ["-L", "ba,endwhile,unparseable"]
