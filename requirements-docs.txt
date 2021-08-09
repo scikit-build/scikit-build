@@ -1,5 +1,8 @@
-docutils
+# docutils 0.17 breaks HTML tags & RTD theme
+# https://github.com/sphinx-doc/sphinx/issues/9001
+docutils==0.16  # rq.filter: ==0.16
 pygments
-sphinx<4  # rq.filter: <4
+sphinx<5  # rq.filter: <5
 sphinx-issues
-sphinx_rtd_theme
+sphinx-rtd-theme
+sphinxcontrib-moderncmakedomain
