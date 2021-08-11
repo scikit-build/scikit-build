@@ -38,4 +38,4 @@ jobs:
 
     - uses: pypa/gh-action-pypi-publish@v1.4.2
       with:
-        password: ${{ secrets.pypa_password }}
+        password: ${{ secrets.pypi_password }}
