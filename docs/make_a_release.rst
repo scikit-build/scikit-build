@@ -11,7 +11,7 @@ A core developer should use the following steps to create a release `X.Y.Z` of
 Prerequisites
 -------------
 
-* All CI tests are passing on `AppVeyor`_, `Azure Pipelines`_, `CircleCI`_ and `Travis CI`_.
+* All CI tests are passing on `GitHub Actions`_ and `Azure Pipelines`_.
 
 * You have a `GPG signing key <https://help.github.com/articles/generating-a-new-gpg-key/>`_.
 
@@ -121,19 +121,17 @@ Setting up environment
       git push origin master
 
 
-..
-    8. Make a `GitHub release <https://github.com/scikit-build/scikit-build/releases/new>`_. Paste the converted release notes as markdown; convert using
+8. Make a `GitHub release <https://github.com/scikit-build/scikit-build/releases/new>`_. Paste the converted release notes as markdown; convert using
 
-      .. code::
+  .. code::
 
-        cat CHANGES.rst | pandoc -f rst -t gfm
+    cat CHANGES.rst | pandoc -f rst -t gfm
 
-    and then edit the result (it will not be perfect) to prepare the body of the release. PRs should be converted to simple `#<number` form. Be sure to use the tag you just pushed as the tag version, and ``Scikit-build X.Y.Z`` should be the name.
-
-8. Create a `GitHub release
-   <https://github.com/scikit-build/scikit-build/releases/new>`_ named
-   ``Scikit-build X.Y.Z`` based on tag ``X.Y.Z`` and reference the newly added
-   ``CHANGES.rst`` entry in the description.
+  and then edit the result (it will not be perfect) to prepare the body of the
+  release. You can also try `clipboardtomarkdown <https://euangoddard.github.io/clipboard2markdown/>`_
+  or copying to a draft `discord <https://discourse.slicer.org/>`_ post. PRs
+  should be converted to simple ``#<number>`` form. Be sure to use the tag you just
+  pushed as the tag version, and ``Scikit-build X.Y.Z`` should be the name.
 
   .. note::
 
