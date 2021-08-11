@@ -113,7 +113,7 @@ Setting up environment
       to sign the tag.
 
 
-7. Publish the both release tag and the master branch
+7. Publish both the release tag and the master branch
 
   .. code::
 
