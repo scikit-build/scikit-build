@@ -135,7 +135,7 @@ class CMakeVisualStudioIDEGenerator(CMakeGenerator):
         or 64-bit) and the selected ``toolset`` (if applicable).
         """
         vs_version = VS_YEAR_TO_VERSION[year]
-        vs_base = "Visual Studio %s %s" % (vs_version, year)
+        vs_base = "Visual Studio {} {}".format(vs_version, year)
         if platform.architecture()[0] == "64bit":
             vs_arch = "x64"
         else:
@@ -217,7 +217,7 @@ def _find_visual_studio_2017_or_newer(vs_version):
             extra_args = {'encoding': 'mbcs', 'errors': 'strict'}
         path = subprocess.check_output([
             os.path.join(root, "Microsoft Visual Studio", "Installer", "vswhere.exe"),
-            "-version", "[%.1f, %.1f)" % (vs_version, vs_version + 1),
+            "-version", "[{:.1f}, {:.1f})".format(vs_version, vs_version + 1),
             "-prerelease",
             "-requires", "Microsoft.VisualStudio.Component.VC.Tools.x86.x64",
             "-property", "installationPath",
@@ -367,4 +367,4 @@ class CMakeVisualStudioCommandLineGenerator(CMakeGenerator):
         vc_env = _get_msvc_compiler_env(VS_YEAR_TO_VERSION[year], toolset)
         env = {str(key.upper()): str(value) for key, value in vc_env.items()}
         super(CMakeVisualStudioCommandLineGenerator, self).__init__(name, env)
-        self._description = "%s (%s)" % (self.name, CMakeVisualStudioIDEGenerator(year, toolset).description)
+        self._description = "{} ({})".format(self.name, CMakeVisualStudioIDEGenerator(year, toolset).description)

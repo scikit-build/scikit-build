@@ -126,7 +126,7 @@ def test_generator(generator, expected_make_program):
 
     this_platform = platform.system().lower()
     if this_platform not in generator_platform[generator]:
-        pytest.skip("%s generator is available only on %s" % (
+        pytest.skip("{} generator is available only on {}".format(
             generator, this_platform.title()))
 
     @project_setup_py_test("hello-cpp", ["build"])

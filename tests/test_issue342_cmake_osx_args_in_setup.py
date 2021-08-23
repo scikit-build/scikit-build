@@ -187,10 +187,10 @@ def test_cmake_args_keyword_osx_default(
 
     assert found_cmake_osx_deployment_target, \
         textwrap.dedent("""
-                    Argument -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=%s is NOT found near the end of
+                    Argument -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING={} is NOT found near the end of
                     current list of arguments:
-                      keyword_cmake_args  : %s
-                      cli_cmake_args    : %s
-                      current_cmake_args: %s
-                    """ % (expected_cmake_osx_deployment_target,
-                           keyword_cmake_args, cli_cmake_args, current_cmake_args))
+                      keyword_cmake_args  : {}
+                      cli_cmake_args    : {}
+                      current_cmake_args: {}
+                    """.format(expected_cmake_osx_deployment_target,
+                               keyword_cmake_args, cli_cmake_args, current_cmake_args))

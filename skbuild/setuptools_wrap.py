@@ -567,7 +567,7 @@ def setup(*args, **kw):  # noqa: C901
             if cmake_minimum_required_version is not None:
                 if parse_version(cmkr.cmake_version) < parse_version(cmake_minimum_required_version):
                     raise SKBuildError(
-                        "CMake version %s or higher is required. CMake version %s is being used" % (
+                        "CMake version {} or higher is required. CMake version {} is being used".format(
                             cmake_minimum_required_version, cmkr.cmake_version))
             # Used to confirm that the cmake executable is the same, and that the environment
             # didn't change
