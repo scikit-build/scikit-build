@@ -17,15 +17,11 @@ def get_platform():
         from . import linux
         return linux.LinuxPlatform()
 
-    elif this_platform == "freebsd":
-        from . import bsd
-        return bsd.BSDPlatform()
-
     elif this_platform == "darwin":
         from . import osx
         return osx.OSXPlatform()
 
-    elif this_platform == "os400":
+    elif this_platform in {"freebsd", "os400", "openbsd"}:
         from . import bsd
         return bsd.BSDPlatform()
 
