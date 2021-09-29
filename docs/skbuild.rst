@@ -57,5 +57,3 @@ skbuild.setuptools\_wrap module
     :members:
     :undoc-members:
     :show-inheritance:
-
-

@@ -56,7 +56,8 @@ if(CYTHON_EXECUTABLE)
                   OUTPUT_VARIABLE CYTHON_version_output
                   ERROR_VARIABLE CYTHON_version_error
                   RESULT_VARIABLE CYTHON_version_result
-                  OUTPUT_STRIP_TRAILING_WHITESPACE)
+                  OUTPUT_STRIP_TRAILING_WHITESPACE
+                  ERROR_STRIP_TRAILING_WHITESPACE)
 
   if(NOT ${CYTHON_version_result} EQUAL 0)
     set(_error_msg "Command \"${CYTHON_version_command}\" failed with")
@@ -65,6 +66,10 @@ if(CYTHON_EXECUTABLE)
   else()
     if("${CYTHON_version_output}" MATCHES "^[Cc]ython version ([^,]+)")
       set(CYTHON_VERSION "${CMAKE_MATCH_1}")
+    else()
+      if("${CYTHON_version_error}" MATCHES "^[Cc]ython version ([^,]+)")
+        set(CYTHON_VERSION "${CMAKE_MATCH_1}")
+      endif()
     endif()
   endif()
 endif()
@@ -75,4 +80,3 @@ FIND_PACKAGE_HANDLE_STANDARD_ARGS(Cython REQUIRED_VARS CYTHON_EXECUTABLE)
 mark_as_advanced(CYTHON_EXECUTABLE)
 
 include(UseCython)
-

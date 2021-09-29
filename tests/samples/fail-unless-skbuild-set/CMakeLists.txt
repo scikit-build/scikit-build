@@ -7,4 +7,3 @@ if(NOT DEFINED SKBUILD)
 endif()
 
 install(CODE "execute_process(COMMAND \${CMAKE_COMMAND} -E sleep 0)")
-

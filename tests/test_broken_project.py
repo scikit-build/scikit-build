@@ -104,7 +104,7 @@ def test_invalid_cmake(exception, mocker):
     def check_output_mock(*args, **kwargs):
         if args[0] == [CMAKE_DEFAULT_EXECUTABLE, '--version']:
             raise exceptions[exception]
-        check_output_original(*args, **kwargs)
+        return check_output_original(*args, **kwargs)
 
     mocker.patch('skbuild.cmaker.subprocess.check_output',
                  new=check_output_mock)

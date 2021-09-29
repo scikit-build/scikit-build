@@ -115,8 +115,11 @@ def test_unsupported_platform(mocker):
 
 @pytest.mark.skipif(sys.platform != 'win32', reason='Requires Windows')
 def test_cached_generator():
-    platform = get_platform()
-    generator = platform.get_generator('Ninja')
-    env = generator.env
+    def is_configured_generator(generator):
+        env = generator.env
+        env_lib = env.get('LIB', '')
+        return 'Visual Studio' in env_lib or 'Visual C++' in env_lib
 
-    assert 'Visual Studio' in env['LIB'] or 'Visual C++' in env['LIB']
+    platform = get_platform()
+    ninja_generators = platform.get_generators('Ninja')
+    assert any(is_configured_generator(g) for g in ninja_generators)

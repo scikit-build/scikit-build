@@ -40,7 +40,7 @@ class sdist(set_build_base_mixin, new_style(_sdist)):
             yield
         finally:
             if orig_val is not NoValue:
-                setattr(os, 'link', orig_val)
+                os.link = orig_val
 
     def make_release_tree(self, base_dir, files):
         """Handle --hide-listing option."""

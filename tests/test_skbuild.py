@@ -64,6 +64,7 @@ def test_generator_selection():
         vs_generator += (" Win64" if arch == "64bit" else "")
 
         has_vs_2017 = find_visual_studio(vs_version=VS_YEAR_TO_VERSION["2017"])
+        has_vs_2019 = find_visual_studio(vs_version=VS_YEAR_TO_VERSION["2019"])
 
         # Apply to VS <= 14 (2015)
         has_vs_ide_vcvars = any([
@@ -91,7 +92,7 @@ def test_generator_selection():
         ) and which("ninja.exe"):
             generator = "Ninja"
 
-        elif has_vs_2017:
+        elif has_vs_2017 or has_vs_2019:
             # ninja is provided by the CMake extension bundled with Visual Studio 2017
             # C:/Program Files (x86)/Microsoft Visual Studio/2017/Professional/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe  # noqa: E501
             generator = "Ninja"
@@ -174,7 +175,7 @@ def test_invalid_generator(generator_args):
 
 
 @pytest.mark.parametrize(
-    "vs_year", ["2008", "2010", "2012", "2013", "2015", "2017"]
+    "vs_year", ["2008", "2010", "2012", "2013", "2015", "2017", "2019"]
 )
 def test_platform_windows_find_visual_studio(vs_year):
     """If the environment variable ``SKBUILD_TEST_FIND_VS<vs_year>_INSTALLATION_EXPECTED`` is set,
@@ -195,20 +196,10 @@ def test_platform_windows_find_visual_studio(vs_year):
         assert find_visual_studio(VS_YEAR_TO_VERSION[vs_year]) == ""
 
 
-@pytest.mark.skipif(sys.platform != 'win32', reason='Requires Visual Studio and ')
+@pytest.mark.skipif(sys.version_info < (3, 5), reason="Python 3.5+ required on Windows")
+@pytest.mark.skipif(sys.platform != 'win32', reason='Requires Windows')
 def test_toolset():
-    version = sys.version_info
-    py_35 = (
-        version.major == 3 and
-        version.minor == 5
-    )
-    py_36_and_above = (
-        version.major == 3 and
-        version.minor >= 6
-    )
-
-    if not any([py_35, py_36_and_above]):
-        pytest.skip("python version < 3.5")
+    py_35 = sys.version_info[:2] == (3, 5)
 
     has_vs_2017 = find_visual_studio(vs_version=VS_YEAR_TO_VERSION["2017"])
     if not has_vs_2017:
@@ -216,7 +207,9 @@ def test_toolset():
 
     arch = platform.architecture()[0]
     vs_generator = "Visual Studio 15 2017"
-    vs_generator += (" Win64" if arch == "64bit" else "")
+    orig_generator = vs_generator
+    if arch == "64bit":
+        vs_generator += " Win64"
 
     @project_setup_py_test("hello-cpp", ["build", "-G", vs_generator])
     def run_build():
@@ -228,10 +221,12 @@ def test_toolset():
     variables = get_cmakecache_variables(str(cmakecache))
 
     generator = variables['CMAKE_GENERATOR'][1]
-    assert generator == vs_generator
+    assert generator == orig_generator
 
-    toolset = variables['CMAKE_GENERATOR_TOOLSET'][1]
+    var_toolset = variables['CMAKE_GENERATOR_TOOLSET']
+    toolset = var_toolset[1]
+
     if py_35:
         assert toolset == "v140"
-    elif py_36_and_above:
+    else:
         assert toolset == "v141"
