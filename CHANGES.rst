@@ -13,9 +13,9 @@ New Features
 ------------
 
 * CMake module :doc:`/cmake-modules/Cython`: Added options
-  ``CYTHON_NO_DOCSTRINGS`` and ``CYTHON_EMBED_POSITIONS`` to override the
-  default argument behavior inferred from the build type. By default, both
-  options are False and docstrings are now retained. See :issue:`518`.
+  ``CYTHON_NO_DOCSTRINGS`` and ``CYTHON_EMBED_POSITIONS``. By default, both
+  options are now False and docstrings are now retained by default. Previously,
+  these settings were inferred from the build type. See :issue:`518`.
 
 Scikit-build 0.12.0
 ===================
