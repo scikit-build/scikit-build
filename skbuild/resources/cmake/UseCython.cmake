@@ -107,23 +107,13 @@
 set(CYTHON_ANNOTATE OFF
     CACHE BOOL "Create an annotated .html file when compiling *.pyx.")
 
-if(CMAKE_BUILD_TYPE STREQUAL "Release" OR
-   CMAKE_BUILD_TYPE STREQUAL "MinSizeRel")
-  set(is_release TRUE)
-endif()
-
-if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR
-   CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
-  set(is_debug TRUE)
-endif()
-
 if(NOT DEFINED CYTHON_NO_DOCSTRINGS)
-  set(CYTHON_NO_DOCSTRINGS FALSE CACHE BOOL
+  set(CYTHON_NO_DOCSTRINGS OFF CACHE BOOL
       "Whether to use Cython --no-docstrings argument. Defaults to False.")
 endif()
 
 if(NOT DEFINED CYTHON_EMBED_POSITIONS)
-  set(CYTHON_EMBED_POSITIONS FALSE CACHE BOOL
+  set(CYTHON_EMBED_POSITIONS OFF CACHE BOOL
       "Whether to use Cython --embed-positions argument. Defaults to False.")
 endif()
 
