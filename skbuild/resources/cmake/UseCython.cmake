@@ -69,9 +69,9 @@
 #   strips docstrings from the compiled module. Defaults to false.
 #
 # ``CYTHON_EMBED_POSITIONS``
-#   Whether to define the Cython flag ``--embed-positions``. If not set, this
-#   option defaults to true for ``Debug`` and ``RelWithDebInfo`` build
-#   configurations.
+#   Whether to define the Cython flag ``--embed-positions``. If enabled, the
+#   Cython file position of each function definition is embedded in its
+#   docstring. Defaults to false.
 #
 # Example usage
 # ^^^^^^^^^^^^^
@@ -123,8 +123,8 @@ if(NOT DEFINED CYTHON_NO_DOCSTRINGS)
 endif()
 
 if(NOT DEFINED CYTHON_EMBED_POSITIONS)
-  set(CYTHON_EMBED_POSITIONS ${is_debug} CACHE BOOL
-      "Whether to use Cython --embed-positions argument. Defaults to True for Debug or RelWithDebInfo builds.")
+  set(CYTHON_EMBED_POSITIONS FALSE CACHE BOOL
+      "Whether to use Cython --embed-positions argument. Defaults to False.")
 endif()
 
 set(CYTHON_FLAGS "" CACHE STRING
