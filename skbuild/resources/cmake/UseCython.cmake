@@ -65,9 +65,8 @@
 #   Additional flags to pass to the Cython compiler.
 #
 # ``CYTHON_WITH_NO_DOCSTRINGS``
-#   Whether to define the Cython flag ``--no-docstrings``. If not set, this
-#   option defaults to true for ``Release`` and ``MinSizeRel`` build
-#   configurations.
+#   Whether to define the Cython flag ``--no-docstrings``. If enabled, this
+#   strips docstrings from the compiled module. Defaults to false.
 #
 # ``CYTHON_WITH_EMBED_POSITIONS``
 #   Whether to define the Cython flag ``--embed-positions``. If not set, this
@@ -119,8 +118,8 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR
 endif()
 
 if(NOT DEFINED CYTHON_WITH_NO_DOCSTRINGS)
-  set(CYTHON_WITH_NO_DOCSTRINGS ${is_release} CACHE BOOL
-      "Whether to use Cython --no-docstrings argument. Defaults to True for Release or MinSizeRel builds.")
+  set(CYTHON_WITH_NO_DOCSTRINGS FALSE CACHE BOOL
+      "Whether to use Cython --no-docstrings argument. Defaults to False.")
 endif()
 
 if(NOT DEFINED CYTHON_WITH_EMBED_POSITIONS)
