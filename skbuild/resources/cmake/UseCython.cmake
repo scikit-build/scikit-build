@@ -64,11 +64,11 @@
 # ``CYTHON_FLAGS``
 #   Additional flags to pass to the Cython compiler.
 #
-# ``CYTHON_WITH_NO_DOCSTRINGS``
+# ``CYTHON_NO_DOCSTRINGS``
 #   Whether to define the Cython flag ``--no-docstrings``. If enabled, this
 #   strips docstrings from the compiled module. Defaults to false.
 #
-# ``CYTHON_WITH_EMBED_POSITIONS``
+# ``CYTHON_EMBED_POSITIONS``
 #   Whether to define the Cython flag ``--embed-positions``. If not set, this
 #   option defaults to true for ``Debug`` and ``RelWithDebInfo`` build
 #   configurations.
@@ -117,13 +117,13 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR
   set(is_debug TRUE)
 endif()
 
-if(NOT DEFINED CYTHON_WITH_NO_DOCSTRINGS)
-  set(CYTHON_WITH_NO_DOCSTRINGS FALSE CACHE BOOL
+if(NOT DEFINED CYTHON_NO_DOCSTRINGS)
+  set(CYTHON_NO_DOCSTRINGS FALSE CACHE BOOL
       "Whether to use Cython --no-docstrings argument. Defaults to False.")
 endif()
 
-if(NOT DEFINED CYTHON_WITH_EMBED_POSITIONS)
-  set(CYTHON_WITH_EMBED_POSITIONS ${is_debug} CACHE BOOL
+if(NOT DEFINED CYTHON_EMBED_POSITIONS)
+  set(CYTHON_EMBED_POSITIONS ${is_debug} CACHE BOOL
       "Whether to use Cython --embed-positions argument. Defaults to True for Debug or RelWithDebInfo builds.")
 endif()
 
@@ -360,12 +360,12 @@ function(add_cython_target _name)
   endif()
 
   set(no_docstrings_arg "")
-  if(CYTHON_WITH_NO_DOCSTRINGS)
+  if(CYTHON_NO_DOCSTRINGS)
     set(no_docstrings_arg "--no-docstrings")
   endif()
 
   set(embed_pos_arg "")
-  if(CYTHON_WITH_EMBED_POSITIONS)
+  if(CYTHON_EMBED_POSITIONS)
     set(embed_pos_arg "--embed-positions")
   endif()
 
