@@ -84,11 +84,12 @@ def test_generator_cleanup():
 
 
 @pytest.mark.parametrize("supported_platform",
-                         ['darwin', 'freebsd', 'linux', 'windows', 'os400'])
+                         ['darwin', 'freebsd', 'openbsd', 'linux', 'windows', 'os400'])
 def test_known_platform(supported_platform, mocker):
     mocker.patch('platform.system', return_value=supported_platform)
     platforms = {
         'freebsd': 'BSD',
+        'openbsd': 'BSD',
         'linux': 'Linux',
         'darwin': 'OSX',
         'windows': 'Windows',
