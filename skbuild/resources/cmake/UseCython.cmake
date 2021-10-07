@@ -64,15 +64,6 @@
 # ``CYTHON_FLAGS``
 #   Additional flags to pass to the Cython compiler.
 #
-# ``CYTHON_NO_DOCSTRINGS``
-#   Whether to define the Cython flag ``--no-docstrings``. If enabled, this
-#   strips docstrings from the compiled module. Defaults to false.
-#
-# ``CYTHON_EMBED_POSITIONS``
-#   Whether to define the Cython flag ``--embed-positions``. If enabled, the
-#   Cython file position of each function definition is embedded in its
-#   docstring. Defaults to false.
-#
 # Example usage
 # ^^^^^^^^^^^^^
 #
@@ -106,16 +97,6 @@
 # Configuration options.
 set(CYTHON_ANNOTATE OFF
     CACHE BOOL "Create an annotated .html file when compiling *.pyx.")
-
-if(NOT DEFINED CYTHON_NO_DOCSTRINGS)
-  set(CYTHON_NO_DOCSTRINGS OFF CACHE BOOL
-      "Whether to use Cython --no-docstrings argument. Defaults to False.")
-endif()
-
-if(NOT DEFINED CYTHON_EMBED_POSITIONS)
-  set(CYTHON_EMBED_POSITIONS OFF CACHE BOOL
-      "Whether to use Cython --embed-positions argument. Defaults to False.")
-endif()
 
 set(CYTHON_FLAGS "" CACHE STRING
     "Extra flags to the cython compiler.")
@@ -349,16 +330,6 @@ function(add_cython_target _name)
     set(annotate_arg "--annotate")
   endif()
 
-  set(no_docstrings_arg "")
-  if(CYTHON_NO_DOCSTRINGS)
-    set(no_docstrings_arg "--no-docstrings")
-  endif()
-
-  set(embed_pos_arg "")
-  if(CYTHON_EMBED_POSITIONS)
-    set(embed_pos_arg "--embed-positions")
-  endif()
-
   set(cython_debug_arg "")
   set(line_directives_arg "")
   if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR
@@ -384,8 +355,7 @@ function(add_cython_target _name)
   add_custom_command(OUTPUT ${generated_file}
                      COMMAND ${CYTHON_EXECUTABLE}
                      ARGS ${cxx_arg} ${include_directory_arg} ${py_version_arg}
-                          ${embed_arg} ${annotate_arg} ${no_docstrings_arg}
-                          ${cython_debug_arg} ${embed_pos_arg}
+                          ${embed_arg} ${annotate_arg} ${cython_debug_arg}
                           ${line_directives_arg} ${CYTHON_FLAGS_LIST} ${pyx_location}
                           --output-file ${generated_file}
                      DEPENDS ${_source_file}

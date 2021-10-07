@@ -12,10 +12,12 @@ Next Release
 New Features
 ------------
 
-* CMake module :doc:`/cmake-modules/Cython`: Added options
-  ``CYTHON_NO_DOCSTRINGS`` and ``CYTHON_EMBED_POSITIONS``. By default, both
-  options are now False and docstrings are now retained by default. Previously,
-  these settings were inferred from the build type. See :issue:`518`.
+* CMake module :doc:`/cmake-modules/Cython` now uses Cython default arguments.
+  This disables ``--no-docstrings`` in Release and MinSizeRel builds, so Cython
+  docstrings are now retained by default. Additionally, ``--embed-positions``
+  is now disabled by default in Debug and RelWithDebInfo builds. Users can
+  enable these and other Cython arguments via the option ``CYTHON_FLAGS``. See
+  :issue:`518` and :pr:`519`.
 
 Scikit-build 0.12.0
 ===================
