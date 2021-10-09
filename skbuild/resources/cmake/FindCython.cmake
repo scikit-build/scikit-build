@@ -13,7 +13,7 @@
 #  ``CYTHON_FOUND``
 #    true if the program was found
 #
-# For more information on the Cython project, see http://cython.org/.
+# For more information on the Cython project, see https://cython.org/.
 #
 # *Cython is a language that makes writing C extensions for the Python language
 # as easy as Python itself.*
