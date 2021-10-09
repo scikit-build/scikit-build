@@ -11,4 +11,6 @@ pytest-runner>=5.1
 pytest-virtualenv>=1.2.5
 requests
 six>=1.10.0
+ubelt >= 0.8.2
 virtualenv
+xdoctest>=0.10.0
