@@ -1,4 +1,3 @@
-
 import os
 
 from . import get_ext_suffix, project_setup_py_test

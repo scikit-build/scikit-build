@@ -13,6 +13,11 @@ repos:
   - id: requirements-txt-fixer
   - id: trailing-whitespace
 
+- repo: https://github.com/asottile/pyupgrade
+  rev: v2.24.0
+  hooks:
+  - id: pyupgrade
+
 - repo: https://github.com/PyCQA/flake8
   rev: 3.9.2
   hooks:

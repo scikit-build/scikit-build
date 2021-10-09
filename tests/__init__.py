@@ -148,7 +148,7 @@ def _copy_dir(target_dir, src_dir, on_duplicate='exception', keep_top_dir=False)
             _copy(entry, target_dir)
         elif on_duplicate == 'exception':
             raise ValueError(
-                "'%s' already exists (src %s)" % (
+                "'{}' already exists (src {})".format(
                     target_entry,
                     entry,
                 )

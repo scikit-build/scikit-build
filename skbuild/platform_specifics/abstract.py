@@ -190,7 +190,7 @@ class CMakePlatform(object):
             outer = "-" * 80
             inner = ["-" * ((idx * 5) - 3) for idx in range(1, 8)]
             print(outer if suffix == "" else "\n".join(inner))
-            print("-- Trying \"%s\" generator%s" % (_generator.description, suffix))
+            print("-- Trying \"{}\" generator{}".format(_generator.description, suffix))
             print(outer if suffix != "" else "\n".join(inner[::-1]))
 
         for generator in candidate_generators:
@@ -251,11 +251,11 @@ class CMakeGenerator(object):
         if arch is None:
             description_arch = name
         else:
-            description_arch = "%s %s" % (name, arch)
+            description_arch = "{} {}".format(name, arch)
         if toolset is None:
             self._description = description_arch
         else:
-            self._description = "%s %s" % (description_arch, toolset)
+            self._description = "{} {}".format(description_arch, toolset)
 
     @property
     def name(self):

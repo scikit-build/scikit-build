@@ -1,3 +1,2 @@
-
 def who():
     return "world"
