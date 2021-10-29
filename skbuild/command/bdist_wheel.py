@@ -66,7 +66,7 @@ class bdist_wheel(set_build_base_mixin, new_style(_bdist_wheel)):
         if sys.platform == 'darwin' and self.plat_name is None and self.distribution.has_ext_modules():
             # The default value is duplicated in setuptools_wrap
             # pylint:disable=access-member-before-definition
-            self.plat_name = os.environ.get('_PYTHON_HOST_PLATFORM', 'macosx-10.6-x86_64')
+            self.plat_name = os.environ.get('_PYTHON_HOST_PLATFORM', 'macosx-10.9-x86_64')
         super(bdist_wheel, self).finalize_options(*args, **kwargs)
 
     def write_wheelfile(self, wheelfile_base, _=None):

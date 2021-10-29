@@ -82,7 +82,7 @@ def skbuild_plat_name():
     Default value corresponds to :func:`_default_skbuild_plat_name()` and can be overridden
     with :func:`set_skbuild_plat_name()`.
 
-    Examples of values are `macosx-10.6-x86_64`, `linux-x86_64`, `linux-i686` or `win-am64`.
+    Examples of values are `macosx-10.9-x86_64`, `linux-x86_64`, `linux-i686` or `win-am64`.
     """
     return _SKBUILD_PLAT_NAME
 

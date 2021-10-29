@@ -12,7 +12,7 @@ params = "osx_deployment_target_env_var,cli_setup_args," \
 
 
 @pytest.mark.parametrize(params, [
-    # default plat_name is 'macosx-10.6-x86_64'
+    # default plat_name is 'macosx-10.9-x86_64'
     (
             # osx_deployment_target_env_var
             None,
@@ -23,7 +23,7 @@ params = "osx_deployment_target_env_var,cli_setup_args," \
             # cli_cmake_args
             [],
             # expected_cmake_osx_deployment_target
-            "10.6"
+            "10.9"
     ),
     (
             # osx_deployment_target_env_var
@@ -155,7 +155,7 @@ def test_cmake_args_keyword_osx_default(
         sys.platform = "darwin"
 
         def mock_mac_ver():
-            return "10.6", None, "x84_64"
+            return "10.9", None, "x84_64"
 
         saved_mac_ver = platform.mac_ver
         platform.mac_ver = mock_mac_ver
