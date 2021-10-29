@@ -188,28 +188,28 @@ Default Deployment Target and Architecture
 .. versionadded:: 0.7.0
 
 The default deployment target and architecture selected by scikit-build are
-hard-coded for MacOSX and are respectively ``10.6`` and ``x86_64``.
+hard-coded for MacOSX and are respectively ``10.9`` and ``x86_64``.
 
 This means that the platform name associated with the `bdist_wheel`
 command is::
 
-    macosx-10.6-x86_64
+    macosx-10.9-x86_64
 
 and is equivalent to building the wheel using::
 
-    python setup.py bdist_wheel --plat-name macosx-10.6-x86_64
+    python setup.py bdist_wheel --plat-name macosx-10.9-x86_64
 
 Respectively, the values associated with the corresponding `CMAKE_OSX_DEPLOYMENT_TARGET`_
 and `CMAKE_OSX_ARCHITECTURES`_ CMake options that are automatically used to configure
 the project are the following::
 
-    CMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.6
+    CMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.9
     CMAKE_OSX_ARCHITECTURES:STRING=x86_64
 
 .. _CMAKE_OSX_DEPLOYMENT_TARGET: https://cmake.org/cmake/help/latest/variable/CMAKE_OSX_DEPLOYMENT_TARGET.html
 .. _CMAKE_OSX_ARCHITECTURES: https://cmake.org/cmake/help/latest/variable/CMAKE_OSX_ARCHITECTURES.html
 
-As illustrated in the table below, choosing ``10.6`` as deployment target to build
+As illustrated in the table below, choosing ``10.9`` as deployment target to build
 MacOSX wheels will allow them to work on `System CPython`, the `Official CPython`,
 `Macports` and also `Homebrew` installations of CPython.
 
@@ -222,7 +222,7 @@ MacOSX wheels will allow them to work on `System CPython`, the `Official CPython
     |                      +-------------------------+--------------+--------------------------------+
     |                      | 3.8, 3.9                | 10.13        | macosx-10.9-x86_64             |
     |                      +-------------------------+--------------+--------------------------------+
-    |                      | 3.7, 3.6, 3.5, 3.4, 2.7 | 10.12        | macosx-**10.6**-intel          |
+    |                      | 3.7, 3.6, 3.5, 3.4, 2.7 | 10.12        | macosx-10.6-intel              |
     |                      +-------------------------+--------------+                                |
     |                      | 3.4, 2.7                | 10.9         |                                |
     |                      +-------------------------+--------------+                                |
