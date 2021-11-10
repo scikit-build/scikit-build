@@ -1,9 +1,6 @@
 """This module defines custom implementation of ``bdist_wheel`` setuptools
 command."""
 
-import os
-import sys
-
 try:
     from wheel.wheelfile import WheelFile
     _USE_WHEELFILE = True
@@ -59,15 +56,6 @@ class bdist_wheel(set_build_base_mixin, new_style(_bdist_wheel)):
                 super(bdist_wheel, self).run(*args, **kwargs)
             finally:
                 _wheel_archive.make_wheelfile_inner = old_make_wheelfile_inner
-
-    def finalize_options(self, *args, **kwargs):
-        """Ensure MacOSX wheels include the expected platform information."""
-        # pylint:disable=attribute-defined-outside-init,access-member-before-definition
-        if sys.platform == 'darwin' and self.plat_name is None and self.distribution.has_ext_modules():
-            # The default value is duplicated in setuptools_wrap
-            # pylint:disable=access-member-before-definition
-            self.plat_name = os.environ.get('_PYTHON_HOST_PLATFORM', 'macosx-10.9-x86_64')
-        super(bdist_wheel, self).finalize_options(*args, **kwargs)
 
     def write_wheelfile(self, wheelfile_base, _=None):
         """Write ``skbuild <version>`` as a wheel generator.
