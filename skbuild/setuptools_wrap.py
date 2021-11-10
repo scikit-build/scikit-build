@@ -539,6 +539,13 @@ def setup(*args, **kw):  # noqa: C901
     else:
         cmake_install_target = cmake_install_target_from_setup
 
+    # Parse CMAKE_ARGS
+    env_cmake_args = os.environ["CMAKE_ARGS"].split() if "CMAKE_ARGS" in os.environ else []
+    env_cmake_args = [s for s in env_cmake_args if "CMAKE_INSTALL_PREFIX" not in s]
+
+    # Using the environment variable CMAKE_ARGS has lower precedence than manual options
+    cmake_args = env_cmake_args + cmake_args
+
     if sys.platform == "darwin":
 
         # If no ``--plat-name`` argument was passed, set default value.
