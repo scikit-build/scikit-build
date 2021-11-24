@@ -434,7 +434,7 @@ endfunction()
 
 function(python_standalone_executable _target)
   include_directories(${PYTHON_INCLUDE_DIRS})
-  target_link_libraries(${_target} ${PYTHON_LIBRARIES})
+  target_link_libraries(${_target} ${SKBUILD_LINK_LIBRARIES_KEYWORD} ${PYTHON_LIBRARIES})
 endfunction()
 
 function(python_modules_header _name)
