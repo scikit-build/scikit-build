@@ -136,7 +136,9 @@ class CMakeVisualStudioIDEGenerator(CMakeGenerator):
         """
         vs_version = VS_YEAR_TO_VERSION[year]
         vs_base = "Visual Studio {} {}".format(vs_version, year)
-        if platform.architecture()[0] == "64bit":
+        if platform.machine() == "ARM64":
+            vs_arch = "ARM64"
+        elif platform.architecture()[0] == "64bit":
             vs_arch = "x64"
         else:
             vs_arch = "Win32"
@@ -279,7 +281,9 @@ def _get_msvc_compiler_env(vs_version, vs_toolset=None):
 
     # Set architecture
     arch = "x86"
-    if platform.architecture()[0] == "64bit":
+    if platform.machine() == "ARM64":
+        arch = "x86_arm64"
+    elif platform.architecture()[0] == "64bit":
         if vs_version < 14:
             arch = "amd64"
         else:
