@@ -65,5 +65,3 @@ if (BUILD_MECL)
   #install(TARGETS ${SCCD_MODULE_NAME} LIBRARY DESTINATION "${_install_dest}../tool/python/pycold")
 
 endif()
-
-

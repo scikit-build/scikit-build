@@ -45,4 +45,3 @@ if (BUILD_MYALGO)
   install(TARGETS ${MYALGO_MODULE_NAME} LIBRARY DESTINATION "${my_skb_mod_install_dest}")
 
 endif()
-

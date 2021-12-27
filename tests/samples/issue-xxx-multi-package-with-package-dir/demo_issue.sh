@@ -45,9 +45,9 @@ rm -rf src/python/my_skb_mod/*.so || echo "already clean"
 # FIXME: running ``pip install -e .`` multiple times breaks!
 pip install --verbose -e .
 
-# The egg link should point to 
-# .../issue-xxx-multi-package-with-package-dir/src/python 
-# 
+# The egg link should point to
+# .../issue-xxx-multi-package-with-package-dir/src/python
+#
 # NOT
 #
 # .../issue-xxx-multi-package-with-package-dir/
