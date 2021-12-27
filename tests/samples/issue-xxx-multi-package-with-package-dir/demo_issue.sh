@@ -9,6 +9,10 @@ run_common_module_tests(){
     python -c "import my_skb_mod; print(my_skb_mod.submod.get_module_resouce())"
 
     echo "Finished common tests of the installed module"
+
+    python -c "import my_skb_mod; print(my_skb_mod.__doc__)"
+
+
 }
 
 
@@ -58,3 +62,18 @@ cat "$SITE_PACKAGE_DPATH/my_skb_mod.egg-link"
 # not sure what's going on.
 
 run_common_module_tests
+
+
+
+#######################
+# DEMO MULTIPLE EDIBALE PIP INSTALL ISSUE
+#######################
+
+# Maybe this isn't an issue here? It is an issue in the project I'm basing this
+# on cant run this command multiple times. I dont know why.
+# This only seeps to break if the "packages" directory is specified as
+# `packages=['my_skb_mod']`. Otherwise it does seem to work
+pip uninstall -y "my_skb_mod" || echo "already uninstalled"
+pip uninstall -y "my_skb_mod" || echo "already uninstalled"
+pip install -e .
+pip install -e .
