@@ -21,8 +21,8 @@ run_common_module_tests(){
 #######################
 
 # First test with a regular wheel
-python setup.py bdist_wheel
-WHEEL_FPATH="$(ls dist/my_skb_mod-*.whl)"
+pip wheel .
+WHEEL_FPATH="$(ls my_skb_mod-*.whl)"
 echo "WHEEL_FPATH = $WHEEL_FPATH"
 # Should see the submodule resource here, but we don't
 unzip -l "$WHEEL_FPATH"
