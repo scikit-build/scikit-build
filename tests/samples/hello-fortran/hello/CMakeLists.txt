@@ -12,6 +12,7 @@ add_custom_command(
   COMMAND ${F2PY_EXECUTABLE}
     -m ${f2py_module_name}
     -c
+    --f90exec=${CMAKE_Fortran_COMPILER}
     ${fortran_src_file}
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
   )
