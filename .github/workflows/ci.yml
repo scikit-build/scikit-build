@@ -39,6 +39,11 @@ jobs:
         echo "SKBUILD_TEST_FIND_VS2015_INSTALLATION_EXPECTED=1" >> $GITHUB_ENV
         echo "SKBUILD_TEST_FIND_VS2017_INSTALLATION_EXPECTED=1" >> $GITHUB_ENV
 
+    - name: Set environment for Fortran compiler on MacOS
+      if: runner.os == 'macOS'
+      run: |
+        echo "FC=gfortran-11" >> $GITHUB_ENV
+
     - name: Setup nox
       uses: excitedleigh/setup-nox@v2.0.0
 
