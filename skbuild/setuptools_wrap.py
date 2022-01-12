@@ -13,6 +13,9 @@ import json
 import platform
 import stat
 
+# Must be imported before distutils
+import setuptools
+
 from contextlib import contextmanager
 from distutils.errors import (DistutilsArgError,
                               DistutilsError,
@@ -33,7 +36,6 @@ try:
 except ImportError:
     from .compat import which
 
-from setuptools import setup as upstream_setup
 from setuptools.dist import Distribution as upstream_Distribution
 
 from . import cmaker
@@ -193,7 +195,7 @@ def _parse_setuptools_arguments(setup_attrs):
     dist = upstream_Distribution(setup_attrs)
 
     # Update class attribute to also ensure the argument is processed
-    # when ``upstream_setup`` is called.
+    # when ``setuptools.setup`` is called.
     # pylint:disable=no-member
     upstream_Distribution.global_options.extend([
         ('hide-listing', None, "do not display list of files being "
@@ -466,7 +468,7 @@ def setup(*args, **kw):  # noqa: C901
             print('Arguments following a second "--" are passed directly to '
                   ' the build tool.')
             print('')
-        return upstream_setup(*args, **kw)
+        return setuptools.setup(*args, **kw)
 
     developer_mode = "develop" in commands or "test" in commands or build_ext_inplace
 
@@ -694,7 +696,7 @@ def setup(*args, **kw):  # noqa: C901
 
     print("")
 
-    return upstream_setup(*args, **kw)
+    return setuptools.setup(*args, **kw)
 
 
 def _collect_package_prefixes(package_dir, packages):
