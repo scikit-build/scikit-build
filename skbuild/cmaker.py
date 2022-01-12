@@ -72,8 +72,15 @@ def has_cmake_cache_arg(cmake_args, arg_name, arg_value=None):
 
 
 def get_cmake_version(cmake_executable=CMAKE_DEFAULT_EXECUTABLE):
-    """Runs CMake and extracts associated version information.
+    """
+    Runs CMake and extracts associated version information.
     Raises :class:`skbuild.exceptions.SKBuildError` if it failed to execute CMake.
+
+    Example:
+        >>> # xdoc: IGNORE_WANT
+        >>> from skbuild.cmaker import get_cmake_version
+        >>> print(get_cmake_version())
+        3.14.4
     """
     try:
         version_string = subprocess.check_output([cmake_executable, '--version'])
@@ -88,7 +95,38 @@ def get_cmake_version(cmake_executable=CMAKE_DEFAULT_EXECUTABLE):
 
 
 class CMaker(object):
-    """Interface to CMake executable."""
+    r"""Interface to CMake executable.
+
+    Example:
+        >>> # Setup dummy repo
+        >>> from skbuild.cmaker import CMaker  # NOQA
+        >>> import ubelt as ub
+        >>> from os.path import join
+        >>> repo_dpath = ub.ensure_app_cache_dir('skbuild', 'test_cmaker')
+        >>> ub.delete(repo_dpath)
+        >>> src_dpath = ub.ensuredir(join(repo_dpath, 'SRC'))
+        >>> cmake_fpath = join(src_dpath, 'CMakeLists.txt')
+        >>> open(cmake_fpath, 'w').write(ub.codeblock(
+                '''
+                cmake_minimum_required(VERSION 3.5.0)
+                project(foobar NONE)
+                file(WRITE "${CMAKE_BINARY_DIR}/foo.txt" "# foo")
+                install(FILES "${CMAKE_BINARY_DIR}/foo.txt" DESTINATION ".")
+                install(CODE "message(STATUS \\"Project has been installed\\")")
+                message(STATUS "CMAKE_SOURCE_DIR:${CMAKE_SOURCE_DIR}")
+                message(STATUS "CMAKE_BINARY_DIR:${CMAKE_BINARY_DIR}")
+                '''
+        >>> ))
+        >>> # create a cmaker instance in the dummy repo, configure, and make.
+        >>> from skbuild.utils import push_dir
+        >>> with push_dir(repo_dpath):
+        >>>     cmkr = CMaker()
+        >>>     config_kwargs = {'cmake_source_dir': str(src_dpath)}
+        >>>     print('--- test cmaker configure ---')
+        >>>     env = cmkr.configure(**config_kwargs)
+        >>>     print('--- test cmaker make ---')
+        >>>     cmkr.make(env=env)
+    """
 
     def __init__(self, cmake_executable=CMAKE_DEFAULT_EXECUTABLE):
         self.cmake_executable = cmake_executable
@@ -168,10 +206,13 @@ class CMaker(object):
         if cli_generator_name is not None:
             generator_name = cli_generator_name
 
+        # if arch is provided on command line, use it
+        clargs, cli_arch = pop_arg('-A', clargs)
+
         generator = self.platform.get_best_generator(
             generator_name, skip_generator_test=skip_generator_test,
             cmake_executable=self.cmake_executable, cmake_args=clargs,
-            languages=languages, cleanup=cleanup)
+            languages=languages, cleanup=cleanup, architecture=cli_arch)
 
         if not os.path.exists(CMAKE_BUILD_DIR()):
             os.makedirs(CMAKE_BUILD_DIR())
@@ -208,6 +249,8 @@ class CMaker(object):
 
         if generator.toolset:
             cmd.extend(['-T', generator.toolset])
+        if generator.architecture:
+            cmd.extend(['-A', generator.architecture])
 
         cmd.extend(clargs)
 
@@ -248,7 +291,18 @@ class CMaker(object):
 
     @staticmethod
     def get_python_version():
-        """Get version associated with the current python interpreter."""
+        """Get version associated with the current python interpreter.
+
+        Returns:
+            str: python version string
+
+        Example:
+            >>> # xdoc: +IGNORE_WANT
+            >>> from skbuild.cmaker import CMaker
+            >>> python_version = CMaker.get_python_version()
+            >>> print('python_version = {!r}'.format(python_version))
+            python_version = '3.7'
+        """
         python_version = sysconfig.get_config_var('VERSION')
 
         if not python_version:
@@ -264,7 +318,22 @@ class CMaker(object):
     @staticmethod  # noqa: C901
     def get_python_include_dir(python_version):
         """Get include directory associated with the current python
-        interpreter."""
+        interpreter.
+
+        Args:
+            python_version (str): python version, may be partial.
+
+        Returns:
+            PathLike: python include dir
+
+        Example:
+            >>> # xdoc: +IGNORE_WANT
+            >>> from skbuild.cmaker import CMaker
+            >>> python_version = CMaker.get_python_version()
+            >>> python_include_dir = CMaker.get_python_include_dir(python_version)
+            >>> print('python_include_dir = {!r}'.format(python_include_dir))
+            python_include_dir = '.../conda/envs/py37/include/python3.7m'
+        """
         # determine python include dir
         python_include_dir = sysconfig.get_config_var('INCLUDEPY')
 
@@ -356,7 +425,22 @@ class CMaker(object):
     @staticmethod
     def get_python_library(python_version):
         """Get path to the python library associated with the current python
-        interpreter."""
+        interpreter.
+
+        Args:
+            python_version (str): python version, may be partial.
+
+        Returns:
+            PathLike: python_library : python shared library
+
+        Example:
+            >>> # xdoc: +IGNORE_WANT
+            >>> from skbuild.cmaker import CMaker
+            >>> python_version = CMaker.get_python_version()
+            >>> python_library = CMaker.get_python_include_dir(python_version)
+            >>> print('python_library = {!r}'.format(python_library))
+            python_library = '.../conda/envs/py37/include/python3.7m'
+        """
         # determine direct path to libpython
         python_library = sysconfig.get_config_var('LIBRARY')
 

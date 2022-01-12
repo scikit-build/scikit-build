@@ -5,30 +5,92 @@ Release Notes
 This is the list of changes to scikit-build between each release. For full
 details, see the commit logs at http://github.com/scikit-build/scikit-build
 
+
 Next Release
 ============
+
+New Features
+------------
+
+* CMake module :doc:`/cmake-modules/Cython` now uses Cython default arguments.
+  This no longer adds ``--no-docstrings`` in Release and MinSizeRel builds, so
+  Cython docstrings are now retained by default. Additionally,
+  ``--embed-positions`` is no longer added to Debug and RelWithDebInfo builds.
+  Users can enable these and other Cython arguments via the option
+  ``CYTHON_FLAGS``. See :issue:`518` and :pr:`519`.
+
+Scikit-build 0.12.0
+===================
+
+The scikit-build GitHub organization welcomes :user:`henryiii` and :user:`mayeut` as core contributors
+and maintainers. Both are also maintainers of `cibuildwheel <https://cibuildwheel.readthedocs.io>`_.
+
+:user:`henryiii` is a `pybind11 <https://pybind11.readthedocs.io>`_ and `pypa/build <https://pypa-build.readthedocs.io>`_ maintainer, has been instrumental in adding Apple Silicon support, adding support for Visual Studio 2019, updating
+the Continuous Integration infrastructure, as well as helping review & integrate contributions, and addressing
+miscellaneous issues. Additionally, :user:`henryiii` has worked on an `example project <https://github.com/pybind/scikit_build_example>`_  to build with ``pybind11`` and ``scikit-build``.
+
+:user:`mayeut` is a `manylinux <https://github.com/pypa/manylinux>`_ maintainer and
+focused his effort on updating the ``cmake-python-distributions`` and ``ninja-python-distributions`` so
+that the corresponding wheels are available on all supported platforms including Apple Silicon and all flavors
+of manylinux.
+
+New Features
+------------
+
+* Support Apple Silicon, including producing Universal2 wheels (:pr:`530`) and
+  respecting standard setuptools cross-compile variables (:pr:`555`). Thanks to
+  :user:`YannickJadoul` for the contributions.
+
+* Support MSVC 2019 without having to run it with the MSVC activation
+  variables, just like 2017 and earlier versions. Thanks to :user:`YannickJadoul` for the contribution in :pr:`526`.
 
 Bug fixes
 ---------
 
-* Fixed a regression that caused setuptools to complain about unknown setup option
-  (`cmake_process_manifest_hook`).
+* Support ``-A`` and ``-T`` internally when setting up MSVC generators.
+  Architecture now always passed through ``-A`` to MSVC generators. Thanks
+  :user:`YannickJadoul` for the contribution. See
+  :pr:`557` and :pr:`536`.
 
-* Hide the warning that shows up when `SKBUILD` is unused.
+* Fixed a regression that caused setuptools to complain about unknown setup option
+  (`cmake_process_manifest_hook`). Thanks :user:`Jmennius` for the contribution. See :pr:`498`.
 
 * If it applies, ensure generator toolset is used to configure the project.
-  Thanks :user:`YannickJadoul` for the contribution. See :issue:`526`.
+  Thanks :user:`YannickJadoul` for the contributions. See :pr:`526`.
+
+* Read ``CYTHON_FLAGS`` where needed, instead of once, allowing the user to
+  define multiple modules with different flags. Thanks :user:`oiffrig` for the
+  contributions in :pr:`536`.
+
+* Avoid an IndexError if prefix was empty. Thanks :user:`dfaure` for the contributions
+  in :pr:`522`.
 
 Documentation
 -------------
 
 * Update `Conda: Step-by-step` release guide available in :doc:`/make_a_release` section.
-* Update links to CMake documentation pages in :doc:/`generators`.
+
+* Update links to CMake documentation pages in :doc:`/generators`. Thanks :user:`Eothred` for the contributions in :pr:`508`.
 
 Tests
 -----
 
-* Fix linting error `F522 <https://flake8.pycqa.org/en/latest/user/error-codes.html>`_ reported with flake8 >= 3.8.x. Thanks :user:`benbovy` for the contribution. See :issue:`494`.
+* Improve and simplify Continuous Integration infrastructure.
+
+  * Support `nox` for running the tests locally. See :pr:`540`.
+
+  * Use GitHub Actions for Continuous Integration and remove use of scikit-ci, tox, TravisCI, AppVeyor and CircleCI. See :pr:`549`, :pr:`551` and :pr:`552`.
+
+  * Add support for testing against Python 3.10. See :pr:`565`.
+
+  * Style checking handled by pre-commit. See :pr:`541`.
+
+  * Check for misspellings adding GitHub Actions workflow using codespell. See :pr:`541`.
+
+* Fix linting error `F522 <https://flake8.pycqa.org/en/latest/user/error-codes.html>`_ reported with flake8 >= 3.8.x. Thanks :user:`benbovy` for the contributions. See :issue:`494`.
+
+* Fix regex in tests to support Python 3.10. Thanks :user:`mgorny` for the contributions in :pr:`544`.
+
 
 Scikit-build 0.11.1
 ===================
@@ -37,7 +99,7 @@ Bug fixes
 ---------
 
 * Support using scikit-build with conan where ``distro<1.2.0`` is required.
-  Thanks :user:`AntoinePrv` and :user:`Chrismarsh` for reporting issue :issue:`472`
+  Thanks :user:`AntoinePrv` and :user:`Chrismarsh` for reporting issues :issue:`472`
   and :issue:`488`.
 
 Documentation
@@ -648,6 +710,7 @@ Tests
 
 * Add ``get_cmakecache_variables`` utility function.
 
+.. _scikit-ci: http://scikit-ci.readthedocs.io
 .. _scikit-ci-addons: http://scikit-ci-addons.readthedocs.io
 
 Internal API

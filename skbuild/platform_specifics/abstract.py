@@ -22,7 +22,8 @@ class CMakePlatform(object):
     Derived class should at least set :attr:`default_generators`.
     """
     def __init__(self):
-        self._default_generators = list()
+        self._default_generators = []
+        self.architecture = None
 
     @property
     def default_generators(self):
@@ -45,7 +46,7 @@ class CMakePlatform(object):
         if not os.path.exists(test_folder):
             os.makedirs(test_folder)
         with open("{:s}/{:s}".format(test_folder, "CMakeLists.txt"), "w") as f:
-            f.write("cmake_minimum_required(VERSION 2.8)\n")
+            f.write("cmake_minimum_required(VERSION 2.8.12)\n")
             f.write("PROJECT(compiler_test NONE)\n")
             for language in languages:
                 f.write("ENABLE_LANGUAGE({:s})\n".format(language))
@@ -66,12 +67,19 @@ class CMakePlatform(object):
 
         return CMakeGenerator(generator_name)
 
+    def get_generators(self, generator_name):
+        """Loop over generators and return all that match the given name.
+        """
+        return [default_generator
+                for default_generator in self.default_generators
+                if default_generator.name == generator_name]
+
     # TODO: this method name is not great.  Does anyone have a better idea for
     # renaming it?
     def get_best_generator(
             self, generator_name=None, skip_generator_test=False,
             languages=("CXX", "C"), cleanup=True,
-            cmake_executable=CMAKE_DEFAULT_EXECUTABLE, cmake_args=()):
+            cmake_executable=CMAKE_DEFAULT_EXECUTABLE, cmake_args=(), architecture=None):
         """Loop over generators to find one that works by configuring
         and compiling a test project.
 
@@ -115,6 +123,14 @@ class CMakePlatform(object):
             # Lookup CMakeGenerator by name. Doing this allow to get a
             # generator object with its ``env`` property appropriately
             # initialized.
+
+            # MSVC should be used in "-A arch" form
+            if architecture is not None:
+                self.architecture = architecture
+
+            # Support classic names for generators
+            generator_name, self.architecture = _parse_legacy_generator_name(generator_name, self.architecture)
+
             candidate_generators = []
             for default_generator in self.default_generators:
                 if default_generator.name == generator_name:
@@ -174,7 +190,7 @@ class CMakePlatform(object):
             outer = "-" * 80
             inner = ["-" * ((idx * 5) - 3) for idx in range(1, 8)]
             print(outer if suffix == "" else "\n".join(inner))
-            print("-- Trying \"%s\" generator%s" % (_generator.description, suffix))
+            print("-- Trying \"{}\" generator{}".format(_generator.description, suffix))
             print(outer if suffix != "" else "\n".join(inner[::-1]))
 
         for generator in candidate_generators:
@@ -191,6 +207,8 @@ class CMakePlatform(object):
                 cmd = [cmake_exe_path, '../', '-G', generator.name]
                 if generator.toolset:
                     cmd.extend(['-T', generator.toolset])
+                if generator.architecture:
+                    cmd.extend(['-A', generator.architecture])
                 cmd.extend(cmake_args)
 
                 status = subprocess.call(cmd, env=generator.env)
@@ -214,7 +232,7 @@ class CMakeGenerator(object):
     .. automethod:: __init__
     """
 
-    def __init__(self, name, env=None, toolset=None):
+    def __init__(self, name, env=None, toolset=None, arch=None):
         """Instantiate a generator object with the given ``name``.
 
         By default, ``os.environ`` is associated with the generator. Dictionary
@@ -229,10 +247,15 @@ class CMakeGenerator(object):
         self.env = dict(
             list(os.environ.items()) + list(env.items() if env else []))
         self._generator_toolset = toolset
-        if toolset is None:
-            self._description = name
+        self._generator_architecture = arch
+        if arch is None:
+            description_arch = name
         else:
-            self._description = "%s %s" % (name, toolset)
+            description_arch = "{} {}".format(name, arch)
+        if toolset is None:
+            self._description = description_arch
+        else:
+            self._description = "{} {}".format(description_arch, toolset)
 
     @property
     def name(self):
@@ -245,6 +268,30 @@ class CMakeGenerator(object):
         return self._generator_toolset
 
     @property
+    def architecture(self):
+        """Architecture associated with the CMake generator."""
+        return self._generator_architecture
+
+    @property
     def description(self):
         """Name of CMake generator with properties describing the environment (e.g toolset)"""
         return self._description
+
+
+def _parse_legacy_generator_name(generator_name, arch):
+    # type: (str, str | None) -> tuple[str, str | None]
+    """
+    Support classic names for MSVC generators. Architecture is stripped from
+    the name and "arch" is replaced with the arch string if a legacy name is
+    given.
+    """
+
+    if generator_name.startswith("Visual Studio"):
+        if generator_name.endswith(" Win64"):
+            arch = "x64"
+            generator_name = generator_name[:-6]
+        elif generator_name.endswith(" ARM"):
+            arch = "ARM"
+            generator_name = generator_name[:-4]
+
+    return generator_name, arch

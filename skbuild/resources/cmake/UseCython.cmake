@@ -43,7 +43,7 @@
 # ``PY2 | PY3``
 #   Force compilation using either Python-2 or Python-3 syntax and code
 #   semantics.  By default, Python-2 syntax and semantics are used if the major
-#   version of Python found is 2.  Otherwise, Python-3 syntax and sematics are
+#   version of Python found is 2.  Otherwise, Python-3 syntax and semantics are
 #   used.
 #
 # ``OUTPUT_VAR <OutputVar>``
@@ -56,13 +56,13 @@
 # ``<OutputVar>``
 #   The path of the generated source file.
 #
-# Cache variables that effect the behavior include:
+# Cache variables that affect the behavior include:
 #
 # ``CYTHON_ANNOTATE``
-#   whether to create an annotated .html file when compiling
+#   Whether to create an annotated .html file when compiling.
 #
 # ``CYTHON_FLAGS``
-#   additional flags to pass to the Cython compiler
+#   Additional flags to pass to the Cython compiler.
 #
 # Example usage
 # ^^^^^^^^^^^^^
@@ -330,19 +330,11 @@ function(add_cython_target _name)
     set(annotate_arg "--annotate")
   endif()
 
-  set(no_docstrings_arg "")
-  if(CMAKE_BUILD_TYPE STREQUAL "Release" OR
-     CMAKE_BUILD_TYPE STREQUAL "MinSizeRel")
-    set(no_docstrings_arg "--no-docstrings")
-  endif()
-
   set(cython_debug_arg "")
-  set(embed_pos_arg "")
   set(line_directives_arg "")
   if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR
      CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
     set(cython_debug_arg "--gdb")
-    set(embed_pos_arg "--embed-positions")
     set(line_directives_arg "--line-directives")
   endif()
 
@@ -363,8 +355,7 @@ function(add_cython_target _name)
   add_custom_command(OUTPUT ${generated_file}
                      COMMAND ${CYTHON_EXECUTABLE}
                      ARGS ${cxx_arg} ${include_directory_arg} ${py_version_arg}
-                          ${embed_arg} ${annotate_arg} ${no_docstrings_arg}
-                          ${cython_debug_arg} ${embed_pos_arg}
+                          ${embed_arg} ${annotate_arg} ${cython_debug_arg}
                           ${line_directives_arg} ${CYTHON_FLAGS_LIST} ${pyx_location}
                           --output-file ${generated_file}
                      DEPENDS ${_source_file}
