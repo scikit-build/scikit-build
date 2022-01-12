@@ -398,7 +398,8 @@ def setup(*args, **kw):  # noqa: C901
         'cmake_source_dir': '',
         'cmake_with_sdist': False,
         'cmake_languages': ('C', 'CXX'),
-        'cmake_minimum_required_version': None
+        'cmake_minimum_required_version': None,
+        'cmake_process_manifest_hook': None
     }
     skbuild_kw = {param: kw.pop(param, parameters[param])
                   for param in parameters}
@@ -505,13 +506,15 @@ def setup(*args, **kw):  # noqa: C901
                 version = cmake_arg.split('=')[1]
             if 'CMAKE_OSX_ARCHITECTURES' in cmake_arg:
                 machine = cmake_arg.split('=')[1]
+                if set(machine.split(';')) == {'x86_64', 'arm64'}:
+                    machine = 'universal2'
 
         set_skbuild_plat_name("macosx-{}-{}".format(version, machine))
 
         # Set platform env. variable so that commands (e.g. bdist_wheel)
         # uses this information. The _PYTHON_HOST_PLATFORM env. variable is
         # used in distutils.util.get_platform() function.
-        os.environ['_PYTHON_HOST_PLATFORM'] = skbuild_plat_name()
+        os.environ.setdefault('_PYTHON_HOST_PLATFORM', skbuild_plat_name())
 
         # Set CMAKE_OSX_DEPLOYMENT_TARGET and CMAKE_OSX_ARCHITECTURES if not already
         # specified
@@ -523,8 +526,9 @@ def setup(*args, **kw):  # noqa: C901
             )
         if not cmaker.has_cmake_cache_arg(
                 cmake_args, 'CMAKE_OSX_ARCHITECTURES'):
+            machine_archs = 'x86_64;arm64' if machine == 'universal2' else machine
             cmake_args.append(
-                '-DCMAKE_OSX_ARCHITECTURES:STRING=%s' % machine
+                '-DCMAKE_OSX_ARCHITECTURES:STRING=%s' % machine_archs
             )
 
     # Install cmake if listed in `setup_requires`
@@ -597,7 +601,7 @@ def setup(*args, **kw):  # noqa: C901
         sys.exit(ex)
 
     # If any, strip ending slash from each package directory
-    package_dir = {package: prefix[:-1] if prefix[-1] == "/" else prefix
+    package_dir = {package: prefix[:-1] if prefix and prefix[-1] == "/" else prefix
                    for package, prefix in package_dir.items()}
 
     # If needed, set reasonable defaults for package_dir
@@ -611,7 +615,7 @@ def setup(*args, **kw):  # noqa: C901
 
     # This hook enables custom processing of the cmake manifest
     cmake_manifest = cmkr.install()
-    process_manifest = kw.get('cmake_process_manifest_hook')
+    process_manifest = skbuild_kw.get('cmake_process_manifest_hook')
     if process_manifest is not None:
         if callable(process_manifest):
             cmake_manifest = process_manifest(cmake_manifest)

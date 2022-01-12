@@ -3,8 +3,8 @@ coverage>=4.2
 cython>=0.25.1
 flake8>=3.0.4
 numpy
-pathlib2; python_version < '3.0'
 path.py>=11.5.0
+pathlib2; python_version < '3.0'
 pytest>=4.5.0
 pytest-cov>=2.7.1
 pytest-mock>=1.10.4

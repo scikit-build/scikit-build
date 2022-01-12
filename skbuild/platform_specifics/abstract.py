@@ -188,13 +188,9 @@ class CMakePlatform(object):
             with push_dir('build', make_directory=True):
                 # call cmake to see if the compiler specified by this
                 # generator works for the specified languages
-                if generator.toolset:
-                    toolset_arg = ['-T', generator.toolset]
-                else:
-                    toolset_arg = []
-
                 cmd = [cmake_exe_path, '../', '-G', generator.name]
-                cmd.extend(toolset_arg)
+                if generator.toolset:
+                    cmd.extend(['-T', generator.toolset])
                 cmd.extend(cmake_args)
 
                 status = subprocess.call(cmd, env=generator.env)

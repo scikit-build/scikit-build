@@ -8,6 +8,28 @@ details, see the commit logs at http://github.com/scikit-build/scikit-build
 Next Release
 ============
 
+Bug fixes
+---------
+
+* Fixed a regression that caused setuptools to complain about unknown setup option
+  (`cmake_process_manifest_hook`).
+
+* Hide the warning that shows up when `SKBUILD` is unused.
+
+* If it applies, ensure generator toolset is used to configure the project.
+  Thanks :user:`YannickJadoul` for the contribution. See :issue:`526`.
+
+Documentation
+-------------
+
+* Update `Conda: Step-by-step` release guide available in :doc:`/make_a_release` section.
+* Update links to CMake documentation pages in :doc:/`generators`.
+
+Tests
+-----
+
+* Fix linting error `F522 <https://flake8.pycqa.org/en/latest/user/error-codes.html>`_ reported with flake8 >= 3.8.x. Thanks :user:`benbovy` for the contribution. See :issue:`494`.
+
 Scikit-build 0.11.1
 ===================
 

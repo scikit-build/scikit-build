@@ -8,7 +8,7 @@
 # and Tempita sources. The required targets are automatically generated to
 # "lower" source files from their high-level representation to a file that the
 # compiler can accept.
-# 
+#
 #
 #   add_python_library(<Name>
 #                      SOURCES [source1 [source2 ...]]
@@ -38,7 +38,7 @@
 # and Tempita sources. The required targets are automatically generated to
 # "lower" source files from their high-level representation to a file that the
 # compiler can accept.
-# 
+#
 #
 #   add_python_extension(<Name>
 #                        SOURCES [source1 [source2 ...]]
@@ -88,7 +88,7 @@ function(add_python_library _name)
   set(options STATIC SHARED MODULE)
   set(multiValueArgs SOURCES INCLUDE_DIRECTORIES LINK_LIBRARIES COMPILE_DEFINITIONS DEPENDS)
   cmake_parse_arguments(_args "${options}" "" "${multiValueArgs}" ${ARGN} )
-  
+
   # Validate arguments to allow simpler debugging
   if(NOT _args_SOURCES)
     message(
@@ -98,14 +98,14 @@ function(add_python_library _name)
       "your CMakeLists.txt file"
     )
   endif()
-  
+
   # Initialize the list of sources
   set(_sources ${_args_SOURCES})
 
   # Generate targets for all *.src files
   set(_processed )
   foreach(_source IN LISTS _sources)
-    if(${_source} MATCHES .pyf.src$ OR ${_source} MATCHES \\.f\\.src$)
+    if(${_source} MATCHES ".pyf.src$" OR ${_source} MATCHES "\\.f\\.src$")
       if(NOT NumPy_FOUND)
         message(
           FATAL_ERROR
@@ -115,14 +115,14 @@ function(add_python_library _name)
       string(REGEX REPLACE "\\.[^.]*$" "" _source_we ${_source})
       add_custom_command(
         OUTPUT ${_source_we}
-        COMMAND ${NumPy_FROM_TEMPLATE_EXECUTABLE} 
+        COMMAND ${NumPy_FROM_TEMPLATE_EXECUTABLE}
                 ${CMAKE_CURRENT_SOURCE_DIR}/${_source}
                 ${CMAKE_CURRENT_BINARY_DIR}/${_source_we}
         DEPENDS ${_source} ${_args_DEPENDS}
         COMMENT "Generating ${_source_we} from template ${_source}"
       )
       list(APPEND _processed ${_source_we})
-    elseif(${_source} MATCHES \\.c\\.src$)
+    elseif(${_source} MATCHES "\\.c\\.src$")
       if(NOT NumPy_FOUND)
         message(
           FATAL_ERROR
@@ -132,14 +132,14 @@ function(add_python_library _name)
       string(REGEX REPLACE "\\.[^.]*$" "" _source_we ${_source})
       add_custom_command(
         OUTPUT ${_source_we}
-        COMMAND ${NumPy_CONV_TEMPLATE_EXECUTABLE} 
+        COMMAND ${NumPy_CONV_TEMPLATE_EXECUTABLE}
                 ${CMAKE_CURRENT_SOURCE_DIR}/${_source}
                 ${CMAKE_CURRENT_BINARY_DIR}/${_source_we}
         DEPENDS ${_source} ${_args_DEPENDS}
         COMMENT "Generating ${_source_we} from template ${_source}"
       )
       list(APPEND _processed ${_source_we})
-    elseif(${_source} MATCHES \\.pyx\\.in$)
+    elseif(${_source} MATCHES "\\.pyx\\.in$")
       if(NOT Cython_FOUND)
         message(
           FATAL_ERROR
@@ -191,7 +191,10 @@ function(add_python_library _name)
     endif()
     set(_sources_abs )
     foreach(_source IN LISTS _sources)
-      list(APPEND _sources_abs ${CMAKE_CURRENT_SOURCE_DIR}/${_source})
+      if(NOT IS_ABSOLUTE ${_source})
+        set(_source ${CMAKE_CURRENT_SOURCE_DIR}/${_source})
+      endif()
+      list(APPEND _sources_abs ${_source})
     endforeach()
     add_custom_command(
         OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_name}.pyf
@@ -200,7 +203,7 @@ function(add_python_library _name)
         ARGS -h ${_name}.pyf -m ${_name} --overwrite-signature
              ${_sources_abs}
         DEPENDS ${_sources} ${_args_DEPENDS}
-        COMMENT "Generating ${_name} Fortan interface file"
+        COMMENT "Generating ${_name} Fortran interface file"
     )
     list(APPEND _sources ${_name}.pyf)
   endif()
@@ -303,10 +306,14 @@ function(add_python_extension _name)
     DEPENDS ${_args_DEPENDS}
   )
   python_extension_module(${_name})
-  
+
   file(RELATIVE_PATH _relative "${CMAKE_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}")
+  if(_relative STREQUAL "")
+    set(_relative ".")
+  endif()
+
   install(
-    TARGETS ${_name} 
+    TARGETS ${_name}
     LIBRARY DESTINATION "${_relative}"
     RUNTIME DESTINATION "${_relative}"
   )
