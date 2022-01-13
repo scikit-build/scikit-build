@@ -52,11 +52,6 @@ jobs:
     - name: Setup nox
       uses: excitedleigh/setup-nox@v2.0.0
 
-    - name: Setup Python 3.10 dev
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.10-dev
-
     # We check all Python's on Linux, because it's fast.
     # We check Python 2.7 on Linux and macOS, it's not supported on Windows.
     # We check minimum Python 3, and maximum Python 3 on all OS's.
@@ -106,6 +101,40 @@ jobs:
 
     - name: Test on 🐍 3.5
       run: nox --forcecolor -s tests-3.5
+
+
+  tests-pypy:
+    runs-on: ${{ matrix.runs-on }}
+    needs: [lint]
+    strategy:
+      fail-fast: false
+      matrix:
+        runs-on: [ubuntu-latest, macos-latest, windows-2016, windows-latest]
+    name: Tests on 🐍 PyPy • ${{ matrix.runs-on }}
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Set environment for available GHA MSVCs
+      run: |
+        echo "SKBUILD_TEST_FIND_VS2008_INSTALLATION_EXPECTED=0" >> $GITHUB_ENV
+        echo "SKBUILD_TEST_FIND_VS2010_INSTALLATION_EXPECTED=0" >> $GITHUB_ENV
+        echo "SKBUILD_TEST_FIND_VS2012_INSTALLATION_EXPECTED=0" >> $GITHUB_ENV
+        echo "SKBUILD_TEST_FIND_VS2015_INSTALLATION_EXPECTED=1" >> $GITHUB_ENV
+        echo "SKBUILD_TEST_FIND_VS2017_INSTALLATION_EXPECTED=1" >> $GITHUB_ENV
+        echo "SKBUILD_TEST_FIND_VS2019_INSTALLATION_EXPECTED=1" >> $GITHUB_ENV
+
+    - name: Setup nox
+      uses: excitedleigh/setup-nox@v2.0.0
+
+    - uses: actions/setup-python@v2
+      with:
+        python_version: pypy3.7
+
+    - name: Test on 🐍 PyPy 3.7
+      run: nox --forcecolor -s tests-pypy3.7
 
 
   dist:

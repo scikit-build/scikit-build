@@ -5,7 +5,7 @@ import nox
 
 nox.options.sessions = ["lint", "tests"]
 
-PYTHON_ALL_VERSIONS = ["2.7", "3.5", "3.6", "3.7", "3.8", "3.9", "3.10"]
+PYTHON_ALL_VERSIONS = ["2.7", "3.5", "3.6", "3.7", "3.8", "3.9", "3.10", "pypy3.7"]
 MSVC_ALL_VERSIONS = {"2008", "2010", "2013", "2015", "2017", "2019"}
 
 
