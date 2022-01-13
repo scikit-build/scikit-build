@@ -159,7 +159,7 @@ def test_cmake_executable_arg():
 
 @pytest.mark.parametrize("action", ['sdist', 'bdist_wheel'])
 @pytest.mark.parametrize("hide_listing", [True, False])
-def test_hide_listing(action, hide_listing, capfd):
+def test_hide_listing(action, hide_listing, capfd, caplog):
 
     cmd = [action]
     if hide_listing:
@@ -171,7 +171,9 @@ def test_hide_listing(action, hide_listing, capfd):
 
     run()
 
-    out, _ = capfd.readouterr()
+    out, err = capfd.readouterr()
+    out += err + caplog.text
+
     if hide_listing:
         assert to_platform_path("bonjour/__init__.py") not in out
     else:

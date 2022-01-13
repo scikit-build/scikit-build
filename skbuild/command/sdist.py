@@ -3,11 +3,10 @@
 import contextlib
 import os
 
-from distutils import log as distutils_log
 from distutils.command.sdist import sdist as _sdist
 
 from . import set_build_base_mixin
-from ..utils import distribution_hide_listing, new_style
+from ..utils import distribution_hide_listing, new_style, distutils_log
 
 
 class sdist(set_build_base_mixin, new_style(_sdist)):

@@ -318,7 +318,7 @@ def test_cmake_minimum_required_version_keyword():
                    strict=False)
 def test_setup_requires_keyword_include_cmake(mocker, capsys):
 
-    mock_setup = mocker.patch('skbuild.setuptools_wrap.upstream_setup')
+    mock_setup = mocker.patch('skbuild.setuptools_wrap.setuptools.setup')
 
     tmp_dir = _tmpdir('setup_requires_keyword_include_cmake')
 
@@ -806,7 +806,7 @@ def test_setup_inputs(
 
     # Do not call the real setup function. Instead, replace it with
     # a MagicMock allowing to check with which arguments it was invoked.
-    mock_setup = mocker.patch('skbuild.setuptools_wrap.upstream_setup')
+    mock_setup = mocker.patch('skbuild.setuptools_wrap.setuptools.setup')
 
     # Convenience print function
     def _pprint(desc, value=None):
@@ -1039,7 +1039,7 @@ def test_cmake_install_into_pure_package(with_cmake_source_dir, capsys):
 @pytest.mark.parametrize("zip_safe", [None, False, True])
 def test_zip_safe_default(zip_safe, mocker):
 
-    mock_setup = mocker.patch('skbuild.setuptools_wrap.upstream_setup')
+    mock_setup = mocker.patch('skbuild.setuptools_wrap.setuptools.setup')
 
     tmp_dir = _tmpdir('zip_safe_default')
 
