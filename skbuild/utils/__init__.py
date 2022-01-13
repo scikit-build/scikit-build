@@ -4,13 +4,26 @@ import errno
 import os
 
 from collections import namedtuple
+import contextlib
 from contextlib import contextmanager
-from distutils import log as distutils_log
 from distutils.command.build_py import build_py as distutils_build_py
 from distutils.errors import DistutilsTemplateError
 from distutils.filelist import FileList
 from distutils.text_file import TextFile
 from functools import wraps
+
+try:
+    import setuptools.logging  # noqa: F401
+    import logging
+
+    distutils_log = logging.getLogger("skbuild")
+    distutils_log.setLevel(logging.INFO)
+    logging_module = True
+
+except ImportError:
+    from distutils import log as distutils_log
+
+    logging_module = False
 
 
 class ContextDecorator(object):
@@ -161,8 +174,12 @@ class PythonModuleFinder(new_style(distutils_build_py)):
             if os.path.exists(updated_module_file):
                 module_file = updated_module_file
         if not os.path.isfile(module_file):
-            distutils_log.warn(
-                "file %s (for module %s) not found", module_file, module)
+            if logging_module:
+                distutils_log.warning(
+                    "file %s (for module %s) not found", module_file, module)
+            else:
+                distutils_log.warn(
+                    "file %s (for module %s) not found", module_file, module)
             return False
         return True
 
@@ -186,15 +203,34 @@ def distribution_hide_listing(distribution):
 
     It yields True if ``--hide-listing`` argument was provided.
     """
+
+    hide_listing = hasattr(distribution, "hide_listing") and distribution.hide_listing
+
     # pylint:disable=protected-access
-    old_threshold = distutils_log._global_log.threshold
-    hide_listing = False
-    if (hasattr(distribution, "hide_listing")
-            and distribution.hide_listing):
-        hide_listing = True
-        distutils_log.set_threshold(distutils_log.WARN)
-    yield hide_listing
-    distutils_log.set_threshold(old_threshold)
+    if logging_module:
+        # Setuptools 60.2+, will always be on Python 3.6+
+        old_level = distutils_log.getEffectiveLevel()
+        if hide_listing:
+            distutils_log.setLevel(logging.WARNING)
+        try:
+            if hide_listing:
+                # The classic logger doesn't respond to set_threshold anymore,
+                # but it does log info and above to stdout, so let's hide that
+                with open(os.devnull, 'w') as f, contextlib.redirect_stdout(f):
+                    yield hide_listing
+            else:
+                yield hide_listing
+        finally:
+            distutils_log.setLevel(old_level)
+
+    else:
+        old_threshold = distutils_log._global_log.threshold
+        if hide_listing:
+            distutils_log.set_threshold(distutils_log.WARN)
+        try:
+            yield hide_listing
+        finally:
+            distutils_log.set_threshold(old_threshold)
 
 
 def parse_manifestin(template):

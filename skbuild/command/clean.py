@@ -7,15 +7,13 @@ try:
 except ImportError:
     from distutils.command.clean import clean as _clean
 
-from distutils import log
-
 from shutil import rmtree
 
 from . import set_build_base_mixin
 from ..constants import (CMAKE_BUILD_DIR,
                          CMAKE_INSTALL_DIR,
                          SKBUILD_DIR)
-from ..utils import new_style
+from ..utils import new_style, distutils_log
 
 
 class clean(set_build_base_mixin, new_style(_clean)):
@@ -28,6 +26,6 @@ class clean(set_build_base_mixin, new_style(_clean)):
                      CMAKE_BUILD_DIR(),
                      SKBUILD_DIR()):
             if os.path.exists(dir_):
-                log.info("removing '%s'", dir_)
+                distutils_log.info("removing '%s'", dir_)
             if not self.dry_run and os.path.exists(dir_):
                 rmtree(dir_)

@@ -147,7 +147,7 @@ def test_hello_clean(dry_run, capfd):
         assert 'Build files have been written to' not in clean_out
 
 
-def test_hello_cleans(capfd):
+def test_hello_cleans(capfd, caplog):
     with push_dir():
 
         tmp_dir = _tmpdir("test_hello_cleans")
@@ -176,9 +176,10 @@ def test_hello_cleans(capfd):
     clean2_out = clean2_out.strip()
 
     assert "running clean" == clean1_out.splitlines()[0]
-    assert "removing '{}'".format(CMAKE_INSTALL_DIR()) == clean1_out.splitlines()[1]
-    assert "removing '{}'".format(CMAKE_BUILD_DIR()) == clean1_out.splitlines()[2]
-    assert "removing '{}'".format(SKBUILD_DIR()) == clean1_out.splitlines()[3]
+    if caplog.text.count("removing") != 3:
+        assert "removing '{}'".format(CMAKE_INSTALL_DIR()) == clean1_out.splitlines()[1]
+        assert "removing '{}'".format(CMAKE_BUILD_DIR()) == clean1_out.splitlines()[2]
+        assert "removing '{}'".format(SKBUILD_DIR()) == clean1_out.splitlines()[3]
 
     assert "running clean" == clean2_out
 
