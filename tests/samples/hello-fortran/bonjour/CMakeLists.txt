@@ -5,7 +5,7 @@ add_f2py_target(_bonjour
   OUTPUT_VAR _pyf_target_output
   )
 
-add_library(${_module_name} MODULE ${_pyf_target_output})
+add_library(${_module_name} MODULE ${_module_name})
 target_include_directories(${_module_name} PRIVATE ${F2PY_INCLUDE_DIRS})
 target_link_libraries(${_module_name} ${F2PY_LIBRARIES})
 python_extension_module(${_module_name})
