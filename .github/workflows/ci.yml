@@ -54,10 +54,17 @@ jobs:
     - name: Setup nox
       uses: excitedleigh/setup-nox@v2.0.0
 
-    - name: Setup Python 3.10 dev
+    - name: Setup Python 3.5
       uses: actions/setup-python@v2
+      if: matrix.runs-on != 'windows-2022'
       with:
-        python-version: 3.10-dev
+        python-version: 3.5
+
+    - name: Setup Python 3.6
+      uses: actions/setup-python@v2
+      if: runner.os == 'Linux'
+      with:
+        python-version: 3.6
 
     # We check all Python's on Linux, because it's fast.
     # We check Python 2.7 on Linux and macOS, it's not supported on Windows.
@@ -67,7 +74,7 @@ jobs:
       if: runner.os != 'Windows'
       run: nox --forcecolor -s tests-2.7
     - name: Test on 🐍 3.5
-      if: matrix.runs-on != 'windows-latest'
+      if: matrix.runs-on != 'windows-2022'
       run: nox --forcecolor -s tests-3.5
     - name: Test on 🐍 3.6
       if: runner.os == 'Linux'
@@ -102,6 +109,7 @@ jobs:
         echo "SKBUILD_TEST_FIND_VS2015_INSTALLATION_EXPECTED=1" >> $GITHUB_ENV
         echo "SKBUILD_TEST_FIND_VS2017_INSTALLATION_EXPECTED=1" >> $GITHUB_ENV
         echo "SKBUILD_TEST_FIND_VS2019_INSTALLATION_EXPECTED=1" >> $GITHUB_ENV
+        echo "SKBUILD_TEST_FIND_VS2022_INSTALLATION_EXPECTED=0" >> $GITHUB_ENV
 
     - name: Setup nox
       uses: excitedleigh/setup-nox@v2.0.0
