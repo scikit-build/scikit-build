@@ -65,6 +65,7 @@ def test_generator_selection():
 
         has_vs_2017 = find_visual_studio(vs_version=VS_YEAR_TO_VERSION["2017"])
         has_vs_2019 = find_visual_studio(vs_version=VS_YEAR_TO_VERSION["2019"])
+        has_vs_2022 = find_visual_studio(vs_version=VS_YEAR_TO_VERSION["2022"])
 
         # Apply to VS <= 14 (2015)
         has_vs_ide_vcvars = any([
@@ -92,7 +93,7 @@ def test_generator_selection():
         ) and which("ninja.exe"):
             generator = "Ninja"
 
-        elif has_vs_2017 or has_vs_2019:
+        elif has_vs_2017 or has_vs_2019 or has_vs_2022:
             # ninja is provided by the CMake extension bundled with Visual Studio 2017
             # C:/Program Files (x86)/Microsoft Visual Studio/2017/Professional/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe  # noqa: E501
             generator = "Ninja"
@@ -175,7 +176,7 @@ def test_invalid_generator(generator_args):
 
 
 @pytest.mark.parametrize(
-    "vs_year", ["2008", "2010", "2012", "2013", "2015", "2017", "2019"]
+    "vs_year", ["2008", "2010", "2012", "2013", "2015", "2017", "2019", "2022"]
 )
 def test_platform_windows_find_visual_studio(vs_year):
     """If the environment variable ``SKBUILD_TEST_FIND_VS<vs_year>_INSTALLATION_EXPECTED`` is set,

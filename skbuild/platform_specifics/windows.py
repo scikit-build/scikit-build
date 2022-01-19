@@ -74,9 +74,9 @@ class WindowsPlatform(abstract.CMakePlatform):
                 """
             ).strip()
 
-        # For Python 3.6 and above: VS2019, VS2017
+        # For Python 3.6 and above: VS2022, VS2019, VS2017
         elif version.major == 3 and version.minor >= 6:
-            supported_vs_years = [("2019", "v142"), ("2017", "v141")]
+            supported_vs_years = [("2022", "v143"), ("2019", "v142"), ("2017", "v141")]
             self._vs_help = vs_help_template % (
                 supported_vs_years[0][0],
                 "Visual Studio 2017",
@@ -85,6 +85,10 @@ class WindowsPlatform(abstract.CMakePlatform):
             self._vs_help += "\n\n" + textwrap.dedent(
                 """
                 Or with "Visual Studio 2019":
+
+                  https://visualstudio.microsoft.com/vs/
+
+                Or with "Visual Studio 2022":
 
                   https://visualstudio.microsoft.com/vs/
                 """
@@ -113,6 +117,7 @@ VS_YEAR_TO_VERSION = {
     "2015": 14,
     "2017": 15,
     "2019": 16,
+    "2022": 17,
 }
 """Describes the version of `Visual Studio` supported by
 :class:`CMakeVisualStudioIDEGenerator` and
