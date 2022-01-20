@@ -474,24 +474,30 @@ class CMaker(object):
             # Because calling `sysconfig.get_config_var('multiarchsubdir')`
             # returns an empty string on Linux, `du_sysconfig` is only used to
             # get the value of `LIBDIR`.
-            libdir = du_sysconfig.get_config_var('LIBDIR')
-            if sysconfig.get_config_var('MULTIARCH'):
-                masd = sysconfig.get_config_var('multiarchsubdir')
-                if masd:
-                    if masd.startswith(os.sep):
-                        masd = masd[len(os.sep):]
-                    libdir = os.path.join(libdir, masd)
-
-            if libdir is None:
-                libdir = os.path.abspath(os.path.join(
-                    sysconfig.get_config_var('LIBDEST'), "..", "libs"))
+            candidate_libdirs = []
+            libdir_a = du_sysconfig.get_config_var('LIBDIR')
+            if libdir_a is None:
+                candidate_libdirs.append(os.path.abspath(os.path.join(
+                    sysconfig.get_config_var('LIBDEST'), "..", "libs")))
+            libdir_b = sysconfig.get_config_var('LIBDIR')
+            for libdir in (libdir_a, libdir_b):
+                if libdir is None:
+                    continue
+                if sysconfig.get_config_var('MULTIARCH'):
+                    masd = sysconfig.get_config_var('multiarchsubdir')
+                    if masd:
+                        if masd.startswith(os.sep):
+                            masd = masd[len(os.sep):]
+                        libdir = os.path.join(libdir, masd)
+                candidate_libdirs.append(libdir)
 
             candidates = (
                 os.path.join(
                     libdir,
                     ''.join((pre, impl, ver, abi, ext))
                 )
-                for (pre, impl, ext, ver, abi) in itertools.product(
+                for (libdir, pre, impl, ext, ver, abi) in itertools.product(
+                    candidate_libdirs,
                     candidate_lib_prefixes,
                     candidate_implementations,
                     candidate_extensions,
