@@ -141,6 +141,10 @@ jobs:
         echo "SKBUILD_TEST_FIND_VS2017_INSTALLATION_EXPECTED=1" >> $GITHUB_ENV
         echo "SKBUILD_TEST_FIND_VS2019_INSTALLATION_EXPECTED=1" >> $GITHUB_ENV
 
+    - name: Set min macOS version
+      run: |
+        echo "MACOS_DEPLOYMENT_TARGET=10.9" >> $GITHUB_ENV
+
     - name: Setup nox
       uses: excitedleigh/setup-nox@v2.0.0
 
