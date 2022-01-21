@@ -91,6 +91,27 @@ jobs:
     - name: Test on 🐍 3.10
       run: nox -s tests-3.10
 
+  cygwin:
+    name: Tests on 🐍 3.9 • cygwin
+    runs-on: windows-latest
+    needs: [lint]
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - uses: egor-tensin/setup-cygwin@v3
+      with:
+        platform: x64
+        packages: cmake gcc-g++ python39 python39-pip
+
+    - name: Install nox
+      run: python3.9 -m pip install nox
+
+    - name: Run tests
+      run: python3.9 -m nox -s tests-3.9
+
 
   tests-pypy:
     runs-on: ${{ matrix.runs-on }}
