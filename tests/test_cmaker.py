@@ -8,6 +8,7 @@ Tests for CMaker functionality.
 """
 
 import os
+import sys
 import pytest
 import re
 import textwrap
@@ -18,6 +19,8 @@ from skbuild.exceptions import SKBuildError
 from skbuild.utils import push_dir, to_unix_path
 
 from . import _tmpdir, get_cmakecache_variables
+
+PYPY = hasattr(sys, "implementation") and sys.implementation.name == "pypy"
 
 
 def test_get_python_version():
@@ -30,6 +33,8 @@ def test_get_python_include_dir():
     assert os.path.exists(python_include_dir)
 
 
+@pytest.mark.xfail(PYPY and sys.platform.startswith('darwin'),
+                   reason="Broken on PyPy on macOS")
 def test_get_python_library():
     python_library = CMaker.get_python_library(CMaker.get_python_version())
     assert python_library

@@ -118,6 +118,44 @@ jobs:
       run: nox --forcecolor -s tests-3.5
 
 
+  tests-pypy:
+    runs-on: ${{ matrix.runs-on }}
+    needs: [lint]
+    strategy:
+      fail-fast: false
+      matrix:
+        runs-on: [ubuntu-latest, macos-latest, windows-2016, windows-latest]
+    name: Tests on 🐍 PyPy • ${{ matrix.runs-on }}
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Set environment for available GHA MSVCs
+      run: |
+        echo "SKBUILD_TEST_FIND_VS2008_INSTALLATION_EXPECTED=0" >> $GITHUB_ENV
+        echo "SKBUILD_TEST_FIND_VS2010_INSTALLATION_EXPECTED=0" >> $GITHUB_ENV
+        echo "SKBUILD_TEST_FIND_VS2012_INSTALLATION_EXPECTED=0" >> $GITHUB_ENV
+        echo "SKBUILD_TEST_FIND_VS2015_INSTALLATION_EXPECTED=1" >> $GITHUB_ENV
+        echo "SKBUILD_TEST_FIND_VS2017_INSTALLATION_EXPECTED=1" >> $GITHUB_ENV
+        echo "SKBUILD_TEST_FIND_VS2019_INSTALLATION_EXPECTED=1" >> $GITHUB_ENV
+
+    - name: Set min macOS version
+      run: |
+        echo "MACOS_DEPLOYMENT_TARGET=10.9" >> $GITHUB_ENV
+
+    - name: Setup nox
+      uses: excitedleigh/setup-nox@v2.0.0
+
+    - uses: actions/setup-python@v2
+      with:
+        python_version: pypy3.7
+
+    - name: Test on 🐍 PyPy 3.7
+      run: nox --forcecolor -s tests-pypy3.7
+
+
   dist:
     name: Distribution
     runs-on: ubuntu-latest

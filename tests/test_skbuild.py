@@ -175,6 +175,7 @@ def test_invalid_generator(generator_args):
                "for your system. Aborting build." in message
 
 
+@pytest.mark.skipif(sys.platform != 'win32', reason='Requires Windows')
 @pytest.mark.parametrize(
     "vs_year", ["2008", "2010", "2012", "2013", "2015", "2017", "2019", "2022"]
 )
