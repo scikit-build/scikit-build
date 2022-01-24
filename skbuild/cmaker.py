@@ -455,7 +455,13 @@ class CMaker(object):
                 candidate_implementations = ['pypy-c', 'pypy3-c']
 
             candidate_extensions = ['.lib', '.so', '.a']
-            if sysconfig.get_config_var('WITH_DYLD'):
+            # On pypy + MacOS, the variable WITH_DYLD is not set. It would
+            # actually be possible to determine the python library there using
+            # LDLIBRARY + LIBDIR. As a simple fix, we check if the LDLIBRARY
+            # ends with .dylib and add it to the candidate matrix in this case.
+            with_ld = sysconfig.get_config_var('WITH_DYLD')
+            ld_lib = sysconfig.get_config_var('LDLIBRARY')
+            if with_ld or (ld_lib and ld_lib.endswith('.dylib')):
                 candidate_extensions.insert(0, '.dylib')
 
             candidate_versions = [python_version]
