@@ -494,7 +494,7 @@ class CMaker(object):
                     if masd:
                         if masd.startswith(os.sep):
                             masd = masd[len(os.sep):]
-                        libdir = os.path.join(libdir, masd)
+                        candidate_libdirs.append(os.path.join(libdir, masd))
                 candidate_libdirs.append(libdir)
 
             candidates = (
