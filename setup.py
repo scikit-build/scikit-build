@@ -1,12 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import versioneer
+import setuptools
 
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
+# Produce an ImportError if this is missing
+import setuptools_scm  # noqa: F401
 
 
 with open('README.rst', 'r') as fp:
@@ -24,25 +22,15 @@ with open('requirements-dev.txt', 'r') as fp:
 with open('requirements-docs.txt', 'r') as fp:
     doc_requirements = list(filter(bool, (line.strip() for line in fp)))
 
-setup(
+setuptools.setup(
     name='scikit-build',
-    version=versioneer.get_version(),
-    cmdclass=versioneer.get_cmdclass(),
     description='Improved build system generator for Python C/C++/Fortran/Cython extensions',
     long_description_content_type='text/x-rst; charset=UTF-8',
     long_description=readme + '\n\n' + history,
     author='The scikit-build team',
     author_email='scikit-build@googlegroups.com',
     url='https://github.com/scikit-build/scikit-build',
-    packages=[
-        'skbuild',
-        'skbuild.command',
-        'skbuild.platform_specifics',
-        'skbuild.utils'
-    ],
-    package_dir={'skbuild': 'skbuild',
-                 'skbuild.platform_specifics': 'skbuild/platform_specifics',
-                 'skbuild.command': 'skbuild/command'},
+    packages=setuptools.find_packages(include=["skbuild*"]),
     project_urls={
         "Documentation": "https://scikit-build.readthedocs.io/",
         "Bug Tracker": "https://github.com/scikit-build/scikit-build/issues",
@@ -50,7 +38,6 @@ setup(
         "Mailing List": "https://groups.google.com/forum/#!forum/scikit-build",
         "Examples": "https://github.com/scikit-build/scikit-build-sample-projects",
     },
-    package_data={'skbuild': ['resources/cmake/*.cmake']},
     include_package_data=True,
     install_requires=requirements,
     license="MIT",
