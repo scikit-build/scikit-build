@@ -54,8 +54,8 @@ Bug fixes
   Thanks to :user:`isuruf` for the contribution in :pr:`622`.
 
 * Better detection of the library path, fixes some issues with PyPy. Thanks
-  to :user:`rkaminsk` for the contribution in :pr:`620`. PyPy is now part
-  of our testing matrix as of :pr:`624`.
+  to :user:`rkaminsk` for the contribution in :pr:`620` and :pr:`630`. PyPy
+  is now part of our testing matrix as of :pr:`624`.
 
 
 
