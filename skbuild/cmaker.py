@@ -133,20 +133,24 @@ class CMaker(object):
         self.cmake_version = get_cmake_version(self.cmake_executable)
         self.platform = get_platform()
 
-    def get_cached_generator_name(self):
-        """Reads and returns the cached generator from the :func:`skbuild.constants.CMAKE_BUILD_DIR()`:.
-        Returns None if not found.
-        """
+    def get_cached(self, item):
+        """Return the cached value if possible, otherwise return None"""
+        item = '{}:'.format(item)
         try:
-            cmake_generator = 'CMAKE_GENERATOR:INTERNAL='
             with open(os.path.join(CMAKE_BUILD_DIR(), 'CMakeCache.txt')) as fp:
                 for line in fp:
-                    if line.startswith(cmake_generator):
-                        return line[len(cmake_generator):].strip()
+                    if line.startswith(item):
+                        return line.split("=", 1)[-1].strip()
         except (OSError, IOError):
             pass
 
         return None
+
+    def get_cached_generator_name(self):
+        """Reads and returns the cached generator from the :func:`skbuild.constants.CMAKE_BUILD_DIR()`:.
+        Returns None if not found.
+        """
+        return self.get_cached('CMAKE_GENERATOR')
 
     def get_cached_generator_env(self):
         """If any, return a mapping of environment associated with the cached generator.
@@ -206,6 +210,14 @@ class CMaker(object):
         if cli_generator_name is not None:
             generator_name = cli_generator_name
 
+        ninja_path = None
+        if (generator_name is None or generator_name == "Ninja"):
+            try:
+                import ninja
+                ninja_path = os.path.join(ninja.BIN_DIR, "ninja")
+            except ImportError:
+                pass
+
         # if arch is provided on command line, use it
         clargs, cli_arch = pop_arg('-A', clargs)
 
@@ -251,6 +263,8 @@ class CMaker(object):
             cmd.extend(['-T', generator.toolset])
         if generator.architecture:
             cmd.extend(['-A', generator.architecture])
+        if ninja_path is not None:
+            cmd.append('-DCMAKE_MAKE_PROGRAM:FILEPATH=' + ninja_path)
 
         cmd.extend(clargs)
 
