@@ -46,7 +46,7 @@ jobs:
         echo "SKBUILD_TEST_FIND_VS2022_INSTALLATION_EXPECTED=0" >> $GITHUB_ENV
 
     - name: Set environment for available GHA MSVCs
-      if: matrix.runs-on == 'windows-latest'
+      if: matrix.runs-on == 'windows-2022'
       run: |
         echo "SKBUILD_TEST_FIND_VS2019_INSTALLATION_EXPECTED=1" >> $GITHUB_ENV
         echo "SKBUILD_TEST_FIND_VS2022_INSTALLATION_EXPECTED=1" >> $GITHUB_ENV
