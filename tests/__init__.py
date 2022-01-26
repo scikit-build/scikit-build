@@ -41,22 +41,6 @@ def push_argv(argv):
 
 
 @contextmanager
-def push_env(**kwargs):
-    """This context manager allow to set/unset environment variables.
-    """
-    saved_env = dict(os.environ)
-    for var, value in kwargs.items():
-        if value is not None:
-            os.environ[var] = value
-        elif var in os.environ:
-            del os.environ[var]
-    yield
-    os.environ.clear()
-    for (saved_var, saved_value) in saved_env.items():
-        os.environ[saved_var] = saved_value
-
-
-@contextmanager
 def prepend_sys_path(paths):
     """This context manager allows to prepend paths to ``sys.path`` and restore the
     original list.

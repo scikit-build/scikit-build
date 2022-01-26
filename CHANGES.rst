@@ -165,6 +165,9 @@ Bug fixes
   `distro.id()`. This adds the `distro` package as dependency. See :issue:`458`. Thanks
   :user:`bnavigator` for the contribution.
 
+* Ignore DESTDIR in environment and MAKEFLAGS when installing .so to _skbuild
+  Contributed by :user:`jokva`.
+
 Documentation
 -------------
 

@@ -12,9 +12,10 @@ import pytest
 
 from skbuild.utils import (ContextDecorator, mkdir_p,
                            PythonModuleFinder, push_dir,
-                           to_platform_path, to_unix_path)
+                           to_platform_path, to_unix_path,
+                           push_env)
 
-from . import (list_ancestors, push_env, SAMPLES_DIR)
+from . import (list_ancestors, SAMPLES_DIR)
 
 saved_cwd = os.getcwd()
 

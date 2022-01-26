@@ -16,9 +16,10 @@ from skbuild.constants import CMAKE_BUILD_DIR
 from skbuild.exceptions import SKBuildError
 from skbuild.platform_specifics import get_platform
 from skbuild.platform_specifics.windows import find_visual_studio, VS_YEAR_TO_VERSION
+from skbuild.utils import push_env
 
 from . import (get_cmakecache_variables, project_setup_py_test,
-               push_dir, push_env, which)
+               push_dir, which)
 
 
 def test_generator_selection():

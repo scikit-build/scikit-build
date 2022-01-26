@@ -5,7 +5,8 @@ import platform
 
 import skbuild.constants
 
-from . import _tmpdir, execute_setup_py, push_env
+from . import _tmpdir, execute_setup_py
+from skbuild.utils import push_env
 
 params = "osx_deployment_target_env_var,cli_setup_args," \
     "keyword_cmake_args,cli_cmake_args,expected_cmake_osx_deployment_target"

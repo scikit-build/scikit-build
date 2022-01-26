@@ -23,6 +23,7 @@ from .constants import (CMAKE_BUILD_DIR,
                         SETUPTOOLS_INSTALL_DIR)
 from .platform_specifics import get_platform
 from .exceptions import SKBuildError
+from .utils import push_env
 
 RE_FILE_INSTALL = re.compile(
     r"""[ \t]*file\(INSTALL DESTINATION "([^"]+)".*"([^"]+)"\).*""")
@@ -92,6 +93,32 @@ def get_cmake_version(cmake_executable=CMAKE_DEFAULT_EXECUTABLE):
         version_string = version_string.decode()
 
     return version_string.splitlines()[0].split(' ')[-1]
+
+
+class push_env_without_destdir(push_env):
+    """Remove DESTDIR from MAKEFLAGS and environment
+
+    When scikit-build is invoked as a part of a larger cmake project, makefile,
+    or something else that sets the DESTDIR environment variable, the internal
+    cmake --target install honours it and makes artefacts under DESTDIR/
+
+    The internal install into _skbuild/ should never need to respect DESTDIR,
+    so simply remove it from the environment. When cmake generates the
+    makefiles, it stores the make parameters [1] in the MAKEFLAGS environment
+    variable.  The DESTDIR entry needs to be removed from here as well.
+
+    [1] make DESTDIR=/path install
+    """
+    def __init__(self, **kwargs):
+        kwargs['DESTDIR'] = None
+
+        if 'MAKEFLAGS' in kwargs:
+            makeflags = kwargs['MAKEFLAGS']
+            flags = makeflags.split(' ')
+            flags = [flag for flag in flags if not flag.startswith('DESTDIR=')]
+            kwargs['MAKEFLAGS'] = ' '.join(flags)
+
+        super(push_env_without_destdir, self).__init__(**kwargs)
 
 
 class CMaker(object):
@@ -590,7 +617,15 @@ class CMaker(object):
                    shlex.split(os.environ.get("SKBUILD_BUILD_OPTIONS", "")))
         )
 
-        rtn = subprocess.call(cmd, cwd=CMAKE_BUILD_DIR(), env=env)
+        # The subprocess.call() expects a modified environment or None (means
+        # inherit process, i.e. os.environ). push_env_without_destdir, however,
+        # uses **kwargs to set/unset parameters
+        if env is None:
+            env = {}
+
+        with push_env_without_destdir(**env):
+            rtn = subprocess.call(cmd, cwd=CMAKE_BUILD_DIR(), env=None)
+
         if rtn != 0:
             raise SKBuildError(
                 "An error occurred while building with CMake.\n"
