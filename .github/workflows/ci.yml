@@ -131,22 +131,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runs-on: [ubuntu-latest, macos-latest, windows-2016, windows-latest]
+        runs-on: [ubuntu-latest, macos-latest]
     name: Tests on 🐍 PyPy • ${{ matrix.runs-on }}
 
     steps:
     - uses: actions/checkout@v2
       with:
         fetch-depth: 0
-
-    - name: Set environment for available GHA MSVCs
-      run: |
-        echo "SKBUILD_TEST_FIND_VS2008_INSTALLATION_EXPECTED=0" >> $GITHUB_ENV
-        echo "SKBUILD_TEST_FIND_VS2010_INSTALLATION_EXPECTED=0" >> $GITHUB_ENV
-        echo "SKBUILD_TEST_FIND_VS2012_INSTALLATION_EXPECTED=0" >> $GITHUB_ENV
-        echo "SKBUILD_TEST_FIND_VS2015_INSTALLATION_EXPECTED=1" >> $GITHUB_ENV
-        echo "SKBUILD_TEST_FIND_VS2017_INSTALLATION_EXPECTED=1" >> $GITHUB_ENV
-        echo "SKBUILD_TEST_FIND_VS2019_INSTALLATION_EXPECTED=1" >> $GITHUB_ENV
 
     - name: Set min macOS version
       run: |
