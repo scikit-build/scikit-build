@@ -21,6 +21,9 @@ with open('requirements.txt', 'r') as fp:
 with open('requirements-dev.txt', 'r') as fp:
     dev_requirements = list(filter(bool, (line.strip() for line in fp)))
 
+with open('requirements-docs.txt', 'r') as fp:
+    doc_requirements = list(filter(bool, (line.strip() for line in fp)))
+
 setup(
     name='scikit-build',
     version=versioneer.get_version(),
@@ -68,5 +71,5 @@ setup(
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
     ],
-    extras_require={"test": dev_requirements},
+    extras_require={"test": dev_requirements, "docs": doc_requirements},
 )
