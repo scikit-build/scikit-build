@@ -133,13 +133,13 @@ class CMaker(object):
         self.cmake_version = get_cmake_version(self.cmake_executable)
         self.platform = get_platform()
 
-    def get_cached(self, item):
-        """Return the cached value if possible, otherwise return None"""
-        item = '{}:'.format(item)
+    def get_cached(self, variable_name):
+        """If set, returns the variable cached value from the :func:`skbuild.constants.CMAKE_BUILD_DIR()`, otherwise returns None"""
+        variable_name = '{}:'.format(variable_name)
         try:
             with open(os.path.join(CMAKE_BUILD_DIR(), 'CMakeCache.txt')) as fp:
                 for line in fp:
-                    if line.startswith(item):
+                    if line.startswith(variable_name):
                         return line.split("=", 1)[-1].strip()
         except (OSError, IOError):
             pass
@@ -210,11 +210,11 @@ class CMaker(object):
         if cli_generator_name is not None:
             generator_name = cli_generator_name
 
-        ninja_path = None
+        ninja_executable_path = None
         if (generator_name is None or generator_name == "Ninja"):
             try:
                 import ninja
-                ninja_path = os.path.join(ninja.BIN_DIR, "ninja")
+                ninja_executable_path = os.path.join(ninja.BIN_DIR, "ninja")
             except ImportError:
                 pass
 
@@ -263,8 +263,8 @@ class CMaker(object):
             cmd.extend(['-T', generator.toolset])
         if generator.architecture:
             cmd.extend(['-A', generator.architecture])
-        if ninja_path is not None:
-            cmd.append('-DCMAKE_MAKE_PROGRAM:FILEPATH=' + ninja_path)
+        if ninja_executable_path is not None:
+            cmd.append('-DCMAKE_MAKE_PROGRAM:FILEPATH=' + ninja_executable_path)
 
         cmd.extend(clargs)
 
