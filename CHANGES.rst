@@ -9,8 +9,8 @@ details, see the commit logs at http://github.com/scikit-build/scikit-build
 Next Release
 ============
 
-This is likely one of the final releases to support Python 2.7 and 3.5; future releases
-will likely target at least Python 3.6+.
+This is likely one of the final releases to support Python 2.7 and 3.5; future
+releases will likely target at least Python 3.6+ and MSCV 2017+.
 
 If you are using scikit-build via ``pyproject.toml``, please remember to
 include ``setuptools`` and ``wheel``. A future version of scikit-build may
@@ -35,8 +35,14 @@ New Features
   ``SKBUILD_LINK_LIBRARIES_KEYWORD`` (somewhat experimental). Thanks to
   :user:`maxbachmann` in :pr:`611`.
 
+
 Bug fixes
 ---------
+
+* Update the Ninja path if using the ``ninja`` package. This fixes repeated
+  isolated builds. Futher path inspection and updates for isolated
+  builds may be considered in the future. :pr:`631`, thanks to
+  :user:`RUrlus` and :user:`segevfiner` for help in tracking this down.
 
 * Allow OpenBSD to pass the platform check (untested). See :pr:`586`.
 
@@ -57,7 +63,10 @@ Bug fixes
   to :user:`rkaminsk` for the contribution in :pr:`620` and :pr:`630`. PyPy
   is now part of our testing matrix as of :pr:`624`.
 
-
+* Scikit-build now uses isolated builds when makign its own wheel.
+  This includes a change to ``setuptools_scm``, which may affect
+  builds-from-source. Downstream users of scikit-build should be
+  unaffected. :pr:`634` and minor warning fix in :pr:`635`.
 
 Scikit-build 0.12.0
 ===================
