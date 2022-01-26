@@ -68,7 +68,7 @@ Bug fixes
 Documentation
 -------------
 
-* Update `Conda: Step-by-step` release guide available in :doc:`/make_a_release` section.
+* Update ``Conda: Step-by-step`` release guide available in :doc:`/make_a_release` section.
 
 * Update links to CMake documentation pages in :doc:`/generators`. Thanks :user:`Eothred` for the contributions in :pr:`508`.
 
@@ -77,7 +77,7 @@ Tests
 
 * Improve and simplify Continuous Integration infrastructure.
 
-  * Support `nox` for running the tests locally. See :pr:`540`.
+  * Support ``nox`` for running the tests locally. See :pr:`540`.
 
   * Use GitHub Actions for Continuous Integration and remove use of scikit-ci, tox, TravisCI, AppVeyor and CircleCI. See :pr:`549`, :pr:`551` and :pr:`552`.
 
@@ -105,7 +105,7 @@ Bug fixes
 Documentation
 -------------
 
-* Fix link in `Conda: Step-by-step` release guide available in :doc:`/make_a_release` section.
+* Fix link in ``Conda: Step-by-step`` release guide available in :doc:`/make_a_release` section.
 
 Scikit-build 0.11.0
 ===================
@@ -114,12 +114,12 @@ New Features
 ------------
 
 * Add a hook to process the cmake install manifest building the wheel. The hook
-  function can be specified as an argument to the `setup()` function. This can be used e.g.
+  function can be specified as an argument to the ``setup()`` function. This can be used e.g.
   to prevent installing cmake configuration files, headers, or static libraries with the wheel.
   Thanks :user:`SylvainCorlay` for the contribution. See :issue:`473`.
 
-* Add support for passing :ref:`CMake configure options <usage_cmake_configure_options>` like `-DFOO:STRING:bar`
-  as global `setuptools` or `pip` options.
+* Add support for passing :ref:`CMake configure options <usage_cmake_configure_options>` like ``-DFOO:STRING:bar``
+  as global ``setuptools`` or ``pip`` options.
 
 * Add support for building project using PyPy or PyPy3. See https://pypy.org
   See :issue:`407`.
@@ -132,12 +132,12 @@ New Features
 
 * CMake modules:
 
-  * Improve CMake module :doc:`/cmake-modules/F2PY` adding `add_f2py_target()` CMake function
-    allowing to generate `*-f2pywrappers.f` and `*module.c` files from `*.pyf` files.
+  * Improve CMake module :doc:`/cmake-modules/F2PY` adding ``add_f2py_target()`` CMake function
+    allowing to generate ``*-f2pywrappers.f`` and `*module.c` files from ``*.pyf`` files.
     Thanks :user:`xoviat` for the contribution.
 
-  * Update CMake module :doc:`/cmake-modules/PythonExtensions` adding `add_python_library()`
-    and `add_python_extension()`.
+  * Update CMake module :doc:`/cmake-modules/PythonExtensions` adding ``add_python_library()``
+    and ``add_python_extension()``.
     Thanks :user:`xoviat` for the contribution.
 
 Bug fixes
@@ -152,26 +152,26 @@ Bug fixes
 
   * Ensure correct suffix is used for compiled python module on windows. See :issue:`383`.
 
-  * Fix warning using `EXT_SUFFIX` config variable instead of deprecated `SO` variable. See :issue:`381`.
+  * Fix warning using ``EXT_SUFFIX`` config variable instead of deprecated ``SO`` variable. See :issue:`381`.
 
-* Honor the `MACOSX_DEPLOYMENT_TARGET` environment variable if it is defined on
+* Honor the ``MACOSX_DEPLOYMENT_TARGET`` environment variable if it is defined on
   macOS. Thanks :user:`certik` for the contribution. See :issue:`441`.
 
-* Fix CMake module :doc:`/cmake-modules/F2PY` to ensure the `f2py` executable specific to
+* Fix CMake module :doc:`/cmake-modules/F2PY` to ensure the ``f2py`` executable specific to
   the python version being used is found. See :issue:`449`. Thanks :user:`bnavigator` for
   the contribution.
 
-* Replace `platform.linux_distribution()` which was removed in Python 3.8 by a call to
-  `distro.id()`. This adds the `distro` package as dependency. See :issue:`458`. Thanks
+* Replace ``platform.linux_distribution()`` which was removed in Python 3.8 by a call to
+  ``distro.id()``. This adds the ``distro`` package as dependency. See :issue:`458`. Thanks
   :user:`bnavigator` for the contribution.
 
 Documentation
 -------------
 
-* Add :doc:`/notes` section to the `For maintainers` top-level category that includes a comparison between
-  `sysconfig` and `distutils.sysconfig` modules.
+* Add :doc:`/notes` section to the ``For maintainers`` top-level category that includes a comparison between
+  ``sysconfig`` and ``distutils.sysconfig`` modules.
 
-* Remove obsolete comment in `cmaker.py`. See :issue:`439`. Thanks :user:`isuruf`
+* Remove obsolete comment in ``cmaker.py``. See :issue:`439`. Thanks :user:`isuruf`
 
 Tests
 -----
@@ -200,7 +200,7 @@ Bug fixes
 * Fix sdist command to ensure symlinks in original source tree are maintained.
   Contributed by :user:`anibali`. See :issue:`401`.
 
-* Ensure use of `bdist_egg` or `bdist_rpm` commands trigger build using cmake.
+* Ensure use of ``bdist_egg`` or ``bdist_rpm`` commands trigger build using cmake.
 
 * Fix default value returned by :func:`skbuild.constants.skbuild_plat_name()` on macOS.
   See :issue:`417`.
@@ -216,7 +216,7 @@ Documentation
 * Fix typo in example associated with :doc:`/cmake-modules/PythonExtensions`.
   Thanks :user:`eirrgang` for the contribution.
 
-* Update :doc:`/make_a_release` section to include `Conda: Step-by-step` release guide.
+* Update :doc:`/make_a_release` section to include ``Conda: Step-by-step`` release guide.
 
 Tests
 -----
@@ -274,7 +274,7 @@ Bug fixes
   and ``CMAKE_OSX_ARCHITECTURES`` values are provided. Thanks :user:`nonhermitian` for the contribution.
   See :issue:`377`.
 
-* Fix testing with recent version of pytest by updating the pytest-runner requirements expression in `setup.py`.
+* Fix testing with recent version of pytest by updating the pytest-runner requirements expression in ``setup.py``.
   Thanks :user:`mackelab` for the contribution.
 
 Scikit-build 0.8.1
@@ -315,7 +315,7 @@ Bug fixes
 * Fix support for building project with CMake source directory outside of the
   ``setup.py`` directory. See :issue:`335` fixed by :user:`massich`.
 
-* Fix reading of `.cmake` files having any character not available in
+* Fix reading of ``.cmake`` files having any character not available in
   `CP-1252 <https://en.wikipedia.org/wiki/Windows-1252>`_ (the default code page on
   windows). See :issue:`334` fixed by :user:`bgermann`.
 
@@ -324,7 +324,7 @@ Bug fixes
   command line arguments override the default values or the one hard-coded in the
   ``cmake_args`` setup keyword. Thanks :user:`yonip` for the help addressing :issue:`342`.
 
-* Support case where relative directory set in `package_dir` has an ending slash.
+* Support case where relative directory set in ``package_dir`` has an ending slash.
   For example, specifying ``package_dir={'awesome': 'src/awesome/'},`` is now
   properly handled.
 
@@ -348,7 +348,7 @@ Documentation
   ``--python-tags`` have no effect.
   Thanks :user:`bgermann` for the suggestion. See :issue:`353`.
 
-* Simplify documentation merging `Extension Build System` section with the `Advanced Usage` section.
+* Simplify documentation merging ``Extension Build System`` section with the ``Advanced Usage`` section.
   Thanks :user:`thewtex` for the suggestion.
 
 Tests
@@ -356,7 +356,7 @@ Tests
 
 * Add ``check_wheel_content`` utility function.
 
-* Skip `test_setup_requires_keyword_include_cmake` if running in conda test environment or
+* Skip ``test_setup_requires_keyword_include_cmake`` if running in conda test environment or
   if https://pypi.org is not reachable. Suggested by :user:`Luthaf`.
 
 * Continuous Integration
@@ -373,7 +373,7 @@ Tests
 
   * Always install up-to-date `scikit-ci`_ and `scikit-ci-addons`_.
 
-  * Simplify release process managing `versioning` with `python-versioneer <https://github.com/warner/python-versioneer/>`_
+  * Simplify release process managing ``versioning`` with `python-versioneer <https://github.com/warner/python-versioneer/>`_
     and update :ref:`making_a_release` documentation.
 
 
@@ -520,7 +520,7 @@ Documentation
   * :mod:`skbuild.command.generate_source_manifest`
   * :mod:`skbuild.utils`
 
-* Split usage documentation into a `Basic Usage` and `Advanced Usage` sections.
+* Split usage documentation into a ``Basic Usage`` and ``Advanced Usage`` sections.
 
 Cleanups
 --------
@@ -599,9 +599,9 @@ Internal API
 * Fix :meth:`skbuild.setuptools_wrap.strip_package` to handle empty package.
 
 * Teach :meth:`skbuild.command.build_py.build_py.find_modules` function to look
-  for `py_module` file in ``CMAKE_INSTALL_DIR``.
+  for ``py_module`` file in ``CMAKE_INSTALL_DIR``.
 
-* Teach :class:`skbuild.utils.PythonModuleFinder` to search for `python module`
+* Teach :class:`skbuild.utils.PythonModuleFinder` to search for ``python module``
   in the CMake install tree.
 
 * Update :meth:`skbuild.setuptools_wrap._consolidate` to copy file into the CMake
@@ -642,7 +642,7 @@ New features
    advantages is that ninja automatically parallelizes the build based on the number
    of CPUs.
 
- * Automatically set the expected `Visual Studio` environment when
+ * Automatically set the expected ``Visual Studio`` environment when
    ``Ninja`` or ``NMake Makefiles`` generators are used.
 
  * Support `Microsoft Visual C++ Compiler for Python 2.7 <http://aka.ms/vcpython27>`_.
@@ -686,7 +686,7 @@ Documentation
 
 * hacking:
 
- * Add :ref:`internal_api` section generated using `sphinx-apidoc`.
+ * Add :ref:`internal_api` section generated using ``sphinx-apidoc``.
 
  * Add :ref:`internal_cmake_modules` to document :doc:`/cmake-modules/targetLinkLibrariesWithDynamicLookup`
    CMake module.
@@ -795,8 +795,8 @@ Tests
 
 * Makefile:
 
- * Fix `coverage` target
- * Add `docs-only` target allowing to regenerate the Sphinx documentation
+ * Fix ``coverage`` target
+ * Add ``docs-only`` target allowing to regenerate the Sphinx documentation
    without opening a new page in the browser.
 
 Scikit-build 0.3.0

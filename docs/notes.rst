@@ -2,13 +2,13 @@
 Notes
 =====
 
-`sysconfig` vs `distutils.sysconfig`
-------------------------------------
+``sysconfig`` vs ``distutils.sysconfig``
+----------------------------------------
 
 After installing CPython, two sysconfig modules are available:
 
-* `sysconfig`
-* `distutils.sysconfig`
+* ``sysconfig``
+* ``distutils.sysconfig``
 
 A difference is the value associated with the ``EXT_SUFFIX`` and ``SO`` configuration
 variables.

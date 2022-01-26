@@ -99,7 +99,7 @@ class CMaker(object):
 
     Example:
         >>> # Setup dummy repo
-        >>> from skbuild.cmaker import CMaker  # NOQA
+        >>> from skbuild.cmaker import CMaker
         >>> import ubelt as ub
         >>> from os.path import join
         >>> repo_dpath = ub.ensure_app_cache_dir('skbuild', 'test_cmaker')

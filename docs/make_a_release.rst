@@ -4,7 +4,7 @@
 Making a release
 ================
 
-A core developer should use the following steps to create a release `X.Y.Z` of
+A core developer should use the following steps to create a release ``X.Y.Z`` of
 **scikit-build** on `PyPI`_ and `Conda`_.
 
 -------------
@@ -92,7 +92,7 @@ Setting up environment
       expression: ``^[0-9]+(\.[0-9]+)*(\.post[0-9]+)?$``.
 
 
-5. In `CHANGES.rst` replace ``Next Release`` section header with
+5. In ``CHANGES.rst`` replace ``Next Release`` section header with
    ``Scikit-build X.Y.Z`` and commit the changes.
 
   .. code::
@@ -138,7 +138,7 @@ Setting up environment
     For examples of releases, see https://github.com/scikit-build/scikit-build/releases
 
 
-9. Add a ``Next Release`` section back in `CHANGES.rst`, commit and push local changes.
+9. Add a ``Next Release`` section back in ``CHANGES.rst``, commit and push local changes.
 
   .. code::
 
