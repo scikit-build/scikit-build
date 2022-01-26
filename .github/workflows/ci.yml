@@ -7,6 +7,10 @@ on:
     - master
     - main
 
+concurrency:
+  group: test-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   FORCE_COLOR: "3"
 
