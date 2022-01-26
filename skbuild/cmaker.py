@@ -210,14 +210,6 @@ class CMaker(object):
         if cli_generator_name is not None:
             generator_name = cli_generator_name
 
-        ninja_executable_path = None
-        if (generator_name is None or generator_name == "Ninja"):
-            try:
-                import ninja
-                ninja_executable_path = os.path.join(ninja.BIN_DIR, "ninja")
-            except ImportError:
-                pass
-
         # if arch is provided on command line, use it
         clargs, cli_arch = pop_arg('-A', clargs)
 
@@ -225,6 +217,14 @@ class CMaker(object):
             generator_name, skip_generator_test=skip_generator_test,
             cmake_executable=self.cmake_executable, cmake_args=clargs,
             languages=languages, cleanup=cleanup, architecture=cli_arch)
+
+        ninja_executable_path = None
+        if generator.name == "Ninja":
+            try:
+                import ninja
+                ninja_executable_path = os.path.join(ninja.BIN_DIR, "ninja")
+            except ImportError:
+                pass
 
         if not os.path.exists(CMAKE_BUILD_DIR()):
             os.makedirs(CMAKE_BUILD_DIR())
