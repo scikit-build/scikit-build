@@ -22,7 +22,7 @@ Example of setup.py, CMakeLists.txt and pyproject.toml
 ------------------------------------------------------
 
 To use scikit-build in a project, place the following in your project's
-`setup.py` file::
+``setup.py`` file::
 
     from skbuild import setup  # This line replaces 'from setuptools import setup'
 
@@ -84,7 +84,7 @@ The section below documents some of the options accepted by the ``setup()`` func
 - ``py_modules``: List all modules rather than listing packages. More details in the `Listing individual modules`_
   section of the distutils documentation.
 
-- ``data_files``: Sequence of `(directory, files)` pairs. Each `(directory, files)` pair in the sequence specifies
+- ``data_files``: Sequence of ``(directory, files)`` pairs. Each ``(directory, files)`` pair in the sequence specifies
   the installation directory and the files to install there. More details in the `Installing Additional Files`_
   section of the setuptools documentation.
 
@@ -94,7 +94,7 @@ The section below documents some of the options accepted by the ``setup()`` func
   this keyword is used to support `Automatic Script Creation`_.
 
 - ``scripts``: List of python script relative paths. If the first line of the script starts with ``#!`` and contains the
-  word `python`, the Distutils will adjust the first line to refer to the current interpreter location.
+  word ``python``, the Distutils will adjust the first line to refer to the current interpreter location.
   More details in the `Installing Scripts <https://docs.python.org/3/distutils/setupscript.html#installing-scripts>`_ section
   of the distutils documentation.
 
@@ -141,7 +141,7 @@ For example::
   By default, it is set to the top-level directory where ``setup.py`` is found.
 
 - ``cmake_process_manifest_hook``: Python function consumming the list of files to be
-  installed produced by cmake. For example, `cmake_process_manifest_hook` can be used
+  installed produced by cmake. For example, ``cmake_process_manifest_hook`` can be used
   to exclude static libraries from the built wheel.
 
 For example::
@@ -160,7 +160,7 @@ For example::
 .. versionadded:: 0.5.0
 
 - ``cmake_with_sdist``: Boolean indicating if CMake should be executed when
-  running `sdist` command. Setting this option to ``True`` is useful when
+  running ``sdist`` command. Setting this option to ``True`` is useful when
   part of the sources specified in ``MANIFEST.in`` are downloaded by CMake.
   By default, this option is ``False``.
 
@@ -169,7 +169,7 @@ For example::
 .. versionadded:: 0.7.0
 
 - ``cmake_languages``: Tuple of languages that the project use, by default
-  `('C', 'CXX',)`. This option ensures that a generator is chosen that supports
+  ``('C', 'CXX',)``. This option ensures that a generator is chosen that supports
   all languages for the project.
 
 - ``cmake_minimum_required_version``: String identifying the minimum version of CMake required
@@ -288,8 +288,8 @@ CMake Configure options
 
 .. versionadded:: 0.10.1
 
-These options are relevant when configuring a project and can be passed as global options using `setup.py`
-or `pip install`.
+These options are relevant when configuring a project and can be passed as global options using ``setup.py``
+or ``pip install``.
 
 The CMake options accepted as global options are any of the following:
 
@@ -374,7 +374,7 @@ will automatically parallelize the build based on the number of available CPUs.
 To limit the number of parallel jobs, the build tool option ``-j N`` can be passed
 to ``ninja``.
 
-For example, to  limit the number of parallel jobs to `3`, the following could be done::
+For example, to  limit the number of parallel jobs to ``3``, the following could be done::
 
     python setup.py bdist_wheel -- -- -j3
 
@@ -388,7 +388,7 @@ options:
 * `CMAKE_JOB_POOL_LINK <https://cmake.org/cmake/help/latest/variable/CMAKE_JOB_POOL_LINK.html>`_
 * `CMAKE_JOB_POOLS <https://cmake.org/cmake/help/latest/variable/CMAKE_JOB_POOLS.html>`_
 
-For example, to have at most `5` compile jobs and `2` link jobs, the following could be done::
+For example, to have at most ``5`` compile jobs and ``2`` link jobs, the following could be done::
 
     python setup.py bdist_wheel -- \
       -DCMAKE_JOB_POOL_COMPILE:STRING=compile \
@@ -402,7 +402,7 @@ If :ref:`Unix Makefiles` generator is used, the associated build tool (called ``
 will **NOT** automatically parallelize the build, the user has to explicitly pass
 option like ``-j N``.
 
-For example, to limit the number of parallel jobs to `3`, the following could be done::
+For example, to limit the number of parallel jobs to ``3``, the following could be done::
 
     python setup.py bdist_wheel -- -- -j3
 
@@ -456,8 +456,8 @@ An isolated environment will be created when using pip to install packages direc
 source or to create an editable installation.
 
 scikit-build supports these use cases as well as the case where the isolated environment support
-is explicitly disabled using the pip option ``--no-build-isolation`` available with the `install`,
-`download` and `wheel` commands.
+is explicitly disabled using the pip option ``--no-build-isolation`` available with the ``install``,
+``download`` and ``wheel`` commands.
 
 .. _PEP 518: https://www.python.org/dev/peps/pep-0518/
 .. _pip build system interface: https://pip.pypa.io/en/stable/reference/pip/#build-system-interface

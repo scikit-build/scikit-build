@@ -37,8 +37,8 @@ their usual distribution mechanisms for each operating systems.
 Build system generator
 ----------------------
 
-Since scikit-build simply provides glue between `setuptools`
-and `CMake`, it needs to choose a `CMake generator`_ to configure the build
+Since scikit-build simply provides glue between ``setuptools``
+and ``CMake``, it needs to choose a `CMake generator`_ to configure the build
 system allowing to build of CPython C extensions.
 
 .. _CMake generator: https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html
@@ -190,7 +190,7 @@ Default Deployment Target and Architecture
 The default deployment target and architecture selected by scikit-build are
 hard-coded for MacOSX and are respectively ``10.9`` and ``x86_64``.
 
-This means that the platform name associated with the `bdist_wheel`
+This means that the platform name associated with the ``bdist_wheel``
 command is::
 
     macosx-10.9-x86_64
@@ -210,8 +210,8 @@ the project are the following::
 .. _CMAKE_OSX_ARCHITECTURES: https://cmake.org/cmake/help/latest/variable/CMAKE_OSX_ARCHITECTURES.html
 
 As illustrated in the table below, choosing ``10.9`` as deployment target to build
-MacOSX wheels will allow them to work on `System CPython`, the `Official CPython`,
-`Macports` and also `Homebrew` installations of CPython.
+MacOSX wheels will allow them to work on ``System CPython``, the ``Official CPython``,
+``Macports`` and also ``Homebrew`` installations of CPython.
 
 .. table:: List of platform names for each CPython distributions, CPython and OSX versions.
 
@@ -275,13 +275,13 @@ Customizing Deployment Target and Architecture
 
 .. versionadded:: 0.11.0
 
-Deployment target can be customized by setting the `MACOSX_DEPLOYMENT_TARGET`
+Deployment target can be customized by setting the ``MACOSX_DEPLOYMENT_TARGET``
 environment variable.
 
 .. versionadded:: 0.7.0
 
 Deployment target and architecture can be customized by associating the
-``--plat-name macosx-<deployment_target>-<arch>`` option with the `bdist_wheel`
+``--plat-name macosx-<deployment_target>-<arch>`` option with the ``bdist_wheel``
 command.
 
 For example::
