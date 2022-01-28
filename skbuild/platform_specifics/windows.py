@@ -117,7 +117,7 @@ class WindowsPlatform(abstract.CMakePlatform):
             raise RuntimeError("Only Python >= 2.7 is supported on Windows.")
 
         try:
-            import ninja
+            import ninja  # pylint: disable=import-outside-toplevel
             ninja_executable_path = os.path.join(ninja.BIN_DIR, "ninja")
             ninja_args = ['-DCMAKE_MAKE_PROGRAM:FILEPATH=' + ninja_executable_path]
         except ImportError:
@@ -178,11 +178,11 @@ def _find_visual_studio_2010_to_2015(vs_version):
     """
     # winreg module
     try:
-        import winreg
+        import winreg  # pylint: disable=import-outside-toplevel
     except ImportError:
         # Support Python 2.7
         try:
-            import _winreg as winreg
+            import _winreg as winreg  # pylint: disable=import-outside-toplevel
         except ImportError:
             return ""
 
@@ -273,15 +273,16 @@ def find_visual_studio(vs_version):
     """
     if 15 <= vs_version:
         return _find_visual_studio_2017_or_newer(vs_version)
-    elif 10 <= vs_version <= 14:
+
+    if 10 <= vs_version <= 14:
         return _find_visual_studio_2010_to_2015(vs_version)
-    else:
-        return ""
+
+    return ""
 
 
 # To avoid multiple slow calls to ``subprocess.check_output()`` (either directly or
 # indirectly through ``query_vcvarsall``), results of previous calls are cached.
-__get_msvc_compiler_env_cache = dict()
+__get_msvc_compiler_env_cache = {}
 
 
 def _get_msvc_compiler_env(vs_version, vs_toolset=None):
@@ -294,8 +295,6 @@ def _get_msvc_compiler_env(vs_version, vs_toolset=None):
     If specified, ``vs_toolset`` is used to set the `-vcvars_ver=XX.Y` argument passed to
     ``vcvarsall.bat`` script.
     """
-    # pylint:disable=global-statement
-    global __get_msvc_compiler_env_cache
 
     # Set architecture
     arch = "x86"
@@ -312,12 +311,12 @@ def _get_msvc_compiler_env(vs_version, vs_toolset=None):
     if cache_key in __get_msvc_compiler_env_cache:
         return __get_msvc_compiler_env_cache[cache_key]
 
-    from setuptools import monkey
+    from setuptools import monkey  # pylint: disable=import-outside-toplevel
     monkey.patch_for_msvc_specialized_compiler()
 
     if vs_version < 14:
         try:
-            import distutils.msvc9compiler
+            import distutils.msvc9compiler  # pylint: disable=import-outside-toplevel
             cached_env = distutils.msvc9compiler.query_vcvarsall(vs_version, arch)
             __get_msvc_compiler_env_cache[cache_key] = cached_env
             return cached_env

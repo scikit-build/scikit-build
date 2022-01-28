@@ -21,7 +21,6 @@ class generate_source_manifest(set_build_base_mixin, new_style(Command)):
     # pylint:disable=no-self-use
     def initialize_options(self):
         """Set default values for all the options that this command supports."""
-        pass
 
     def run(self):
         """
@@ -40,10 +39,10 @@ class generate_source_manifest(set_build_base_mixin, new_style(Command)):
             not os.path.exists('MANIFEST.in')
 
             # otherwise, we check to see that there is no MANIFEST, ...
-            and not os.path.exists('MANIFEST')  # ... or ...
+            if not os.path.exists('MANIFEST')
 
             # ... (if there is one,) that we created it
-            or os.path.exists(SKBUILD_MARKER_FILE())
+            else os.path.exists(SKBUILD_MARKER_FILE())
         )
 
         if do_generate:
@@ -80,4 +79,3 @@ class generate_source_manifest(set_build_base_mixin, new_style(Command)):
 
     def finalize_options(self, *args, **kwargs):
         """Set final values for all the options that this command supports."""
-        pass

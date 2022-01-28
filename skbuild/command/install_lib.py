@@ -15,4 +15,4 @@ class install_lib(set_build_base_mixin, new_style(_install_lib)):
         with distribution_hide_listing(self.distribution):
             outfiles = super(install_lib, self).install()
         if outfiles is not None:
-            distutils_log.info("copied %d files" % len(outfiles))
+            distutils_log.info("copied %d files", len(outfiles))

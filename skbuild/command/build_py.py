@@ -38,7 +38,7 @@ class build_py(set_build_base_mixin, new_style(_build_py)):
         """
         with distribution_hide_listing(self.distribution):
             super(build_py, self).run(*args, **kwargs)
-        distutils_log.info("copied %d files" % self.outfiles_count)
+        distutils_log.info("copied %d files", self.outfiles_count)
 
     def find_modules(self):
         """Finds individually-specified Python modules, ie. those listed by

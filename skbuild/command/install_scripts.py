@@ -15,4 +15,4 @@ class install_scripts(set_build_base_mixin, new_style(_install_scripts)):
         """Handle --hide-listing option."""
         with distribution_hide_listing(self.distribution):
             super(install_scripts, self).run(*args, **kwargs)
-        distutils_log.info("copied %d files" % len(self.outfiles))
+        distutils_log.info("copied %d files", len(self.outfiles))

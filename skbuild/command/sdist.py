@@ -27,25 +27,24 @@ class sdist(set_build_base_mixin, new_style(_sdist)):
         """
         # copied from setuptools.sdist
 
-        class NoValue:
-            pass
+        no_value = object()
 
-        orig_val = getattr(os, 'link', NoValue)
+        orig_val = getattr(os, 'link', no_value)
         try:
             del os.link
-        except Exception:
+        except Exception:  # pylint: disable=broad-except
             pass
         try:
             yield
         finally:
-            if orig_val is not NoValue:
+            if orig_val is not no_value:
                 os.link = orig_val
 
     def make_release_tree(self, base_dir, files):
         """Handle --hide-listing option."""
         with distribution_hide_listing(self.distribution):
             super(sdist, self).make_release_tree(base_dir, files)
-        distutils_log.info("copied %d files" % len(files))
+        distutils_log.info("copied %d files", len(files))
 
     # pylint:disable=too-many-arguments, unused-argument
     def make_archive(self, base_name, _format, root_dir=None, base_dir=None,

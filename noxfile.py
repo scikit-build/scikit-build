@@ -43,6 +43,16 @@ def tests(session):
 
 
 @nox.session
+def pylint(session):
+    """
+    Run PyLint.
+    """
+
+    session.install(".", "pylint", "cmake", "distro")
+    session.run("pylint", "skbuild", *session.posargs)
+
+
+@nox.session
 def docs(session):
     """
     Build the docs.

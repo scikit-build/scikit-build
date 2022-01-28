@@ -75,7 +75,7 @@ def set_skbuild_plat_name(plat_name):
     * :func:`CMAKE_SPEC_FILE()`
     * :func:`SETUPTOOLS_INSTALL_DIR()`
     """
-    global _SKBUILD_PLAT_NAME
+    global _SKBUILD_PLAT_NAME  # pylint: disable=global-statement
     _SKBUILD_PLAT_NAME = plat_name
 
 

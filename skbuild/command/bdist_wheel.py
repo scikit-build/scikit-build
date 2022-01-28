@@ -12,6 +12,7 @@ from wheel.bdist_wheel import bdist_wheel as _bdist_wheel
 
 from . import set_build_base_mixin
 from ..utils import distribution_hide_listing, new_style
+from .. import __version__ as skbuild_version
 
 
 class bdist_wheel(set_build_base_mixin, new_style(_bdist_wheel)):
@@ -61,6 +62,5 @@ class bdist_wheel(set_build_base_mixin, new_style(_bdist_wheel)):
         """Write ``skbuild <version>`` as a wheel generator.
         See `PEP-0427 <https://www.python.org/dev/peps/pep-0427/#file-contents>`_ for more details.
         """
-        from .. import __version__ as skbuild_version
         generator = "skbuild %s" % skbuild_version
         super(bdist_wheel, self).write_wheelfile(wheelfile_base, generator)

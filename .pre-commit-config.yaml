@@ -28,7 +28,7 @@ repos:
   rev: v2.1.0
   hooks:
   - id: codespell
-    exclude: "(^.git|^.pylintrc|.png|.svg|^_version.py)$"
+    exclude: "(.png|.svg|^_version.py)$"
     args: ["-L", "ba,endwhile,unparseable"]
 
 - repo: https://github.com/pre-commit/pygrep-hooks

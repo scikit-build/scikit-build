@@ -1,6 +1,8 @@
 """This modules implements the logic allowing to instantiate the expected
 :class:`.abstract.CMakePlatform`."""
 
+# pylint: disable=import-outside-toplevel
+
 import platform
 
 
@@ -13,18 +15,17 @@ def get_platform():
         from . import windows
         return windows.WindowsPlatform()
 
-    elif this_platform == "linux":
+    if this_platform == "linux":
         from . import linux
         return linux.LinuxPlatform()
 
-    elif this_platform == "darwin":
+    if this_platform == "darwin":
         from . import osx
         return osx.OSXPlatform()
 
-    elif this_platform in {"freebsd", "os400", "openbsd"}:
+    if this_platform in {"freebsd", "os400", "openbsd"}:
         from . import bsd
         return bsd.BSDPlatform()
 
-    else:
-        raise RuntimeError("Unsupported platform: {:s}. Please contact "
-                           "the scikit-build team.".format(this_platform))
+    msg = "Unsupported platform: {:s}. Please contact the scikit-build team.".format(this_platform)
+    raise RuntimeError(msg)

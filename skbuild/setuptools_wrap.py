@@ -13,28 +13,30 @@ import json
 import platform
 import stat
 
+from contextlib import contextmanager
+from glob import glob
+from shutil import copyfile, copymode
+
 # Must be imported before distutils
 import setuptools
 
-from contextlib import contextmanager
+# pylint: disable-next=wrong-import-order
 from distutils.errors import (DistutilsArgError,
                               DistutilsError,
                               DistutilsGetoptError)
-from glob import glob
-from shutil import copyfile, copymode
-from packaging.requirements import Requirement
-from packaging.version import parse as parse_version
 
-# XXX If 'six' becomes a dependency, use 'six.StringIO' instead.
-try:
-    from StringIO import StringIO
-except ImportError:
+if sys.version_info >= (3, 0):
     from io import StringIO
+else:
+    from StringIO import StringIO
 
 try:
     from shutil import which
 except ImportError:
     from .compat import which
+
+from packaging.requirements import Requirement
+from packaging.version import parse as parse_version
 
 from setuptools.dist import Distribution as upstream_Distribution
 
@@ -196,7 +198,6 @@ def _parse_setuptools_arguments(setup_attrs):
 
     # Update class attribute to also ensure the argument is processed
     # when ``setuptools.setup`` is called.
-    # pylint:disable=no-member
     upstream_Distribution.global_options.extend([
         ('hide-listing', None, "do not display list of files being "
                                "included in the distribution"),
@@ -403,14 +404,14 @@ def setup(*args, **kw):  # noqa: C901
         'cmake_minimum_required_version': None,
         'cmake_process_manifest_hook': None
     }
-    skbuild_kw = {param: kw.pop(param, parameters[param])
-                  for param in parameters}
+    skbuild_kw = {param: kw.pop(param, value)
+                  for param, value in parameters.items()}
 
     # ... and validate them
     try:
         _check_skbuild_parameters(skbuild_kw)
     except SKBuildError as ex:
-        import traceback
+        import traceback  # pylint: disable=import-outside-toplevel
         print("Traceback (most recent call last):")
         traceback.print_tb(sys.exc_info()[2])
         print('')
@@ -544,7 +545,7 @@ def setup(*args, **kw):  # noqa: C901
             # installed in .eggs subdirectory without honoring setuptools "console_scripts"
             # entry_points and without settings the expected executable permissions, we are
             # taking care of it below.
-            import cmake
+            import cmake  # pylint: disable=import-outside-toplevel
             for executable in ['cmake', 'cpack', 'ctest']:
                 executable = os.path.join(cmake.CMAKE_BIN_DIR, executable)
                 if platform.system().lower() == 'windows':
@@ -596,7 +597,7 @@ def setup(*args, **kw):  # noqa: C901
     except SKBuildGeneratorNotFoundError as ex:
         sys.exit(ex)
     except SKBuildError as ex:
-        import traceback
+        import traceback  # pylint: disable=import-outside-toplevel
         print("Traceback (most recent call last):")
         traceback.print_tb(sys.exc_info()[2])
         print('')
@@ -688,9 +689,8 @@ def setup(*args, **kw):  # noqa: C901
         kw['zip_safe'] = False
 
     # Adapted from espdev/ITKPythonInstaller/setup.py.in
-    # pylint: disable=missing-docstring
-    class BinaryDistribution(upstream_Distribution):
-        def has_ext_modules(self):  # pylint: disable=no-self-use
+    class BinaryDistribution(upstream_Distribution):  # pylint: disable=missing-class-docstring
+        def has_ext_modules(self):  # pylint: disable=no-self-use,missing-function-docstring
             return has_cmakelists
     kw['distclass'] = BinaryDistribution
 
@@ -747,7 +747,7 @@ def _classify_installed_files(install_paths, package_data, package_prefixes,
                               py_modules, new_py_modules,
                               scripts, new_scripts,
                               data_files,
-                              cmake_source_dir, cmake_install_dir):
+                              cmake_source_dir, _cmake_install_dir):
     assert not os.path.isabs(cmake_source_dir)
     assert cmake_source_dir != "."
 

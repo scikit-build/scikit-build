@@ -63,10 +63,10 @@ def has_cmake_cache_arg(cmake_args, arg_name, arg_value=None):
     in ``cmake_args``. If ``arg_value`` is None, return True only if
     ``-D<arg_name>:`` is found in the list."""
     for arg in reversed(cmake_args):
-        if arg.startswith("-D%s:" % arg_name):
+        if arg.startswith("-D{}:".format(arg_name)):
             if arg_value is None:
                 return True
-            elif "=" in arg:
+            if "=" in arg:
                 return arg.split("=")[1] == arg_value
     return False
 
@@ -133,7 +133,8 @@ class CMaker(object):
         self.cmake_version = get_cmake_version(self.cmake_executable)
         self.platform = get_platform()
 
-    def get_cached(self, variable_name):
+    @staticmethod
+    def get_cached(variable_name):
         """If set, returns the variable cached value from the :func:`skbuild.constants.CMAKE_BUILD_DIR()`, otherwise returns None"""
         variable_name = '{}:'.format(variable_name)
         try:
@@ -146,11 +147,12 @@ class CMaker(object):
 
         return None
 
-    def get_cached_generator_name(self):
+    @classmethod
+    def get_cached_generator_name(cls):
         """Reads and returns the cached generator from the :func:`skbuild.constants.CMAKE_BUILD_DIR()`:.
         Returns None if not found.
         """
-        return self.get_cached('CMAKE_GENERATOR')
+        return cls.get_cached('CMAKE_GENERATOR')
 
     def get_cached_generator_env(self):
         """If any, return a mapping of environment associated with the cached generator.
@@ -221,7 +223,7 @@ class CMaker(object):
         ninja_executable_path = None
         if generator.name == "Ninja":
             try:
-                import ninja
+                import ninja  # pylint: disable=import-outside-toplevel
                 ninja_executable_path = os.path.join(ninja.BIN_DIR, "ninja")
             except ImportError:
                 pass
@@ -650,8 +652,8 @@ class CMaker(object):
         quotation marks.
         """
         try:
-            from shlex import quote
+            from shlex import quote  # pylint: disable=import-outside-toplevel
         except ImportError:
-            from pipes import quote
+            from pipes import quote  # pylint: disable=import-outside-toplevel
 
         return ' '.join(quote(arg) for arg in args)
