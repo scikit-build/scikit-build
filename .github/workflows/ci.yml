@@ -99,36 +99,10 @@ jobs:
       if: runner.os == 'Linux'
       run: nox --error-on-missing-interpreters -s tests-3.8
     - name: Test on 🐍 3.9
+      if: runner.os == 'Linux'
       run: nox --error-on-missing-interpreters -s tests-3.9
     - name: Test on 🐍 3.10
       run: nox --error-on-missing-interpreters -s tests-3.10
-
-  # Split out due to a bug in our test suite requiring a clean run for Windows Ninja
-  tests-win-extra:
-    name: Tests on 🐍 3.5 • windows-latest
-    runs-on: windows-latest
-    needs: [lint]
-
-    steps:
-    - uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-
-    - name: Set environment for available GHA MSVCs
-      run: |
-        echo "SKBUILD_TEST_FIND_VS2008_INSTALLATION_EXPECTED=0" >> $GITHUB_ENV
-        echo "SKBUILD_TEST_FIND_VS2010_INSTALLATION_EXPECTED=0" >> $GITHUB_ENV
-        echo "SKBUILD_TEST_FIND_VS2012_INSTALLATION_EXPECTED=0" >> $GITHUB_ENV
-        echo "SKBUILD_TEST_FIND_VS2015_INSTALLATION_EXPECTED=1" >> $GITHUB_ENV
-        echo "SKBUILD_TEST_FIND_VS2017_INSTALLATION_EXPECTED=1" >> $GITHUB_ENV
-        echo "SKBUILD_TEST_FIND_VS2019_INSTALLATION_EXPECTED=1" >> $GITHUB_ENV
-        echo "SKBUILD_TEST_FIND_VS2022_INSTALLATION_EXPECTED=0" >> $GITHUB_ENV
-
-    - name: Setup nox
-      uses: excitedleigh/setup-nox@v2.0.0
-
-    - name: Test on 🐍 3.5
-      run: nox --error-on-missing-interpreters -s tests-3.5
 
 
   tests-pypy:
