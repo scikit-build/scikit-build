@@ -59,7 +59,11 @@ Setup options
 setuptools options
 ^^^^^^^^^^^^^^^^^^
 
-The section below documents some of the options accepted by the ``setup()`` function.
+The section below documents some of the options accepted by the ``setup()``
+function. These currently must be passed in your ``setup.py``, not in
+``setup.cfg``, as scikit-build intercepts them and inspects them. This
+restriction may be relaxed in the future. Setuptools options not listed here can
+be placed in ``setup.cfg`` as normal.
 
 - ``packages``: Explicitly list of all packages to include in the distribution. Setuptools will not recursively
   scan the source tree looking for any directory with an ``__init__.py`` file. To automatically generate the list
