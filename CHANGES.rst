@@ -6,8 +6,15 @@ This is the list of changes to scikit-build between each release. For full
 details, see the commit logs at http://github.com/scikit-build/scikit-build
 
 
-Next Release
-============
+Scikit-build 0.13.0
+===================
+
+This is likely one of the final releases to support Python 2.7 and 3.5; future
+releases will likely target at least Python 3.6+ and MSCV 2017+.
+
+If you are using scikit-build via ``pyproject.toml``, please remember to
+include ``setuptools`` and ``wheel``. A future version of scikit-build may
+remove the setuptools install-time hard requirement.
 
 New Features
 ------------
@@ -17,7 +24,44 @@ New Features
   Cython docstrings are now retained by default. Additionally,
   ``--embed-positions`` is no longer added to Debug and RelWithDebInfo builds.
   Users can enable these and other Cython arguments via the option
-  ``CYTHON_FLAGS``. See :issue:`518` and :pr:`519`.
+  ``CYTHON_FLAGS``. See :issue:`518` and :pr:`519`, thanks to :user:`bdice` for
+  the improvement.
+
+* Experimental support for ARM64 on Windows. Thanks to :user:`gaborkertesz-linaro` in :pr:`612`.
+
+* Support for MSVC 2022. Thanks to :user:`tttapa` for the contribution in :pr:`627`.
+
+* Support the modern form of ``target_link_libraries``, via
+  ``SKBUILD_LINK_LIBRARIES_KEYWORD`` (somewhat experimental). Thanks to
+  :user:`maxbachmann` in :pr:`611`.
+
+
+Bug fixes
+---------
+
+* Update the Ninja path if using the ``ninja`` package. This fixes repeated
+  isolated builds. Further path inspection and updates for isolated
+  builds may be considered in the future. :pr:`631`, thanks to
+  :user:`RUrlus` and :user:`segevfiner` for help in tracking this down.
+
+* Allow OpenBSD to pass the platform check (untested). See :pr:`586`.
+
+* Avoid forcing the min macOS version. Behaviour is now inline with setuptools.
+  Users should set ``MACOSX_DEPLOYMENT_TARGET`` when building (automatic with
+  cibuildwheel), otherwise you will get the same value Python was compiled
+  with. Note: This may seem like a regression for PyPy until the next release
+  (7.3.8), since it was compiled with 10.7, which is too old to build with on
+  modern macOS - manually set ``MACOSX_DEPLOYMENT_TARGET`` (including setting
+  it if unset in your ``setup.py``) for PyPy until 7.3.8. :pr:`607`
+
+* Fix logging issue when using Setuptools 60.2+. :pr:`623`
+
+* MacOS cross compiling support fix (for conda-forge) for built-in modules.
+  Thanks to :user:`isuruf` for the contribution in :pr:`622`.
+
+* Better detection of the library path, fixes some issues with PyPy. Thanks
+  to :user:`rkaminsk` for the contribution in :pr:`620` and :pr:`630`. PyPy
+  is now part of our testing matrix as of :pr:`624`.
 
 Scikit-build 0.12.0
 ===================
