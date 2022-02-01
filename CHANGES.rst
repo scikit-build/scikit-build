@@ -63,11 +63,6 @@ Bug fixes
   to :user:`rkaminsk` for the contribution in :pr:`620` and :pr:`630`. PyPy
   is now part of our testing matrix as of :pr:`624`.
 
-* Scikit-build now uses isolated builds when making its own wheel.
-  This includes a change to ``setuptools_scm``, which may affect
-  builds-from-source. Downstream users of scikit-build should be
-  unaffected. :pr:`634` and minor warning fix in :pr:`635`.
-
 Scikit-build 0.12.0
 ===================
 
