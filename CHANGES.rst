@@ -61,7 +61,12 @@ Bug fixes
 
 * Better detection of the library path, fixes some issues with PyPy. Thanks
   to :user:`rkaminsk` for the contribution in :pr:`620` and :pr:`630`. PyPy
-  is now part of our testing matrix as of :pr:`624`.
+  is now part of our testing matrix as of :pr:`624`. Also :user:`robtaylor`
+  in :pr:`632`.
+
+* Fixed issue when cross-compiling on conda-forge (probalby upstream bug, but
+  easy to avoid). :pr:`646`.
+
 
 Scikit-build 0.12.0
 ===================
