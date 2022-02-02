@@ -514,6 +514,21 @@ If a file is added to the CMake build system by updating one of the ``CMakeLists
 will not explicitly reconfigure the project. Instead, the generated build-system will automatically
 detect the change and reconfigure the project after :meth:`skbuild.cmaker.CMaker.make` is called.
 
+
+Environment variable configuration
+----------------------------------
+
+Scikit-build support environment variables to configure some options. These are:
+
+``SKBUILD_CONFIGURE_OPTIONS``/``CMAKE_ARGS``
+  This will add configuration options when configuring CMake.
+  ``SKBUILD_CONFIGURE_OPTIONS`` will be used instead of ``CMAKE_ARGS`` if both
+  are defined.
+
+``SKBUILD_BUILD_OPTIONS``
+  Pass options to the build.
+
+
 .. _cross_compilation:
 
 Cross-compilation
