@@ -25,7 +25,10 @@ def _default_skbuild_plat_name():
     supported_macos_architectures = {"x86_64", "arm64"}
     macos_universal2_architectures = {"x86_64", "arm64"}
 
-    release, _, machine = platform.mac_ver()
+    # See https://github.com/scikit-build/scikit-build/issues/643 for a weird cross
+    # compiling bug that forces us to get machine from os.uname() directly.
+    release = platform.mac_ver()[0]
+    machine = os.uname().machine
 
     # If the MACOSX_DEPLOYMENT_TARGET environment variable is defined, use
     # it, as it will be the most accurate. Otherwise use the value returned by
