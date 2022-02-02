@@ -64,7 +64,7 @@ Bug fixes
   is now part of our testing matrix as of :pr:`624`. Also :user:`robtaylor`
   in :pr:`632`.
 
-* Fixed issue when cross-compiling on conda-forge (probalby upstream bug, but
+* Fixed issue when cross-compiling on conda-forge (probably upstream bug, but
   easy to avoid). :pr:`646`.
 
 
