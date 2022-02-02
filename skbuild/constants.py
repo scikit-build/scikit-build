@@ -28,7 +28,7 @@ def _default_skbuild_plat_name():
     # See https://github.com/scikit-build/scikit-build/issues/643 for a weird cross
     # compiling bug that forces us to get machine from os.uname() directly.
     release = platform.mac_ver()[0]
-    machine = os.uname().machine
+    machine = os.uname()[4]  # Can be .machine on Python 3
 
     # If the MACOSX_DEPLOYMENT_TARGET environment variable is defined, use
     # it, as it will be the most accurate. Otherwise use the value returned by
