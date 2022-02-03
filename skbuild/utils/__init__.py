@@ -26,6 +26,17 @@ except ImportError:
     logging_module = False
 
 
+def _log_warning(msg, *args):
+    try:
+        if logging_module:
+            distutils_log.warning(msg, *args)
+        else:
+            distutils_log.warn(msg, *args)
+    except ValueError:
+        # Setuptools might disconnect the logger. That shouldn't be an error for a warning.
+        print(msg % args)
+
+
 class ContextDecorator(object):
     """A base class or mixin that enables context managers to work as
     decorators."""
@@ -174,12 +185,7 @@ class PythonModuleFinder(new_style(distutils_build_py)):
             if os.path.exists(updated_module_file):
                 module_file = updated_module_file
         if not os.path.isfile(module_file):
-            if logging_module:
-                distutils_log.warning(
-                    "file %s (for module %s) not found", module_file, module)
-            else:
-                distutils_log.warn(
-                    "file %s (for module %s) not found", module_file, module)
+            _log_warning("file %s (for module %s) not found", module_file, module)
             return False
         return True
 
