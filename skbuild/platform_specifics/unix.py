@@ -1,5 +1,7 @@
 """This module defines object specific to Unix platform."""
 
+import os
+
 from .abstract import CMakeGenerator
 
 from . import abstract
@@ -11,7 +13,14 @@ class UnixPlatform(abstract.CMakePlatform):
 
     def __init__(self):
         super(UnixPlatform, self).__init__()
+        try:
+            import ninja
+            ninja_executable_path = os.path.join(ninja.BIN_DIR, "ninja")
+            ninja_args = ['-DCMAKE_MAKE_PROGRAM:FILEPATH=' + ninja_executable_path]
+        except ImportError:
+            ninja_args = []
+
         self.default_generators = [
-            CMakeGenerator("Ninja"),
+            CMakeGenerator("Ninja", args=ninja_args),
             CMakeGenerator("Unix Makefiles")
         ]

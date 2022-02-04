@@ -33,6 +33,17 @@ VS_YEAR_TO_VERSION = {
 The different version are identified by their year.
 """
 
+VS_YEAR_TO_MSC_VER = {
+    "2008":"1500",  # VS 2008
+    "2010":"1600",  # VS 2010
+    "2012":"1700",  # VS 2012
+    "2013":"1800",  # VS 2012
+    "2015":"1900",  # VS 2015
+    "2017":"1910",  # VS 2017 - can be +9
+    "2019":"1920",  # VS 2019 - can be +9
+    "2022":"1930",  # VS 2022 - can be +9
+}
+
 
 class WindowsPlatform(abstract.CMakePlatform):
     """Windows implementation of :class:`.abstract.CMakePlatform`."""
@@ -114,11 +125,20 @@ class WindowsPlatform(abstract.CMakePlatform):
         else:
             raise RuntimeError("Only Python >= 2.7 is supported on Windows.")
 
+        try:
+            import ninja
+            ninja_executable_path = os.path.join(ninja.BIN_DIR, "ninja")
+            ninja_args = ['-DCMAKE_MAKE_PROGRAM:FILEPATH=' + ninja_executable_path]
+        except ImportError:
+            ninja_args = []
+
         for vs_year, vs_toolset in supported_vs_years:
+            vs_version = VS_YEAR_TO_MSC_VER[vs_year]
+            args = ["-D_SKBUILD_FORCE_MSVC={}".format(vs_version)]
             self.default_generators.extend([
-                CMakeVisualStudioCommandLineGenerator("Ninja", vs_year, vs_toolset),
+                CMakeVisualStudioCommandLineGenerator("Ninja", vs_year, vs_toolset, args=ninja_args + args),
                 CMakeVisualStudioIDEGenerator(vs_year, vs_toolset),
-                CMakeVisualStudioCommandLineGenerator("NMake Makefiles", vs_year, vs_toolset),
+                CMakeVisualStudioCommandLineGenerator("NMake Makefiles", vs_year, vs_toolset, args=args),
             ])
 
     @property
@@ -359,7 +379,7 @@ class CMakeVisualStudioCommandLineGenerator(CMakeGenerator):
 
     .. automethod:: __init__
     """
-    def __init__(self, name, year, toolset=None):
+    def __init__(self, name, year, toolset=None, args=None):
         """Instantiate CMake command-line generator.
 
         The generator ``name`` can be values like `Ninja`, `NMake Makefiles`
@@ -375,5 +395,5 @@ class CMakeVisualStudioCommandLineGenerator(CMakeGenerator):
         """
         vc_env = _get_msvc_compiler_env(VS_YEAR_TO_VERSION[year], toolset)
         env = {str(key.upper()): str(value) for key, value in vc_env.items()}
-        super(CMakeVisualStudioCommandLineGenerator, self).__init__(name, env)
+        super(CMakeVisualStudioCommandLineGenerator, self).__init__(name, env, args=args)
         self._description = "{} ({})".format(self.name, CMakeVisualStudioIDEGenerator(year, toolset).description)
