@@ -81,12 +81,6 @@ jobs:
       with:
         python-version: 3.5
 
-    - name: Hack for Ninja finding GCC on windows-2016
-      uses: ilammy/msvc-dev-cmd@v1
-      if: matrix.runs-on == 'windows-2016'
-      with:
-        toolset: "14.0"
-
     - name: Setup Python 3.6
       uses: actions/setup-python@v2
       if: runner.os == 'Linux'

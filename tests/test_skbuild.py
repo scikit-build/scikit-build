@@ -85,31 +85,30 @@ def test_generator_selection():
             ]
         ])
 
-        generator = None
-
         # If environment exists, update the expected generator
         if (
                 has_vs_for_python_vcvars or has_vs_ide_vcvars
         ) and which("ninja.exe"):
-            generator = "Ninja"
+            assert get_best_generator().name == "Ninja"
 
-        elif has_vs_2017 or has_vs_2019 or has_vs_2022:
+        elif has_vs_2017:
+            vs_generator = "Visual Studio 15 2017"
+            # Early versions of 2017 may not ship with Ninja (TODO: check)
+            assert get_best_generator().name in {"Ninja", vs_generator}
+
+        elif has_vs_2019 or has_vs_2022:
             # ninja is provided by the CMake extension bundled with Visual Studio 2017
             # C:/Program Files (x86)/Microsoft Visual Studio/2017/Professional/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe  # noqa: E501
-            generator = "Ninja"
+            assert get_best_generator().name == "Ninja"
 
-        elif has_vs_ide_vcvars or has_vs_2017:
-            generator = vs_generator
+        elif has_vs_ide_vcvars:
+            assert get_best_generator().name == vs_generator
 
         elif has_vs_for_python_vcvars:
-            generator = "NMake Makefiles"
-
-        assert (get_best_generator().name == generator)
+            assert get_best_generator().name == "NMake Makefiles"
 
     elif this_platform in ["darwin", "linux"]:
-        generator = "Unix Makefiles"
-        if which("ninja"):
-            generator = "Ninja"
+        generator = "Ninja" if which("ninja") else "Unix Makefiles"
         assert get_best_generator().name == generator
 
 
@@ -192,10 +191,11 @@ def test_platform_windows_find_visual_studio(vs_year):
         pytest.skip("env. variable %s is not set" % env_var)
 
     valid_path_expected = bool(int(os.environ[env_var]))
+    vs_path = find_visual_studio(VS_YEAR_TO_VERSION[vs_year])
     if valid_path_expected:
-        assert os.path.exists(find_visual_studio(VS_YEAR_TO_VERSION[vs_year]))
+        assert os.path.exists(vs_path)
     else:
-        assert find_visual_studio(VS_YEAR_TO_VERSION[vs_year]) == ""
+        assert vs_path == ""
 
 
 @pytest.mark.skipif(sys.version_info < (3, 5), reason="Python 3.5+ required on Windows")

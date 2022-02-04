@@ -50,6 +50,15 @@ class CMakePlatform(object):
             f.write("PROJECT(compiler_test NONE)\n")
             for language in languages:
                 f.write("ENABLE_LANGUAGE({:s})\n".format(language))
+            f.write('if("${_SKBUILD_FORCE_MSVC}")\n'
+                    '  math(EXPR FORCE_MAX "${_SKBUILD_FORCE_MSVC}+9")\n'
+                    '  math(EXPR FORCE_MIN "${_SKBUILD_FORCE_MSVC}")\n'
+                    '  if(NOT MSVC)\n'
+                    '    message(FATAL_ERROR "MSVC is required to pass this check.")\n'
+                    "  elseif(MSVC_VERSION LESS FORCE_MIN OR MSVC_VERSION GREATER FORCE_MAX)\n"
+                    '    message(FATAL_ERROR "MSVC ${MSVC_VERSION} does pass this check.")\n'
+                    "  endif()\n"
+                    'endif()\n')
 
     @staticmethod
     def cleanup_test():
@@ -210,6 +219,7 @@ class CMakePlatform(object):
                 if generator.architecture:
                     cmd.extend(['-A', generator.architecture])
                 cmd.extend(cmake_args)
+                cmd.extend(generator.args)
 
                 status = subprocess.call(cmd, env=generator.env)
 
@@ -232,7 +242,7 @@ class CMakeGenerator(object):
     .. automethod:: __init__
     """
 
-    def __init__(self, name, env=None, toolset=None, arch=None):
+    def __init__(self, name, env=None, toolset=None, arch=None, args=None):
         """Instantiate a generator object with the given ``name``.
 
         By default, ``os.environ`` is associated with the generator. Dictionary
@@ -241,9 +251,10 @@ class CMakeGenerator(object):
         variable in ``env`` is used.
 
         Some CMake generators support a ``toolset`` specification to tell the native
-        build system how to choose a compiler.
+        build system how to choose a compiler. You can also include CMake arguments.
         """
         self._generator_name = name
+        self.args = args or []
         self.env = dict(
             list(os.environ.items()) + list(env.items() if env else []))
         self._generator_toolset = toolset
