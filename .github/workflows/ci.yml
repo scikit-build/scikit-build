@@ -85,24 +85,24 @@ jobs:
 
     - name: Test on 🐍 2.7
       if: runner.os != 'Windows'
-      run: nox --error-on-missing-interpreters -s tests-2.7
+      run: nox -s tests-2.7
     - name: Test on 🐍 3.5
       if: matrix.runs-on != 'windows-2022'
-      run: nox --error-on-missing-interpreters -s tests-3.5
+      run: nox -s tests-3.5
     - name: Test on 🐍 3.6
       if: runner.os == 'Linux'
-      run: nox --error-on-missing-interpreters -s tests-3.6
+      run: nox -s tests-3.6
     - name: Test on 🐍 3.7
       if: runner.os == 'Linux' || matrix.runs-on == 'windows-2022'
-      run: nox --error-on-missing-interpreters -s tests-3.7
+      run: nox -s tests-3.7
     - name: Test on 🐍 3.8
       if: runner.os == 'Linux'
-      run: nox --error-on-missing-interpreters -s tests-3.8
+      run: nox -s tests-3.8
     - name: Test on 🐍 3.9
       if: runner.os == 'Linux'
-      run: nox --error-on-missing-interpreters -s tests-3.9
+      run: nox -s tests-3.9
     - name: Test on 🐍 3.10
-      run: nox --error-on-missing-interpreters -s tests-3.10
+      run: nox -s tests-3.10
 
 
   tests-pypy:
@@ -131,7 +131,7 @@ jobs:
         python-version: pypy-3.7
 
     - name: Test on 🐍 PyPy 3.7
-      run: nox --error-on-missing-interpreters -s tests-pypy3.7
+      run: nox -s tests-pypy3.7
 
 
   dist:
