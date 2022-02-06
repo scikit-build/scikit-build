@@ -16,6 +16,24 @@ from .abstract import CMakeGenerator
 from . import abstract
 
 
+VS_YEAR_TO_VERSION = {
+    "2008": 9,
+    "2010": 10,
+    "2012": 11,
+    "2013": 12,
+    "2015": 14,
+    "2017": 15,
+    "2019": 16,
+    "2022": 17,
+}
+"""Describes the version of `Visual Studio` supported by
+:class:`CMakeVisualStudioIDEGenerator` and
+:class:`CMakeVisualStudioCommandLineGenerator`.
+
+The different version are identified by their year.
+"""
+
+
 class WindowsPlatform(abstract.CMakePlatform):
     """Windows implementation of :class:`.abstract.CMakePlatform`."""
 
@@ -107,24 +125,6 @@ class WindowsPlatform(abstract.CMakePlatform):
     def generator_installation_help(self):
         """Return message guiding the user for installing a valid toolchain."""
         return self._vs_help
-
-
-VS_YEAR_TO_VERSION = {
-    "2008": 9,
-    "2010": 10,
-    "2012": 11,
-    "2013": 12,
-    "2015": 14,
-    "2017": 15,
-    "2019": 16,
-    "2022": 17,
-}
-"""Describes the version of `Visual Studio` supported by
-:class:`CMakeVisualStudioIDEGenerator` and
-:class:`CMakeVisualStudioCommandLineGenerator`.
-
-The different version are identified by their year.
-"""
 
 
 class CMakeVisualStudioIDEGenerator(CMakeGenerator):
