@@ -42,8 +42,20 @@ a C++ extension named ``_hello`` is built::
 Then, add a ``pyproject.toml`` to list the build system requirements::
 
     [build-system]
-    requires = ["setuptools", "wheel", "scikit-build", "cmake", "ninja"]
+    requires = [
+      "setuptools>=42",
+      "wheel",
+      "scikit-build",
+      "cmake",
+      "ninja; platform_system!='Windows'"
+    ]
+    build-backend = "setuptools.build_meta"
 
+
+You can add lower limits to ``cmake`` or ``scikit-build`` as needed. Ninja
+should be limited to non-Windows systems, as MSVC 2017+ ships with Ninja
+already, and there are fall-backs if Ninja is missing, and the Python Ninja
+seems to be less likely to find MSVC than the built-in one currently.
 
 ..  note::
 
