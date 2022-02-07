@@ -5,6 +5,22 @@ Release Notes
 This is the list of changes to scikit-build between each release. For full
 details, see the commit logs at http://github.com/scikit-build/scikit-build
 
+Scikit-build 0.13.1
+===================
+
+This release fixes two bugs affecting Windows. Users should use ``"ninja;
+platform_system!='Windows"``, at least for now, since MSVC ships with Ninja,
+and that Ninja is better at finding the matching MSVC than the Python package
+is. Including it may slow down the search and force the IDE generator instead,
+but will at least no longer discover GCC instead.
+
+Bug fixes
+---------
+
+* On Windows, don't let Ninja find something other than what it's supposed to
+  look for.  Ensure the Ninja package is used for the search, just like normal
+  runs, if installed.  :pr:`652`.
+* Do not throw an error when printing info and a logger is disconnected. :pr:`652`
 
 Scikit-build 0.13.0
 ===================
