@@ -123,14 +123,16 @@ class WindowsPlatform(abstract.CMakePlatform):
         except ImportError:
             ninja_args = []
 
+        extra = []
         for vs_year, vs_toolset in supported_vs_years:
             vs_version = VS_YEAR_TO_MSC_VER[vs_year]
             args = ["-D_SKBUILD_FORCE_MSVC={}".format(vs_version)]
             self.default_generators.extend([
                 CMakeVisualStudioCommandLineGenerator("Ninja", vs_year, vs_toolset, args=ninja_args + args),
                 CMakeVisualStudioIDEGenerator(vs_year, vs_toolset),
-                CMakeVisualStudioCommandLineGenerator("NMake Makefiles", vs_year, vs_toolset, args=args),
             ])
+            extra.append(CMakeVisualStudioCommandLineGenerator("NMake Makefiles", vs_year, vs_toolset, args=args))
+        self.default_generators.extend(extra)
 
     @property
     def generator_installation_help(self):
