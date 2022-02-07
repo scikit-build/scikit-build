@@ -50,7 +50,6 @@ class WindowsPlatform(abstract.CMakePlatform):
 
     def __init__(self):
         super(WindowsPlatform, self).__init__()
-        version = sys.version_info
         self._vs_help = ""
         vs_help_template = textwrap.dedent(
             """
@@ -62,10 +61,7 @@ class WindowsPlatform(abstract.CMakePlatform):
         ).strip().format(pyver="%s.%s" % sys.version_info[:2])
 
         # For Python 2.7 to Python 3.2: VS2008
-        if (
-            (version.major == 2 and version.minor >= 7) or
-            (version.major == 3 and version.minor <= 2)
-        ):
+        if (2, 7) <= sys.version_info < (3, 3):
             supported_vs_years = [("2008", None)]
             self._vs_help = vs_help_template % (
                 supported_vs_years[0][0],
@@ -74,12 +70,7 @@ class WindowsPlatform(abstract.CMakePlatform):
             )
 
         # For Python 3.3 to Python 3.4: VS2010
-        elif (
-            version.major == 3 and (
-                version.minor >= 3 and
-                version.minor <= 4
-            )
-        ):
+        elif (3, 3) <= sys.version_info < (3, 5):
             supported_vs_years = [("2010", None)]
             self._vs_help = vs_help_template % (
                 supported_vs_years[0][0],
@@ -88,7 +79,7 @@ class WindowsPlatform(abstract.CMakePlatform):
             )
 
         # For Python 3.5: VS2019, VS2017, VS2015
-        elif version.major == 3 and version.minor == 5:
+        elif (3, 5) <= sys.version_info < (3, 6):
             supported_vs_years = [("2019", "v142"), ("2017", "v140"), ("2015", None)]
             self._vs_help = vs_help_template % (
                 supported_vs_years[0][0],
@@ -104,7 +95,7 @@ class WindowsPlatform(abstract.CMakePlatform):
             ).strip()
 
         # For Python 3.6 and above: VS2022, VS2019, VS2017
-        elif version.major == 3 and version.minor >= 6:
+        elif (3, 6) <= sys.version_info:
             supported_vs_years = [("2022", "v143"), ("2019", "v142"), ("2017", "v141")]
             self._vs_help = vs_help_template % (
                 supported_vs_years[0][0],
