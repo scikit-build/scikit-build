@@ -6,5 +6,5 @@ setup(
     description="a minimal example package using a non-default target",
     author='The scikit-build team',
     license="MIT",
-    cmake_target="install-runtime",
+    cmake_install_target="install-runtime",
 )

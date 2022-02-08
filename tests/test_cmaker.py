@@ -175,8 +175,9 @@ def test_make_with_install_target(install_target, capfd):
         # One of these error appears with install_target: nonexistant-install-target
         err_message1 = "No rule to make target"
         err_message2 = "unknown target"
+        err_message3 = "CMAKE_MAKE_PROGRAM is not set"  # Showing up on windows-2016
         if install_target == "nonexistant-install-target":
-            assert err_message1 in err or err_message2 in err
+            assert err_message1 in err or err_message2 in err or err_message3 in err
 
 
 def test_configure_with_cmake_args(capfd):
