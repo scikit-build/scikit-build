@@ -5,6 +5,26 @@ Release Notes
 This is the list of changes to scikit-build between each release. For full
 details, see the commit logs at http://github.com/scikit-build/scikit-build
 
+
+Scikit-build 0.14.0 (WIP)
+=========================
+
+This is the final release for Python < 3.6 and MSVC<2015.
+
+New Features
+------------
+* Add support for ``--install-target`` scikit-build command line option.
+  And ``cmake_install_target`` in ``setup.py``. Allows
+  providing an install target different than the default ``install``.
+  Thanks :user:`phcerdan` for the contribution. See :pr:`477`.
+
+Internal
+--------
+
+* Scikit-build now uses pyproject.toml, setuptools_scm to build. If you
+are packaging scikit-build itself, you might need to update your requirements.
+See :pr:`634`.
+
 Scikit-build 0.13.1
 ===================
 
@@ -177,10 +197,6 @@ Scikit-build 0.11.0
 
 New Features
 ------------
-* Add support for `--install-target` scikit-build command line option.
-  And `cmake_install_target` in `setup.py`. Allowing to
-  provide an install target different than the default `install`.
-  Thanks :user:`phcerdan` for the contribution. See :issue:`477`.
 
 * Add a hook to process the cmake install manifest building the wheel. The hook
   function can be specified as an argument to the ``setup()`` function. This can be used e.g.
