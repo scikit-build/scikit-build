@@ -8,7 +8,6 @@ Tests for `skbuild.setup` function.
 """
 
 import textwrap
-import sys
 import os
 import pprint
 import py.path
