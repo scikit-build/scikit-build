@@ -24,6 +24,11 @@ from .constants import (CMAKE_BUILD_DIR,
 from .platform_specifics import get_platform
 from .exceptions import SKBuildError
 
+if sys.version_info >= (3, 3):
+    from shlex import quote
+else:
+    from pipes import quote
+
 RE_FILE_INSTALL = re.compile(
     r"""[ \t]*file\(INSTALL DESTINATION "([^"]+)".*"([^"]+)"\).*""")
 
@@ -651,9 +656,5 @@ class CMaker(object):
         Currently, the only formatting is naively surrounding each argument with
         quotation marks.
         """
-        try:
-            from shlex import quote  # pylint: disable=import-outside-toplevel
-        except ImportError:
-            from pipes import quote  # pylint: disable=import-outside-toplevel
 
         return ' '.join(quote(arg) for arg in args)

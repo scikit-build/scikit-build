@@ -30,9 +30,9 @@ if sys.version_info >= (3, 0):
 else:
     from StringIO import StringIO
 
-try:
+if sys.version_info >= (3, 3):
     from shutil import which
-except ImportError:
+else:
     from .compat import which
 
 from packaging.requirements import Requirement
