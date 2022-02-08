@@ -28,7 +28,7 @@ repos:
   rev: v2.1.0
   hooks:
   - id: codespell
-    exclude: "(^.git|^.pylintrc|.png|.svg|^_version.py|^versioneer.py)$"
+    exclude: "(^.git|^.pylintrc|.png|.svg|^_version.py)$"
     args: ["-L", "ba,endwhile,unparseable"]
 
 - repo: https://github.com/pre-commit/pygrep-hooks
@@ -41,3 +41,10 @@ repos:
   - id: rst-backticks
   - id: rst-directive-colons
   - id: rst-inline-touching-normal
+
+- repo: https://github.com/mgedmin/check-manifest
+  rev: "0.47"
+  hooks:
+  - id: check-manifest
+    stages: [manual]
+    additional_dependencies: ["setuptools_scm[toml]"]
