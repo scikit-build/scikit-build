@@ -625,6 +625,8 @@ def setup(*args, **kw):  # noqa: C901
         sys.exit(ex)
 
     # If any, strip ending slash from each package directory
+    # Regular setuptools does not support this
+    # TODO: produce warning and deprecate
     package_dir = {package: prefix[:-1] if prefix and prefix[-1] == "/" else prefix
                    for package, prefix in package_dir.items()}
 
@@ -634,6 +636,8 @@ def setup(*args, **kw):  # noqa: C901
             package_dir[package] = package.replace(".", "/")
             if '' in package_dir:
                 package_dir[package] = to_unix_path(os.path.join(package_dir[''], package_dir[package]))
+
+    kw['package_dir'] = package_dir
 
     package_prefixes = _collect_package_prefixes(package_dir, packages)
 
