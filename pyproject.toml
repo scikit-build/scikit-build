@@ -2,6 +2,7 @@
 requires = ["setuptools>=42", "wheel", "setuptools_scm[toml]"]
 build-backend = "setuptools.build_meta"
 
+
 [tool.setuptools_scm]
 write_to = "skbuild/_version.py"
 
@@ -14,6 +15,10 @@ ignore = [
   "noxfile.py",
   "azure-pipelines.yml",
 ]
+
+
+[tool.isort]
+profile = "black"
 
 
 [tool.pylint]
