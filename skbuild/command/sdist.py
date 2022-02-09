@@ -13,7 +13,7 @@ class sdist(set_build_base_mixin, new_style(_sdist)):
         """Handle --hide-listing option."""
         with distribution_hide_listing(self.distribution):
             super(sdist, self).make_release_tree(base_dir, files)
-        distutils_log.info("copied %d files" % len(files))
+        distutils_log.info("copied %d files", len(files))
 
     # pylint:disable=too-many-arguments, unused-argument
     def make_archive(self, base_name, _format, root_dir=None, base_dir=None,

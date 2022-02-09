@@ -1,9 +1,10 @@
 """This module defines object specific to Linux platform."""
 
-import distro
 import platform
 import sys
 import textwrap
+
+import distro
 
 from . import unix
 

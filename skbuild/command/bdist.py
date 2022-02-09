@@ -11,4 +11,3 @@ from ..utils import new_style
 
 class bdist(set_build_base_mixin, new_style(_bdist)):
     """Custom implementation of ``bdist`` setuptools command."""
-    pass

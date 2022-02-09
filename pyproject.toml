@@ -14,3 +14,33 @@ ignore = [
   "noxfile.py",
   "azure-pipelines.yml",
 ]
+
+
+[tool.pylint]
+master.py-version = "2.7"
+master.jobs = "0"
+reports.output-format = "colorized"
+similarities.ignore-imports = "yes"
+messages_control.enable = [
+  "useless-suppression",
+]
+messages_control.disable = [
+  "fixme",
+  "invalid-name",
+  "line-too-long",
+  "missing-module-docstring",
+  "no-member",
+  "protected-access",
+  "raise-missing-from", # Python 3
+  "super-with-arguments", # Python 3
+  "too-few-public-methods",
+  "too-many-arguments",
+  "too-many-branches",
+  "too-many-locals",
+  "too-many-statements",
+  "ungrouped-imports",
+  "unspecified-encoding", # Python 3
+  "use-maxsplit-arg",  # Python 3
+  "useless-object-inheritance", # Python 3
+  "wrong-import-position",
+]

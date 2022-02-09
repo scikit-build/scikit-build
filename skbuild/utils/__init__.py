@@ -6,11 +6,12 @@ import os
 from collections import namedtuple
 import contextlib
 from contextlib import contextmanager
+
+from functools import wraps
 from distutils.command.build_py import build_py as distutils_build_py
 from distutils.errors import DistutilsTemplateError
 from distutils.filelist import FileList
 from distutils.text_file import TextFile
-from functools import wraps
 
 try:
     import setuptools.logging  # noqa: F401
@@ -31,7 +32,7 @@ def _log_warning(msg, *args):
         if logging_module:
             distutils_log.warning(msg, *args)
         else:
-            distutils_log.warn(msg, *args)
+            distutils_log.warn(msg, *args)  # pylint: disable=deprecated-method
     except ValueError:
         # Setuptools might disconnect the logger. That shouldn't be an error for a warning.
         print(msg % args)
@@ -53,7 +54,7 @@ class ContextDecorator(object):
 
     def __call__(self, func):
         @wraps(func)
-        def inner(*args, **kwds):  # pylint:disable=missing-docstring
+        def inner(*args, **kwds):
             with self:
                 return func(*args, **kwds)
         return inner
@@ -212,7 +213,6 @@ def distribution_hide_listing(distribution):
 
     hide_listing = hasattr(distribution, "hide_listing") and distribution.hide_listing
 
-    # pylint:disable=protected-access
     if logging_module:
         # Setuptools 60.2+, will always be on Python 3.6+
         old_level = distutils_log.getEffectiveLevel()
