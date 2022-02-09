@@ -29,7 +29,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runs-on: [ubuntu-latest, macos-latest, windows-2016, windows-2019, windows-2022]
+        runs-on: [ubuntu-latest, macos-latest, windows-2019, windows-2022]
 
     name: Tests on ${{ matrix.runs-on }}
     steps:
@@ -44,15 +44,6 @@ jobs:
         echo "SKBUILD_TEST_FIND_VS2008_INSTALLATION_EXPECTED=0" >> $GITHUB_ENV
         echo "SKBUILD_TEST_FIND_VS2010_INSTALLATION_EXPECTED=0" >> $GITHUB_ENV
         echo "SKBUILD_TEST_FIND_VS2012_INSTALLATION_EXPECTED=0" >> $GITHUB_ENV
-
-    - name: Set environment for available GHA MSVCs
-      if: matrix.runs-on == 'windows-2016'
-      shell: bash
-      run: |
-        echo "SKBUILD_TEST_FIND_VS2015_INSTALLATION_EXPECTED=1" >> $GITHUB_ENV
-        echo "SKBUILD_TEST_FIND_VS2017_INSTALLATION_EXPECTED=1" >> $GITHUB_ENV
-        echo "SKBUILD_TEST_FIND_VS2019_INSTALLATION_EXPECTED=0" >> $GITHUB_ENV
-        echo "SKBUILD_TEST_FIND_VS2022_INSTALLATION_EXPECTED=0" >> $GITHUB_ENV
 
     - name: Set environment for available GHA MSVCs
       if: matrix.runs-on == 'windows-2019'
@@ -75,15 +66,8 @@ jobs:
     - name: Setup nox
       uses: excitedleigh/setup-nox@v2.0.0
 
-    - name: Setup Python 3.5
-      uses: actions/setup-python@v2
-      if: matrix.runs-on != 'windows-2022'
-      with:
-        python-version: 3.5
-
     - name: Setup Python 3.6
       uses: actions/setup-python@v2
-      if: runner.os == 'Linux'
       with:
         python-version: 3.6
 
@@ -91,12 +75,6 @@ jobs:
     # We check Python 2.7 on Linux and macOS, it's not supported on Windows.
     # We check minimum Python 3, and maximum Python 3 on all OS's.
 
-    - name: Test on 🐍 2.7
-      if: runner.os != 'Windows'
-      run: nox -s tests-2.7
-    - name: Test on 🐍 3.5
-      if: matrix.runs-on != 'windows-2022'
-      run: nox -s tests-3.5
     - name: Test on 🐍 3.6
       if: runner.os == 'Linux'
       run: nox -s tests-3.6
