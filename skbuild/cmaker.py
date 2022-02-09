@@ -3,6 +3,7 @@ This module provides an interface for invoking CMake executable.
 """
 
 from __future__ import print_function
+
 import argparse
 import distutils.sysconfig as du_sysconfig
 import glob
@@ -12,17 +13,19 @@ import os
 import os.path
 import platform
 import re
-import subprocess
 import shlex
+import subprocess
 import sys
 import sysconfig
 
-from .constants import (CMAKE_BUILD_DIR,
-                        CMAKE_DEFAULT_EXECUTABLE,
-                        CMAKE_INSTALL_DIR,
-                        SETUPTOOLS_INSTALL_DIR)
-from .platform_specifics import get_platform
+from .constants import (
+    CMAKE_BUILD_DIR,
+    CMAKE_DEFAULT_EXECUTABLE,
+    CMAKE_INSTALL_DIR,
+    SETUPTOOLS_INSTALL_DIR,
+)
 from .exceptions import SKBuildError
+from .platform_specifics import get_platform
 
 if sys.version_info >= (3, 3):
     from shlex import quote

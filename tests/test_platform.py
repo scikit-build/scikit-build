@@ -8,8 +8,9 @@ Tests for platforms, to verify that CMake correctly does a test compilation.
 """
 
 import os
-import sys
 import platform
+import sys
+
 import pytest
 
 from skbuild.platform_specifics import get_platform

@@ -9,17 +9,16 @@ attempt fails with a SystemExit exception that has an SKBuildError exception as
 its value.
 """
 
-import pytest
+from subprocess import CalledProcessError, check_output
 
-from subprocess import (check_output, CalledProcessError)
+import pytest
 
 from skbuild.constants import CMAKE_DEFAULT_EXECUTABLE
 from skbuild.exceptions import SKBuildError
 from skbuild.platform_specifics import CMakeGenerator, get_platform
 from skbuild.utils import push_dir
 
-from . import project_setup_py_test
-from . import push_env
+from . import project_setup_py_test, push_env
 
 
 def test_cmakelists_with_fatalerror_fails(capfd):

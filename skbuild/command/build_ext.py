@@ -1,7 +1,6 @@
 """This module defines custom implementation of ``build_ext`` setuptools command."""
 
 import os
-
 from distutils.file_util import copy_file
 
 try:
@@ -9,9 +8,9 @@ try:
 except ImportError:
     from distutils.command.build_ext import build_ext as _build_ext
 
-from . import set_build_base_mixin
 from ..constants import CMAKE_INSTALL_DIR
 from ..utils import new_style
+from . import set_build_base_mixin
 
 
 class build_ext(set_build_base_mixin, new_style(_build_ext)):

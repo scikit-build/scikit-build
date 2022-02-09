@@ -8,13 +8,10 @@ import re
 import subprocess
 import sys
 import textwrap
-
 from itertools import count
 
-from .abstract import CMakeGenerator
-
 from . import abstract
-
+from .abstract import CMakeGenerator
 
 VS_YEAR_TO_VERSION = {
     "2008": 9,

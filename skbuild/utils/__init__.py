@@ -1,21 +1,20 @@
 """This module defines functions generally useful in scikit-build."""
 
+import contextlib
 import errno
 import os
-
 from collections import namedtuple
-import contextlib
 from contextlib import contextmanager
-
-from functools import wraps
 from distutils.command.build_py import build_py as distutils_build_py
 from distutils.errors import DistutilsTemplateError
 from distutils.filelist import FileList
 from distutils.text_file import TextFile
+from functools import wraps
 
 try:
-    import setuptools.logging  # noqa: F401
     import logging
+
+    import setuptools.logging  # noqa: F401
 
     distutils_log = logging.getLogger("skbuild")
     distutils_log.setLevel(logging.INFO)

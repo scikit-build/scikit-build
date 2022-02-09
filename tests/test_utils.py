@@ -8,13 +8,19 @@ Tests for utils functions.
 """
 
 import os
+
 import pytest
 
-from skbuild.utils import (ContextDecorator, mkdir_p,
-                           PythonModuleFinder, push_dir,
-                           to_platform_path, to_unix_path)
+from skbuild.utils import (
+    ContextDecorator,
+    PythonModuleFinder,
+    mkdir_p,
+    push_dir,
+    to_platform_path,
+    to_unix_path,
+)
 
-from . import (list_ancestors, push_env, SAMPLES_DIR)
+from . import SAMPLES_DIR, list_ancestors, push_env
 
 saved_cwd = os.getcwd()
 

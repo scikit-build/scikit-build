@@ -8,12 +8,17 @@ Tests for CMaker functionality.
 """
 
 import os
-import pytest
 import re
 import textwrap
 
+import pytest
+
 from skbuild.cmaker import CMaker, has_cmake_cache_arg
-from skbuild.constants import CMAKE_BUILD_DIR, CMAKE_DEFAULT_EXECUTABLE, CMAKE_INSTALL_DIR
+from skbuild.constants import (
+    CMAKE_BUILD_DIR,
+    CMAKE_DEFAULT_EXECUTABLE,
+    CMAKE_INSTALL_DIR,
+)
 from skbuild.exceptions import SKBuildError
 from skbuild.utils import push_dir, to_unix_path
 

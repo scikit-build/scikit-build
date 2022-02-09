@@ -1,7 +1,8 @@
-import pytest
+import platform
 import sys
 import textwrap
-import platform
+
+import pytest
 
 import skbuild.constants
 

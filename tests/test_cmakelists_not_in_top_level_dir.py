@@ -10,12 +10,13 @@ keyword works.
 """
 
 import glob
-import pytest
 import textwrap
+
+import pytest
 
 from skbuild.exceptions import SKBuildError
 
-from . import (_tmpdir, execute_setup_py, project_setup_py_test)
+from . import _tmpdir, execute_setup_py, project_setup_py_test
 from .pytest_helpers import check_sdist_content
 
 

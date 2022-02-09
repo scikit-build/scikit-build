@@ -4,27 +4,24 @@ from distutils and setuptools.
 
 from __future__ import print_function
 
+import argparse
 import copy
+import json
 import os
 import os.path
-import sys
-import argparse
-import json
 import platform
 import stat
+import sys
 import warnings
-
 from contextlib import contextmanager
+
+# pylint: disable-next=wrong-import-order
+from distutils.errors import DistutilsArgError, DistutilsError, DistutilsGetoptError
 from glob import glob
 from shutil import copyfile, copymode
 
 # Must be imported before distutils
 import setuptools
-
-# pylint: disable-next=wrong-import-order
-from distutils.errors import (DistutilsArgError,
-                              DistutilsError,
-                              DistutilsGetoptError)
 
 if sys.version_info >= (3, 0):
     from io import StringIO
@@ -38,21 +35,39 @@ else:
 
 from packaging.requirements import Requirement
 from packaging.version import parse as parse_version
-
 from setuptools.dist import Distribution as upstream_Distribution
 
 from . import cmaker
-from .command import (build, build_ext, build_py, clean,
-                      install, install_lib, install_scripts,
-                      bdist, bdist_wheel, egg_info,
-                      sdist, generate_source_manifest, test)
-from .constants import (CMAKE_DEFAULT_EXECUTABLE,
-                        CMAKE_INSTALL_DIR,
-                        CMAKE_SPEC_FILE,
-                        set_skbuild_plat_name,
-                        skbuild_plat_name)
+from .command import (
+    bdist,
+    bdist_wheel,
+    build,
+    build_ext,
+    build_py,
+    clean,
+    egg_info,
+    generate_source_manifest,
+    install,
+    install_lib,
+    install_scripts,
+    sdist,
+    test,
+)
+from .constants import (
+    CMAKE_DEFAULT_EXECUTABLE,
+    CMAKE_INSTALL_DIR,
+    CMAKE_SPEC_FILE,
+    set_skbuild_plat_name,
+    skbuild_plat_name,
+)
 from .exceptions import SKBuildError, SKBuildGeneratorNotFoundError
-from .utils import (mkdir_p, parse_manifestin, PythonModuleFinder, to_platform_path, to_unix_path)
+from .utils import (
+    PythonModuleFinder,
+    mkdir_p,
+    parse_manifestin,
+    to_platform_path,
+    to_unix_path,
+)
 
 
 def create_skbuild_argparser():

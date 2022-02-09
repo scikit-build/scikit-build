@@ -7,13 +7,13 @@
 Tests for `skbuild.setup` function.
 """
 
-import textwrap
 import os
 import pprint
+import textwrap
+from distutils.core import Distribution as distutils_Distribution
+
 import py.path
 import pytest
-
-from distutils.core import Distribution as distutils_Distribution
 from mock import patch
 from setuptools import Distribution as setuptool_Distribution
 
@@ -22,10 +22,15 @@ from skbuild.constants import CMAKE_INSTALL_DIR, SKBUILD_DIR
 from skbuild.exceptions import SKBuildError
 from skbuild.platform_specifics import get_platform
 from skbuild.setuptools_wrap import strip_package
-from skbuild.utils import (push_dir, to_platform_path)
+from skbuild.utils import push_dir, to_platform_path
 
-from . import (_tmpdir, execute_setup_py,
-               initialize_git_repo_and_commit, is_site_reachable, push_argv)
+from . import (
+    _tmpdir,
+    execute_setup_py,
+    initialize_git_repo_and_commit,
+    is_site_reachable,
+    push_argv,
+)
 
 
 @pytest.mark.parametrize("distribution_type",

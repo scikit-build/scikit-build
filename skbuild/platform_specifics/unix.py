@@ -2,9 +2,8 @@
 
 import os
 
-from .abstract import CMakeGenerator
-
 from . import abstract
+from .abstract import CMakeGenerator
 
 
 # pylint:disable=abstract-method

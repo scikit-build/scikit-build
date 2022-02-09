@@ -1,5 +1,6 @@
-from skbuild.utils import distutils_log, distribution_hide_listing
 import pytest
+
+from skbuild.utils import distribution_hide_listing, distutils_log
 
 setuptools_logging = pytest.importorskip("setuptools.logging")
 

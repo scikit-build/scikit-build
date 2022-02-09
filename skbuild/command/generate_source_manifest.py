@@ -4,12 +4,11 @@ command."""
 import os
 import subprocess
 import sys
-
 from distutils.cmd import Command
 
-from . import set_build_base_mixin
 from ..constants import SKBUILD_DIR, SKBUILD_MARKER_FILE
 from ..utils import new_style
+from . import set_build_base_mixin
 
 
 class generate_source_manifest(set_build_base_mixin, new_style(Command)):

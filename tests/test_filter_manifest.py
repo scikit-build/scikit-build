@@ -1,8 +1,6 @@
 import glob
 
-from . import (
-    _tmpdir, execute_setup_py, initialize_git_repo_and_commit, prepare_project
-)
+from . import _tmpdir, execute_setup_py, initialize_git_repo_and_commit, prepare_project
 from .pytest_helpers import check_wheel_content
 
 

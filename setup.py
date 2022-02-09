@@ -6,7 +6,6 @@ import setuptools
 # Produce an ImportError if this is missing
 import setuptools_scm  # noqa: F401
 
-
 with open('README.rst', 'r') as fp:
     readme = fp.read()
 

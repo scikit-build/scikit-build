@@ -8,6 +8,7 @@ Tests for various command line functionality.
 """
 
 import os
+
 import pytest
 
 from skbuild.constants import CMAKE_BUILD_DIR
