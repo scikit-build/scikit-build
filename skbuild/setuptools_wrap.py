@@ -12,6 +12,7 @@ import argparse
 import json
 import platform
 import stat
+import warnings
 
 # Must be imported before distutils
 import setuptools
@@ -372,6 +373,17 @@ def setup(*args, **kw):  # noqa: C901
     version in :func:`skbuild.constants.CMAKE_SPEC_FILE()`: and (3) re-configuring only if either the generator or
     the CMake specs change.
     """
+
+    # If any, strip ending slash from each package directory
+    # Regular setuptools does not support this
+    # TODO: will become an error in the future
+    if 'package_dir' in kw:
+        for package, prefix in kw['package_dir'].items():
+            if prefix.endswith('/'):
+                msg = 'package_dir={{{!r}: {!r}}} ends with a trailing slash, which is not supported by setuptools.'.format(package, prefix)
+                warnings.warn(msg, FutureWarning, stacklevel=2)
+                kw['package_dir'][package] = prefix[:-1]
+
     sys.argv, cmake_executable, skip_generator_test, cmake_args, make_args = parse_args()
 
     # work around https://bugs.python.org/issue1011113
@@ -623,12 +635,6 @@ def setup(*args, **kw):  # noqa: C901
         traceback.print_tb(sys.exc_info()[2])
         print('')
         sys.exit(ex)
-
-    # If any, strip ending slash from each package directory
-    # Regular setuptools does not support this
-    # TODO: produce warning and deprecate
-    package_dir = {package: prefix[:-1] if prefix and prefix[-1] == "/" else prefix
-                   for package, prefix in package_dir.items()}
 
     # If needed, set reasonable defaults for package_dir
     for package in packages:
