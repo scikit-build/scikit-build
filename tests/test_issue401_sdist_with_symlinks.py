@@ -20,6 +20,7 @@ def test_sdist_with_symlinks():
     assert sdists_tar or sdists_zip
 
     expected_content = [
+        'hello-1.2.3/MANIFEST.in',
         'hello-1.2.3/README',
         'hello-1.2.3/setup.py',
         'hello-1.2.3/VERSION',

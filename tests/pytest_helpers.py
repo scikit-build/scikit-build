@@ -11,7 +11,7 @@ from skbuild import __version__ as skbuild_version
 from . import list_ancestors
 
 
-def check_sdist_content(sdist_archive, expected_distribution_name, expected_content):
+def check_sdist_content(sdist_archive, expected_distribution_name, expected_content, package_dir=''):
     """This function raises an AssertionError if the given sdist_archive
     does not have the expected content.
     """
@@ -21,8 +21,20 @@ def check_sdist_content(sdist_archive, expected_distribution_name, expected_cont
 
     expected_content = list(expected_content)
 
+    expected_name = '_'.join(expected_distribution_name.split('-')[:-1])
+
+    if not package_dir:
+        egg_info_dir = '{}/{}.egg-info'.format(expected_distribution_name, expected_name)
+    else:
+        egg_info_dir = '{}/{}/{}.egg-info'.format(expected_distribution_name, package_dir, expected_name)
+
     expected_content += [
        '%s/PKG-INFO' % expected_distribution_name,
+       '%s/setup.cfg' % expected_distribution_name,
+       '%s/dependency_links.txt' % egg_info_dir,
+       '%s/top_level.txt' % egg_info_dir,
+       '%s/PKG-INFO' % egg_info_dir,
+       '%s/SOURCES.txt' % egg_info_dir,
     ]
 
     if sdist_zip and (
