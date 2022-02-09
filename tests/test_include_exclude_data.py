@@ -60,7 +60,7 @@ def check_sdist(proj, base=''):
     if sdists_tar:
         sdist_archive = 'dist/%s.tar.gz' % proj
 
-    check_sdist_content(sdist_archive, proj, expected_content)
+    check_sdist_content(sdist_archive, proj, expected_content, package_dir=base)
 
 
 @project_setup_py_test("test-include-exclude-data", ["bdist_wheel"])

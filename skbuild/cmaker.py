@@ -594,17 +594,57 @@ class CMaker(object):
                     ("      " + _install) for _install in bad_installs)
             )))
 
-    def make(self, clargs=(), config="Release", source_dir=".", env=None):
+    def make(self, clargs=(), config="Release", source_dir=".",
+             install_target="install", env=None):
         """Calls the system-specific make program to compile code.
+
+           install_target: string
+                Name of the target responsible to install the project.
+                Default is "install".
+
+                .. note::
+
+                   To workaround CMake issue #8438.
+                   See https://gitlab.kitware.com/cmake/cmake/-/issues/8438
+                   Due to a limitation of CMake preventing from adding a dependency
+                   on the "build-all" built-in target, we explicitly build the project first when
+                   the install target is different from the default on.
         """
         clargs, config = pop_arg('--config', clargs, config)
+        clargs, install_target = pop_arg('--install-target', clargs, install_target)
         if not os.path.exists(CMAKE_BUILD_DIR()):
             raise SKBuildError(("CMake build folder ({}) does not exist. "
                                 "Did you forget to run configure before "
                                 "make?").format(CMAKE_BUILD_DIR()))
 
-        cmd = [self.cmake_executable, "--build", source_dir,
-               "--target", "install", "--config", config, "--"]
+        # Workaround CMake issue #8438
+        # See https://gitlab.kitware.com/cmake/cmake/-/issues/8438
+        # Due to a limitation of CMake preventing from adding a dependency
+        # on the "build-all" built-in target, we explicitly build
+        # the project first when
+        # the install target is different from the default on.
+        if install_target != "install":
+            self.make_impl(clargs=clargs, config=config, source_dir=source_dir,
+                           install_target=None, env=env)
+
+        self.make_impl(clargs=clargs, config=config, source_dir=source_dir,
+                       install_target=install_target, env=env)
+
+    def make_impl(self, clargs, config, source_dir, install_target, env=None):
+        """
+        Precondition: clargs does not have --config nor --install-target options.
+        These command line arguments are extracted in the caller function
+        `make` with `clargs, config = pop_arg('--config', clargs, config)`
+
+        This is a refactor effort for calling the function `make` twice in
+        case the install_target is different than the default `install`.
+        """
+        if not install_target:
+            cmd = [self.cmake_executable, "--build", source_dir,
+                   "--config", config, "--"]
+        else:
+            cmd = [self.cmake_executable, "--build", source_dir,
+                   "--target", install_target, "--config", config, "--"]
         cmd.extend(clargs)
         cmd.extend(
             filter(bool,
@@ -612,17 +652,25 @@ class CMaker(object):
         )
 
         rtn = subprocess.call(cmd, cwd=CMAKE_BUILD_DIR(), env=env)
+        # For reporting errors (if any)
+        if not install_target:
+            install_target = "internal build step [valid]"
+
         if rtn != 0:
             raise SKBuildError(
                 "An error occurred while building with CMake.\n"
                 "  Command:\n"
                 "    {}\n"
+                "  Install target:\n"
+                "    {}\n"
                 "  Source directory:\n"
                 "    {}\n"
                 "  Working directory:\n"
                 "    {}\n"
-                "Please see CMake's output for more information.".format(
+                "Please check the install target is valid and see CMake's output for more "
+                "information.".format(
                     self._formatArgsForDisplay(cmd),
+                    install_target,
                     os.path.abspath(source_dir),
                     os.path.abspath(CMAKE_BUILD_DIR())))
 

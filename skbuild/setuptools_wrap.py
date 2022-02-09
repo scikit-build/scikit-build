@@ -12,6 +12,7 @@ import argparse
 import json
 import platform
 import stat
+import warnings
 
 from contextlib import contextmanager
 from glob import glob
@@ -72,6 +73,11 @@ def create_skbuild_argparser():
         help='specify the path to the cmake executable'
     )
     parser.add_argument(
+        '--install-target', default=None, metavar='',
+        help='specify the CMake target performing the install. '
+             'If not provided, uses the target ``install``'
+    )
+    parser.add_argument(
         '--skip-generator-test', action='store_true',
         help='skip generator test when a generator is explicitly selected using --generator'
     )
@@ -114,6 +120,8 @@ def parse_skbuild_args(args, cmake_args, build_tool_args):
     build_tool_args.extend(['--config', namespace.build_type])
     if namespace.jobs is not None:
         build_tool_args.extend(['-j', str(namespace.jobs)])
+    if namespace.install_target is not None:
+        build_tool_args.extend(['--install-target', namespace.install_target])
 
     if namespace.generator is None and namespace.skip_generator_test is True:
         sys.exit("ERROR: Specifying --skip-generator-test requires --generator to also be specified.")
@@ -366,6 +374,17 @@ def setup(*args, **kw):  # noqa: C901
     version in :func:`skbuild.constants.CMAKE_SPEC_FILE()`: and (3) re-configuring only if either the generator or
     the CMake specs change.
     """
+
+    # If any, strip ending slash from each package directory
+    # Regular setuptools does not support this
+    # TODO: will become an error in the future
+    if 'package_dir' in kw:
+        for package, prefix in kw['package_dir'].items():
+            if prefix.endswith('/'):
+                msg = 'package_dir={{{!r}: {!r}}} ends with a trailing slash, which is not supported by setuptools.'.format(package, prefix)
+                warnings.warn(msg, FutureWarning, stacklevel=2)
+                kw['package_dir'][package] = prefix[:-1]
+
     sys.argv, cmake_executable, skip_generator_test, cmake_args, make_args = parse_args()
 
     # work around https://bugs.python.org/issue1011113
@@ -402,7 +421,8 @@ def setup(*args, **kw):  # noqa: C901
         'cmake_with_sdist': False,
         'cmake_languages': ('C', 'CXX'),
         'cmake_minimum_required_version': None,
-        'cmake_process_manifest_hook': None
+        'cmake_process_manifest_hook': None,
+        'cmake_install_target': 'install'
     }
     skbuild_kw = {param: kw.pop(param, value)
                   for param, value in parameters.items()}
@@ -492,6 +512,20 @@ def setup(*args, **kw):  # noqa: C901
     # weight and when CMake is given multiple times a argument, only the last
     # one is considered, let's prepend the one provided in the setup call.
     cmake_args = skbuild_kw['cmake_args'] + cmake_args
+
+    # Handle cmake_install_target
+    # get the target (next item after '--install-target') or return '' if no --install-target
+    cmake_install_target_from_command = next(
+        (make_args[index+1] for index, item in enumerate(make_args) if
+         item == '--install-target'), '')
+    cmake_install_target_from_setup = skbuild_kw['cmake_install_target']
+    # Setting target from command takes precedence
+    # cmake_install_target_from_setup has the default 'install',
+    # so cmake_install_target would never be empty.
+    if cmake_install_target_from_command:
+        cmake_install_target = cmake_install_target_from_command
+    else:
+        cmake_install_target = cmake_install_target_from_setup
 
     if sys.platform == 'darwin':
 
@@ -593,7 +627,7 @@ def setup(*args, **kw):  # noqa: C901
                                      languages=cmake_languages
                                      )
                 _save_cmake_spec(cmake_spec)
-            cmkr.make(make_args, env=env)
+            cmkr.make(make_args, install_target=cmake_install_target, env=env)
     except SKBuildGeneratorNotFoundError as ex:
         sys.exit(ex)
     except SKBuildError as ex:
@@ -603,16 +637,14 @@ def setup(*args, **kw):  # noqa: C901
         print('')
         sys.exit(ex)
 
-    # If any, strip ending slash from each package directory
-    package_dir = {package: prefix[:-1] if prefix and prefix[-1] == "/" else prefix
-                   for package, prefix in package_dir.items()}
-
     # If needed, set reasonable defaults for package_dir
     for package in packages:
         if package not in package_dir:
             package_dir[package] = package.replace(".", "/")
             if '' in package_dir:
                 package_dir[package] = to_unix_path(os.path.join(package_dir[''], package_dir[package]))
+
+    kw['package_dir'] = package_dir
 
     package_prefixes = _collect_package_prefixes(package_dir, packages)
 

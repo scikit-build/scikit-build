@@ -42,7 +42,7 @@ def test_hello_cython_sdist():
     if sdists_tar:
         sdist_archive = 'dist/hello-cython-1.2.3.tar.gz'
 
-    check_sdist_content(sdist_archive, 'hello-cython-1.2.3', expected_content)
+    check_sdist_content(sdist_archive, 'hello-cython-1.2.3', expected_content, package_dir='hello')
 
 
 @project_setup_py_test("hello-cython", ["bdist_wheel"])

@@ -21,7 +21,8 @@ def test_manifest_in_sdist():
 
     expected_content = [
         'manifest-in-1.2.3/hello/__init__.py',
-        'manifest-in-1.2.3/setup.py'
+        'manifest-in-1.2.3/setup.py',
+        'manifest-in-1.2.3/MANIFEST.in',
     ]
 
     sdist_archive = 'dist/manifest-in-1.2.3.zip'

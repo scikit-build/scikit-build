@@ -1,9 +1,6 @@
 """This module defines custom implementation of ``sdist`` setuptools command."""
 
-import contextlib
-import os
-
-from distutils.command.sdist import sdist as _sdist
+from setuptools.command.sdist import sdist as _sdist
 
 from . import set_build_base_mixin
 from ..utils import distribution_hide_listing, new_style, distutils_log
@@ -11,34 +8,6 @@ from ..utils import distribution_hide_listing, new_style, distutils_log
 
 class sdist(set_build_base_mixin, new_style(_sdist)):
     """Custom implementation of ``sdist`` setuptools command."""
-
-    def make_distribution(self):
-        """This function was originally re-implemented in setuptools to workaround
-        https://github.com/pypa/setuptools/issues/516 and later ported to scikit-build
-        to ensure symlinks are maintained.
-        """
-        with self._remove_os_link():
-            super(sdist, self).make_distribution()
-
-    @staticmethod
-    @contextlib.contextmanager
-    def _remove_os_link():
-        """In a context, remove and restore ``os.link`` if it exists.
-        """
-        # copied from setuptools.sdist
-
-        no_value = object()
-
-        orig_val = getattr(os, 'link', no_value)
-        try:
-            del os.link
-        except Exception:  # pylint: disable=broad-except
-            pass
-        try:
-            yield
-        finally:
-            if orig_val is not no_value:
-                os.link = orig_val
 
     def make_release_tree(self, base_dir, files):
         """Handle --hide-listing option."""
