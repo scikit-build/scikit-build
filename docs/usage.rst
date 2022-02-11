@@ -90,7 +90,7 @@ be placed in ``setup.cfg`` as normal.
 - ``package_data``: A dictionary mapping package names to lists of glob patterns. For a complete description and examples,
   see the setuptools documentation section on `Including Data Files`_.
   You do not need to use this option if you are using include_package_data, unless you need to add e.g. files that are generated
-  by your setup script and build process. (And are therefore not in source control or are files that you don’t want to include
+  by your setup script and build process. (And are therefore not in source control or are files that you don't want to include
   in your source distribution.)
 
 - ``exclude_package_data``: Dictionary mapping package names to lists of glob patterns that should be excluded from

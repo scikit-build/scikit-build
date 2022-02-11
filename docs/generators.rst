@@ -389,7 +389,7 @@ Steve Dower, engineer at Microsoft.
 
 .. [#getplat] ``from distutils.util import get_platform; print(get_platform())``
 
-.. [#alternativevs] `How to deal with the pain of “unable to find vcvarsall.bat” <https://blogs.msdn.microsoft.com/pythonengineering/2016/04/11/unable-to-find-vcvarsall-bat/>`_
+.. [#alternativevs] `How to deal with the pain of "unable to find vcvarsall.bat" <https://blogs.msdn.microsoft.com/pythonengineering/2016/04/11/unable-to-find-vcvarsall-bat/>`_
 
 .. [#automaticvsenv] Implementation details: This is made possible by internally using the function ``query_vcvarsall``
                      from the ``distutils.msvc9compiler`` (or ``distutils._msvccompiler`` when visual studio ``>= 2015``

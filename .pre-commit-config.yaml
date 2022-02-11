@@ -13,6 +13,12 @@ repos:
   - id: requirements-txt-fixer
   - id: trailing-whitespace
 
+- repo: https://github.com/sirosen/texthooks
+  rev: "0.2.2"
+  hooks:
+  - id: fix-ligatures
+  - id: fix-smartquotes
+
 - repo: https://github.com/PyCQA/isort
   rev: "5.10.1"
   hooks:
