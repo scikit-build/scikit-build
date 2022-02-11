@@ -9,13 +9,13 @@ Tries to build and test the `hello-cpp` sample project.
 
 import glob
 import os
+
 import pytest
 
 from skbuild.constants import CMAKE_BUILD_DIR, CMAKE_INSTALL_DIR, SKBUILD_DIR
 from skbuild.utils import push_dir
 
-from . import get_ext_suffix, project_setup_py_test
-from . import (_copy_dir, _tmpdir, SAMPLES_DIR)
+from . import SAMPLES_DIR, _copy_dir, _tmpdir, get_ext_suffix, project_setup_py_test
 from .pytest_helpers import check_sdist_content, check_wheel_content
 
 

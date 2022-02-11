@@ -9,11 +9,9 @@ except ImportError:
 
 from shutil import rmtree
 
+from ..constants import CMAKE_BUILD_DIR, CMAKE_INSTALL_DIR, SKBUILD_DIR
+from ..utils import distutils_log, new_style
 from . import set_build_base_mixin
-from ..constants import (CMAKE_BUILD_DIR,
-                         CMAKE_INSTALL_DIR,
-                         SKBUILD_DIR)
-from ..utils import new_style, distutils_log
 
 
 class clean(set_build_base_mixin, new_style(_clean)):

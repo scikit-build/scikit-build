@@ -3,8 +3,8 @@ command."""
 
 from setuptools.command.install_lib import install_lib as _install_lib
 
+from ..utils import distribution_hide_listing, distutils_log, new_style
 from . import set_build_base_mixin
-from ..utils import distribution_hide_listing, new_style, distutils_log
 
 
 class install_lib(set_build_base_mixin, new_style(_install_lib)):

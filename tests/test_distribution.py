@@ -1,6 +1,6 @@
 import os
-import pytest
 
+import pytest
 from path import Path
 
 from . import initialize_git_repo_and_commit, prepare_project

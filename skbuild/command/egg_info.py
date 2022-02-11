@@ -6,9 +6,9 @@ import os.path
 
 from setuptools.command.egg_info import egg_info as _egg_info
 
-from . import set_build_base_mixin
 from ..constants import CMAKE_INSTALL_DIR
 from ..utils import new_style, to_unix_path
+from . import set_build_base_mixin
 
 
 class egg_info(set_build_base_mixin, new_style(_egg_info)):

@@ -5,7 +5,6 @@ This module defines constants commonly used in scikit-build.
 import os
 import platform
 import sys
-
 from distutils.util import get_platform
 
 CMAKE_DEFAULT_EXECUTABLE = "cmake"

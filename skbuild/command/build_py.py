@@ -5,9 +5,9 @@ import os
 
 from setuptools.command.build_py import build_py as _build_py
 
-from . import set_build_base_mixin
 from ..constants import CMAKE_INSTALL_DIR
-from ..utils import distribution_hide_listing, new_style, distutils_log
+from ..utils import distribution_hide_listing, distutils_log, new_style
+from . import set_build_base_mixin
 
 
 class build_py(set_build_base_mixin, new_style(_build_py)):

@@ -1,11 +1,10 @@
 """This module defines custom implementation of ``install_scripts`` setuptools
 command."""
 
-from setuptools.command.install_scripts import (
-    install_scripts as _install_scripts)
+from setuptools.command.install_scripts import install_scripts as _install_scripts
 
+from ..utils import distribution_hide_listing, distutils_log, new_style
 from . import set_build_base_mixin
-from ..utils import distribution_hide_listing, new_style, distutils_log
 
 
 class install_scripts(set_build_base_mixin, new_style(_install_scripts)):

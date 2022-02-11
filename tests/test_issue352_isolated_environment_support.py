@@ -1,5 +1,6 @@
-import textwrap
 import os
+import textwrap
+
 import pytest
 
 import skbuild

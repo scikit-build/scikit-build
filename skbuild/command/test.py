@@ -2,8 +2,8 @@
 
 from setuptools.command.test import test as _test
 
-from . import set_build_base_mixin
 from ..utils import new_style
+from . import set_build_base_mixin
 
 
 class test(set_build_base_mixin, new_style(_test)):

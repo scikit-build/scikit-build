@@ -1,10 +1,10 @@
-import six
 import sys
 import tarfile
-import wheel
-
-from pkg_resources import parse_version
 from zipfile import ZipFile
+
+import six
+import wheel
+from pkg_resources import parse_version
 
 from skbuild import __version__ as skbuild_version
 

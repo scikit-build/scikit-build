@@ -2,8 +2,8 @@
 
 from setuptools.command.sdist import sdist as _sdist
 
+from ..utils import distribution_hide_listing, distutils_log, new_style
 from . import set_build_base_mixin
-from ..utils import distribution_hide_listing, new_style, distutils_log
 
 
 class sdist(set_build_base_mixin, new_style(_sdist)):

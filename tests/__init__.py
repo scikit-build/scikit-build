@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
-import _pytest.tmpdir
 import distutils
 import os
 import os.path
+
+import _pytest.tmpdir
 import pkg_resources
 
 try:
@@ -11,20 +12,19 @@ try:
 except ImportError:
     import pathlib2 as pathlib  # Python 2.7
 
-import py.path
 import re
-import requests
-import six
 import subprocess
 import sys
-
 from contextlib import contextmanager
+
+import py.path
+import requests
+import six
 from mock import patch
 
 from skbuild.compat import which  # noqa: F401
-from skbuild.utils import push_dir
 from skbuild.platform_specifics import get_platform
-
+from skbuild.utils import push_dir
 
 SAMPLES_DIR = os.path.join(
     os.path.dirname(os.path.realpath(__file__)),
