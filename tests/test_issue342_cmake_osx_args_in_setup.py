@@ -8,13 +8,17 @@ import skbuild.constants
 
 from . import _tmpdir, execute_setup_py, push_env
 
-params = "osx_deployment_target_env_var,cli_setup_args," \
+params = (
+    "osx_deployment_target_env_var,cli_setup_args,"
     "keyword_cmake_args,cli_cmake_args,expected_cmake_osx_deployment_target"
+)
 
 
-@pytest.mark.parametrize(params, [
-    # default plat_name is 'macosx-10.9-x86_64'
-    (
+@pytest.mark.parametrize(
+    params,
+    [
+        # default plat_name is 'macosx-10.9-x86_64'
+        (
             # osx_deployment_target_env_var
             None,
             # cli_setup_args
@@ -24,9 +28,9 @@ params = "osx_deployment_target_env_var,cli_setup_args," \
             # cli_cmake_args
             [],
             # expected_cmake_osx_deployment_target
-            "10.9"
-    ),
-    (
+            "10.9",
+        ),
+        (
             # osx_deployment_target_env_var
             "10.7",
             # cli_setup_args
@@ -36,9 +40,9 @@ params = "osx_deployment_target_env_var,cli_setup_args," \
             # cli_cmake_args
             [],
             # expected_cmake_osx_deployment_target
-            "10.7"
-    ),
-    (
+            "10.7",
+        ),
+        (
             # osx_deployment_target_env_var
             "10.7",
             # cli_setup_args
@@ -48,9 +52,9 @@ params = "osx_deployment_target_env_var,cli_setup_args," \
             # cli_cmake_args
             [],
             # expected_cmake_osx_deployment_target
-            "10.9"
-    ),
-    (
+            "10.9",
+        ),
+        (
             # osx_deployment_target_env_var
             None,
             # cli_setup_args
@@ -60,9 +64,9 @@ params = "osx_deployment_target_env_var,cli_setup_args," \
             # cli_cmake_args
             [],
             # expected_cmake_osx_deployment_target
-            "10.6"
-    ),
-    (
+            "10.6",
+        ),
+        (
             # osx_deployment_target_env_var
             None,
             # cli_setup_args
@@ -72,9 +76,9 @@ params = "osx_deployment_target_env_var,cli_setup_args," \
             # cli_cmake_args
             [],
             # expected_cmake_osx_deployment_target
-            "10.7"
-    ),
-    (
+            "10.7",
+        ),
+        (
             # osx_deployment_target_env_var
             None,
             # cli_setup_args
@@ -84,9 +88,9 @@ params = "osx_deployment_target_env_var,cli_setup_args," \
             # cli_cmake_args
             [],
             # expected_cmake_osx_deployment_target
-            "10.7"
-    ),
-    (
+            "10.7",
+        ),
+        (
             # osx_deployment_target_env_var
             None,
             # cli_setup_args
@@ -96,9 +100,9 @@ params = "osx_deployment_target_env_var,cli_setup_args," \
             # cli_cmake_args
             [],
             # expected_cmake_osx_deployment_target
-            "10.7"
-    ),
-    (
+            "10.7",
+        ),
+        (
             # osx_deployment_target_env_var
             None,
             # cli_setup_args
@@ -108,9 +112,9 @@ params = "osx_deployment_target_env_var,cli_setup_args," \
             # cli_cmake_args
             ['-DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.8'],
             # expected_cmake_osx_deployment_target
-            "10.8"
-    ),
-    (
+            "10.8",
+        ),
+        (
             # osx_deployment_target_env_var
             None,
             # cli_setup_args
@@ -120,17 +124,24 @@ params = "osx_deployment_target_env_var,cli_setup_args," \
             # cli_cmake_args
             ['-DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.8'],
             # expected_cmake_osx_deployment_target
-            "10.8"
-    ),
-])
+            "10.8",
+        ),
+    ],
+)
 def test_cmake_args_keyword_osx_default(
-        osx_deployment_target_env_var,
-        cli_setup_args, keyword_cmake_args, cli_cmake_args, expected_cmake_osx_deployment_target, mocker):
+    osx_deployment_target_env_var,
+    cli_setup_args,
+    keyword_cmake_args,
+    cli_cmake_args,
+    expected_cmake_osx_deployment_target,
+    mocker,
+):
 
     tmp_dir = _tmpdir('cmake_args_keyword_osx_default')
 
-    tmp_dir.join('setup.py').write(textwrap.dedent(
-        """
+    tmp_dir.join('setup.py').write(
+        textwrap.dedent(
+            """
         from skbuild import setup
         setup(
             name="test_cmake_args_keyword_osx_default",
@@ -140,13 +151,18 @@ def test_cmake_args_keyword_osx_default(
             license="MIT",
             cmake_args=[{cmake_args}]
         )
-        """.format(cmake_args=",".join(["'%s'" % arg for arg in keyword_cmake_args]))
-    ))
-    tmp_dir.join('CMakeLists.txt').write(textwrap.dedent(
-        """
+        """.format(
+                cmake_args=",".join(["'%s'" % arg for arg in keyword_cmake_args])
+            )
+        )
+    )
+    tmp_dir.join('CMakeLists.txt').write(
+        textwrap.dedent(
+            """
         message(FATAL_ERROR "This error message should not be displayed")
         """
-    ))
+        )
+    )
 
     mock_configure = mocker.patch('skbuild.cmaker.CMaker.configure', side_effect=RuntimeError("exit skbuild"))
 
@@ -186,12 +202,14 @@ def test_cmake_args_keyword_osx_default(
                 found_cmake_osx_deployment_target = True
             break
 
-    assert found_cmake_osx_deployment_target, \
-        textwrap.dedent("""
+    assert found_cmake_osx_deployment_target, textwrap.dedent(
+        """
                     Argument -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING={} is NOT found near the end of
                     current list of arguments:
                       keyword_cmake_args  : {}
                       cli_cmake_args    : {}
                       current_cmake_args: {}
-                    """.format(expected_cmake_osx_deployment_target,
-                               keyword_cmake_args, cli_cmake_args, current_cmake_args))
+                    """.format(
+            expected_cmake_osx_deployment_target, keyword_cmake_args, cli_cmake_args, current_cmake_args
+        )
+    )

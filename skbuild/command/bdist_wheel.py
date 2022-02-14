@@ -3,9 +3,11 @@ command."""
 
 try:
     from wheel.wheelfile import WheelFile
+
     _USE_WHEELFILE = True
 except ImportError:
     from wheel import archive as _wheel_archive  # Not available with wheel >= 0.32.0
+
     _USE_WHEELFILE = False
 
 from wheel.bdist_wheel import bdist_wheel as _bdist_wheel
@@ -28,8 +30,7 @@ class bdist_wheel(set_build_base_mixin, new_style(_bdist_wheel)):
                 with distribution_hide_listing(self.distribution) as hide_listing:
                     if hide_listing:
                         zip_filename = wheelfile_self.filename
-                        print("creating '%s' and adding '%s' to it"
-                              % (zip_filename, base_dir))
+                        print("creating '{}' and adding '{}' to it".format(zip_filename, base_dir))
                     old_write_files(wheelfile_self, base_dir)
 
             WheelFile.distribution = self.distribution
@@ -47,8 +48,7 @@ class bdist_wheel(set_build_base_mixin, new_style(_bdist_wheel)):
                 with distribution_hide_listing(self.distribution) as hide_listing:
                     if hide_listing:
                         zip_filename = base_name + ".whl"
-                        print("creating '%s' and adding '%s' to it"
-                              % (zip_filename, base_dir))
+                        print("creating '{}' and adding '{}' to it".format(zip_filename, base_dir))
                     old_make_wheelfile_inner(base_name, base_dir)
 
             _wheel_archive.make_wheelfile_inner = _make_wheelfile_inner

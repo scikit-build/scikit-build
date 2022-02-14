@@ -29,7 +29,7 @@ from skbuild.utils import push_dir
 SAMPLES_DIR = os.path.join(
     os.path.dirname(os.path.realpath(__file__)),
     'samples',
-    )
+)
 
 
 @contextmanager
@@ -42,8 +42,7 @@ def push_argv(argv):
 
 @contextmanager
 def push_env(**kwargs):
-    """This context manager allow to set/unset environment variables.
-    """
+    """This context manager allow to set/unset environment variables."""
     saved_env = dict(os.environ)
     for var, value in kwargs.items():
         if value is not None:
@@ -94,13 +93,10 @@ def _tmpdir(basename):
             rootdir = temproot
 
         rootdir.ensure(dir=1)
-        basetemp = py.path.local.make_numbered_dir(prefix='pytest-',
-                                                   rootdir=rootdir)
+        basetemp = py.path.local.make_numbered_dir(prefix='pytest-', rootdir=rootdir)
 
     # Adapted from _pytest.tmpdir.TempdirFactory.mktemp
-    return py.path.local.make_numbered_dir(prefix=basename,
-                                           keep=0, rootdir=basetemp,
-                                           lock_timeout=None)
+    return py.path.local.make_numbered_dir(prefix=basename, keep=0, rootdir=basetemp, lock_timeout=None)
 
 
 def _copy(src, target):
@@ -181,10 +177,9 @@ def initialize_git_repo_and_commit(project_dir, verbose=True):
             ['git', 'config', 'commit.gpgsign', 'false'],
             ['git', 'add', '-A'],
             ['git', 'reset', '.gitignore'],
-            ['git', 'commit', '-m', 'Initial commit']
+            ['git', 'commit', '-m', 'Initial commit'],
         ]:
-            do_call = (subprocess.check_call
-                       if verbose else subprocess.check_output)
+            do_call = subprocess.check_call if verbose else subprocess.check_output
             do_call(cmd)
 
 
@@ -255,17 +250,14 @@ def execute_setup_py(project_dir, setup_args, disable_languages_test=False):
 
 
 def project_setup_py_test(project, setup_args, tmp_dir=None, verbose_git=True, disable_languages_test=False):
-
     def dec(fun):
-
         @six.wraps(fun)
         def wrapped(*iargs, **ikwargs):
 
             if wrapped.tmp_dir is None:
                 wrapped.tmp_dir = _tmpdir(fun.__name__)
                 prepare_project(wrapped.project, wrapped.tmp_dir)
-                initialize_git_repo_and_commit(
-                    wrapped.tmp_dir, verbose=wrapped.verbose_git)
+                initialize_git_repo_and_commit(wrapped.tmp_dir, verbose=wrapped.verbose_git)
 
             with execute_setup_py(wrapped.tmp_dir, wrapped.setup_args, disable_languages_test=disable_languages_test):
                 result2 = fun(*iargs, **ikwargs)
@@ -315,14 +307,12 @@ def is_site_reachable(url):
 
 
 def list_ancestors(path):
-    """Return logical ancestors of the path.
-    """
+    """Return logical ancestors of the path."""
     return [str(parent) for parent in pathlib.PurePosixPath(path).parents if str(parent) != "."]
 
 
 def get_ext_suffix():
-    """Return python extension suffix.
-    """
+    """Return python extension suffix."""
     ext_suffix_var = 'SO'
     if sys.version_info[:2] >= (3, 5):
         ext_suffix_var = 'EXT_SUFFIX'

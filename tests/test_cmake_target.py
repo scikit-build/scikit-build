@@ -16,4 +16,4 @@ from . import project_setup_py_test
 def test_cmake_target_build(capsys):
     out, err = capsys.readouterr()
     dist_warning = "Unknown distribution option: 'cmake_target'"
-    assert (dist_warning not in err and dist_warning not in out)
+    assert dist_warning not in err and dist_warning not in out

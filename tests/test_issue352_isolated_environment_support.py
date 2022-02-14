@@ -13,8 +13,9 @@ def test_isolated_env_trigger_reconfigure(mocker):
 
     tmp_dir = _tmpdir('isolated_env_trigger_reconfigure')
 
-    tmp_dir.join('setup.py').write(textwrap.dedent(
-        """
+    tmp_dir.join('setup.py').write(
+        textwrap.dedent(
+            """
         from skbuild import setup
         setup(
             name="test_isolated_env_trigger_reconfigure",
@@ -24,24 +25,29 @@ def test_isolated_env_trigger_reconfigure(mocker):
             license="MIT",
         )
         """
-    ))
-    tmp_dir.join('CMakeLists.txt').write(textwrap.dedent(
-        """
+        )
+    )
+    tmp_dir.join('CMakeLists.txt').write(
+        textwrap.dedent(
+            """
         message(FATAL_ERROR "This error message should not be displayed")
         """
-    ))
+        )
+    )
 
     #
     # mock configure
     #
     def fake_configure(*args, **kwargs):
         # Simulate a successful configuration creating a CMakeCache.txt
-        tmp_dir.ensure(CMAKE_BUILD_DIR(), dir=1).join('CMakeCache.txt').write(textwrap.dedent(
-            """
+        tmp_dir.ensure(CMAKE_BUILD_DIR(), dir=1).join('CMakeCache.txt').write(
+            textwrap.dedent(
+                """
             //Name of generator.
             CMAKE_GENERATOR:INTERNAL=Ninja
             """
-        ))
+            )
+        )
 
     # Skip real configuration creating the CMakeCache.txt expected by
     # "skbuild.setuptools_wrap._load_cmake_spec()" function

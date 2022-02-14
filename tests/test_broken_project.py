@@ -95,7 +95,7 @@ def test_invalid_cmake(exception, mocker):
 
     exceptions = {
         OSError: OSError('Unknown error'),
-        CalledProcessError: CalledProcessError([CMAKE_DEFAULT_EXECUTABLE, '--version'], 1)
+        CalledProcessError: CalledProcessError([CMAKE_DEFAULT_EXECUTABLE, '--version'], 1),
     }
 
     check_output_original = check_output
@@ -105,8 +105,7 @@ def test_invalid_cmake(exception, mocker):
             raise exceptions[exception]
         return check_output_original(*args, **kwargs)
 
-    mocker.patch('skbuild.cmaker.subprocess.check_output',
-                 new=check_output_mock)
+    mocker.patch('skbuild.cmaker.subprocess.check_output', new=check_output_mock)
 
     with push_dir():
 
@@ -130,13 +129,14 @@ def test_first_invalid_generator(mocker, capfd):
     platform = get_platform()
     default_generators = [CMakeGenerator('Invalid')]
     default_generators.extend(platform.default_generators)
-    mocker.patch.object(type(platform), 'default_generators',
-                        new_callable=mocker.PropertyMock,
-                        return_value=default_generators)
+    mocker.patch.object(
+        type(platform), 'default_generators', new_callable=mocker.PropertyMock, return_value=default_generators
+    )
 
     mocker.patch('skbuild.cmaker.get_platform', return_value=platform)
 
     with push_dir(), push_env(CMAKE_GENERATOR=None):
+
         @project_setup_py_test("hello-no-language", ["build"])
         def run_build():
             pass
@@ -149,12 +149,13 @@ def test_first_invalid_generator(mocker, capfd):
 
 def test_invalid_generator(mocker, capfd):
     platform = get_platform()
-    mocker.patch.object(type(platform), 'default_generators',
-                        new_callable=mocker.PropertyMock,
-                        return_value=[CMakeGenerator('Invalid')])
+    mocker.patch.object(
+        type(platform), 'default_generators', new_callable=mocker.PropertyMock, return_value=[CMakeGenerator('Invalid')]
+    )
     mocker.patch('skbuild.cmaker.get_platform', return_value=platform)
 
     with push_dir(), push_env(CMAKE_GENERATOR=None):
+
         @project_setup_py_test("hello-no-language", ["build"])
         def should_fail():
             pass
@@ -171,5 +172,4 @@ def test_invalid_generator(mocker, capfd):
 
     assert "CMake Error: Could not create named generator Invalid" in err
     assert failed
-    assert "scikit-build could not get a working generator for your system." \
-           " Aborting build." in message
+    assert "scikit-build could not get a working generator for your system." " Aborting build." in message

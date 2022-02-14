@@ -8,5 +8,5 @@ setup(
     license="MIT",
     packages=['hello'],
     package_dir={'': 'src'},
-    test_suite='hello_tests'
+    test_suite='hello_tests',
 )

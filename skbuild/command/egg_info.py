@@ -26,9 +26,9 @@ class egg_info(set_build_base_mixin, new_style(_egg_info)):
                 egg_base = to_unix_path(list(self.distribution.package_dir.values())[0])
                 cmake_install_dir = to_unix_path(CMAKE_INSTALL_DIR())
                 if egg_base.startswith(cmake_install_dir):
-                    egg_base = egg_base[len(cmake_install_dir) + 1:]
+                    egg_base = egg_base[len(cmake_install_dir) + 1 :]
                 if package_name and egg_base.endswith(package_name):
-                    egg_base = egg_base[:-len(package_name) - 1]
+                    egg_base = egg_base[: -len(package_name) - 1]
                 if egg_base == "":
                     egg_base = "."
                 # pylint:disable=attribute-defined-outside-init

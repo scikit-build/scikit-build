@@ -15,7 +15,7 @@ def test_bdist_wheel_command():
         'hello-1.2.3.data/data/lib/static/libbar.a',
         'hello-1.2.3.data/data/lib/static/libfoo.a',
         'hello-1.2.3.data/data/include/bar.h',
-        'hello-1.2.3.data/data/include/foo.h'
+        'hello-1.2.3.data/data/include/foo.h',
     ]
 
     expected_distribution_name = 'hello-1.2.3'

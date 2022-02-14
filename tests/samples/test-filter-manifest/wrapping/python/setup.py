@@ -15,5 +15,5 @@ setup(
     tests_require=[],
     setup_requires=[],
     cmake_source_dir="../../",
-    cmake_process_manifest_hook=exclude_dev_files
+    cmake_process_manifest_hook=exclude_dev_files,
 )

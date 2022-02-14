@@ -47,9 +47,7 @@ def test_hello_pure_sdist():
 
 @project_setup_py_test("hello-pure", ["bdist_wheel"], disable_languages_test=True)
 def test_hello_pure_wheel():
-    expected_content = [
-        'hello/__init__.py'
-    ]
+    expected_content = ['hello/__init__.py']
 
     expected_distribution_name = 'hello_pure-1.2.3'
 

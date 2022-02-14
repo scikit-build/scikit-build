@@ -32,8 +32,7 @@ if sys.version_info >= (3, 3):
 else:
     from pipes import quote
 
-RE_FILE_INSTALL = re.compile(
-    r"""[ \t]*file\(INSTALL DESTINATION "([^"]+)".*"([^"]+)"\).*""")
+RE_FILE_INSTALL = re.compile(r"""[ \t]*file\(INSTALL DESTINATION "([^"]+)".*"([^"]+)"\).*""")
 
 
 def pop_arg(arg, args, default=None):
@@ -94,7 +93,8 @@ def get_cmake_version(cmake_executable=CMAKE_DEFAULT_EXECUTABLE):
         version_string = subprocess.check_output([cmake_executable, '--version'])
     except (OSError, subprocess.CalledProcessError):
         raise SKBuildError(
-            "Problem with the CMake installation, aborting build. CMake executable is %s" % cmake_executable)
+            "Problem with the CMake installation, aborting build. CMake executable is %s" % cmake_executable
+        )
 
     if sys.version_info > (3, 0):
         version_string = version_string.decode()
@@ -163,17 +163,23 @@ class CMaker(object):
         return cls.get_cached('CMAKE_GENERATOR')
 
     def get_cached_generator_env(self):
-        """If any, return a mapping of environment associated with the cached generator.
-        """
+        """If any, return a mapping of environment associated with the cached generator."""
         generator_name = self.get_cached_generator_name()
         if generator_name is not None:
             return self.platform.get_generator(generator_name).env
 
         return None
 
-    def configure(self, clargs=(), generator_name=None, skip_generator_test=False,
-                  cmake_source_dir='.', cmake_install_dir='',
-                  languages=('C', 'CXX'), cleanup=True):
+    def configure(
+        self,
+        clargs=(),
+        generator_name=None,
+        skip_generator_test=False,
+        cmake_source_dir='.',
+        cmake_install_dir='',
+        languages=('C', 'CXX'),
+        cleanup=True,
+    ):
         """Calls cmake to generate the Makefile/VS Solution/XCode project.
 
         clargs: tuple
@@ -224,14 +230,20 @@ class CMaker(object):
         clargs, cli_arch = pop_arg('-A', clargs)
 
         generator = self.platform.get_best_generator(
-            generator_name, skip_generator_test=skip_generator_test,
-            cmake_executable=self.cmake_executable, cmake_args=clargs,
-            languages=languages, cleanup=cleanup, architecture=cli_arch)
+            generator_name,
+            skip_generator_test=skip_generator_test,
+            cmake_executable=self.cmake_executable,
+            cmake_args=clargs,
+            languages=languages,
+            cleanup=cleanup,
+            architecture=cli_arch,
+        )
 
         ninja_executable_path = None
         if generator.name == "Ninja":
             try:
                 import ninja  # pylint: disable=import-outside-toplevel
+
                 ninja_executable_path = os.path.join(ninja.BIN_DIR, "ninja")
             except ImportError:
                 pass
@@ -251,22 +263,17 @@ class CMaker(object):
 
         cmake_source_dir = os.path.abspath(cmake_source_dir)
         cmd = [
-            self.cmake_executable, cmake_source_dir, '-G', generator.name,
-            ("-DCMAKE_INSTALL_PREFIX:PATH=" +
-                os.path.abspath(
-                    os.path.join(CMAKE_INSTALL_DIR(), cmake_install_dir))),
-            ("-DPYTHON_EXECUTABLE:FILEPATH=" +
-                sys.executable),
-            ("-DPYTHON_VERSION_STRING:STRING=" +
-                sys.version.split(' ')[0]),
-            ("-DPYTHON_INCLUDE_DIR:PATH=" +
-                python_include_dir),
-            ("-DPYTHON_LIBRARY:FILEPATH=" +
-                python_library),
-            ("-DSKBUILD:INTERNAL=" +
-                "TRUE"),
-            ("-DCMAKE_MODULE_PATH:PATH=" +
-                os.path.join(os.path.dirname(__file__), "resources", "cmake"))
+            self.cmake_executable,
+            cmake_source_dir,
+            '-G',
+            generator.name,
+            ("-DCMAKE_INSTALL_PREFIX:PATH=" + os.path.abspath(os.path.join(CMAKE_INSTALL_DIR(), cmake_install_dir))),
+            ("-DPYTHON_EXECUTABLE:FILEPATH=" + sys.executable),
+            ("-DPYTHON_VERSION_STRING:STRING=" + sys.version.split(' ')[0]),
+            ("-DPYTHON_INCLUDE_DIR:PATH=" + python_include_dir),
+            ("-DPYTHON_LIBRARY:FILEPATH=" + python_library),
+            ("-DSKBUILD:INTERNAL=" + "TRUE"),
+            ("-DCMAKE_MODULE_PATH:PATH=" + os.path.join(os.path.dirname(__file__), "resources", "cmake")),
         ]
 
         if generator.toolset:
@@ -278,10 +285,7 @@ class CMaker(object):
 
         cmd.extend(clargs)
 
-        cmd.extend(
-            filter(bool,
-                   shlex.split(os.environ.get("SKBUILD_CONFIGURE_OPTIONS", "")))
-        )
+        cmd.extend(filter(bool, shlex.split(os.environ.get("SKBUILD_CONFIGURE_OPTIONS", ""))))
 
         # changes dir to cmake_build and calls cmake's configure step
         # to generate makefile
@@ -290,10 +294,8 @@ class CMaker(object):
             "  Working directory:\n"
             "    {}\n"
             "  Command:\n"
-            "    {}\n".format(
-                os.path.abspath(CMAKE_BUILD_DIR()),
-                self._formatArgsForDisplay(cmd)
-            ))
+            "    {}\n".format(os.path.abspath(CMAKE_BUILD_DIR()), self._formatArgsForDisplay(cmd))
+        )
         rtn = subprocess.call(cmd, cwd=CMAKE_BUILD_DIR(), env=generator.env)
         if rtn != 0:
             raise SKBuildError(
@@ -307,7 +309,9 @@ class CMaker(object):
                 "Please see CMake's output for more information.".format(
                     self._formatArgsForDisplay(cmd),
                     os.path.abspath(cmake_source_dir),
-                    os.path.abspath(CMAKE_BUILD_DIR())))
+                    os.path.abspath(CMAKE_BUILD_DIR()),
+                )
+            )
 
         CMaker.check_for_bad_installs()
 
@@ -363,10 +367,7 @@ class CMaker(object):
 
         # if Python.h not found (or python_include_dir is None), try to find a
         # suitable include dir
-        found_python_h = (
-            python_include_dir is not None and
-            os.path.exists(os.path.join(python_include_dir, 'Python.h'))
-        )
+        found_python_h = python_include_dir is not None and os.path.exists(os.path.join(python_include_dir, 'Python.h'))
 
         if not found_python_h:
 
@@ -402,17 +403,21 @@ class CMaker(object):
             if plat_include is not None:
                 plat_include = os.path.dirname(plat_include)
             if python_inc is not None:
-                python_inc2 = os.path.join(
-                    python_inc, ".".join(map(str, sys.version_info[:2])))
+                python_inc2 = os.path.join(python_inc, ".".join(map(str, sys.version_info[:2])))
 
-            candidate_prefixes = list(filter(bool, (
-                include_py,
-                include_dir,
-                include,
-                plat_include,
-                python_inc,
-                python_inc2,
-            )))
+            candidate_prefixes = list(
+                filter(
+                    bool,
+                    (
+                        include_py,
+                        include_dir,
+                        include,
+                        plat_include,
+                        python_inc,
+                        python_inc2,
+                    ),
+                )
+            )
 
             candidate_versions = (python_version,)
             if python_version:
@@ -429,10 +434,7 @@ class CMaker(object):
 
             candidates = (
                 os.path.join(prefix, ''.join(('python', ver)))
-                for (prefix, ver) in itertools.product(
-                    candidate_prefixes,
-                    candidate_versions
-                )
+                for (prefix, ver) in itertools.product(candidate_prefixes, candidate_versions)
             )
 
             for candidate in candidates:
@@ -469,8 +471,7 @@ class CMaker(object):
         python_library = sysconfig.get_config_var('LIBRARY')
 
         # if static (or nonexistent), try to find a suitable dynamic libpython
-        if (not python_library or
-                os.path.splitext(python_library)[1][-2:] == '.a'):
+        if not python_library or os.path.splitext(python_library)[1][-2:] == '.a':
 
             candidate_lib_prefixes = ['', 'lib']
 
@@ -491,8 +492,7 @@ class CMaker(object):
             candidate_versions = [python_version]
             if python_version:
                 candidate_versions.append('')
-                candidate_versions.insert(
-                    0, "".join(python_version.split(".")[:2]))
+                candidate_versions.insert(0, "".join(python_version.split(".")[:2]))
 
             abiflags = getattr(sys, 'abiflags', '')
             candidate_abiflags = [abiflags]
@@ -507,8 +507,9 @@ class CMaker(object):
             candidate_libdirs = []
             libdir_a = du_sysconfig.get_config_var('LIBDIR')
             if libdir_a is None:
-                candidate_libdirs.append(os.path.abspath(os.path.join(
-                    sysconfig.get_config_var('LIBDEST'), "..", "libs")))
+                candidate_libdirs.append(
+                    os.path.abspath(os.path.join(sysconfig.get_config_var('LIBDEST'), "..", "libs"))
+                )
             libdir_b = sysconfig.get_config_var('LIBDIR')
             for libdir in (libdir_a, libdir_b):
                 if libdir is None:
@@ -517,22 +518,19 @@ class CMaker(object):
                     masd = sysconfig.get_config_var('multiarchsubdir')
                     if masd:
                         if masd.startswith(os.sep):
-                            masd = masd[len(os.sep):]
+                            masd = masd[len(os.sep) :]
                         candidate_libdirs.append(os.path.join(libdir, masd))
                 candidate_libdirs.append(libdir)
 
             candidates = (
-                os.path.join(
-                    libdir,
-                    ''.join((pre, impl, ver, abi, ext))
-                )
+                os.path.join(libdir, ''.join((pre, impl, ver, abi, ext)))
                 for (libdir, pre, impl, ext, ver, abi) in itertools.product(
                     candidate_libdirs,
                     candidate_lib_prefixes,
                     candidate_implementations,
                     candidate_extensions,
                     candidate_versions,
-                    candidate_abiflags
+                    candidate_abiflags,
                 )
             )
 
@@ -575,50 +573,47 @@ class CMaker(object):
                     if match is None:
                         continue
 
-                    destination = os.path.normpath(
-                        match.group(1).replace("${CMAKE_INSTALL_PREFIX}",
-                                               install_dir))
+                    destination = os.path.normpath(match.group(1).replace("${CMAKE_INSTALL_PREFIX}", install_dir))
 
                     if not destination.startswith(install_dir):
-                        bad_installs.append(
-                            os.path.join(
-                                destination,
-                                os.path.basename(match.group(2))
-                            )
-                        )
+                        bad_installs.append(os.path.join(destination, os.path.basename(match.group(2))))
 
         if bad_installs:
-            raise SKBuildError("\n".join((
-                "  CMake-installed files must be within the project root.",
-                "    Project Root:",
-                "      " + install_dir,
-                "    Violating Files:",
+            raise SKBuildError(
                 "\n".join(
-                    ("      " + _install) for _install in bad_installs)
-            )))
+                    (
+                        "  CMake-installed files must be within the project root.",
+                        "    Project Root:",
+                        "      " + install_dir,
+                        "    Violating Files:",
+                        "\n".join(("      " + _install) for _install in bad_installs),
+                    )
+                )
+            )
 
-    def make(self, clargs=(), config="Release", source_dir=".",
-             install_target="install", env=None):
+    def make(self, clargs=(), config="Release", source_dir=".", install_target="install", env=None):
         """Calls the system-specific make program to compile code.
 
-           install_target: string
-                Name of the target responsible to install the project.
-                Default is "install".
+        install_target: string
+             Name of the target responsible to install the project.
+             Default is "install".
 
-                .. note::
+             .. note::
 
-                   To workaround CMake issue #8438.
-                   See https://gitlab.kitware.com/cmake/cmake/-/issues/8438
-                   Due to a limitation of CMake preventing from adding a dependency
-                   on the "build-all" built-in target, we explicitly build the project first when
-                   the install target is different from the default on.
+                To workaround CMake issue #8438.
+                See https://gitlab.kitware.com/cmake/cmake/-/issues/8438
+                Due to a limitation of CMake preventing from adding a dependency
+                on the "build-all" built-in target, we explicitly build the project first when
+                the install target is different from the default on.
         """
         clargs, config = pop_arg('--config', clargs, config)
         clargs, install_target = pop_arg('--install-target', clargs, install_target)
         if not os.path.exists(CMAKE_BUILD_DIR()):
-            raise SKBuildError(("CMake build folder ({}) does not exist. "
-                                "Did you forget to run configure before "
-                                "make?").format(CMAKE_BUILD_DIR()))
+            raise SKBuildError(
+                ("CMake build folder ({}) does not exist. " "Did you forget to run configure before " "make?").format(
+                    CMAKE_BUILD_DIR()
+                )
+            )
 
         # Workaround CMake issue #8438
         # See https://gitlab.kitware.com/cmake/cmake/-/issues/8438
@@ -627,11 +622,9 @@ class CMaker(object):
         # the project first when
         # the install target is different from the default on.
         if install_target != "install":
-            self.make_impl(clargs=clargs, config=config, source_dir=source_dir,
-                           install_target=None, env=env)
+            self.make_impl(clargs=clargs, config=config, source_dir=source_dir, install_target=None, env=env)
 
-        self.make_impl(clargs=clargs, config=config, source_dir=source_dir,
-                       install_target=install_target, env=env)
+        self.make_impl(clargs=clargs, config=config, source_dir=source_dir, install_target=install_target, env=env)
 
     def make_impl(self, clargs, config, source_dir, install_target, env=None):
         """
@@ -643,16 +636,11 @@ class CMaker(object):
         case the install_target is different than the default `install`.
         """
         if not install_target:
-            cmd = [self.cmake_executable, "--build", source_dir,
-                   "--config", config, "--"]
+            cmd = [self.cmake_executable, "--build", source_dir, "--config", config, "--"]
         else:
-            cmd = [self.cmake_executable, "--build", source_dir,
-                   "--target", install_target, "--config", config, "--"]
+            cmd = [self.cmake_executable, "--build", source_dir, "--target", install_target, "--config", config, "--"]
         cmd.extend(clargs)
-        cmd.extend(
-            filter(bool,
-                   shlex.split(os.environ.get("SKBUILD_BUILD_OPTIONS", "")))
-        )
+        cmd.extend(filter(bool, shlex.split(os.environ.get("SKBUILD_BUILD_OPTIONS", ""))))
 
         rtn = subprocess.call(cmd, cwd=CMAKE_BUILD_DIR(), env=env)
         # For reporting errors (if any)
@@ -675,7 +663,9 @@ class CMaker(object):
                     self._formatArgsForDisplay(cmd),
                     install_target,
                     os.path.abspath(source_dir),
-                    os.path.abspath(CMAKE_BUILD_DIR())))
+                    os.path.abspath(CMAKE_BUILD_DIR()),
+                )
+            )
 
     def install(self):
         """Returns a list of file paths to install via setuptools that is
@@ -684,8 +674,7 @@ class CMaker(object):
         return self._parse_manifests()
 
     def _parse_manifests(self):
-        paths = \
-            glob.glob(os.path.join(CMAKE_BUILD_DIR(), "install_manifest*.txt"))
+        paths = glob.glob(os.path.join(CMAKE_BUILD_DIR(), "install_manifest*.txt"))
         try:
             return [self._parse_manifest(path) for path in paths][0]
         except IndexError:

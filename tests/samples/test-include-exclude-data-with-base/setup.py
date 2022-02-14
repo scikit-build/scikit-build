@@ -7,8 +7,10 @@ setup(
     packages=['hello', 'hello2'],
     package_dir={'': 'src'},
     include_package_data=True,
-    exclude_package_data={'': [
-        '*/*/*_data4_include_from_manifest_and_exclude_from_setup.txt',
-        '*/*/*_data4_cmake_generated_and_exclude_from_setup.txt'
-    ]}
+    exclude_package_data={
+        '': [
+            '*/*/*_data4_include_from_manifest_and_exclude_from_setup.txt',
+            '*/*/*_data4_cmake_generated_and_exclude_from_setup.txt',
+        ]
+    },
 )

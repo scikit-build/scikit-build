@@ -92,8 +92,9 @@ def test_make(configure_with_cmake_source_dir, capfd):
     with push_dir(str(tmp_dir)):
 
         src_dir = tmp_dir.ensure('SRC', dir=1)
-        src_dir.join('CMakeLists.txt').write(textwrap.dedent(
-            """
+        src_dir.join('CMakeLists.txt').write(
+            textwrap.dedent(
+                """
             cmake_minimum_required(VERSION 3.5.0)
             project(foobar NONE)
             file(WRITE "${CMAKE_BINARY_DIR}/foo.txt" "# foo")
@@ -102,12 +103,11 @@ def test_make(configure_with_cmake_source_dir, capfd):
             message(STATUS "CMAKE_SOURCE_DIR:${CMAKE_SOURCE_DIR}")
             message(STATUS "CMAKE_BINARY_DIR:${CMAKE_BINARY_DIR}")
             """
-        ))
+            )
+        )
         src_dir.ensure(CMAKE_BUILD_DIR(), dir=1)
 
-        with push_dir(str(src_dir)
-                      if not configure_with_cmake_source_dir
-                      else str(tmp_dir.ensure('BUILD', dir=1))):
+        with push_dir(str(src_dir) if not configure_with_cmake_source_dir else str(tmp_dir.ensure('BUILD', dir=1))):
             cmkr = CMaker()
             config_kwargs = {}
             if configure_with_cmake_source_dir:
@@ -121,7 +121,7 @@ def test_make(configure_with_cmake_source_dir, capfd):
             messages += [
                 "/SRC",
                 "/BUILD/{}".format(to_unix_path(CMAKE_BUILD_DIR())),
-                "/BUILD/{}/./foo.txt".format(to_unix_path(CMAKE_INSTALL_DIR()))
+                "/BUILD/{}/./foo.txt".format(to_unix_path(CMAKE_INSTALL_DIR())),
             ]
         else:
             messages += [
@@ -140,8 +140,9 @@ def test_make_with_install_target(install_target, capfd):
     tmp_dir = _tmpdir('test_make_with_install_target')
     with push_dir(str(tmp_dir)):
 
-        tmp_dir.join('CMakeLists.txt').write(textwrap.dedent(
-            """
+        tmp_dir.join('CMakeLists.txt').write(
+            textwrap.dedent(
+                """
             cmake_minimum_required(VERSION 3.5.0)
             project(foobar NONE)
             file(WRITE "${CMAKE_BINARY_DIR}/foo.txt" "# foo")
@@ -158,7 +159,8 @@ def test_make_with_install_target(install_target, capfd):
               -P "${PROJECT_BINARY_DIR}/cmake_install.cmake"
               )
             """
-        ))
+            )
+        )
 
         with push_dir(str(tmp_dir)):
             cmkr = CMaker()
@@ -189,8 +191,9 @@ def test_configure_with_cmake_args(capfd):
     tmp_dir = _tmpdir('test_configure_with_cmake_args')
     with push_dir(str(tmp_dir)):
 
-        tmp_dir.join('CMakeLists.txt').write(textwrap.dedent(
-            """
+        tmp_dir.join('CMakeLists.txt').write(
+            textwrap.dedent(
+                """
             cmake_minimum_required(VERSION 3.5.0)
             project(foobar NONE)
             # Do not complain about missing arguments passed to the main
@@ -206,17 +209,14 @@ def test_configure_with_cmake_args(capfd):
               )
             endforeach()
             """
-        ))
+            )
+        )
 
         with push_dir(str(tmp_dir)):
             cmkr = CMaker()
-            cmkr.configure(clargs=[
-                '-DCMAKE_EXPECTED_FOO:STRING=foo',
-                '-DCMAKE_EXPECTED_BAR:STRING=bar'
-            ], cleanup=False)
+            cmkr.configure(clargs=['-DCMAKE_EXPECTED_FOO:STRING=foo', '-DCMAKE_EXPECTED_BAR:STRING=bar'], cleanup=False)
 
-        cmakecache = tmp_dir.join(
-            "_cmake_test_compile", "build", "CMakeCache.txt")
+        cmakecache = tmp_dir.join("_cmake_test_compile", "build", "CMakeCache.txt")
         assert cmakecache.exists()
         variables = get_cmakecache_variables(str(cmakecache))
         assert variables.get('CMAKE_EXPECTED_FOO', (None, None))[1] == "foo"
@@ -229,11 +229,13 @@ def test_configure_with_cmake_args(capfd):
 
 def test_check_for_bad_installs(tmpdir):
     with push_dir(str(tmpdir)):
-        tmpdir.ensure(CMAKE_BUILD_DIR(), "cmake_install.cmake").write(textwrap.dedent(
-            """
+        tmpdir.ensure(CMAKE_BUILD_DIR(), "cmake_install.cmake").write(
+            textwrap.dedent(
+                """
             file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/../hello" TYPE FILE FILES "/path/to/hello/world.py")
             """
-        ))
+            )
+        )
         with pytest.raises(SKBuildError) as excinfo:
             CMaker.check_for_bad_installs()
         assert "CMake-installed files must be within the project root" in str(excinfo.value)

@@ -24,19 +24,23 @@ from .pytest_helpers import check_sdist_content
 def test_build(capsys):
     out, err = capsys.readouterr()
     dist_warning = "Unknown distribution option: 'cmake_source_dir'"
-    assert (dist_warning not in err and dist_warning not in out)
+    assert dist_warning not in err and dist_warning not in out
 
 
-@pytest.mark.parametrize("cmake_source_dir, expected_failed", (
+@pytest.mark.parametrize(
+    "cmake_source_dir, expected_failed",
+    (
         ("invalid", True),
         ("", False),
         (".", False),
-))
+    ),
+)
 def test_cmake_source_dir(cmake_source_dir, expected_failed):
     tmp_dir = _tmpdir('test_cmake_source_dir')
 
-    tmp_dir.join('setup.py').write(textwrap.dedent(
-        """
+    tmp_dir.join('setup.py').write(
+        textwrap.dedent(
+            """
         from skbuild import setup
         setup(
             name="test_cmake_source_dir",
@@ -46,8 +50,11 @@ def test_cmake_source_dir(cmake_source_dir, expected_failed):
             license="MIT",
             cmake_source_dir="{cmake_source_dir}"
         )
-        """.format(cmake_source_dir=cmake_source_dir)
-    ))
+        """.format(
+                cmake_source_dir=cmake_source_dir
+            )
+        )
+    )
 
     failed = False
     message = ""

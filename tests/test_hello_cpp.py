@@ -80,7 +80,7 @@ def test_hello_wheel():
         'bonjour/data/ciel.txt',
         'bonjour/data/soleil.txt',
         'bonjour/data/terre.txt',
-        'bonjourModule.py'
+        'bonjourModule.py',
     ]
 
     expected_distribution_name = 'hello-1.2.3'
@@ -169,8 +169,7 @@ def test_hello_cleans(capfd, caplog):
         print("<<-->>")
         run_clean()
 
-    _, clean1_out, clean2_out = \
-        capfd.readouterr()[0].split('<<-->>')
+    _, clean1_out, clean2_out = capfd.readouterr()[0].split('<<-->>')
 
     clean1_out = clean1_out.strip()
     clean2_out = clean2_out.strip()
@@ -200,6 +199,6 @@ def test_hello_develop():
         # are copied from CMAKE_INSTALL_DIR
         'hello/_hello%s' % get_ext_suffix(),
         'hello/world.py',
-        'helloModule.py'
+        'helloModule.py',
     ]:
         assert os.path.exists(expected_file)

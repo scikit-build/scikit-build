@@ -7,5 +7,5 @@ setup(
     author='The scikit-build team',
     license="MIT",
     packages=['hello'],
-    cmake_source_dir='hello'
+    cmake_source_dir='hello',
 )
