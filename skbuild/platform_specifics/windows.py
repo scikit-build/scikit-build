@@ -31,14 +31,14 @@ The different version are identified by their year.
 """
 
 VS_YEAR_TO_MSC_VER = {
-    "2008":"1500",  # VS 2008
-    "2010":"1600",  # VS 2010
-    "2012":"1700",  # VS 2012
-    "2013":"1800",  # VS 2012
-    "2015":"1900",  # VS 2015
-    "2017":"1910",  # VS 2017 - can be +9
-    "2019":"1920",  # VS 2019 - can be +9
-    "2022":"1930",  # VS 2022 - can be +9
+    "2008": "1500",  # VS 2008
+    "2010": "1600",  # VS 2010
+    "2012": "1700",  # VS 2012
+    "2013": "1800",  # VS 2012
+    "2015": "1900",  # VS 2015
+    "2017": "1910",  # VS 2017 - can be +9
+    "2019": "1920",  # VS 2019 - can be +9
+    "2022": "1930",  # VS 2022 - can be +9
 }
 
 
@@ -48,14 +48,18 @@ class WindowsPlatform(abstract.CMakePlatform):
     def __init__(self):
         super(WindowsPlatform, self).__init__()
         self._vs_help = ""
-        vs_help_template = textwrap.dedent(
-            """
+        vs_help_template = (
+            textwrap.dedent(
+                """
             Building windows wheels for Python {pyver} requires Microsoft Visual Studio %s.
             Get it with "%s":
 
               %s
             """  # noqa: E501
-        ).strip().format(pyver="%s.%s" % sys.version_info[:2])
+            )
+            .strip()
+            .format(pyver="%s.%s" % sys.version_info[:2])
+        )
 
         # For Python 2.7 to Python 3.2: VS2008
         if (2, 7) <= sys.version_info < (3, 3):
@@ -63,7 +67,7 @@ class WindowsPlatform(abstract.CMakePlatform):
             self._vs_help = vs_help_template % (
                 supported_vs_years[0][0],
                 "Microsoft Visual C++ Compiler for Python 2.7",
-                "http://aka.ms/vcpython27"
+                "http://aka.ms/vcpython27",
             )
 
         # For Python 3.3 to Python 3.4: VS2010
@@ -72,7 +76,7 @@ class WindowsPlatform(abstract.CMakePlatform):
             self._vs_help = vs_help_template % (
                 supported_vs_years[0][0],
                 "Windows SDK for Windows 7 and .NET 4.0",
-                "https://www.microsoft.com/download/details.aspx?id=8279"
+                "https://www.microsoft.com/download/details.aspx?id=8279",
             )
 
         # For Python 3.5: VS2019, VS2017, VS2015
@@ -81,15 +85,18 @@ class WindowsPlatform(abstract.CMakePlatform):
             self._vs_help = vs_help_template % (
                 supported_vs_years[0][0],
                 "Visual Studio 2015",
-                "https://visualstudio.microsoft.com/vs/older-downloads/"
+                "https://visualstudio.microsoft.com/vs/older-downloads/",
             )
-            self._vs_help += "\n\n" + textwrap.dedent(
-                """
+            self._vs_help += (
+                "\n\n"
+                + textwrap.dedent(
+                    """
                 Or with "Visual Studio 2017" or "Visual Studio 2019":
 
                   https://visualstudio.microsoft.com/vs/
                 """
-            ).strip()
+                ).strip()
+            )
 
         # For Python 3.6 and above: VS2022, VS2019, VS2017
         elif (3, 6) <= sys.version_info:
@@ -97,10 +104,12 @@ class WindowsPlatform(abstract.CMakePlatform):
             self._vs_help = vs_help_template % (
                 supported_vs_years[0][0],
                 "Visual Studio 2017",
-                "https://visualstudio.microsoft.com/vs/"
+                "https://visualstudio.microsoft.com/vs/",
             )
-            self._vs_help += "\n\n" + textwrap.dedent(
-                """
+            self._vs_help += (
+                "\n\n"
+                + textwrap.dedent(
+                    """
                 Or with "Visual Studio 2019":
 
                   https://visualstudio.microsoft.com/vs/
@@ -109,12 +118,14 @@ class WindowsPlatform(abstract.CMakePlatform):
 
                   https://visualstudio.microsoft.com/vs/
                 """
-            ).strip()
+                ).strip()
+            )
         else:
             raise RuntimeError("Only Python >= 2.7 is supported on Windows.")
 
         try:
             import ninja  # pylint: disable=import-outside-toplevel
+
             ninja_executable_path = os.path.join(ninja.BIN_DIR, "ninja")
             ninja_args = ['-DCMAKE_MAKE_PROGRAM:FILEPATH=' + ninja_executable_path]
         except ImportError:
@@ -124,10 +135,12 @@ class WindowsPlatform(abstract.CMakePlatform):
         for vs_year, vs_toolset in supported_vs_years:
             vs_version = VS_YEAR_TO_MSC_VER[vs_year]
             args = ["-D_SKBUILD_FORCE_MSVC={}".format(vs_version)]
-            self.default_generators.extend([
-                CMakeVisualStudioCommandLineGenerator("Ninja", vs_year, vs_toolset, args=ninja_args + args),
-                CMakeVisualStudioIDEGenerator(vs_year, vs_toolset),
-            ])
+            self.default_generators.extend(
+                [
+                    CMakeVisualStudioCommandLineGenerator("Ninja", vs_year, vs_toolset, args=ninja_args + args),
+                    CMakeVisualStudioIDEGenerator(vs_year, vs_toolset),
+                ]
+            )
             extra.append(CMakeVisualStudioCommandLineGenerator("NMake Makefiles", vs_year, vs_toolset, args=args))
         self.default_generators.extend(extra)
 
@@ -143,6 +156,7 @@ class CMakeVisualStudioIDEGenerator(CMakeGenerator):
 
     .. automethod:: __init__
     """
+
     def __init__(self, year, toolset=None):
         """Instantiate a generator object with its name set to the `Visual
         Studio` generator associated with the given ``year``
@@ -189,7 +203,7 @@ def _find_visual_studio_2010_to_2015(vs_version):
             winreg.HKEY_LOCAL_MACHINE,
             r"Software\Microsoft\VisualStudio\SxS\VC7",
             0,
-            winreg.KEY_READ | winreg.KEY_WOW64_32KEY
+            winreg.KEY_READ | winreg.KEY_WOW64_32KEY,
         )
     except OSError:
         return ""
@@ -232,14 +246,21 @@ def _find_visual_studio_2017_or_newer(vs_version):
         extra_args = {}
         if sys.version_info[:3] >= (3, 6, 0):
             extra_args = {'encoding': 'mbcs', 'errors': 'strict'}
-        path = subprocess.check_output([
-            os.path.join(root, "Microsoft Visual Studio", "Installer", "vswhere.exe"),
-            "-version", "[{:.1f}, {:.1f})".format(vs_version, vs_version + 1),
-            "-prerelease",
-            "-requires", "Microsoft.VisualStudio.Component.VC.Tools.x86.x64",
-            "-property", "installationPath",
-            "-products", "*",
-        ], **extra_args).strip()
+        path = subprocess.check_output(
+            [
+                os.path.join(root, "Microsoft Visual Studio", "Installer", "vswhere.exe"),
+                "-version",
+                "[{:.1f}, {:.1f})".format(vs_version, vs_version + 1),
+                "-prerelease",
+                "-requires",
+                "Microsoft.VisualStudio.Component.VC.Tools.x86.x64",
+                "-property",
+                "installationPath",
+                "-products",
+                "*",
+            ],
+            **extra_args
+        ).strip()
         if (3, 0) <= sys.version_info[:2] <= (3, 5):
             path = path.decode()
     except (subprocess.CalledProcessError, OSError, UnicodeDecodeError):
@@ -309,11 +330,13 @@ def _get_msvc_compiler_env(vs_version, vs_toolset=None):
         return __get_msvc_compiler_env_cache[cache_key]
 
     from setuptools import monkey  # pylint: disable=import-outside-toplevel
+
     monkey.patch_for_msvc_specialized_compiler()
 
     if vs_version < 14:
         try:
             import distutils.msvc9compiler  # pylint: disable=import-outside-toplevel
+
             cached_env = distutils.msvc9compiler.query_vcvarsall(vs_version, arch)
             __get_msvc_compiler_env_cache[cache_key] = cached_env
             return cached_env
@@ -343,15 +366,14 @@ def _get_msvc_compiler_env(vs_version, vs_toolset=None):
 
             vc_env = {
                 key.lower(): value
-                for key, _, value in
-                (line.partition('=') for line in out.splitlines())
+                for key, _, value in (line.partition('=') for line in out.splitlines())
                 if key and value
             }
 
             cached_env = {
                 'PATH': vc_env.get('path', ''),
                 'INCLUDE': vc_env.get('include', ''),
-                'LIB': vc_env.get('lib', '')
+                'LIB': vc_env.get('lib', ''),
             }
             __get_msvc_compiler_env_cache[cache_key] = cached_env
             return cached_env
@@ -368,6 +390,7 @@ class CMakeVisualStudioCommandLineGenerator(CMakeGenerator):
 
     .. automethod:: __init__
     """
+
     def __init__(self, name, year, toolset=None, args=None):
         """Instantiate CMake command-line generator.
 

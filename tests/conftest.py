@@ -18,7 +18,22 @@ def pep518_wheelhouse(tmpdir_factory):
     subprocess.check_call([sys.executable, "-m", "build", "--wheel", "--outdir", str(dist)], cwd=BASE)
     (wheel_path,) = dist.visit("*.whl")
     subprocess.check_call([sys.executable, "-m", "pip", "download", "-q", "-d", str(wheelhouse), str(wheel_path)])
-    subprocess.check_call([sys.executable, "-m", "pip", "download", "-q", "-d", str(wheelhouse), "build", "setuptools", "wheel", "ninja", "cmake"])
+    subprocess.check_call(
+        [
+            sys.executable,
+            "-m",
+            "pip",
+            "download",
+            "-q",
+            "-d",
+            str(wheelhouse),
+            "build",
+            "setuptools",
+            "wheel",
+            "ninja",
+            "cmake",
+        ]
+    )
     return str(wheelhouse)
 
 

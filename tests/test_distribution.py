@@ -9,8 +9,7 @@ DIST_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '../dist'))
 
 # Test if package can be imported to allow testing on
 # conda-forge where ``pytest-virtualenv`` is not available.
-pytest.importorskip("pytest_virtualenv",
-                    reason="pytest_virtualenv not available. See #228")
+pytest.importorskip("pytest_virtualenv", reason="pytest_virtualenv not available. See #228")
 
 
 def test_source_distribution(virtualenv):

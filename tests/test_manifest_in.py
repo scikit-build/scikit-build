@@ -37,9 +37,7 @@ def test_manifest_in_wheel():
     whls = glob.glob('dist/*.whl')
     assert len(whls) == 1
 
-    expected_content = [
-        'hello/__init__.py'
-    ]
+    expected_content = ['hello/__init__.py']
 
     expected_distribution_name = 'manifest_in-1.2.3'
 

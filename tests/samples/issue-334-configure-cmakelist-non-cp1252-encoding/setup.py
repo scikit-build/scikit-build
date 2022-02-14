@@ -6,5 +6,5 @@ setup(
     description="a minimal example package",
     author='The scikit-build team',
     license="MIT",
-    packages=[]
+    packages=[],
 )

@@ -28,13 +28,10 @@ class LinuxPlatform(unix.UnixPlatform):
 
         distribution_name = distro.id()
         cmd = ""
-        if distribution_name in [
-                'debian', 'Ubuntu', 'mandrake', 'mandriva']:
+        if distribution_name in ['debian', 'Ubuntu', 'mandrake', 'mandriva']:
             cmd = "sudo apt-get install build-essential"
 
-        elif distribution_name in [
-                'centos', 'fedora', 'redhat',
-                'turbolinux', 'yellowdog', 'rocks']:
+        elif distribution_name in ['centos', 'fedora', 'redhat', 'turbolinux', 'yellowdog', 'rocks']:
             # http://unix.stackexchange.com/questions/16422/cant-install-build-essential-on-centos#32439
             cmd = "sudo yum groupinstall 'Development Tools'"
 
@@ -50,20 +47,14 @@ class LinuxPlatform(unix.UnixPlatform):
         distribution_name, cmd = self.build_essential_install_cmd()
         install_help = ""
         if distribution_name:
-            install_help = (
-                "But scikit-build does *NOT* know how to install it on %s\n"
-                % distribution_name
-            )
+            install_help = "But scikit-build does *NOT* know how to install it on %s\n" % distribution_name
         if distribution_name and cmd:
-            install_help = (
-                "It can be installed using %s package manager:\n"
-                "\n"
-                "  %s\n" % (distribution_name, cmd)
-            )
+            install_help = "It can be installed using %s package manager:\n" "\n" "  %s\n" % (distribution_name, cmd)
 
         arch = "x64" if platform.architecture()[0] == "64bit" else "x86"
-        return textwrap.dedent(
-            """
+        return (
+            textwrap.dedent(
+                """
             Building Linux wheels for Python %s requires a compiler (e.g gcc).
             %s
             To build compliant wheels, consider using the manylinux system described in PEP-513.
@@ -75,4 +66,6 @@ class LinuxPlatform(unix.UnixPlatform):
 
               http://scikit-build.readthedocs.io/en/latest/generators.html#linux
             """  # noqa: E501
-        ).strip() % ("%s.%s" % sys.version_info[:2], install_help, arch)
+            ).strip()
+            % ("%s.%s" % sys.version_info[:2], install_help, arch)
+        )

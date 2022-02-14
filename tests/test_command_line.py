@@ -102,16 +102,14 @@ def test_too_many_separators():
         assert failed
 
 
-@project_setup_py_test("hello-no-language",
-                       ["build", "--", "-DMY_CMAKE_VARIABLE:BOOL=1"], disable_languages_test=True)
+@project_setup_py_test("hello-no-language", ["build", "--", "-DMY_CMAKE_VARIABLE:BOOL=1"], disable_languages_test=True)
 def test_cmake_args(capfd):
     out, err = capfd.readouterr()
     assert "Manually-specified variables were not used by the project" in err
     assert "MY_CMAKE_VARIABLE" in err
 
 
-@project_setup_py_test("hello-no-language",
-                       ["-DMY_CMAKE_VARIABLE:BOOL=1", "build"], disable_languages_test=True)
+@project_setup_py_test("hello-no-language", ["-DMY_CMAKE_VARIABLE:BOOL=1", "build"], disable_languages_test=True)
 def test_cmake_cache_entry_as_global_option(capfd):
     out, err = capfd.readouterr()
     assert "Manually-specified variables were not used by the project" in err
@@ -141,8 +139,9 @@ def test_cmake_executable_arg():
 
     cmake_executable = "/path/to/invalid/cmake"
 
-    @project_setup_py_test("hello-no-language",
-                           ["--cmake-executable", cmake_executable, "build"], disable_languages_test=True)
+    @project_setup_py_test(
+        "hello-no-language", ["--cmake-executable", cmake_executable, "build"], disable_languages_test=True
+    )
     def should_fail():
         pass
 

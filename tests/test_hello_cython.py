@@ -50,7 +50,7 @@ def test_hello_cython_wheel():
     expected_content = [
         'hello_cython/_hello%s' % get_ext_suffix(),
         'hello_cython/__init__.py',
-        'hello_cython/__main__.py'
+        'hello_cython/__main__.py',
     ]
 
     expected_distribution_name = 'hello_cython-1.2.3'

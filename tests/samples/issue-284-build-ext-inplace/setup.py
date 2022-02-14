@@ -14,5 +14,5 @@ setup(
             'hello._hello_ext',
             sources=['hello/_hello_ext.cxx'],
         )
-    ]
+    ],
 )

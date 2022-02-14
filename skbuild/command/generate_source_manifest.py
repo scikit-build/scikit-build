@@ -36,10 +36,8 @@ class generate_source_manifest(set_build_base_mixin, new_style(Command)):
             # If there's a MANIFEST.in file, we assume that we had nothing to do
             # with the project's manifest.
             not os.path.exists('MANIFEST.in')
-
             # otherwise, we check to see that there is no MANIFEST, ...
             if not os.path.exists('MANIFEST')
-
             # ... (if there is one,) that we created it
             else os.path.exists(SKBUILD_MARKER_FILE())
         )
@@ -55,11 +53,7 @@ class generate_source_manifest(set_build_base_mixin, new_style(Command)):
                     except subprocess.CalledProcessError:
                         cmd_out = subprocess.check_output(['git', 'ls-files'])
                     git_files = [git_file.strip() for git_file in cmd_out.split(b'\n')]
-                    manifest_text = b'\n'.join([
-                        b'include %s' % git_file.strip()
-                        for git_file in git_files
-                        if git_file
-                    ])
+                    manifest_text = b'\n'.join([b'include %s' % git_file.strip() for git_file in git_files if git_file])
                     manifest_text += b'\nexclude MANIFEST.in'
                     manifest_in_file.write(manifest_text)
             except subprocess.CalledProcessError:

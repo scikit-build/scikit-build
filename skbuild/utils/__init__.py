@@ -56,6 +56,7 @@ class ContextDecorator(object):
         def inner(*args, **kwds):
             with self:
                 return func(*args, **kwds)
+
         return inner
 
 
@@ -75,8 +76,8 @@ def mkdir_p(path):
 
 
 class push_dir(ContextDecorator):
-    """Context manager to change current directory.
-    """
+    """Context manager to change current directory."""
+
     def __init__(self, directory=None, make_directory=False):
         """
         :param directory:
@@ -89,8 +90,7 @@ class push_dir(ContextDecorator):
         self.directory = None
         self.make_directory = None
         self.old_cwd = None
-        super(push_dir, self).__init__(
-            directory=directory, make_directory=make_directory)
+        super(push_dir, self).__init__(directory=directory, make_directory=make_directory)
 
     def __enter__(self):
         self.old_cwd = os.getcwd()
@@ -123,8 +123,7 @@ class PythonModuleFinder(new_style(distutils_build_py)):
     provides a specialized version of ``find_all_modules()``.
     """
 
-    def __init__(self, packages, package_dir, py_modules,
-                 alternative_build_base=None):
+    def __init__(self, packages, package_dir, py_modules, alternative_build_base=None):
         """
         :param packages: List of packages to search.
         :param package_dir: Dictionary mapping ``package`` with ``directory``.
@@ -158,30 +157,24 @@ class PythonModuleFinder(new_style(distutils_build_py)):
         Doing so will ensure modules can also be found in other location
         (e.g ``skbuild.constants.CMAKE_INSTALL_DIR``).
         """
-        if (package_dir != ""
-            and not os.path.exists(package_dir)
-                and self.alternative_build_base is not None):
+        if package_dir != "" and not os.path.exists(package_dir) and self.alternative_build_base is not None:
             package_dir = os.path.join(self.alternative_build_base, package_dir)
 
-        modules = super(PythonModuleFinder, self).find_package_modules(
-            package, package_dir)
+        modules = super(PythonModuleFinder, self).find_package_modules(package, package_dir)
 
         # Strip the alternative base from module_file
         def _strip_directory(entry):
             module_file = entry[2]
-            if (self.alternative_build_base is not None
-                    and module_file.startswith(self.alternative_build_base)):
-                module_file = module_file[len(self.alternative_build_base) + 1:]
+            if self.alternative_build_base is not None and module_file.startswith(self.alternative_build_base):
+                module_file = module_file[len(self.alternative_build_base) + 1 :]
             return entry[0], entry[1], module_file
 
         return map(_strip_directory, modules)
 
     def check_module(self, module, module_file):
-        """Return True if ``module_file`` belongs to ``module``.
-        """
+        """Return True if ``module_file`` belongs to ``module``."""
         if self.alternative_build_base is not None:
-            updated_module_file = os.path.join(
-                self.alternative_build_base, module_file)
+            updated_module_file = os.path.join(self.alternative_build_base, module_file)
             if os.path.exists(updated_module_file):
                 module_file = updated_module_file
         if not os.path.isfile(module_file):
@@ -191,9 +184,8 @@ class PythonModuleFinder(new_style(distutils_build_py)):
 
 
 def to_platform_path(path):
-    """Return a version of ``path`` where all separator are :attr:`os.sep` """
-    return (path.replace("/", os.sep).replace("\\", os.sep)
-            if path is not None else None)
+    """Return a version of ``path`` where all separator are :attr:`os.sep`"""
+    return path.replace("/", os.sep).replace("\\", os.sep) if path is not None else None
 
 
 def to_unix_path(path):
@@ -243,9 +235,9 @@ def parse_manifestin(template):
     if not os.path.exists(template):
         return []
 
-    template = TextFile(template, strip_comments=1, skip_blanks=1,
-                        join_lines=1, lstrip_ws=1, rstrip_ws=1,
-                        collapse_join=1)
+    template = TextFile(
+        template, strip_comments=1, skip_blanks=1, join_lines=1, lstrip_ws=1, rstrip_ws=1, collapse_join=1
+    )
 
     file_list = FileList()
     try:
@@ -260,9 +252,7 @@ def parse_manifestin(template):
             # malformed lines, or a ValueError from the lower-level
             # convert_path function
             except (DistutilsTemplateError, ValueError) as msg:
-                print("%s, line %d: %s" % (template.filename,
-                                           template.current_line,
-                                           msg))
+                print("%s, line %d: %s" % (template.filename, template.current_line, msg))
         return file_list.files
     finally:
         template.close()

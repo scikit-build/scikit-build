@@ -21,6 +21,7 @@ class CMakePlatform(object):
 
     Derived class should at least set :attr:`default_generators`.
     """
+
     def __init__(self):
         self._default_generators = []
         self.architecture = None
@@ -50,15 +51,17 @@ class CMakePlatform(object):
             f.write("PROJECT(compiler_test NONE)\n")
             for language in languages:
                 f.write("ENABLE_LANGUAGE({:s})\n".format(language))
-            f.write('if("${_SKBUILD_FORCE_MSVC}")\n'
-                    '  math(EXPR FORCE_MAX "${_SKBUILD_FORCE_MSVC}+9")\n'
-                    '  math(EXPR FORCE_MIN "${_SKBUILD_FORCE_MSVC}")\n'
-                    '  if(NOT MSVC)\n'
-                    '    message(FATAL_ERROR "MSVC is required to pass this check.")\n'
-                    "  elseif(MSVC_VERSION LESS FORCE_MIN OR MSVC_VERSION GREATER FORCE_MAX)\n"
-                    '    message(FATAL_ERROR "MSVC ${MSVC_VERSION} does pass this check.")\n'
-                    "  endif()\n"
-                    'endif()\n')
+            f.write(
+                'if("${_SKBUILD_FORCE_MSVC}")\n'
+                '  math(EXPR FORCE_MAX "${_SKBUILD_FORCE_MSVC}+9")\n'
+                '  math(EXPR FORCE_MIN "${_SKBUILD_FORCE_MSVC}")\n'
+                '  if(NOT MSVC)\n'
+                '    message(FATAL_ERROR "MSVC is required to pass this check.")\n'
+                "  elseif(MSVC_VERSION LESS FORCE_MIN OR MSVC_VERSION GREATER FORCE_MAX)\n"
+                '    message(FATAL_ERROR "MSVC ${MSVC_VERSION} does pass this check.")\n'
+                "  endif()\n"
+                'endif()\n'
+            )
 
     @staticmethod
     def cleanup_test():
@@ -77,18 +80,25 @@ class CMakePlatform(object):
         return CMakeGenerator(generator_name)
 
     def get_generators(self, generator_name):
-        """Loop over generators and return all that match the given name.
-        """
-        return [default_generator
-                for default_generator in self.default_generators
-                if default_generator.name == generator_name]
+        """Loop over generators and return all that match the given name."""
+        return [
+            default_generator
+            for default_generator in self.default_generators
+            if default_generator.name == generator_name
+        ]
 
     # TODO: this method name is not great.  Does anyone have a better idea for
     # renaming it?
     def get_best_generator(
-            self, generator_name=None, skip_generator_test=False,
-            languages=("CXX", "C"), cleanup=True,
-            cmake_executable=CMAKE_DEFAULT_EXECUTABLE, cmake_args=(), architecture=None):
+        self,
+        generator_name=None,
+        skip_generator_test=False,
+        languages=("CXX", "C"),
+        cleanup=True,
+        cmake_executable=CMAKE_DEFAULT_EXECUTABLE,
+        cmake_args=(),
+        architecture=None,
+    ):
         """Loop over generators to find one that works by configuring
         and compiling a test project.
 
@@ -152,21 +162,22 @@ class CMakePlatform(object):
         if skip_generator_test:
             working_generator = candidate_generators[0]
         else:
-            working_generator = self.compile_test_cmakelist(
-                cmake_executable, candidate_generators, cmake_args)
+            working_generator = self.compile_test_cmakelist(cmake_executable, candidate_generators, cmake_args)
 
         if working_generator is None:
-            raise SKBuildGeneratorNotFoundError(textwrap.dedent(
-                """
+            raise SKBuildGeneratorNotFoundError(
+                textwrap.dedent(
+                    """
                 {line}
                 scikit-build could not get a working generator for your system. Aborting build.
 
                 {installation_help}
 
                 {line}
-                """).strip().format(  # noqa: E501
-                    line="*"*80,
-                    installation_help=self.generator_installation_help)
+                """
+                )
+                .strip()
+                .format(line="*" * 80, installation_help=self.generator_installation_help)  # noqa: E501
             )
 
         if cleanup:
@@ -176,8 +187,7 @@ class CMakePlatform(object):
 
     @staticmethod
     @push_dir(directory=test_folder)
-    def compile_test_cmakelist(
-            cmake_exe_path, candidate_generators, cmake_args=()):
+    def compile_test_cmakelist(cmake_exe_path, candidate_generators, cmake_args=()):
         """Attempt to configure the test project with
         each :class:`CMakeGenerator` from ``candidate_generators``.
 
@@ -223,8 +233,7 @@ class CMakePlatform(object):
 
                 status = subprocess.call(cmd, env=generator.env)
 
-            _generator_discovery_status_msg(
-                generator, " - %s" % ("success" if status == 0 else "failure"))
+            _generator_discovery_status_msg(generator, " - %s" % ("success" if status == 0 else "failure"))
             print("")
 
             # cmake succeeded, this generator should work
@@ -255,8 +264,7 @@ class CMakeGenerator(object):
         """
         self._generator_name = name
         self.args = args or []
-        self.env = dict(
-            list(os.environ.items()) + list(env.items() if env else []))
+        self.env = dict(list(os.environ.items()) + list(env.items() if env else []))
         self._generator_toolset = toolset
         self._generator_architecture = arch
         if arch is None:

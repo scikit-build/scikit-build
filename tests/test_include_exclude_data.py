@@ -45,15 +45,19 @@ def check_sdist(proj, base=''):
         to_unix_path(os.path.join(proj, base, 'hello/__init__.py')),
         to_unix_path(os.path.join(proj, base, 'hello/data/subdata/hello_data1_include_from_manifest.txt')),
         to_unix_path(os.path.join(proj, base, 'hello/data/subdata/hello_data2_include_from_manifest.txt')),
-        to_unix_path(os.path.join(
-            proj, base, 'hello/data/subdata/hello_data4_include_from_manifest_and_exclude_from_setup.txt')),
+        to_unix_path(
+            os.path.join(proj, base, 'hello/data/subdata/hello_data4_include_from_manifest_and_exclude_from_setup.txt')
+        ),
         to_unix_path(os.path.join(proj, base, 'hello/hello_include_from_manifest.txt')),
         to_unix_path(os.path.join(proj, base, 'hello2/__init__.py')),
         to_unix_path(os.path.join(proj, base, 'hello2/data2/subdata2/hello2_data1_include_from_manifest.txt')),
         to_unix_path(os.path.join(proj, base, 'hello2/data2/subdata2/hello2_data2_include_from_manifest.txt')),
-        to_unix_path(os.path.join(
-            proj, base, 'hello2/data2/subdata2/hello2_data4_include_from_manifest_and_exclude_from_setup.txt')),
-        to_unix_path(os.path.join(proj, base, 'hello2/hello2_include_from_manifest.txt'))
+        to_unix_path(
+            os.path.join(
+                proj, base, 'hello2/data2/subdata2/hello2_data4_include_from_manifest_and_exclude_from_setup.txt'
+            )
+        ),
+        to_unix_path(os.path.join(proj, base, 'hello2/hello2_include_from_manifest.txt')),
     ]
 
     sdist_archive = 'dist/%s.zip' % proj

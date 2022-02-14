@@ -8,5 +8,5 @@ setup(
     license="MIT",
     packages=['bonjour', 'hello'],
     package_data={'bonjour': ['data/*.txt', 'data/terre.txt']},
-    py_modules=['bonjourModule', 'helloModule']
+    py_modules=['bonjourModule', 'helloModule'],
 )

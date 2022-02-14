@@ -26,12 +26,12 @@ saved_cwd = os.getcwd()
 
 
 def setup_module():
-    """ setup any state specific to the execution of the given module."""
+    """setup any state specific to the execution of the given module."""
     os.chdir(os.path.dirname(__file__))
 
 
 def teardown_module():
-    """ teardown any state that was previously setup with a setup_module
+    """teardown any state that was previously setup with a setup_module
     method.
     """
     os.chdir(saved_cwd)
@@ -114,6 +114,7 @@ def test_push_dir_decorator(tmpdir):
         # With non existing directory
         failed = False
         try:
+
             @push_dir(directory=foo_directory)
             def test():
                 pass
@@ -180,50 +181,54 @@ def test_push_env():
 
 
 def test_python_module_finder():
-    modules = PythonModuleFinder(['bonjour', 'hello'], {}, []).find_all_modules(
-        os.path.join(SAMPLES_DIR, 'hello-cpp')
+    modules = PythonModuleFinder(['bonjour', 'hello'], {}, []).find_all_modules(os.path.join(SAMPLES_DIR, 'hello-cpp'))
+    assert sorted(modules) == sorted(
+        [
+            ('bonjour', '__init__', to_platform_path('bonjour/__init__.py')),
+            ('hello', '__init__', to_platform_path('hello/__init__.py')),
+            ('hello', '__main__', to_platform_path('hello/__main__.py')),
+        ]
     )
-    assert sorted(modules) == sorted([
-        ('bonjour', '__init__', to_platform_path('bonjour/__init__.py')),
-        ('hello', '__init__', to_platform_path('hello/__init__.py')),
-        ('hello', '__main__', to_platform_path('hello/__main__.py'))])
 
 
 @pytest.mark.parametrize(
-    "input_path, expected_path", (
+    "input_path, expected_path",
+    (
         (None, None),
         ('', ''),
         ('/bar/foo/baz', '{s}bar{s}foo{s}baz'.format(s=os.sep)),
         ('C:\\bar\\foo\\baz', 'C:{s}bar{s}foo{s}baz'.format(s=os.sep)),
         ('C:\\bar/foo\\baz/', 'C:{s}bar{s}foo{s}baz{s}'.format(s=os.sep)),
-    )
+    ),
 )
 def test_to_platform_path(input_path, expected_path):
     assert to_platform_path(input_path) == expected_path
 
 
 @pytest.mark.parametrize(
-    "input_path, expected_path", (
+    "input_path, expected_path",
+    (
         (None, None),
         ('', ''),
         ('/bar/foo/baz', '/bar/foo/baz'),
         ('C:\\bar\\foo\\baz', 'C:/bar/foo/baz'),
         ('C:\\bar/foo\\baz/', 'C:/bar/foo/baz/'),
-    )
+    ),
 )
 def test_to_unix_path(input_path, expected_path):
     assert to_unix_path(input_path) == expected_path
 
 
 @pytest.mark.parametrize(
-    "input_path, expected_ancestors", (
+    "input_path, expected_ancestors",
+    (
         ('', []),
         ('.', []),
         ('part1/part2/part3/part4', ['part1/part2/part3', 'part1/part2', 'part1']),
         ('part1\\part2\\part3\\part4', []),
         ('/part1/part2/part3/part4', ['/part1/part2/part3', '/part1/part2', '/part1', '/']),
         ('C:/part1/part2/part3/part4', ['C:/part1/part2/part3', 'C:/part1/part2', 'C:/part1', 'C:']),
-    )
+    ),
 )
 def test_list_ancestors(input_path, expected_ancestors):
     assert list_ancestors(input_path) == expected_ancestors

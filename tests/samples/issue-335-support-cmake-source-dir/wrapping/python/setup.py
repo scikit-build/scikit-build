@@ -9,5 +9,5 @@ setup(
     packages=['hello'],
     tests_require=[],
     setup_requires=[],
-    cmake_source_dir="../../"
+    cmake_source_dir="../../",
 )

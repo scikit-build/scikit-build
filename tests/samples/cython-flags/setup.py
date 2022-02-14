@@ -8,5 +8,4 @@ setup(
     license="MIT",
     packages=['cython_flags'],
     package_dir={'cython_flags': 'hello'},
-
 )

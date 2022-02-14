@@ -57,13 +57,15 @@ variables.
             import sys
             import sysconfig
             from distutils import sysconfig as du_sysconfig
+
             details = (platform.python_implementation(),) + sys.version_info[:3]
             print("%s %s.%s.%s" % details)
             print(" SO")
-            print("  sysconfig           : %s" % sysconfig.get_config_var('SO'))
-            print("  distutils.sysconfig : %s" % du_sysconfig.get_config_var('SO'))
+            print("  sysconfig           : %s" % sysconfig.get_config_var("SO"))
+            print("  distutils.sysconfig : %s" % du_sysconfig.get_config_var("SO"))
             print(" EXT_SUFFIX")
-            print("  sysconfig           : %s" % sysconfig.get_config_var('EXT_SUFFIX'))
-            print("  distutils.sysconfig : %s" % du_sysconfig.get_config_var('EXT_SUFFIX'))
+            print("  sysconfig           : %s" % sysconfig.get_config_var("EXT_SUFFIX"))
+            print("  distutils.sysconfig : %s" % du_sysconfig.get_config_var("EXT_SUFFIX"))
+
 
         display_ext_suffix_config_var()

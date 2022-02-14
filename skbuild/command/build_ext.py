@@ -30,17 +30,13 @@ class build_ext(set_build_base_mixin, new_style(_build_ext)):
             package = '.'.join(modpath[:-1])
             package_dir = build_py.get_package_dir(package)
             # skbuild: strip install dir for inplace build
-            package_dir = package_dir[len(CMAKE_INSTALL_DIR()) + 1:]
-            dest_filename = os.path.join(package_dir,
-                                         os.path.basename(filename))
+            package_dir = package_dir[len(CMAKE_INSTALL_DIR()) + 1 :]
+            dest_filename = os.path.join(package_dir, os.path.basename(filename))
             src_filename = os.path.join(self.build_lib, filename)
 
             # Always copy, even if source is older than destination, to ensure
             # that the right extensions for the current Python/platform are
             # used.
-            copy_file(
-                src_filename, dest_filename, verbose=self.verbose,
-                dry_run=self.dry_run
-            )
+            copy_file(src_filename, dest_filename, verbose=self.verbose, dry_run=self.dry_run)
             if ext._needs_stub:
                 self.write_stub(package_dir or os.curdir, ext, True)

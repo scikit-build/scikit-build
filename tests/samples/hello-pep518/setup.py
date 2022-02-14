@@ -6,8 +6,11 @@ try:
     import skbuild
     from skbuild import setup
 except ImportError:
-    print('Please update pip, you need pip 10 or greater,\n'
-          ' or you need to install the PEP 518 requirements in pyproject.toml yourself', file=sys.stderr)
+    print(
+        'Please update pip, you need pip 10 or greater,\n'
+        ' or you need to install the PEP 518 requirements in pyproject.toml yourself',
+        file=sys.stderr,
+    )
     raise
 
 print("Scikit-build version:", skbuild.__version__)
@@ -21,5 +24,5 @@ setup(
     license="MIT",
     packages=['hello'],
     package_dir={'': 'src'},
-    cmake_install_dir='src/hello'
+    cmake_install_dir='src/hello',
 )

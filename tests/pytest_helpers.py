@@ -29,18 +29,18 @@ def check_sdist_content(sdist_archive, expected_distribution_name, expected_cont
         egg_info_dir = '{}/{}/{}.egg-info'.format(expected_distribution_name, package_dir, expected_name)
 
     expected_content += [
-       '%s/PKG-INFO' % expected_distribution_name,
-       '%s/setup.cfg' % expected_distribution_name,
-       '%s/dependency_links.txt' % egg_info_dir,
-       '%s/top_level.txt' % egg_info_dir,
-       '%s/PKG-INFO' % egg_info_dir,
-       '%s/SOURCES.txt' % egg_info_dir,
+        '%s/PKG-INFO' % expected_distribution_name,
+        '%s/setup.cfg' % expected_distribution_name,
+        '%s/dependency_links.txt' % egg_info_dir,
+        '%s/top_level.txt' % egg_info_dir,
+        '%s/PKG-INFO' % egg_info_dir,
+        '%s/SOURCES.txt' % egg_info_dir,
     ]
 
     if sdist_zip and (
-            (2, 7, 15) < sys.version_info[:3] < (3, 0, 0)
-            or (3, 6, 7) < sys.version_info[:3] < (3, 7, 0)
-            or (3, 7, 1) < sys.version_info[:3]
+        (2, 7, 15) < sys.version_info[:3] < (3, 0, 0)
+        or (3, 6, 7) < sys.version_info[:3] < (3, 7, 0)
+        or (3, 7, 1) < sys.version_info[:3]
     ):
         # Add directory entries in ZIP files created by distutils.
         # See https://github.com/python/cpython/pull/9419
@@ -73,7 +73,7 @@ def check_wheel_content(wheel_archive, expected_distribution_name, expected_cont
         '%s.dist-info/top_level.txt' % expected_distribution_name,
         '%s.dist-info/WHEEL' % expected_distribution_name,
         '%s.dist-info/RECORD' % expected_distribution_name,
-        '%s.dist-info/METADATA' % expected_distribution_name
+        '%s.dist-info/METADATA' % expected_distribution_name,
     ]
 
     if parse_version(wheel.__version__) < parse_version('0.31.0'):
@@ -81,7 +81,7 @@ def check_wheel_content(wheel_archive, expected_distribution_name, expected_cont
         # See https://github.com/pypa/wheel/issues/195
         expected_content += [
             '%s.dist-info/DESCRIPTION.rst' % expected_distribution_name,
-            '%s.dist-info/metadata.json' % expected_distribution_name
+            '%s.dist-info/metadata.json' % expected_distribution_name,
         ]
 
     if parse_version('0.33.1') < parse_version(wheel.__version__) < parse_version('0.33.4'):
