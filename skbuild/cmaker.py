@@ -90,7 +90,7 @@ def get_cmake_version(cmake_executable=CMAKE_DEFAULT_EXECUTABLE):
         3.14.4
     """
     try:
-        version_string = subprocess.check_output([cmake_executable, '--version'])
+        version_string = subprocess.check_output([cmake_executable, "--version"])
     except (OSError, subprocess.CalledProcessError):
         raise SKBuildError(
             "Problem with the CMake installation, aborting build. CMake executable is %s" % cmake_executable
@@ -99,7 +99,7 @@ def get_cmake_version(cmake_executable=CMAKE_DEFAULT_EXECUTABLE):
     if sys.version_info > (3, 0):
         version_string = version_string.decode()
 
-    return version_string.splitlines()[0].split(' ')[-1]
+    return version_string.splitlines()[0].split(" ")[-1]
 
 
 class CMaker(object):
@@ -144,9 +144,9 @@ class CMaker(object):
     @staticmethod
     def get_cached(variable_name):
         """If set, returns the variable cached value from the :func:`skbuild.constants.CMAKE_BUILD_DIR()`, otherwise returns None"""
-        variable_name = '{}:'.format(variable_name)
+        variable_name = "{}:".format(variable_name)
         try:
-            with open(os.path.join(CMAKE_BUILD_DIR(), 'CMakeCache.txt')) as fp:
+            with open(os.path.join(CMAKE_BUILD_DIR(), "CMakeCache.txt")) as fp:
                 for line in fp:
                     if line.startswith(variable_name):
                         return line.split("=", 1)[-1].strip()
@@ -160,7 +160,7 @@ class CMaker(object):
         """Reads and returns the cached generator from the :func:`skbuild.constants.CMAKE_BUILD_DIR()`:.
         Returns None if not found.
         """
-        return cls.get_cached('CMAKE_GENERATOR')
+        return cls.get_cached("CMAKE_GENERATOR")
 
     def get_cached_generator_env(self):
         """If any, return a mapping of environment associated with the cached generator."""
@@ -175,9 +175,9 @@ class CMaker(object):
         clargs=(),
         generator_name=None,
         skip_generator_test=False,
-        cmake_source_dir='.',
-        cmake_install_dir='',
-        languages=('C', 'CXX'),
+        cmake_source_dir=".",
+        cmake_install_dir="",
+        languages=("C", "CXX"),
         cleanup=True,
     ):
         """Calls cmake to generate the Makefile/VS Solution/XCode project.
@@ -222,12 +222,12 @@ class CMaker(object):
             generator_name = os.environ.get("CMAKE_GENERATOR")
 
         # if generator_name is provided on command line, use it
-        clargs, cli_generator_name = pop_arg('-G', clargs)
+        clargs, cli_generator_name = pop_arg("-G", clargs)
         if cli_generator_name is not None:
             generator_name = cli_generator_name
 
         # if arch is provided on command line, use it
-        clargs, cli_arch = pop_arg('-A', clargs)
+        clargs, cli_arch = pop_arg("-A", clargs)
 
         generator = self.platform.get_best_generator(
             generator_name,
@@ -265,11 +265,11 @@ class CMaker(object):
         cmd = [
             self.cmake_executable,
             cmake_source_dir,
-            '-G',
+            "-G",
             generator.name,
             ("-DCMAKE_INSTALL_PREFIX:PATH=" + os.path.abspath(os.path.join(CMAKE_INSTALL_DIR(), cmake_install_dir))),
             ("-DPYTHON_EXECUTABLE:FILEPATH=" + sys.executable),
-            ("-DPYTHON_VERSION_STRING:STRING=" + sys.version.split(' ')[0]),
+            ("-DPYTHON_VERSION_STRING:STRING=" + sys.version.split(" ")[0]),
             ("-DPYTHON_INCLUDE_DIR:PATH=" + python_include_dir),
             ("-DPYTHON_LIBRARY:FILEPATH=" + python_library),
             ("-DSKBUILD:INTERNAL=" + "TRUE"),
@@ -277,11 +277,11 @@ class CMaker(object):
         ]
 
         if generator.toolset:
-            cmd.extend(['-T', generator.toolset])
+            cmd.extend(["-T", generator.toolset])
         if generator.architecture:
-            cmd.extend(['-A', generator.architecture])
+            cmd.extend(["-A", generator.architecture])
         if ninja_executable_path is not None:
-            cmd.append('-DCMAKE_MAKE_PROGRAM:FILEPATH=' + ninja_executable_path)
+            cmd.append("-DCMAKE_MAKE_PROGRAM:FILEPATH=" + ninja_executable_path)
 
         cmd.extend(clargs)
 
@@ -331,10 +331,10 @@ class CMaker(object):
             >>> print('python_version = {!r}'.format(python_version))
             python_version = '3.7'
         """
-        python_version = sysconfig.get_config_var('VERSION')
+        python_version = sysconfig.get_config_var("VERSION")
 
         if not python_version:
-            python_version = sysconfig.get_config_var('py_version_short')
+            python_version = sysconfig.get_config_var("py_version_short")
 
         if not python_version:
             python_version = ".".join(map(str, sys.version_info[:2]))
@@ -363,31 +363,31 @@ class CMaker(object):
             python_include_dir = '.../conda/envs/py37/include/python3.7m'
         """
         # determine python include dir
-        python_include_dir = sysconfig.get_config_var('INCLUDEPY')
+        python_include_dir = sysconfig.get_config_var("INCLUDEPY")
 
         # if Python.h not found (or python_include_dir is None), try to find a
         # suitable include dir
-        found_python_h = python_include_dir is not None and os.path.exists(os.path.join(python_include_dir, 'Python.h'))
+        found_python_h = python_include_dir is not None and os.path.exists(os.path.join(python_include_dir, "Python.h"))
 
         if not found_python_h:
 
             # NOTE(opadron): these possible prefixes must be guarded against
             # AttributeErrors and KeyErrors because they each can throw on
             # different platforms or even different builds on the same platform.
-            include_py = sysconfig.get_config_var('INCLUDEPY')
-            include_dir = sysconfig.get_config_var('INCLUDEDIR')
+            include_py = sysconfig.get_config_var("INCLUDEPY")
+            include_dir = sysconfig.get_config_var("INCLUDEDIR")
             include = None
             plat_include = None
             python_inc = None
             python_inc2 = None
 
             try:
-                include = sysconfig.get_path('include')
+                include = sysconfig.get_path("include")
             except (AttributeError, KeyError):
                 pass
 
             try:
-                plat_include = sysconfig.get_path('platinclude')
+                plat_include = sysconfig.get_path("platinclude")
             except (AttributeError, KeyError):
                 pass
 
@@ -421,24 +421,24 @@ class CMaker(object):
 
             candidate_versions = (python_version,)
             if python_version:
-                candidate_versions += ('',)
+                candidate_versions += ("",)
 
                 pymalloc = None
                 try:
-                    pymalloc = bool(sysconfig.get_config_var('WITH_PYMALLOC'))
+                    pymalloc = bool(sysconfig.get_config_var("WITH_PYMALLOC"))
                 except AttributeError:
                     pass
 
                 if pymalloc:
-                    candidate_versions += (python_version + 'm',)
+                    candidate_versions += (python_version + "m",)
 
             candidates = (
-                os.path.join(prefix, ''.join(('python', ver)))
+                os.path.join(prefix, "".join(("python", ver)))
                 for (prefix, ver) in itertools.product(candidate_prefixes, candidate_versions)
             )
 
             for candidate in candidates:
-                if os.path.exists(os.path.join(candidate, 'Python.h')):
+                if os.path.exists(os.path.join(candidate, "Python.h")):
                     # we found an include directory
                     python_include_dir = candidate
                     break
@@ -468,36 +468,36 @@ class CMaker(object):
             python_library = '.../conda/envs/py37/include/python3.7m'
         """
         # determine direct path to libpython
-        python_library = sysconfig.get_config_var('LIBRARY')
+        python_library = sysconfig.get_config_var("LIBRARY")
 
         # if static (or nonexistent), try to find a suitable dynamic libpython
-        if not python_library or os.path.splitext(python_library)[1][-2:] == '.a':
+        if not python_library or os.path.splitext(python_library)[1][-2:] == ".a":
 
-            candidate_lib_prefixes = ['', 'lib']
+            candidate_lib_prefixes = ["", "lib"]
 
-            candidate_implementations = ['python']
+            candidate_implementations = ["python"]
             if hasattr(sys, "pypy_version_info"):
-                candidate_implementations = ['pypy-c', 'pypy3-c']
+                candidate_implementations = ["pypy-c", "pypy3-c"]
 
-            candidate_extensions = ['.lib', '.so', '.a']
+            candidate_extensions = [".lib", ".so", ".a"]
             # On pypy + MacOS, the variable WITH_DYLD is not set. It would
             # actually be possible to determine the python library there using
             # LDLIBRARY + LIBDIR. As a simple fix, we check if the LDLIBRARY
             # ends with .dylib and add it to the candidate matrix in this case.
-            with_ld = sysconfig.get_config_var('WITH_DYLD')
-            ld_lib = sysconfig.get_config_var('LDLIBRARY')
-            if with_ld or (ld_lib and ld_lib.endswith('.dylib')):
-                candidate_extensions.insert(0, '.dylib')
+            with_ld = sysconfig.get_config_var("WITH_DYLD")
+            ld_lib = sysconfig.get_config_var("LDLIBRARY")
+            if with_ld or (ld_lib and ld_lib.endswith(".dylib")):
+                candidate_extensions.insert(0, ".dylib")
 
             candidate_versions = [python_version]
             if python_version:
-                candidate_versions.append('')
+                candidate_versions.append("")
                 candidate_versions.insert(0, "".join(python_version.split(".")[:2]))
 
-            abiflags = getattr(sys, 'abiflags', '')
+            abiflags = getattr(sys, "abiflags", "")
             candidate_abiflags = [abiflags]
             if abiflags:
-                candidate_abiflags.append('')
+                candidate_abiflags.append("")
 
             # Ensure the value injected by virtualenv is
             # returned on windows.
@@ -505,17 +505,17 @@ class CMaker(object):
             # returns an empty string on Linux, `du_sysconfig` is only used to
             # get the value of `LIBDIR`.
             candidate_libdirs = []
-            libdir_a = du_sysconfig.get_config_var('LIBDIR')
+            libdir_a = du_sysconfig.get_config_var("LIBDIR")
             if libdir_a is None:
                 candidate_libdirs.append(
-                    os.path.abspath(os.path.join(sysconfig.get_config_var('LIBDEST'), "..", "libs"))
+                    os.path.abspath(os.path.join(sysconfig.get_config_var("LIBDEST"), "..", "libs"))
                 )
-            libdir_b = sysconfig.get_config_var('LIBDIR')
+            libdir_b = sysconfig.get_config_var("LIBDIR")
             for libdir in (libdir_a, libdir_b):
                 if libdir is None:
                     continue
-                if sysconfig.get_config_var('MULTIARCH'):
-                    masd = sysconfig.get_config_var('multiarchsubdir')
+                if sysconfig.get_config_var("MULTIARCH"):
+                    masd = sysconfig.get_config_var("multiarchsubdir")
                     if masd:
                         if masd.startswith(os.sep):
                             masd = masd[len(os.sep) :]
@@ -523,7 +523,7 @@ class CMaker(object):
                 candidate_libdirs.append(libdir)
 
             candidates = (
-                os.path.join(libdir, ''.join((pre, impl, ver, abi, ext)))
+                os.path.join(libdir, "".join((pre, impl, ver, abi, ext)))
                 for (libdir, pre, impl, ext, ver, abi) in itertools.product(
                     candidate_libdirs,
                     candidate_lib_prefixes,
@@ -606,8 +606,8 @@ class CMaker(object):
                 on the "build-all" built-in target, we explicitly build the project first when
                 the install target is different from the default on.
         """
-        clargs, config = pop_arg('--config', clargs, config)
-        clargs, install_target = pop_arg('--install-target', clargs, install_target)
+        clargs, config = pop_arg("--config", clargs, config)
+        clargs, install_target = pop_arg("--install-target", clargs, install_target)
         if not os.path.exists(CMAKE_BUILD_DIR()):
             raise SKBuildError(
                 ("CMake build folder ({}) does not exist. " "Did you forget to run configure before " "make?").format(
@@ -697,4 +697,4 @@ class CMaker(object):
         quotation marks.
         """
 
-        return ' '.join(quote(arg) for arg in args)
+        return " ".join(quote(arg) for arg in args)

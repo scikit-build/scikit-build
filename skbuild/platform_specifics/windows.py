@@ -127,7 +127,7 @@ class WindowsPlatform(abstract.CMakePlatform):
             import ninja  # pylint: disable=import-outside-toplevel
 
             ninja_executable_path = os.path.join(ninja.BIN_DIR, "ninja")
-            ninja_args = ['-DCMAKE_MAKE_PROGRAM:FILEPATH=' + ninja_executable_path]
+            ninja_args = ["-DCMAKE_MAKE_PROGRAM:FILEPATH=" + ninja_executable_path]
         except ImportError:
             ninja_args = []
 
@@ -245,7 +245,7 @@ def _find_visual_studio_2017_or_newer(vs_version):
     try:
         extra_args = {}
         if sys.version_info[:3] >= (3, 6, 0):
-            extra_args = {'encoding': 'mbcs', 'errors': 'strict'}
+            extra_args = {"encoding": "mbcs", "errors": "strict"}
         path = subprocess.check_output(
             [
                 os.path.join(root, "Microsoft Visual Studio", "Installer", "vswhere.exe"),
@@ -360,20 +360,20 @@ def _get_msvc_compiler_env(vs_version, vs_toolset=None):
                 'cmd /u /c "{}" {} {} && set'.format(vcvarsall, arch, vcvars_ver),
                 stderr=subprocess.STDOUT,
             )
-            out = out.decode('utf-16le', errors='replace')
+            out = out.decode("utf-16le", errors="replace")
             if sys.version_info[0] < 3:
-                out = out.encode('utf-8')
+                out = out.encode("utf-8")
 
             vc_env = {
                 key.lower(): value
-                for key, _, value in (line.partition('=') for line in out.splitlines())
+                for key, _, value in (line.partition("=") for line in out.splitlines())
                 if key and value
             }
 
             cached_env = {
-                'PATH': vc_env.get('path', ''),
-                'INCLUDE': vc_env.get('include', ''),
-                'LIB': vc_env.get('lib', ''),
+                "PATH": vc_env.get("path", ""),
+                "INCLUDE": vc_env.get("include", ""),
+                "LIB": vc_env.get("lib", ""),
             }
             __get_msvc_compiler_env_cache[cache_key] = cached_env
             return cached_env

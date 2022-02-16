@@ -55,12 +55,12 @@ class CMakePlatform(object):
                 'if("${_SKBUILD_FORCE_MSVC}")\n'
                 '  math(EXPR FORCE_MAX "${_SKBUILD_FORCE_MSVC}+9")\n'
                 '  math(EXPR FORCE_MIN "${_SKBUILD_FORCE_MSVC}")\n'
-                '  if(NOT MSVC)\n'
+                "  if(NOT MSVC)\n"
                 '    message(FATAL_ERROR "MSVC is required to pass this check.")\n'
                 "  elseif(MSVC_VERSION LESS FORCE_MIN OR MSVC_VERSION GREATER FORCE_MAX)\n"
                 '    message(FATAL_ERROR "MSVC ${MSVC_VERSION} does pass this check.")\n'
                 "  endif()\n"
-                'endif()\n'
+                "endif()\n"
             )
 
     @staticmethod
@@ -209,7 +209,7 @@ class CMakePlatform(object):
             outer = "-" * 80
             inner = ["-" * ((idx * 5) - 3) for idx in range(1, 8)]
             print(outer if suffix == "" else "\n".join(inner))
-            print("-- Trying \"{}\" generator{}".format(_generator.description, suffix))
+            print('-- Trying "{}" generator{}'.format(_generator.description, suffix))
             print(outer if suffix != "" else "\n".join(inner[::-1]))
 
         for generator in candidate_generators:
@@ -217,17 +217,17 @@ class CMakePlatform(object):
             _generator_discovery_status_msg(generator)
 
             # clear the cache for each attempted generator type
-            if os.path.isdir('build'):
-                shutil.rmtree('build')
+            if os.path.isdir("build"):
+                shutil.rmtree("build")
 
-            with push_dir('build', make_directory=True):
+            with push_dir("build", make_directory=True):
                 # call cmake to see if the compiler specified by this
                 # generator works for the specified languages
-                cmd = [cmake_exe_path, '../', '-G', generator.name]
+                cmd = [cmake_exe_path, "../", "-G", generator.name]
                 if generator.toolset:
-                    cmd.extend(['-T', generator.toolset])
+                    cmd.extend(["-T", generator.toolset])
                 if generator.architecture:
-                    cmd.extend(['-A', generator.architecture])
+                    cmd.extend(["-A", generator.architecture])
                 cmd.extend(cmake_args)
                 cmd.extend(generator.args)
 

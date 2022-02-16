@@ -16,7 +16,7 @@ class UnixPlatform(abstract.CMakePlatform):
             import ninja  # pylint: disable=import-outside-toplevel
 
             ninja_executable_path = os.path.join(ninja.BIN_DIR, "ninja")
-            ninja_args = ['-DCMAKE_MAKE_PROGRAM:FILEPATH=' + ninja_executable_path]
+            ninja_args = ["-DCMAKE_MAKE_PROGRAM:FILEPATH=" + ninja_executable_path]
         except ImportError:
             ninja_args = []
 

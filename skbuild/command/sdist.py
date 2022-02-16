@@ -24,5 +24,5 @@ class sdist(set_build_base_mixin, new_style(_sdist)):
 
     def run(self, *args, **kwargs):
         """Force :class:`.egg_info.egg_info` command to run."""
-        self.run_command('generate_source_manifest')
+        self.run_command("generate_source_manifest")
         super(sdist, self).run(*args, **kwargs)

@@ -43,7 +43,7 @@ def test_write_compiler_test_file():
 def test_cxx_compiler():
 
     # Create a unique subdirectory 'foo' that is expected to be removed.
-    test_build_folder = os.path.join(test_folder, 'build', 'foo')
+    test_build_folder = os.path.join(test_folder, "build", "foo")
     mkdir_p(test_build_folder)
 
     generator = skbuild_platform.get_best_generator(languages=["CXX", "C"], cleanup=False)
@@ -84,23 +84,23 @@ def test_generator_cleanup():
     assert not os.path.exists(test_folder)
 
 
-@pytest.mark.parametrize("supported_platform", ['darwin', 'freebsd', 'openbsd', 'linux', 'windows', 'os400'])
+@pytest.mark.parametrize("supported_platform", ["darwin", "freebsd", "openbsd", "linux", "windows", "os400"])
 def test_known_platform(supported_platform, mocker):
-    mocker.patch('platform.system', return_value=supported_platform)
+    mocker.patch("platform.system", return_value=supported_platform)
     platforms = {
-        'freebsd': 'BSD',
-        'openbsd': 'BSD',
-        'linux': 'Linux',
-        'darwin': 'OSX',
-        'windows': 'Windows',
-        'os400': 'BSD',
+        "freebsd": "BSD",
+        "openbsd": "BSD",
+        "linux": "Linux",
+        "darwin": "OSX",
+        "windows": "Windows",
+        "os400": "BSD",
     }
     expected_platform_classname = "%sPlatform" % platforms[supported_platform]
     assert get_platform().__class__.__name__ == expected_platform_classname
 
 
 def test_unsupported_platform(mocker):
-    mocker.patch('platform.system', return_value='bogus')
+    mocker.patch("platform.system", return_value="bogus")
 
     failed = False
     message = ""
@@ -114,13 +114,13 @@ def test_unsupported_platform(mocker):
     assert "Unsupported platform: bogus." in message
 
 
-@pytest.mark.skipif(sys.platform != 'win32', reason='Requires Windows')
+@pytest.mark.skipif(sys.platform != "win32", reason="Requires Windows")
 def test_cached_generator():
     def is_configured_generator(generator):
         env = generator.env
-        env_lib = env.get('LIB', '')
-        return 'Visual Studio' in env_lib or 'Visual C++' in env_lib
+        env_lib = env.get("LIB", "")
+        return "Visual Studio" in env_lib or "Visual C++" in env_lib
 
     platform = get_platform()
-    ninja_generators = platform.get_generators('Ninja')
+    ninja_generators = platform.get_generators("Ninja")
     assert any(is_configured_generator(g) for g in ninja_generators)

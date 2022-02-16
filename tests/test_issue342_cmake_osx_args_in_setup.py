@@ -46,7 +46,7 @@ params = (
             # osx_deployment_target_env_var
             "10.7",
             # cli_setup_args
-            ['--plat-name', 'macosx-10.9-x86_64'],
+            ["--plat-name", "macosx-10.9-x86_64"],
             # keyword_cmake_args
             [],
             # cli_cmake_args
@@ -58,7 +58,7 @@ params = (
             # osx_deployment_target_env_var
             None,
             # cli_setup_args
-            ['--plat-name', 'macosx-10.6-x86_64'],
+            ["--plat-name", "macosx-10.6-x86_64"],
             # keyword_cmake_args
             [],
             # cli_cmake_args
@@ -70,7 +70,7 @@ params = (
             # osx_deployment_target_env_var
             None,
             # cli_setup_args
-            ['--plat-name', 'macosx-10.7-x86_64'],
+            ["--plat-name", "macosx-10.7-x86_64"],
             # keyword_cmake_args
             [],
             # cli_cmake_args
@@ -84,7 +84,7 @@ params = (
             # cli_setup_args
             [],
             # keyword_cmake_args
-            ['-DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7'],
+            ["-DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"],
             # cli_cmake_args
             [],
             # expected_cmake_osx_deployment_target
@@ -94,9 +94,9 @@ params = (
             # osx_deployment_target_env_var
             None,
             # cli_setup_args
-            ['--plat-name', 'macosx-10.12-x86_64'],
+            ["--plat-name", "macosx-10.12-x86_64"],
             # keyword_cmake_args
-            ['-DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7'],
+            ["-DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"],
             # cli_cmake_args
             [],
             # expected_cmake_osx_deployment_target
@@ -108,9 +108,9 @@ params = (
             # cli_setup_args
             [],
             # keyword_cmake_args
-            ['-DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7'],
+            ["-DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"],
             # cli_cmake_args
-            ['-DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.8'],
+            ["-DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.8"],
             # expected_cmake_osx_deployment_target
             "10.8",
         ),
@@ -118,11 +118,11 @@ params = (
             # osx_deployment_target_env_var
             None,
             # cli_setup_args
-            ['--plat-name', 'macosx-10.12-x86_64'],
+            ["--plat-name", "macosx-10.12-x86_64"],
             # keyword_cmake_args
-            ['-DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7'],
+            ["-DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"],
             # cli_cmake_args
-            ['-DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.8'],
+            ["-DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.8"],
             # expected_cmake_osx_deployment_target
             "10.8",
         ),
@@ -137,9 +137,9 @@ def test_cmake_args_keyword_osx_default(
     mocker,
 ):
 
-    tmp_dir = _tmpdir('cmake_args_keyword_osx_default')
+    tmp_dir = _tmpdir("cmake_args_keyword_osx_default")
 
-    tmp_dir.join('setup.py').write(
+    tmp_dir.join("setup.py").write(
         textwrap.dedent(
             """
         from skbuild import setup
@@ -156,7 +156,7 @@ def test_cmake_args_keyword_osx_default(
             )
         )
     )
-    tmp_dir.join('CMakeLists.txt').write(
+    tmp_dir.join("CMakeLists.txt").write(
         textwrap.dedent(
             """
         message(FATAL_ERROR "This error message should not be displayed")
@@ -164,7 +164,7 @@ def test_cmake_args_keyword_osx_default(
         )
     )
 
-    mock_configure = mocker.patch('skbuild.cmaker.CMaker.configure', side_effect=RuntimeError("exit skbuild"))
+    mock_configure = mocker.patch("skbuild.cmaker.CMaker.configure", side_effect=RuntimeError("exit skbuild"))
 
     try:
         # allow to run the test on any platform
@@ -182,7 +182,7 @@ def test_cmake_args_keyword_osx_default(
         with push_env(MACOSX_DEPLOYMENT_TARGET=osx_deployment_target_env_var):
             skbuild.constants._SKBUILD_PLAT_NAME = skbuild.constants._default_skbuild_plat_name()
             with pytest.raises(RuntimeError, match="exit skbuild"):
-                with execute_setup_py(tmp_dir, ['build'] + cli_setup_args + ['--'] + cli_cmake_args):
+                with execute_setup_py(tmp_dir, ["build"] + cli_setup_args + ["--"] + cli_cmake_args):
                     pass
     finally:
         sys.platform = saved_platform

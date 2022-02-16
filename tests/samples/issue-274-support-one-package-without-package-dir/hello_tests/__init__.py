@@ -15,5 +15,5 @@ class HelloTest(unittest.TestCase):
         self.assertEqual(cmake_generated_module.what(), "cmake_generated_module")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

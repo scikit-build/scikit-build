@@ -7,7 +7,7 @@ setup(
         "a minimal example packagze that should always fail to build "
         "because it provides a _hello.cxx with a compile error"
     ),
-    author='The scikit-build team',
+    author="The scikit-build team",
     license="MIT",
-    packages=['hello'],
+    packages=["hello"],
 )

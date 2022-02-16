@@ -22,12 +22,12 @@ class build_ext(set_build_base_mixin, new_style(_build_ext)):
         It is customized to ensure the extensions compiled using distutils
         are copied back to the source tree instead of the :func:`skbuild.constants.CMAKE_INSTALL_DIR()`.
         """
-        build_py = self.get_finalized_command('build_py')
+        build_py = self.get_finalized_command("build_py")
         for ext in self.extensions:
             fullname = self.get_ext_fullname(ext.name)
             filename = self.get_ext_filename(fullname)
-            modpath = fullname.split('.')
-            package = '.'.join(modpath[:-1])
+            modpath = fullname.split(".")
+            package = ".".join(modpath[:-1])
             package_dir = build_py.get_package_dir(package)
             # skbuild: strip install dir for inplace build
             package_dir = package_dir[len(CMAKE_INSTALL_DIR()) + 1 :]

@@ -153,7 +153,7 @@ def test_invalid_generator(generator_args):
         assert "scikit-build could not get a working generator " "for your system. Aborting build." in message
 
 
-@pytest.mark.skipif(sys.platform != 'win32', reason='Requires Windows')
+@pytest.mark.skipif(sys.platform != "win32", reason="Requires Windows")
 @pytest.mark.parametrize("vs_year", ["2008", "2010", "2012", "2013", "2015", "2017", "2019", "2022"])
 def test_platform_windows_find_visual_studio(vs_year):
     """If the environment variable ``SKBUILD_TEST_FIND_VS<vs_year>_INSTALLATION_EXPECTED`` is set,
@@ -163,7 +163,7 @@ def test_platform_windows_find_visual_studio(vs_year):
     Setting the environment variable to 1 means that the corresponding Visual Studio version
     is expected to be installed. Setting it to 0, means otherwise.
     """
-    env_var = 'SKBUILD_TEST_FIND_VS%s_INSTALLATION_EXPECTED' % vs_year
+    env_var = "SKBUILD_TEST_FIND_VS%s_INSTALLATION_EXPECTED" % vs_year
     if env_var not in os.environ:
         pytest.skip("env. variable %s is not set" % env_var)
 
@@ -176,7 +176,7 @@ def test_platform_windows_find_visual_studio(vs_year):
 
 
 @pytest.mark.skipif(sys.version_info < (3, 5), reason="Python 3.5+ required on Windows")
-@pytest.mark.skipif(sys.platform != 'win32', reason='Requires Windows')
+@pytest.mark.skipif(sys.platform != "win32", reason="Requires Windows")
 def test_toolset():
     py_35 = sys.version_info[:2] == (3, 5)
 
@@ -199,10 +199,10 @@ def test_toolset():
     cmakecache = tmp_dir.join(CMAKE_BUILD_DIR()).join("CMakeCache.txt")
     variables = get_cmakecache_variables(str(cmakecache))
 
-    generator = variables['CMAKE_GENERATOR'][1]
+    generator = variables["CMAKE_GENERATOR"][1]
     assert generator == orig_generator
 
-    var_toolset = variables['CMAKE_GENERATOR_TOOLSET']
+    var_toolset = variables["CMAKE_GENERATOR_TOOLSET"]
     toolset = var_toolset[1]
 
     if py_35:

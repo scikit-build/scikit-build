@@ -63,7 +63,7 @@ def test_cmakelists_with_syntaxerror_fails(capfd):
     assert failed
 
     _, err = capfd.readouterr()
-    assert "Parse error.  Function missing ending \")\"" in err
+    assert 'Parse error.  Function missing ending ")"' in err
     assert "An error occurred while configuring with CMake." in message
 
 
@@ -94,18 +94,18 @@ def test_hello_with_compileerror_fails(capfd):
 def test_invalid_cmake(exception, mocker):
 
     exceptions = {
-        OSError: OSError('Unknown error'),
-        CalledProcessError: CalledProcessError([CMAKE_DEFAULT_EXECUTABLE, '--version'], 1),
+        OSError: OSError("Unknown error"),
+        CalledProcessError: CalledProcessError([CMAKE_DEFAULT_EXECUTABLE, "--version"], 1),
     }
 
     check_output_original = check_output
 
     def check_output_mock(*args, **kwargs):
-        if args[0] == [CMAKE_DEFAULT_EXECUTABLE, '--version']:
+        if args[0] == [CMAKE_DEFAULT_EXECUTABLE, "--version"]:
             raise exceptions[exception]
         return check_output_original(*args, **kwargs)
 
-    mocker.patch('skbuild.cmaker.subprocess.check_output', new=check_output_mock)
+    mocker.patch("skbuild.cmaker.subprocess.check_output", new=check_output_mock)
 
     with push_dir():
 
@@ -127,13 +127,13 @@ def test_invalid_cmake(exception, mocker):
 
 def test_first_invalid_generator(mocker, capfd):
     platform = get_platform()
-    default_generators = [CMakeGenerator('Invalid')]
+    default_generators = [CMakeGenerator("Invalid")]
     default_generators.extend(platform.default_generators)
     mocker.patch.object(
-        type(platform), 'default_generators', new_callable=mocker.PropertyMock, return_value=default_generators
+        type(platform), "default_generators", new_callable=mocker.PropertyMock, return_value=default_generators
     )
 
-    mocker.patch('skbuild.cmaker.get_platform', return_value=platform)
+    mocker.patch("skbuild.cmaker.get_platform", return_value=platform)
 
     with push_dir(), push_env(CMAKE_GENERATOR=None):
 
@@ -150,9 +150,9 @@ def test_first_invalid_generator(mocker, capfd):
 def test_invalid_generator(mocker, capfd):
     platform = get_platform()
     mocker.patch.object(
-        type(platform), 'default_generators', new_callable=mocker.PropertyMock, return_value=[CMakeGenerator('Invalid')]
+        type(platform), "default_generators", new_callable=mocker.PropertyMock, return_value=[CMakeGenerator("Invalid")]
     )
-    mocker.patch('skbuild.cmaker.get_platform', return_value=platform)
+    mocker.patch("skbuild.cmaker.get_platform", return_value=platform)
 
     with push_dir(), push_env(CMAKE_GENERATOR=None):
 

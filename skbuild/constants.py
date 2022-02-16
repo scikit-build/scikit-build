@@ -18,7 +18,7 @@ def _default_skbuild_plat_name():
 
     On macOS, it corresponds to the version and machine associated with :func:`platform.mac_ver()`.
     """
-    if sys.platform != 'darwin':
+    if sys.platform != "darwin":
         return get_platform()
 
     supported_macos_architectures = {"x86_64", "arm64"}
@@ -93,7 +93,7 @@ def SKBUILD_DIR():
     """Top-level directory where setuptools and CMake directories are generated."""
     return os.path.join(
         "_skbuild",
-        "{}-{}".format(_SKBUILD_PLAT_NAME, '.'.join(map(str, sys.version_info[:2]))),
+        "{}-{}".format(_SKBUILD_PLAT_NAME, ".".join(map(str, sys.version_info[:2]))),
     )
 
 
