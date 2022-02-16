@@ -16,7 +16,7 @@ def test_install_command():
 def test_test_command():
     with push_dir():
 
-        tmp_dir = _tmpdir('test_test_command')
+        tmp_dir = _tmpdir("test_test_command")
         project = "issue-274-support-one-package-without-package-dir"
         prepare_project(project, tmp_dir)
         initialize_git_repo_and_commit(tmp_dir, verbose=True)

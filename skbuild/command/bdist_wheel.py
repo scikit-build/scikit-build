@@ -44,7 +44,7 @@ class bdist_wheel(set_build_base_mixin, new_style(_bdist_wheel)):
         else:
             old_make_wheelfile_inner = _wheel_archive.make_wheelfile_inner
 
-            def _make_wheelfile_inner(base_name, base_dir='.'):
+            def _make_wheelfile_inner(base_name, base_dir="."):
                 with distribution_hide_listing(self.distribution) as hide_listing:
                     if hide_listing:
                         zip_filename = base_name + ".whl"

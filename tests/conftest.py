@@ -8,7 +8,7 @@ DIR = os.path.dirname(os.path.abspath(__file__))
 BASE = os.path.dirname(DIR)
 
 
-pytest.register_assert_rewrite('tests.pytest_helpers')
+pytest.register_assert_rewrite("tests.pytest_helpers")
 
 
 @pytest.fixture(scope="session")

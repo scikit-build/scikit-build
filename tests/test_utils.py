@@ -39,7 +39,7 @@ def teardown_module():
 
 def test_context_decorator():
     with ContextDecorator(foo=42) as context:
-        assert hasattr(context, 'foo')
+        assert hasattr(context, "foo")
         assert context.foo == 42
 
 
@@ -50,20 +50,20 @@ def test_push_dir(tmpdir):
         level2 = level1.mkdir("level2")
 
         os.chdir(str(level2))
-        assert os.path.split(os.getcwd())[-1] == 'level2'
+        assert os.path.split(os.getcwd())[-1] == "level2"
 
         # No directory
         with push_dir():
-            os.chdir(os.path.join(os.getcwd(), '..'))
-            assert os.path.split(os.getcwd())[-1] == 'level1'
-        assert os.path.split(os.getcwd())[-1] == 'level2'
+            os.chdir(os.path.join(os.getcwd(), ".."))
+            assert os.path.split(os.getcwd())[-1] == "level1"
+        assert os.path.split(os.getcwd())[-1] == "level2"
 
         # With existing directory
-        with push_dir(directory=os.path.join(os.getcwd(), '..')):
-            assert os.path.split(os.getcwd())[-1] == 'level1'
-        assert os.path.split(os.getcwd())[-1] == 'level2'
+        with push_dir(directory=os.path.join(os.getcwd(), "..")):
+            assert os.path.split(os.getcwd())[-1] == "level1"
+        assert os.path.split(os.getcwd())[-1] == "level2"
 
-        foo_directory = os.path.join(str(tmpdir), 'foo')
+        foo_directory = os.path.join(str(tmpdir), "foo")
 
         # With non existing directory
         failed = False
@@ -78,7 +78,7 @@ def test_push_dir(tmpdir):
         # With make_directory option
         with push_dir(directory=foo_directory, make_directory=True):
             assert os.getcwd() == foo_directory
-        assert os.path.split(os.getcwd())[-1] == 'level2'
+        assert os.path.split(os.getcwd())[-1] == "level2"
         assert os.path.isdir(foo_directory)
     finally:
         os.chdir(old_cwd)
@@ -90,26 +90,26 @@ def test_push_dir_decorator(tmpdir):
         level1 = tmpdir.mkdir("level1")
         level2 = level1.mkdir("level2")
         os.chdir(str(level2))
-        assert os.path.split(os.getcwd())[-1] == 'level2'
+        assert os.path.split(os.getcwd())[-1] == "level2"
 
         # No directory
         @push_dir()
         def test_default():
-            os.chdir(os.path.join(os.getcwd(), '..'))
-            assert os.path.split(os.getcwd())[-1] == 'level1'
+            os.chdir(os.path.join(os.getcwd(), ".."))
+            assert os.path.split(os.getcwd())[-1] == "level1"
 
         test_default()
-        assert os.path.split(os.getcwd())[-1] == 'level2'
+        assert os.path.split(os.getcwd())[-1] == "level2"
 
         # With existing directory
-        @push_dir(directory=os.path.join(os.getcwd(), '..'))
+        @push_dir(directory=os.path.join(os.getcwd(), ".."))
         def test():
-            assert os.path.split(os.getcwd())[-1] == 'level1'
+            assert os.path.split(os.getcwd())[-1] == "level1"
 
         test()
-        assert os.path.split(os.getcwd())[-1] == 'level2'
+        assert os.path.split(os.getcwd())[-1] == "level2"
 
-        foo_directory = os.path.join(str(tmpdir), 'foo')
+        foo_directory = os.path.join(str(tmpdir), "foo")
 
         # With non existing directory
         failed = False
@@ -131,7 +131,7 @@ def test_push_dir_decorator(tmpdir):
             assert os.getcwd() == foo_directory
 
         test()
-        assert os.path.split(os.getcwd())[-1] == 'level2'
+        assert os.path.split(os.getcwd())[-1] == "level2"
         assert os.path.isdir(foo_directory)
     finally:
         os.chdir(old_cwd)
@@ -141,7 +141,7 @@ def test_mkdir_p(tmpdir):
     tmp_dir = str(tmpdir)
     assert os.path.isdir(tmp_dir)
 
-    foo_bar_dir = os.path.join(tmp_dir, 'foo', 'bar')
+    foo_bar_dir = os.path.join(tmp_dir, "foo", "bar")
 
     mkdir_p(foo_bar_dir)
     assert os.path.isdir(foo_bar_dir)
@@ -152,21 +152,21 @@ def test_mkdir_p(tmpdir):
 
 
 def test_push_env():
-    assert 'SKBUILD_NEW_VAR' not in os.environ
+    assert "SKBUILD_NEW_VAR" not in os.environ
 
-    os.environ['SKBUILD_ANOTHER_VAR'] = 'abcd'
-    assert 'SKBUILD_ANOTHER_VAR' in os.environ
+    os.environ["SKBUILD_ANOTHER_VAR"] = "abcd"
+    assert "SKBUILD_ANOTHER_VAR" in os.environ
 
     saved_env = dict(os.environ)
 
     # Setting and un-setting variables can be done simultaneously
-    with push_env(SKBUILD_NEW_VAR='1234', SKBUILD_ANOTHER_VAR=None):
-        assert 'SKBUILD_NEW_VAR' in os.environ
-        assert 'SKBUILD_ANOTHER_VAR' not in os.environ
-        assert os.getenv('SKBUILD_NEW_VAR') == '1234'
+    with push_env(SKBUILD_NEW_VAR="1234", SKBUILD_ANOTHER_VAR=None):
+        assert "SKBUILD_NEW_VAR" in os.environ
+        assert "SKBUILD_ANOTHER_VAR" not in os.environ
+        assert os.getenv("SKBUILD_NEW_VAR") == "1234"
 
-    assert 'SKBUILD_NEW_VAR' not in os.environ
-    assert 'SKBUILD_ANOTHER_VAR' in os.environ
+    assert "SKBUILD_NEW_VAR" not in os.environ
+    assert "SKBUILD_ANOTHER_VAR" in os.environ
     assert saved_env == os.environ
 
     # Trying to unset an unknown variable should be a no-op
@@ -181,12 +181,12 @@ def test_push_env():
 
 
 def test_python_module_finder():
-    modules = PythonModuleFinder(['bonjour', 'hello'], {}, []).find_all_modules(os.path.join(SAMPLES_DIR, 'hello-cpp'))
+    modules = PythonModuleFinder(["bonjour", "hello"], {}, []).find_all_modules(os.path.join(SAMPLES_DIR, "hello-cpp"))
     assert sorted(modules) == sorted(
         [
-            ('bonjour', '__init__', to_platform_path('bonjour/__init__.py')),
-            ('hello', '__init__', to_platform_path('hello/__init__.py')),
-            ('hello', '__main__', to_platform_path('hello/__main__.py')),
+            ("bonjour", "__init__", to_platform_path("bonjour/__init__.py")),
+            ("hello", "__init__", to_platform_path("hello/__init__.py")),
+            ("hello", "__main__", to_platform_path("hello/__main__.py")),
         ]
     )
 
@@ -195,10 +195,10 @@ def test_python_module_finder():
     "input_path, expected_path",
     (
         (None, None),
-        ('', ''),
-        ('/bar/foo/baz', '{s}bar{s}foo{s}baz'.format(s=os.sep)),
-        ('C:\\bar\\foo\\baz', 'C:{s}bar{s}foo{s}baz'.format(s=os.sep)),
-        ('C:\\bar/foo\\baz/', 'C:{s}bar{s}foo{s}baz{s}'.format(s=os.sep)),
+        ("", ""),
+        ("/bar/foo/baz", "{s}bar{s}foo{s}baz".format(s=os.sep)),
+        ("C:\\bar\\foo\\baz", "C:{s}bar{s}foo{s}baz".format(s=os.sep)),
+        ("C:\\bar/foo\\baz/", "C:{s}bar{s}foo{s}baz{s}".format(s=os.sep)),
     ),
 )
 def test_to_platform_path(input_path, expected_path):
@@ -209,10 +209,10 @@ def test_to_platform_path(input_path, expected_path):
     "input_path, expected_path",
     (
         (None, None),
-        ('', ''),
-        ('/bar/foo/baz', '/bar/foo/baz'),
-        ('C:\\bar\\foo\\baz', 'C:/bar/foo/baz'),
-        ('C:\\bar/foo\\baz/', 'C:/bar/foo/baz/'),
+        ("", ""),
+        ("/bar/foo/baz", "/bar/foo/baz"),
+        ("C:\\bar\\foo\\baz", "C:/bar/foo/baz"),
+        ("C:\\bar/foo\\baz/", "C:/bar/foo/baz/"),
     ),
 )
 def test_to_unix_path(input_path, expected_path):
@@ -222,12 +222,12 @@ def test_to_unix_path(input_path, expected_path):
 @pytest.mark.parametrize(
     "input_path, expected_ancestors",
     (
-        ('', []),
-        ('.', []),
-        ('part1/part2/part3/part4', ['part1/part2/part3', 'part1/part2', 'part1']),
-        ('part1\\part2\\part3\\part4', []),
-        ('/part1/part2/part3/part4', ['/part1/part2/part3', '/part1/part2', '/part1', '/']),
-        ('C:/part1/part2/part3/part4', ['C:/part1/part2/part3', 'C:/part1/part2', 'C:/part1', 'C:']),
+        ("", []),
+        (".", []),
+        ("part1/part2/part3/part4", ["part1/part2/part3", "part1/part2", "part1"]),
+        ("part1\\part2\\part3\\part4", []),
+        ("/part1/part2/part3/part4", ["/part1/part2/part3", "/part1/part2", "/part1", "/"]),
+        ("C:/part1/part2/part3/part4", ["C:/part1/part2/part3", "C:/part1/part2", "C:/part1", "C:"]),
     ),
 )
 def test_list_ancestors(input_path, expected_ancestors):

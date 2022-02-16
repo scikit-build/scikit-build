@@ -11,30 +11,30 @@ from skbuild import __version__ as skbuild_version
 from . import list_ancestors
 
 
-def check_sdist_content(sdist_archive, expected_distribution_name, expected_content, package_dir=''):
+def check_sdist_content(sdist_archive, expected_distribution_name, expected_content, package_dir=""):
     """This function raises an AssertionError if the given sdist_archive
     does not have the expected content.
     """
-    sdist_zip = sdist_archive.endswith('.zip')
-    sdist_tar = sdist_archive.endswith('.tar.gz')
+    sdist_zip = sdist_archive.endswith(".zip")
+    sdist_tar = sdist_archive.endswith(".tar.gz")
     assert sdist_zip or sdist_tar
 
     expected_content = list(expected_content)
 
-    expected_name = '_'.join(expected_distribution_name.split('-')[:-1])
+    expected_name = "_".join(expected_distribution_name.split("-")[:-1])
 
     if not package_dir:
-        egg_info_dir = '{}/{}.egg-info'.format(expected_distribution_name, expected_name)
+        egg_info_dir = "{}/{}.egg-info".format(expected_distribution_name, expected_name)
     else:
-        egg_info_dir = '{}/{}/{}.egg-info'.format(expected_distribution_name, package_dir, expected_name)
+        egg_info_dir = "{}/{}/{}.egg-info".format(expected_distribution_name, package_dir, expected_name)
 
     expected_content += [
-        '%s/PKG-INFO' % expected_distribution_name,
-        '%s/setup.cfg' % expected_distribution_name,
-        '%s/dependency_links.txt' % egg_info_dir,
-        '%s/top_level.txt' % egg_info_dir,
-        '%s/PKG-INFO' % egg_info_dir,
-        '%s/SOURCES.txt' % egg_info_dir,
+        "%s/PKG-INFO" % expected_distribution_name,
+        "%s/setup.cfg" % expected_distribution_name,
+        "%s/dependency_links.txt" % egg_info_dir,
+        "%s/top_level.txt" % egg_info_dir,
+        "%s/PKG-INFO" % egg_info_dir,
+        "%s/SOURCES.txt" % egg_info_dir,
     ]
 
     if sdist_zip and (
@@ -70,21 +70,21 @@ def check_wheel_content(wheel_archive, expected_distribution_name, expected_cont
 
     expected_content = list(expected_content)
     expected_content += [
-        '%s.dist-info/top_level.txt' % expected_distribution_name,
-        '%s.dist-info/WHEEL' % expected_distribution_name,
-        '%s.dist-info/RECORD' % expected_distribution_name,
-        '%s.dist-info/METADATA' % expected_distribution_name,
+        "%s.dist-info/top_level.txt" % expected_distribution_name,
+        "%s.dist-info/WHEEL" % expected_distribution_name,
+        "%s.dist-info/RECORD" % expected_distribution_name,
+        "%s.dist-info/METADATA" % expected_distribution_name,
     ]
 
-    if parse_version(wheel.__version__) < parse_version('0.31.0'):
+    if parse_version(wheel.__version__) < parse_version("0.31.0"):
         # These files were specified in the now-withdrawn PEP 426
         # See https://github.com/pypa/wheel/issues/195
         expected_content += [
-            '%s.dist-info/DESCRIPTION.rst' % expected_distribution_name,
-            '%s.dist-info/metadata.json' % expected_distribution_name,
+            "%s.dist-info/DESCRIPTION.rst" % expected_distribution_name,
+            "%s.dist-info/metadata.json" % expected_distribution_name,
         ]
 
-    if parse_version('0.33.1') < parse_version(wheel.__version__) < parse_version('0.33.4'):
+    if parse_version("0.33.1") < parse_version(wheel.__version__) < parse_version("0.33.4"):
         # Include directory entries when building wheel
         # See https://github.com/pypa/wheel/issues/287 and https://github.com/pypa/wheel/issues/294
         directories = set()
@@ -93,9 +93,9 @@ def check_wheel_content(wheel_archive, expected_distribution_name, expected_cont
         expected_content += directories
 
     if pure:
-        assert wheel_archive.endswith('-none-any.whl')
+        assert wheel_archive.endswith("-none-any.whl")
     else:
-        assert not wheel_archive.endswith('-none-any.whl')
+        assert not wheel_archive.endswith("-none-any.whl")
 
     archive = ZipFile(wheel_archive)
     member_list = archive.namelist()

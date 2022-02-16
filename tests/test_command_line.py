@@ -62,10 +62,10 @@ def test_no_command():
         try:
             run()
         except SystemExit as e:
-            failed = 'error: no commands supplied' in e.args[0]
+            failed = "error: no commands supplied" in e.args[0]
 
         assert failed
-        assert not os.path.exists('_skbuild')
+        assert not os.path.exists("_skbuild")
 
 
 def test_invalid_command():
@@ -80,10 +80,10 @@ def test_invalid_command():
         try:
             run()
         except SystemExit as e:
-            failed = 'error: invalid command' in e.args[0]
+            failed = "error: invalid command" in e.args[0]
 
         assert failed
-        assert not os.path.exists('_skbuild')
+        assert not os.path.exists("_skbuild")
 
 
 def test_too_many_separators():
@@ -97,7 +97,7 @@ def test_too_many_separators():
         try:
             run()
         except SystemExit as e:
-            failed = e.args[0].startswith('ERROR: Too many')
+            failed = e.args[0].startswith("ERROR: Too many")
 
         assert failed
 
@@ -132,7 +132,7 @@ def test_cmake_initial_cache_as_global_option(tmpdir):
 
     cmakecache_txt = tmpdir.join(CMAKE_BUILD_DIR(), "CMakeCache.txt")
     assert cmakecache_txt.exists()
-    assert get_cmakecache_variables(str(cmakecache_txt)).get('MY_CMAKE_VARIABLE', (None, None)) == ('BOOL', '1')
+    assert get_cmakecache_variables(str(cmakecache_txt)).get("MY_CMAKE_VARIABLE", (None, None)) == ("BOOL", "1")
 
 
 def test_cmake_executable_arg():
@@ -157,7 +157,7 @@ def test_cmake_executable_arg():
     assert "Problem with the CMake installation, aborting build. CMake executable is %s" % cmake_executable in message
 
 
-@pytest.mark.parametrize("action", ['sdist', 'bdist_wheel'])
+@pytest.mark.parametrize("action", ["sdist", "bdist_wheel"])
 @pytest.mark.parametrize("hide_listing", [True, False])
 def test_hide_listing(action, hide_listing, capfd, caplog):
 

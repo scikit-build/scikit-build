@@ -65,8 +65,8 @@ class build_py(set_build_base_mixin, new_style(_build_py)):
         # string or empty list, depending on context).  Differences:
         #   - don't check for __init__.py in directory for empty package
         for module in self.py_modules:
-            path = module.split('.')
-            package = '.'.join(path[0:-1])
+            path = module.split(".")
+            package = ".".join(path[0:-1])
             module_base = path[-1]
 
             try:

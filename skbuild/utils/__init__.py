@@ -130,8 +130,8 @@ class PythonModuleFinder(new_style(distutils_build_py)):
         :param py_modules: List of python modules.
         :param alternative_build_base: Additional directory to search in.
         """
-        self.distribution = namedtuple('Distribution', 'script_name')
-        self.distribution.script_name = 'setup.py'
+        self.distribution = namedtuple("Distribution", "script_name")
+        self.distribution.script_name = "setup.py"
         self.packages = packages
         self.package_dir = package_dir
         self.py_modules = py_modules
@@ -213,7 +213,7 @@ def distribution_hide_listing(distribution):
             if hide_listing:
                 # The classic logger doesn't respond to set_threshold anymore,
                 # but it does log info and above to stdout, so let's hide that
-                with open(os.devnull, 'w') as f, contextlib.redirect_stdout(f):
+                with open(os.devnull, "w") as f, contextlib.redirect_stdout(f):
                     yield hide_listing
             else:
                 yield hide_listing
