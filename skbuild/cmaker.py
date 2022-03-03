@@ -285,7 +285,14 @@ class CMaker(object):
 
         cmd.extend(clargs)
 
-        cmd.extend(filter(bool, shlex.split(os.environ.get("SKBUILD_CONFIGURE_OPTIONS", ""))))
+        # Parse CMAKE_ARGS only if SKBUILD_CONFIGURE_OPTIONS is not present
+        if "SKBUILD_CONFIGURE_OPTIONS" not in os.environ:
+            env_cmake_args = filter(None, shlex.split(os.environ.get("SKBUILD_CONFIGURE_OPTIONS", "")))
+        else:
+            env_cmake_args = filter(None, shlex.split(os.environ.get("CMAKE_ARGS", "")))
+            env_cmake_args = [s for s in env_cmake_args if "CMAKE_INSTALL_PREFIX" not in s]
+
+        cmd.extend(env_cmake_args)
 
         # changes dir to cmake_build and calls cmake's configure step
         # to generate makefile
