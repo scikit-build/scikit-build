@@ -484,7 +484,7 @@ class CMaker(object):
 
             candidate_implementations = ["python"]
             if hasattr(sys, "pypy_version_info"):
-                candidate_implementations = ['pypy-c', 'pypy3-c', 'pypy']
+                candidate_implementations = ["pypy-c", "pypy3-c", "pypy"]
 
             candidate_extensions = [".lib", ".so", ".a"]
             # On pypy + MacOS, the variable WITH_DYLD is not set. It would
@@ -497,7 +497,7 @@ class CMaker(object):
                 candidate_extensions.insert(0, ".dylib")
             if hasattr(sys, "pypy_version_info"):
                 for ext in list(candidate_extensions):
-                    candidate_extensions.append('-c' + ext)
+                    candidate_extensions.append("-c" + ext)
 
             candidate_versions = [python_version]
             if python_version:
