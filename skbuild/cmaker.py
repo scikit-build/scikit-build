@@ -482,9 +482,11 @@ class CMaker(object):
 
             candidate_lib_prefixes = ["", "lib"]
 
+            candidate_suffixes = [""]
             candidate_implementations = ["python"]
             if hasattr(sys, "pypy_version_info"):
                 candidate_implementations = ["pypy-c", "pypy3-c", "pypy"]
+                candidate_suffixes.append("-c")
 
             candidate_extensions = [".lib", ".so", ".a"]
             # On pypy + MacOS, the variable WITH_DYLD is not set. It would
@@ -495,9 +497,6 @@ class CMaker(object):
             ld_lib = sysconfig.get_config_var("LDLIBRARY")
             if with_ld or (ld_lib and ld_lib.endswith(".dylib")):
                 candidate_extensions.insert(0, ".dylib")
-            if hasattr(sys, "pypy_version_info"):
-                for ext in list(candidate_extensions):
-                    candidate_extensions.append("-c" + ext)
 
             candidate_versions = [python_version]
             if python_version:
@@ -533,14 +532,15 @@ class CMaker(object):
                 candidate_libdirs.append(libdir)
 
             candidates = (
-                os.path.join(libdir, "".join((pre, impl, ver, abi, ext)))
-                for (libdir, pre, impl, ext, ver, abi) in itertools.product(
+                os.path.join(libdir, "".join((pre, impl, ver, abi, suf, ext)))
+                for (libdir, pre, impl, ext, ver, abi, suf) in itertools.product(
                     candidate_libdirs,
                     candidate_lib_prefixes,
                     candidate_implementations,
                     candidate_extensions,
                     candidate_versions,
                     candidate_abiflags,
+                    candidate_suffixes,
                 )
             )
 
