@@ -5,7 +5,6 @@ from distutils and setuptools.
 from __future__ import print_function
 
 import argparse
-import copy
 import json
 import os
 import os.path
