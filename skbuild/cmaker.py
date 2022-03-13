@@ -485,7 +485,7 @@ class CMaker(object):
                 masd = sysconfig.get_config_var("multiarchsubdir")
                 if masd:
                     if masd.startswith(os.sep):
-                        masd = masd[len(os.sep):]
+                        masd = masd[len(os.sep) :]
                     libdir_masd = os.path.join(libdir, masd)
                     if os.path.exists(libdir_masd):
                         libdir = libdir_masd
