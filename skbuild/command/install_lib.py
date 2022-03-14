@@ -16,3 +16,4 @@ class install_lib(set_build_base_mixin, new_style(_install_lib)):
             outfiles = super(install_lib, self).install()
         if outfiles is not None:
             distutils_log.info("copied %d files", len(outfiles))
+        return outfiles
