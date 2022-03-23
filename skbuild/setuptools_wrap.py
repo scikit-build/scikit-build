@@ -510,7 +510,7 @@ def setup(*args, **kw):  # noqa: C901
 
     packages = kw.get("packages", [])
     package_dir = kw.get("package_dir", {})
-    package_data = copy.deepcopy(kw.get("package_data", {}))
+    package_data = {k: copy.copy(v) for k, v in kw.get("package_data", {}).items()}
 
     py_modules = kw.get("py_modules", [])
     new_py_modules = {py_module: False for py_module in py_modules}
