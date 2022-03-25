@@ -716,7 +716,7 @@ def setup(*args, **kw):  # noqa: C901
         _consolidate_package_data_files(original_package_data, package_prefixes, hide_listing)
 
         for data_file in original_manifestin_data_files:
-            dest_data_file = os.path.join(CMAKE_INSTALL_DIR(), data_file)
+            dest_data_file = os.path.join(CMAKE_INSTALL_DIR(), skbuild_kw["cmake_install_dir"], data_file)
             _copy_file(data_file, dest_data_file, hide_listing)
 
     kw["package_data"] = package_data
