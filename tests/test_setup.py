@@ -412,7 +412,8 @@ def test_script_keyword(distribution_type, capsys):
             description="a package testing use of script keyword",
             author='The scikit-build team',
             license="MIT",
-            scripts=['foo.py', 'bar.py']
+            scripts=['foo.py', 'bar.py'],
+            packages=[],
         )
         """
         )
