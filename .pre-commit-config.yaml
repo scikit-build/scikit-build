@@ -32,7 +32,7 @@ repos:
   - id: pyupgrade
 
 - repo: https://github.com/psf/black
-  rev: "22.1.0" # Keep in sync with blacken-docs
+  rev: "22.3.0" # Keep in sync with blacken-docs
   hooks:
   - id: black
     exclude: ^docs/conf\.py$
