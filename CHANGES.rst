@@ -6,10 +6,10 @@ This is the list of changes to scikit-build between each release. For full
 details, see the commit logs at http://github.com/scikit-build/scikit-build
 
 
-Scikit-build 0.14.0 (WIP)
-=========================
+Scikit-build 0.14.0
+===================
 
-This is the final release for Python < 3.6 and MSVC<2015.
+This is the final release for Python < 3.6 and MSVC<2017.
 
 New Features
 ------------
@@ -18,12 +18,26 @@ New Features
   providing an install target different than the default ``install``.
   Thanks :user:`phcerdan` for the contribution. See :pr:`477`.
 
+Bug fixes
+---------
+
+* The manifest install location computation was fixed. Thanks :user:`kratsg`
+  for the contribution in :pr:`682`.
+* Byte-compilation was skipped due to a missing return. Thanks :user:`pekkarr`
+  in :pr:`678`.
+* Packages can now be computed from the same shared collections, before this
+  could confuse Scikit-build. Thanks :user:`vyasr` in :pr:`675`.
+* Fixed library detection for PyPy 3.9. Thanks :user:`rkaminsk` in :pr:`673`.
+
 Internal
 --------
 
-* Scikit-build now uses pyproject.toml, setuptools_scm to build. If you
-are packaging scikit-build itself, you might need to update your requirements.
-See :pr:`634`.
+* Scikit-build now uses ``pyproject.toml`` and ``setuptools_scm`` to build. If
+  you are packaging scikit-build itself, you might need to update your
+  requirements.  See :pr:`634`.
+* The codebase is now formatted with Black. :pr:`665`
+
+
 
 Scikit-build 0.13.1
 ===================
