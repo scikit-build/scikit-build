@@ -21,7 +21,6 @@ import py.path
 import requests
 import six
 
-from skbuild.compat import which  # noqa: F401
 from skbuild.platform_specifics import get_platform
 from skbuild.utils import push_dir
 
