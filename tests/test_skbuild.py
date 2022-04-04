@@ -9,6 +9,7 @@ Tests for `skbuild` module.
 import os
 import platform
 import sys
+from shutil import which
 
 import pytest
 
@@ -17,7 +18,7 @@ from skbuild.exceptions import SKBuildError
 from skbuild.platform_specifics import get_platform
 from skbuild.platform_specifics.windows import VS_YEAR_TO_VERSION, find_visual_studio
 
-from . import get_cmakecache_variables, project_setup_py_test, push_dir, push_env, which
+from . import get_cmakecache_variables, project_setup_py_test, push_dir, push_env
 
 
 def test_generator_selection():
