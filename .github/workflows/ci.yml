@@ -38,14 +38,6 @@ jobs:
         fetch-depth: 0
 
     - name: Set environment for available GHA MSVCs
-      if: runner.os == 'Windows'
-      shell: bash
-      run: |
-        echo "SKBUILD_TEST_FIND_VS2008_INSTALLATION_EXPECTED=0" >> $GITHUB_ENV
-        echo "SKBUILD_TEST_FIND_VS2010_INSTALLATION_EXPECTED=0" >> $GITHUB_ENV
-        echo "SKBUILD_TEST_FIND_VS2012_INSTALLATION_EXPECTED=0" >> $GITHUB_ENV
-
-    - name: Set environment for available GHA MSVCs
       if: matrix.runs-on == 'windows-2019'
       shell: bash
       run: |
@@ -70,14 +62,7 @@ jobs:
     # We check Python 2.7 on Linux and macOS, it's not supported on Windows.
     # We check minimum Python 3, and maximum Python 3 on all OS's.
 
-    - name: Test on 🐍 2.7
-      if: runner.os != 'Windows'
-      run: nox -s tests-2.7
-    - name: Test on 🐍 3.5
-      if: matrix.runs-on != 'windows-2022'
-      run: nox -s tests-3.5
     - name: Test on 🐍 3.6
-      if: runner.os == 'Linux'
       run: nox -s tests-3.6
     - name: Test on 🐍 3.7
       if: runner.os == 'Linux' || matrix.runs-on == 'windows-2022'
@@ -124,7 +109,8 @@ jobs:
       fail-fast: false
       matrix:
         runs-on: [ubuntu-latest]
-    name: Tests on 🐍 PyPy • ${{ matrix.runs-on }}
+        pypy-version: ["3.7", "3.9"]
+    name: Tests on 🐍 PyPy ${{ matrix.pypy-version }} • ${{ matrix.runs-on }}
 
     steps:
     - uses: actions/checkout@v3
@@ -134,8 +120,12 @@ jobs:
     - name: Setup nox
       uses: ./.github/actions/setup-nox
 
-    - name: Test on 🐍 PyPy 3.8
-      run: nox -s tests-pypy3.8
+    - uses: actions/setup-python@v2
+      with:
+        python-version: pypy-${{ matrix.pypy-version }}
+
+    - name: Test on 🐍 PyPy ${{ matrix.pypy-version }}
+      run: nox -s tests-pypy${{ matrix.pypy-version }}
 
 
   dist:
