@@ -58,7 +58,7 @@ def _default_skbuild_plat_name():
     if set(machine.split(";")) == macos_universal2_architectures:
         machine = "universal2"
 
-    return "macosx-{}.{}-{}".format(major_macos, minor_macos, machine)
+    return f"macosx-{major_macos}.{minor_macos}-{machine}"
 
 
 _SKBUILD_PLAT_NAME = _default_skbuild_plat_name()

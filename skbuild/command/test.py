@@ -12,4 +12,4 @@ class test(set_build_base_mixin, new_style(_test)):
     def run(self, *args, **kwargs):
         """Force ``develop`` command to run."""
         self.run_command("develop")
-        super(test, self).run(*args, **kwargs)
+        super().run(*args, **kwargs)

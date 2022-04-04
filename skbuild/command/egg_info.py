@@ -39,4 +39,4 @@ class egg_info(set_build_base_mixin, new_style(_egg_info)):
             # pylint:disable=attribute-defined-outside-init
             self.egg_base = os.path.join(script_dir, self.egg_base)
 
-        super(egg_info, self).finalize_options(*args, **kwargs)
+        super().finalize_options(*args, **kwargs)

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 scikit-build is an improved build system generator for CPython C extensions.
 

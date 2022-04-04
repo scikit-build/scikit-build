@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """test_skbuild
 ----------------------------------
@@ -109,7 +108,7 @@ def test_generator(generator, expected_make_program):
 
     this_platform = platform.system().lower()
     if this_platform not in generator_platform[generator]:
-        pytest.skip("{} generator is available only on {}".format(generator, this_platform.title()))
+        pytest.skip(f"{generator} generator is available only on {this_platform.title()}")
 
     @project_setup_py_test("hello-cpp", ["build"])
     def run_build():

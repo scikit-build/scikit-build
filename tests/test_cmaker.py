@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """test_cmaker
 ----------------------------------
@@ -121,14 +120,14 @@ def test_make(configure_with_cmake_source_dir, capfd):
         if configure_with_cmake_source_dir:
             messages += [
                 "/SRC",
-                "/BUILD/{}".format(to_unix_path(CMAKE_BUILD_DIR())),
-                "/BUILD/{}/./foo.txt".format(to_unix_path(CMAKE_INSTALL_DIR())),
+                f"/BUILD/{to_unix_path(CMAKE_BUILD_DIR())}",
+                f"/BUILD/{to_unix_path(CMAKE_INSTALL_DIR())}/./foo.txt",
             ]
         else:
             messages += [
                 "/SRC",
-                "/SRC/{}".format(to_unix_path(CMAKE_BUILD_DIR())),
-                "/SRC/{}/./foo.txt".format(to_unix_path(CMAKE_INSTALL_DIR())),
+                f"/SRC/{to_unix_path(CMAKE_BUILD_DIR())}",
+                f"/SRC/{to_unix_path(CMAKE_INSTALL_DIR())}/./foo.txt",
             ]
 
         out, _ = capfd.readouterr()
@@ -199,7 +198,7 @@ def test_configure_with_cmake_args(capfd):
         ]
 
         find_python_prefixes = [
-            "Python{}".format(sys.version_info[0]),
+            f"Python{sys.version_info[0]}",
             "Python",
             "PYTHON",
         ]
@@ -232,7 +231,7 @@ def test_configure_with_cmake_args(capfd):
               )
             endforeach()
             """
-            ).format("\n".join("  ${{{}}}".format(unused) for unused in unused_vars))
+            ).format("\n".join(f"  ${{{unused}}}" for unused in unused_vars))
         )
 
         with push_dir(str(tmp_dir)):

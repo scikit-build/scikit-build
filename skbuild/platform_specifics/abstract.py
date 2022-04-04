@@ -1,7 +1,6 @@
 """This module defines objects useful to discover which CMake generator is
 supported on the current platform."""
 
-from __future__ import print_function
 
 import os
 import shutil
@@ -15,7 +14,7 @@ from ..utils import push_dir
 test_folder = "_cmake_test_compile"
 
 
-class CMakePlatform(object):
+class CMakePlatform:
     """This class encapsulates the logic allowing to get the identifier of a
     working CMake generator.
 
@@ -50,7 +49,7 @@ class CMakePlatform(object):
             f.write("cmake_minimum_required(VERSION 2.8.12)\n")
             f.write("PROJECT(compiler_test NONE)\n")
             for language in languages:
-                f.write("ENABLE_LANGUAGE({:s})\n".format(language))
+                f.write(f"ENABLE_LANGUAGE({language:s})\n")
             f.write(
                 'if("${_SKBUILD_FORCE_MSVC}")\n'
                 '  math(EXPR FORCE_MAX "${_SKBUILD_FORCE_MSVC}+9")\n'
@@ -209,7 +208,7 @@ class CMakePlatform(object):
             outer = "-" * 80
             inner = ["-" * ((idx * 5) - 3) for idx in range(1, 8)]
             print(outer if suffix == "" else "\n".join(inner))
-            print('-- Trying "{}" generator{}'.format(_generator.description, suffix))
+            print(f'-- Trying "{_generator.description}" generator{suffix}')
             print(outer if suffix != "" else "\n".join(inner[::-1]))
 
         for generator in candidate_generators:
@@ -245,7 +244,7 @@ class CMakePlatform(object):
         return working_generator
 
 
-class CMakeGenerator(object):
+class CMakeGenerator:
     """Represents a CMake generator.
 
     .. automethod:: __init__
@@ -270,11 +269,11 @@ class CMakeGenerator(object):
         if arch is None:
             description_arch = name
         else:
-            description_arch = "{} {}".format(name, arch)
+            description_arch = f"{name} {arch}"
         if toolset is None:
             self._description = description_arch
         else:
-            self._description = "{} {}".format(description_arch, toolset)
+            self._description = f"{description_arch} {toolset}"
 
     @property
     def name(self):

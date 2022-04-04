@@ -2,7 +2,6 @@
 from distutils and setuptools.
 """
 
-from __future__ import print_function
 
 import argparse
 import copy
@@ -18,21 +17,11 @@ from contextlib import contextmanager
 # pylint: disable-next=wrong-import-order
 from distutils.errors import DistutilsArgError, DistutilsError, DistutilsGetoptError
 from glob import glob
-from shutil import copyfile, copymode
+from io import StringIO
+from shutil import copyfile, copymode, which
 
 # Must be imported before distutils
 import setuptools
-
-if sys.version_info >= (3, 0):
-    from io import StringIO
-else:
-    from StringIO import StringIO
-
-if sys.version_info >= (3, 3):
-    from shutil import which
-else:
-    from .compat import which
-
 from packaging.requirements import Requirement
 from packaging.version import parse as parse_version
 from setuptools.dist import Distribution as upstream_Distribution
@@ -374,7 +363,7 @@ def _load_cmake_spec():
     try:
         with open(CMAKE_SPEC_FILE()) as fp:
             return json.load(fp)
-    except (OSError, IOError, ValueError):
+    except (OSError, ValueError):
         return None
 
 
@@ -565,7 +554,7 @@ def setup(*args, **kw):  # noqa: C901
                 if set(machine.split(";")) == {"x86_64", "arm64"}:
                     machine = "universal2"
 
-        set_skbuild_plat_name("macosx-{}-{}".format(version, machine))
+        set_skbuild_plat_name(f"macosx-{version}-{machine}")
 
         # Set platform env. variable so that commands (e.g. bdist_wheel)
         # uses this information. The _PYTHON_HOST_PLATFORM env. variable is
@@ -901,12 +890,12 @@ def _copy_file(src_file, dest_file, hide_listing=True):
     dest_dir = os.path.dirname(dest_file)
     if dest_dir != "" and not os.path.exists(dest_dir):
         if not hide_listing:
-            print("creating directory {}".format(dest_dir))
+            print(f"creating directory {dest_dir}")
         mkdir_p(dest_dir)
 
     # Copy file
     if not hide_listing:
-        print("copying {} -> {}".format(src_file, dest_file))
+        print(f"copying {src_file} -> {dest_file}")
     copyfile(src_file, dest_file)
     copymode(src_file, dest_file)
 
@@ -943,7 +932,7 @@ def _consolidate_package_modules(cmake_source_dir, packages, package_dir, py_mod
             packages, package_dir, py_modules, alternative_build_base=CMAKE_INSTALL_DIR()
         ).find_all_modules()
     except DistutilsError as msg:
-        raise SystemExit("error: {}".format(str(msg)))
+        raise SystemExit(f"error: {str(msg)}")
 
     print("")
 

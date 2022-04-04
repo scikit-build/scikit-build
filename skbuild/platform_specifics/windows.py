@@ -1,6 +1,5 @@
 """This module defines object specific to Windows platform."""
 
-from __future__ import print_function
 
 import os
 import platform
@@ -46,7 +45,7 @@ class WindowsPlatform(abstract.CMakePlatform):
     """Windows implementation of :class:`.abstract.CMakePlatform`."""
 
     def __init__(self):
-        super(WindowsPlatform, self).__init__()
+        super().__init__()
         self._vs_help = ""
         vs_help_template = (
             textwrap.dedent(
@@ -134,7 +133,7 @@ class WindowsPlatform(abstract.CMakePlatform):
         extra = []
         for vs_year, vs_toolset in supported_vs_years:
             vs_version = VS_YEAR_TO_MSC_VER[vs_year]
-            args = ["-D_SKBUILD_FORCE_MSVC={}".format(vs_version)]
+            args = [f"-D_SKBUILD_FORCE_MSVC={vs_version}"]
             self.default_generators.extend(
                 [
                     CMakeVisualStudioCommandLineGenerator("Ninja", vs_year, vs_toolset, args=ninja_args + args),
@@ -164,14 +163,14 @@ class CMakeVisualStudioIDEGenerator(CMakeGenerator):
         or 64-bit) and the selected ``toolset`` (if applicable).
         """
         vs_version = VS_YEAR_TO_VERSION[year]
-        vs_base = "Visual Studio {} {}".format(vs_version, year)
+        vs_base = f"Visual Studio {vs_version} {year}"
         if platform.machine() == "ARM64":
             vs_arch = "ARM64"
         elif platform.architecture()[0] == "64bit":
             vs_arch = "x64"
         else:
             vs_arch = "Win32"
-        super(CMakeVisualStudioIDEGenerator, self).__init__(vs_base, toolset=toolset, arch=vs_arch)
+        super().__init__(vs_base, toolset=toolset, arch=vs_arch)
 
 
 def _find_visual_studio_2010_to_2015(vs_version):
@@ -244,14 +243,13 @@ def _find_visual_studio_2017_or_newer(vs_version):
 
     try:
         extra_args = {}
-        if sys.version_info >= (3, 6):
-            extra_args["encoding"] = "utf-8" if sys.platform.startswith("cygwin") else "mbcs"
-            extra_args["errors"] = "strict"
+        extra_args["encoding"] = "utf-8" if sys.platform.startswith("cygwin") else "mbcs"
+        extra_args["errors"] = "strict"
         path = subprocess.check_output(
             [
                 os.path.join(root, "Microsoft Visual Studio", "Installer", "vswhere.exe"),
                 "-version",
-                "[{:.1f}, {:.1f})".format(vs_version, vs_version + 1),
+                f"[{vs_version:.1f}, {vs_version + 1:.1f})",
                 "-prerelease",
                 "-requires",
                 "Microsoft.VisualStudio.Component.VC.Tools.x86.x64",
@@ -260,7 +258,7 @@ def _find_visual_studio_2017_or_newer(vs_version):
                 "-products",
                 "*",
             ],
-            **extra_args
+            **extra_args,
         ).strip()
         if (3, 0) <= sys.version_info[:2] <= (3, 5):
             path = path.decode()
@@ -359,7 +357,7 @@ def _get_msvc_compiler_env(vs_version, vs_toolset=None):
         try:
             # TODO: should always be shell=True, but currently requires this
             out = subprocess.check_output(
-                'cmd /u /c "{}" {} {} && set'.format(vcvarsall, arch, vcvars_ver),
+                f'cmd /u /c "{vcvarsall}" {arch} {vcvars_ver} && set',
                 stderr=subprocess.STDOUT,
                 shell=sys.platform.startswith("cygwin"),
             )
@@ -410,5 +408,5 @@ class CMakeVisualStudioCommandLineGenerator(CMakeGenerator):
         """
         vc_env = _get_msvc_compiler_env(VS_YEAR_TO_VERSION[year], toolset)
         env = {str(key.upper()): str(value) for key, value in vc_env.items()}
-        super(CMakeVisualStudioCommandLineGenerator, self).__init__(name, env, args=args)
-        self._description = "{} ({})".format(self.name, CMakeVisualStudioIDEGenerator(year, toolset).description)
+        super().__init__(name, env, args=args)
+        self._description = f"{self.name} ({CMakeVisualStudioIDEGenerator(year, toolset).description})"

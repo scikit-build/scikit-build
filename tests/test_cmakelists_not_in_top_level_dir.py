@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """test_cmakelists_not_in_top_level_dir
 ----------------------------------

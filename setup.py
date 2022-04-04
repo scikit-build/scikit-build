@@ -1,24 +1,23 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 import setuptools
 
 # Produce an ImportError if this is missing
 import setuptools_scm  # noqa: F401
 
-with open("README.rst", "r") as fp:
+with open("README.rst") as fp:
     readme = fp.read()
 
-with open("HISTORY.rst", "r") as fp:
+with open("HISTORY.rst") as fp:
     history = fp.read().replace(".. :changelog:", "")
 
-with open("requirements.txt", "r") as fp:
+with open("requirements.txt") as fp:
     requirements = list(filter(bool, (line.strip() for line in fp)))
 
-with open("requirements-dev.txt", "r") as fp:
+with open("requirements-dev.txt") as fp:
     dev_requirements = list(filter(bool, (line.strip() for line in fp)))
 
-with open("requirements-docs.txt", "r") as fp:
+with open("requirements-docs.txt") as fp:
     doc_requirements = list(filter(bool, (line.strip() for line in fp)))
 
 setuptools.setup(

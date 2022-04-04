@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """test_hello_cpp
 ----------------------------------
@@ -176,9 +175,9 @@ def test_hello_cleans(capfd, caplog):
 
     assert "running clean" == clean1_out.splitlines()[0]
     if caplog.text.count("removing") != 3:
-        assert "removing '{}'".format(CMAKE_INSTALL_DIR()) == clean1_out.splitlines()[1]
-        assert "removing '{}'".format(CMAKE_BUILD_DIR()) == clean1_out.splitlines()[2]
-        assert "removing '{}'".format(SKBUILD_DIR()) == clean1_out.splitlines()[3]
+        assert f"removing '{CMAKE_INSTALL_DIR()}'" == clean1_out.splitlines()[1]
+        assert f"removing '{CMAKE_BUILD_DIR()}'" == clean1_out.splitlines()[2]
+        assert f"removing '{SKBUILD_DIR()}'" == clean1_out.splitlines()[3]
 
     assert "running clean" == clean2_out
 

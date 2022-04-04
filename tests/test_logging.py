@@ -5,7 +5,7 @@ from skbuild.utils import distribution_hide_listing, distutils_log
 setuptools_logging = pytest.importorskip("setuptools.logging")
 
 
-class SimpleNamespace(object):
+class SimpleNamespace:
     pass
 
 
