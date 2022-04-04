@@ -37,7 +37,7 @@ def _log_warning(msg, *args):
         print(msg % args)
 
 
-class ContextDecorator(object):
+class ContextDecorator:
     """A base class or mixin that enables context managers to work as
     decorators."""
 
@@ -90,7 +90,7 @@ class push_dir(ContextDecorator):
         self.directory = None
         self.make_directory = None
         self.old_cwd = None
-        super(push_dir, self).__init__(directory=directory, make_directory=make_directory)
+        super().__init__(directory=directory, make_directory=make_directory)
 
     def __enter__(self):
         self.old_cwd = os.getcwd()
@@ -113,7 +113,7 @@ def new_style(klass):
     This ensures that <object> is always at the end of the MRO, even after
     being mixed in with other classes.
     """
-    return type("NewStyleClass<{}>".format(klass.__name__), (klass, object), {})
+    return type(f"NewStyleClass<{klass.__name__}>", (klass, object), {})
 
 
 class PythonModuleFinder(new_style(distutils_build_py)):
@@ -150,7 +150,7 @@ class PythonModuleFinder(new_style(distutils_build_py)):
         Return a list of tuples ``(package, module, module_file)``.
         """
         with push_dir(project_dir):
-            return super(PythonModuleFinder, self).find_all_modules()
+            return super().find_all_modules()
 
     def find_package_modules(self, package, package_dir):
         """Temporally prepend the ``alternative_build_base`` to ``module_file``.
@@ -160,7 +160,7 @@ class PythonModuleFinder(new_style(distutils_build_py)):
         if package_dir != "" and not os.path.exists(package_dir) and self.alternative_build_base is not None:
             package_dir = os.path.join(self.alternative_build_base, package_dir)
 
-        modules = super(PythonModuleFinder, self).find_package_modules(package, package_dir)
+        modules = super().find_package_modules(package, package_dir)
 
         # Strip the alternative base from module_file
         def _strip_directory(entry):

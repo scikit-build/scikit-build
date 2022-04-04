@@ -18,7 +18,7 @@ class build_py(set_build_base_mixin, new_style(_build_py)):
 
         Initializes ``outfiles_count``.
         """
-        super(build_py, self).initialize_options()
+        super().initialize_options()
         # pylint:disable=attribute-defined-outside-init
         self.outfiles_count = 0
 
@@ -27,7 +27,7 @@ class build_py(set_build_base_mixin, new_style(_build_py)):
 
         Increments ``outfiles_count``.
         """
-        super(build_py, self).build_module(module, module_file, package)
+        super().build_module(module, module_file, package)
         self.outfiles_count += 1
 
     def run(self, *args, **kwargs):
@@ -37,7 +37,7 @@ class build_py(set_build_base_mixin, new_style(_build_py)):
         of ``outfiles_count``.
         """
         with distribution_hide_listing(self.distribution):
-            super(build_py, self).run(*args, **kwargs)
+            super().run(*args, **kwargs)
         distutils_log.info("copied %d files", self.outfiles_count)
 
     def find_modules(self):

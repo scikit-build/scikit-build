@@ -12,7 +12,7 @@ class CygwinPlatform(abstract.CMakePlatform):
     """Cygwin implementation of :class:`.abstract.CMakePlatform`."""
 
     def __init__(self):
-        super(CygwinPlatform, self).__init__()
+        super().__init__()
         self.default_generators = [CMakeGenerator("Ninja"), CMakeGenerator("Unix Makefiles")]
 
     @property

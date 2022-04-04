@@ -36,5 +36,5 @@ def get_platform():
 
         return bsd.BSDPlatform()
 
-    msg = "Unsupported platform: {:s}. Please contact the scikit-build team.".format(this_platform)
+    msg = f"Unsupported platform: {this_platform:s}. Please contact the scikit-build team."
     raise RuntimeError(msg)

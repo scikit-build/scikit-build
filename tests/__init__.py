@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import setuptools  # noqa: F401
 
 try:
@@ -23,11 +21,11 @@ import re
 import subprocess
 import sys
 from contextlib import contextmanager
+from unittest.mock import patch
 
 import py.path
 import requests
 import six
-from mock import patch
 
 from skbuild.compat import which  # noqa: F401
 from skbuild.platform_specifics import get_platform
@@ -134,7 +132,7 @@ def _copy_dir(target_dir, src_dir, on_duplicate="exception", keep_top_dir=False)
     """
     src_files = []
 
-    if isinstance(src_dir, six.string_types):
+    if isinstance(src_dir, str):
         src_dir = py.path.local(src_dir)
 
     if keep_top_dir:
@@ -167,7 +165,7 @@ def initialize_git_repo_and_commit(project_dir, verbose=True):
     git repository with one commit containing all the directories and files
     is created.
     """
-    if isinstance(project_dir, six.string_types):
+    if isinstance(project_dir, str):
         project_dir = py.path.local(project_dir)
 
     if project_dir.join(".git").exists():
@@ -200,7 +198,7 @@ def prepare_project(project, tmp_project_dir, force=False):
     Specifying ``force=True`` will copy the files even if ``tmp_project_dir``
     is not empty.
     """
-    if isinstance(tmp_project_dir, six.string_types):
+    if isinstance(tmp_project_dir, str):
         tmp_project_dir = py.path.local(tmp_project_dir)
 
     # Create project directory if it does not exist
@@ -234,7 +232,7 @@ def execute_setup_py(project_dir, setup_args, disable_languages_test=False):
         # See function "project_on_sys_path()" in setuptools.command.test
         pkg_resources._initialize_master_working_set()
 
-        with open("setup.py", "r") as fp:
+        with open("setup.py") as fp:
             setup_code = compile(fp.read(), "setup.py", mode="exec")
 
             if setup_code is not None:
@@ -248,10 +246,10 @@ def execute_setup_py(project_dir, setup_args, disable_languages_test=False):
                         original_write_test_cmakelist([])
 
                     with patch.object(type(platform), "write_test_cmakelist", new=write_test_cmakelist_no_languages):
-                        six.exec_(setup_code)
+                        exec(setup_code)
 
                 else:
-                    six.exec_(setup_code)
+                    exec(setup_code)
 
         yield
 

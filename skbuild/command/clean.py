@@ -20,7 +20,7 @@ class clean(set_build_base_mixin, new_style(_clean)):
     def run(self):
         """After calling the super class implementation, this function removes
         the directories specific to scikit-build."""
-        super(clean, self).run()
+        super().run()
         for dir_ in (CMAKE_INSTALL_DIR(), CMAKE_BUILD_DIR(), SKBUILD_DIR()):
             if os.path.exists(dir_):
                 distutils_log.info("removing '%s'", dir_)

@@ -13,7 +13,7 @@ class install_lib(set_build_base_mixin, new_style(_install_lib)):
     def install(self):
         """Handle --hide-listing option."""
         with distribution_hide_listing(self.distribution):
-            outfiles = super(install_lib, self).install()
+            outfiles = super().install()
         if outfiles is not None:
             distutils_log.info("copied %d files", len(outfiles))
         return outfiles

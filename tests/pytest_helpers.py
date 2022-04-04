@@ -24,9 +24,9 @@ def check_sdist_content(sdist_archive, expected_distribution_name, expected_cont
     expected_name = "_".join(expected_distribution_name.split("-")[:-1])
 
     if not package_dir:
-        egg_info_dir = "{}/{}.egg-info".format(expected_distribution_name, expected_name)
+        egg_info_dir = f"{expected_distribution_name}/{expected_name}.egg-info"
     else:
-        egg_info_dir = "{}/{}/{}.egg-info".format(expected_distribution_name, package_dir, expected_name)
+        egg_info_dir = f"{expected_distribution_name}/{package_dir}/{expected_name}.egg-info"
 
     expected_content += [
         "%s/PKG-INFO" % expected_distribution_name,

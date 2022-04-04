@@ -5,7 +5,7 @@ distutils and setuptools commands.
 from .. import cmaker
 
 
-class set_build_base_mixin(object):
+class set_build_base_mixin:
     """Mixin allowing to override distutils and setuptools commands."""
 
     def finalize_options(self, *args, **kwargs):
@@ -16,4 +16,4 @@ class set_build_base_mixin(object):
         except AttributeError:
             pass
 
-        super(set_build_base_mixin, self).finalize_options(*args, **kwargs)
+        super().finalize_options(*args, **kwargs)

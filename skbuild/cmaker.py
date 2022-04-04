@@ -2,12 +2,10 @@
 This module provides an interface for invoking CMake executable.
 """
 
-from __future__ import print_function
 
 import argparse
 import distutils.sysconfig as du_sysconfig
 import glob
-import io
 import itertools
 import os
 import os.path
@@ -17,6 +15,7 @@ import shlex
 import subprocess
 import sys
 import sysconfig
+from shlex import quote
 
 from .constants import (
     CMAKE_BUILD_DIR,
@@ -26,11 +25,6 @@ from .constants import (
 )
 from .exceptions import SKBuildError
 from .platform_specifics import get_platform
-
-if sys.version_info >= (3, 3):
-    from shlex import quote
-else:
-    from pipes import quote
 
 RE_FILE_INSTALL = re.compile(r"""[ \t]*file\(INSTALL DESTINATION "([^"]+)".*"([^"]+)"\).*""")
 
@@ -70,7 +64,7 @@ def has_cmake_cache_arg(cmake_args, arg_name, arg_value=None):
     in ``cmake_args``. If ``arg_value`` is None, return True only if
     ``-D<arg_name>:`` is found in the list."""
     for arg in reversed(cmake_args):
-        if arg.startswith("-D{}:".format(arg_name)):
+        if arg.startswith(f"-D{arg_name}:"):
             if arg_value is None:
                 return True
             if "=" in arg:
@@ -96,13 +90,12 @@ def get_cmake_version(cmake_executable=CMAKE_DEFAULT_EXECUTABLE):
             "Problem with the CMake installation, aborting build. CMake executable is %s" % cmake_executable
         )
 
-    if sys.version_info > (3, 0):
-        version_string = version_string.decode()
+    version_string = version_string.decode()
 
     return version_string.splitlines()[0].split(" ")[-1]
 
 
-class CMaker(object):
+class CMaker:
     r"""Interface to CMake executable.
 
     Example:
@@ -144,13 +137,13 @@ class CMaker(object):
     @staticmethod
     def get_cached(variable_name):
         """If set, returns the variable cached value from the :func:`skbuild.constants.CMAKE_BUILD_DIR()`, otherwise returns None"""
-        variable_name = "{}:".format(variable_name)
+        variable_name = f"{variable_name}:"
         try:
             with open(os.path.join(CMAKE_BUILD_DIR(), "CMakeCache.txt")) as fp:
                 for line in fp:
                     if line.startswith(variable_name):
                         return line.split("=", 1)[-1].strip()
-        except (OSError, IOError):
+        except OSError:
             pass
 
         return None
@@ -275,7 +268,7 @@ class CMaker(object):
         ]
 
         find_python_prefixes = [
-            "-DPython{}".format(python_version[0]),
+            f"-DPython{python_version[0]}",
             "-DPython",
             "-DPYTHON",
         ]
@@ -618,7 +611,7 @@ class CMaker(object):
                 if os.path.splitext(filename)[1] != ".cmake":
                     continue
 
-                with io.open(os.path.join(root, filename), encoding="utf-8") as fp:
+                with open(os.path.join(root, filename), encoding="utf-8") as fp:
                     lines = fp.readlines()
 
                 for line in lines:
@@ -735,7 +728,7 @@ class CMaker(object):
 
     @staticmethod
     def _parse_manifest(install_manifest_path):
-        with open(install_manifest_path, "r") as manifest:
+        with open(install_manifest_path) as manifest:
             return [_remove_cwd_prefix(path) for path in manifest]
 
         return []

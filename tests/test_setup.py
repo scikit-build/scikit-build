@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """test_setup
 ----------------------------------
@@ -12,10 +11,10 @@ import pprint
 import sys
 import textwrap
 from distutils.core import Distribution as distutils_Distribution
+from unittest.mock import patch
 
 import py.path
 import pytest
-from mock import patch
 from setuptools import Distribution as setuptool_Distribution
 
 from skbuild import setup as skbuild_setup
@@ -66,7 +65,7 @@ def test_distribution_is_pure(distribution_type, tmpdir):
             """
         )
     else:
-        raise Exception("Unknown distribution_type: {}".format(distribution_type))
+        raise Exception(f"Unknown distribution_type: {distribution_type}")
 
     platform = get_platform()
     original_write_test_cmakelist = platform.write_test_cmakelist
@@ -83,7 +82,7 @@ def test_distribution_is_pure(distribution_type, tmpdir):
                 description="test object returned by setup function",
                 author="The scikit-build team",
                 license="MIT",
-                **skbuild_setup_kwargs
+                **skbuild_setup_kwargs,
             )
             assert issubclass(distribution.__class__, (distutils_Distribution, setuptool_Distribution))
             assert is_pure == distribution.is_pure()
@@ -173,7 +172,7 @@ def test_cmake_install_dir_keyword(cmake_install_dir, expected_failed, error_cod
 
     setup_kwarg = ""
     if cmake_install_dir is not None:
-        setup_kwarg = "cmake_install_dir=r'{}'".format(cmake_install_dir)
+        setup_kwarg = f"cmake_install_dir=r'{cmake_install_dir}'"
 
     tmp_dir.join("setup.py").write(
         textwrap.dedent(
@@ -231,8 +230,8 @@ def test_cmake_install_dir_keyword(cmake_install_dir, expected_failed, error_cod
         else:
             assert message.strip().startswith("setup parameter 'cmake_install_dir' " "is set to an absolute path.")
     else:
-        init_py = to_platform_path("{}/banana/__init__.py".format(CMAKE_INSTALL_DIR()))
-        assert "copying {}".format(init_py) in out
+        init_py = to_platform_path(f"{CMAKE_INSTALL_DIR()}/banana/__init__.py")
+        assert f"copying {init_py}" in out
 
 
 @pytest.mark.parametrize("cmake_with_sdist", [True, False])
@@ -1069,7 +1068,7 @@ def test_zip_safe_default(zip_safe, mocker):
 
     setup_kwarg = ""
     if zip_safe is not None:
-        setup_kwarg = "zip_safe={}".format(zip_safe)
+        setup_kwarg = f"zip_safe={zip_safe}"
 
     tmp_dir.join("setup.py").write(
         textwrap.dedent(

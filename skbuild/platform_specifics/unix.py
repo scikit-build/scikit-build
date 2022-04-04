@@ -11,7 +11,7 @@ class UnixPlatform(abstract.CMakePlatform):
     """Unix implementation of :class:`.abstract.CMakePlatform`."""
 
     def __init__(self):
-        super(UnixPlatform, self).__init__()
+        super().__init__()
         try:
             import ninja  # pylint: disable=import-outside-toplevel
 
