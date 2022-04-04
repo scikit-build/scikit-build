@@ -13,10 +13,6 @@ from . import abstract
 from .abstract import CMakeGenerator
 
 VS_YEAR_TO_VERSION = {
-    "2008": 9,
-    "2010": 10,
-    "2012": 11,
-    "2013": 12,
     "2015": 14,
     "2017": 15,
     "2019": 16,
@@ -30,10 +26,6 @@ The different version are identified by their year.
 """
 
 VS_YEAR_TO_MSC_VER = {
-    "2008": "1500",  # VS 2008
-    "2010": "1600",  # VS 2010
-    "2012": "1700",  # VS 2012
-    "2013": "1800",  # VS 2012
     "2015": "1900",  # VS 2015
     "2017": "1910",  # VS 2017 - can be +9
     "2019": "1920",  # VS 2019 - can be +9
@@ -60,67 +52,27 @@ class WindowsPlatform(abstract.CMakePlatform):
             .format(pyver="%s.%s" % sys.version_info[:2])
         )
 
-        # For Python 2.7 to Python 3.2: VS2008
-        if (2, 7) <= sys.version_info < (3, 3):
-            supported_vs_years = [("2008", None)]
-            self._vs_help = vs_help_template % (
-                supported_vs_years[0][0],
-                "Microsoft Visual C++ Compiler for Python 2.7",
-                "http://aka.ms/vcpython27",
-            )
-
-        # For Python 3.3 to Python 3.4: VS2010
-        elif (3, 3) <= sys.version_info < (3, 5):
-            supported_vs_years = [("2010", None)]
-            self._vs_help = vs_help_template % (
-                supported_vs_years[0][0],
-                "Windows SDK for Windows 7 and .NET 4.0",
-                "https://www.microsoft.com/download/details.aspx?id=8279",
-            )
-
-        # For Python 3.5: VS2019, VS2017, VS2015
-        elif (3, 5) <= sys.version_info < (3, 6):
-            supported_vs_years = [("2019", "v142"), ("2017", "v140"), ("2015", None)]
-            self._vs_help = vs_help_template % (
-                supported_vs_years[0][0],
-                "Visual Studio 2015",
-                "https://visualstudio.microsoft.com/vs/older-downloads/",
-            )
-            self._vs_help += (
-                "\n\n"
-                + textwrap.dedent(
-                    """
-                Or with "Visual Studio 2017" or "Visual Studio 2019":
-
-                  https://visualstudio.microsoft.com/vs/
-                """
-                ).strip()
-            )
-
         # For Python 3.6 and above: VS2022, VS2019, VS2017
-        elif (3, 6) <= sys.version_info:
-            supported_vs_years = [("2022", "v143"), ("2019", "v142"), ("2017", "v141")]
-            self._vs_help = vs_help_template % (
-                supported_vs_years[0][0],
-                "Visual Studio 2017",
-                "https://visualstudio.microsoft.com/vs/",
-            )
-            self._vs_help += (
-                "\n\n"
-                + textwrap.dedent(
-                    """
-                Or with "Visual Studio 2019":
-
-                  https://visualstudio.microsoft.com/vs/
-
-                Or with "Visual Studio 2022":
-
-                  https://visualstudio.microsoft.com/vs/
+        supported_vs_years = [("2022", "v143"), ("2019", "v142"), ("2017", "v141")]
+        self._vs_help = vs_help_template % (
+            supported_vs_years[0][0],
+            "Visual Studio 2017",
+            "https://visualstudio.microsoft.com/vs/",
+        )
+        self._vs_help += (
+            "\n\n"
+            + textwrap.dedent(
                 """
-                ).strip()
-            )
-        else:
-            raise RuntimeError("Only Python >= 2.7 is supported on Windows.")
+            Or with "Visual Studio 2019":
+
+                https://visualstudio.microsoft.com/vs/
+
+            Or with "Visual Studio 2022":
+
+                https://visualstudio.microsoft.com/vs/
+            """
+            ).strip()
+        )
 
         try:
             import ninja  # pylint: disable=import-outside-toplevel
@@ -187,14 +139,7 @@ def _find_visual_studio_2010_to_2015(vs_version):
     path (e.g `C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/`).
     """
     # winreg module
-    try:
-        import winreg  # pylint: disable=import-outside-toplevel
-    except ImportError:
-        # Support Python 2.7
-        try:
-            import _winreg as winreg  # pylint: disable=import-outside-toplevel
-        except ImportError:
-            return ""
+    import winreg  # pylint: disable=import-outside-toplevel
 
     # get registry key associated with Visual Studio installations
     try:
@@ -242,9 +187,10 @@ def _find_visual_studio_2017_or_newer(vs_version):
         return ""
 
     try:
-        extra_args = {}
-        extra_args["encoding"] = "utf-8" if sys.platform.startswith("cygwin") else "mbcs"
-        extra_args["errors"] = "strict"
+        extra_args = {
+            "encoding": "utf-8" if sys.platform.startswith("cygwin") else "mbcs",
+            "errors": "strict",
+        }
         path = subprocess.check_output(
             [
                 os.path.join(root, "Microsoft Visual Studio", "Installer", "vswhere.exe"),
@@ -260,8 +206,6 @@ def _find_visual_studio_2017_or_newer(vs_version):
             ],
             **extra_args,
         ).strip()
-        if (3, 0) <= sys.version_info[:2] <= (3, 5):
-            path = path.decode()
     except (subprocess.CalledProcessError, OSError, UnicodeDecodeError):
         return ""
 
@@ -362,8 +306,6 @@ def _get_msvc_compiler_env(vs_version, vs_toolset=None):
                 shell=sys.platform.startswith("cygwin"),
             )
             out = out.decode("utf-16le", errors="replace")
-            if sys.version_info[0] < 3:
-                out = out.encode("utf-8")
 
             vc_env = {
                 key.lower(): value

@@ -59,8 +59,7 @@ jobs:
       uses: ./.github/actions/setup-nox
 
     # We check all Python's on Linux, because it's fast.
-    # We check Python 2.7 on Linux and macOS, it's not supported on Windows.
-    # We check minimum Python 3, and maximum Python 3 on all OS's.
+    # We check minimum Python and maximum Python on all OS's.
 
     - name: Test on 🐍 3.6
       run: nox -s tests-3.6

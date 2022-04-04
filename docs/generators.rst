@@ -123,15 +123,9 @@ Visual Studio IDE
     +-------------------+------------------------+-----------------------------+
     | CPython Version   | x86 (32-bit)           | x64 (64-bit)                |
     +===================+========================+=============================+
-    | **3.6 and above** | Visual Studio 16 2019  | Visual Studio 16 2019 Win64 |
+    | **3.6 and above** | Visual Studio 17 2022  | Visual Studio 17 2022 Win64 |
+    |                   | Visual Studio 16 2019  | Visual Studio 16 2019 Win64 |
     |                   | Visual Studio 15 2017  | Visual Studio 15 2017 Win64 |
-    +-------------------+------------------------+-----------------------------+
-    | **3.5**           | Visual Studio 15 2017  | Visual Studio 15 2017 Win64 |
-    |                   | Visual Studio 14 2015  | Visual Studio 14 2015 Win64 |
-    +-------------------+------------------------+-----------------------------+
-    | **3.3 to 3.4**    | Visual Studio 10 2010  | Visual Studio 10 2010 Win64 |
-    +-------------------+------------------------+-----------------------------+
-    | **2.7 to 3.2**    | Visual Studio 9 2008   | Visual Studio 9 2008 Win64  |
     +-------------------+------------------------+-----------------------------+
 
 
@@ -218,25 +212,15 @@ MacOSX wheels will allow them to work on ``System CPython``, the ``Official CPyt
     +----------------------+-------------------------+--------------+--------------------------------+
     | CPython Distribution | CPython Version         | OSX Version  | ``get_platform()`` [#getplat]_ |
     +======================+=========================+==============+================================+
-    | Official CPython     | 3.10                    | 10.13        | macosx-10.9-universal2         |
+    | Official CPython     | 3.9, 3.10               | 10.9         | macosx-10.9-universal2         |
     |                      +-------------------------+--------------+--------------------------------+
-    |                      | 3.8, 3.9                | 10.13        | macosx-10.9-x86_64             |
+    |                      | 3.8                     | 11           | macosx-11.0-universal2         |
     |                      +-------------------------+--------------+--------------------------------+
-    |                      | 3.7, 3.6, 3.5, 3.4, 2.7 | 10.12        | macosx-10.6-intel              |
-    |                      +-------------------------+--------------+                                |
-    |                      | 3.4, 2.7                | 10.9         |                                |
-    |                      +-------------------------+--------------+                                |
-    |                      | 2.7                     | 10.7         |                                |
+    |                      | 3.6, 3.7, 3.8, 3.9, 3.10| 10.9         | macosx-10.9-x86_64             |
     +----------------------+-------------------------+--------------+--------------------------------+
-    | System CPython       | 2.7                     | 10.12        | macosx-10.12-intel             |
-    |                      |                         +--------------+--------------------------------+
-    |                      |                         | 10.9         | macosx-10.9-intel              |
-    |                      |                         +--------------+--------------------------------+
-    |                      |                         | 10.7         | macosx-10.7-intel              |
-    +----------------------+-------------------------+--------------+--------------------------------+
-    | Macports CPython     | 2.7                     | 10.9         | macosx-10.9-x86_64             |
-    +----------------------+-------------------------+--------------+                                |
-    | Homebrew CPython     | 2.7                     | 10.9         |                                |
+    | Macports CPython     | 3.x                     | Current      | Depends on current macOS       |
+    +----------------------+-------------------------+--------------+ version.                       |
+    | Homebrew CPython     | 3.x                     | Current      |                                |
     +----------------------+-------------------------+--------------+--------------------------------+
 
 
@@ -331,18 +315,16 @@ which Microsoft C run-time and compiler are used:
 
 .. table::
 
-    +---------------------------+----------------+-----------------+-----------------+
-    | Python version            | 2.7 to 3.2     | 3.3 to 3.4      | 3.5 and above   |
-    +===========================+================+=================+=================+
-    | **Microsoft C run-time**  | `msvcr90.dll`_ | `msvcr100.dll`_ | `ucrtbase.dll`_ |
-    +---------------------------+----------------+-----------------+-----------------+
-    | **Compiler version**      | MSVC++ 9.0     | MSVC++ 10.0     | MSVC++ 14.0     |
-    +---------------------------+----------------+-----------------+-----------------+
-    | **Visual Studio version** | 2008           | 2010            | 2015            |
-    +---------------------------+----------------+-----------------+-----------------+
+    +---------------------------+-----------------+
+    | Python version            | 3.6 and above   |
+    +===========================+=================+
+    | **Microsoft C run-time**  | `ucrtbase.dll`_ |
+    +---------------------------+-----------------+
+    | **Compiler version**      | MSVC++ 14.0     |
+    +---------------------------+-----------------+
+    | **Visual Studio version** | 2017            |
+    +---------------------------+-----------------+
 
-.. _msvcr90.dll: https://msdn.microsoft.com/en-us/library/abx4dbyh(v=vs.90).aspx
-.. _msvcr100.dll: https://msdn.microsoft.com/en-us/library/abx4dbyh(v=vs.100).aspx
 .. _ucrtbase.dll: https://msdn.microsoft.com/en-us/library/abx4dbyh(v=vs.140).aspx
 
 Installing compiler and Microsoft C run-time
@@ -365,24 +347,19 @@ this next table references links for installing alternative environments:
     +-------------------+-------------------------------------------------+
     | CPython version   | Download links for Windows SDK or Visual Studio |
     +===================+=================================================+
-    | **3.5 and above** | - `Visual C++ Build Tools 2015`_                |
+    | **3.6 and above** | - `Visual C++ Build Tools 2015`_                |
     |                   |                                                 |
     |                   | or                                              |
     |                   |                                                 |
-    |                   | - `Visual Studio 2015`_                         |
-    +-------------------+-------------------------------------------------+
-    | **3.3 to 3.4**    | `Windows SDK for Windows 7 and .NET 4.0`_       |
-    +-------------------+-------------------------------------------------+
-    | **2.7 to 3.2**    | `Microsoft Visual C++ Compiler for Python 2.7`_ |
+    |                   | - `Visual Studio 2017`_                         |
     +-------------------+-------------------------------------------------+
 
 These links have been copied from the great article [#alternativevs]_ of
 Steve Dower, engineer at Microsoft.
 
 .. _Visual C++ Build Tools 2015: http://go.microsoft.com/fwlink/?LinkId=691126
-.. _Visual Studio 2015: https://visualstudio.com/
+.. _Visual Studio 2017: https://visualstudio.com/
 .. _Windows SDK for Windows 7 and .NET 4.0: https://www.microsoft.com/download/details.aspx?id=8279
-.. _Microsoft Visual C++ Compiler for Python 2.7: http://aka.ms/vcpython27
 
 
 .. rubric:: Footnotes
