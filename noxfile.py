@@ -5,8 +5,8 @@ import nox
 
 nox.options.sessions = ["lint", "tests"]
 
-PYTHON_ALL_VERSIONS = ["2.7", "3.5", "3.6", "3.7", "3.8", "3.9", "3.10", "pypy3.7", "pypy3.8", "pypy3.9"]
-MSVC_ALL_VERSIONS = {"2008", "2010", "2013", "2015", "2017", "2019", "2022"}
+PYTHON_ALL_VERSIONS = ["3.6", "3.7", "3.8", "3.9", "3.10", "pypy3.7", "pypy3.8", "pypy3.9"]
+MSVC_ALL_VERSIONS = {"2017", "2019", "2022"}
 
 if os.environ.get("CI", None):
     nox.options.error_on_missing_interpreters = True
