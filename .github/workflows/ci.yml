@@ -73,7 +73,7 @@ jobs:
         echo "SKBUILD_TEST_FIND_VS2022_INSTALLATION_EXPECTED=1" >> $GITHUB_ENV
 
     - name: Setup nox
-      uses: excitedleigh/setup-nox@v2.0.0
+      uses: ./.github/actions/setup-nox
 
     - name: Setup Python 3.5
       uses: actions/setup-python@v2
@@ -132,7 +132,7 @@ jobs:
         echo "MACOS_DEPLOYMENT_TARGET=10.9" >> $GITHUB_ENV
 
     - name: Setup nox
-      uses: excitedleigh/setup-nox@v2.0.0
+      uses: ./.github/actions/setup-nox
 
     - uses: actions/setup-python@v2
       with:
