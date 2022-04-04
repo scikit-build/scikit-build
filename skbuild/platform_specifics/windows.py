@@ -46,7 +46,7 @@ class WindowsPlatform(abstract.CMakePlatform):
             """  # noqa: E501
             )
             .strip()
-            .format(pyver="%s.%s" % sys.version_info[:2])
+            .format(pyver=".".join(str(v) for v in sys.version_info[:2]))
         )
 
         # For Python 3.6 and above: VS2022, VS2019, VS2017
@@ -228,7 +228,8 @@ def _get_msvc_compiler_env(vs_version, vs_toolset=None):
     if vs_toolset is not None and vs_version >= 15:
         match = re.findall(r"^v(\d\d)(\d+)$", vs_toolset)[0]
         if match:
-            vcvars_ver = "-vcvars_ver=%s.%s" % match
+            match_str = ".".join(match)
+            vcvars_ver = f"-vcvars_ver={match_str}"
 
     try:
         out = subprocess.check_output(

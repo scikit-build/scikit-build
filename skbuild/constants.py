@@ -5,6 +5,7 @@ This module defines constants commonly used in scikit-build.
 import os
 import platform
 import sys
+
 from distutils.util import get_platform
 
 CMAKE_DEFAULT_EXECUTABLE = "cmake"
@@ -91,10 +92,8 @@ def skbuild_plat_name():
 
 def SKBUILD_DIR():
     """Top-level directory where setuptools and CMake directories are generated."""
-    return os.path.join(
-        "_skbuild",
-        "{}-{}".format(_SKBUILD_PLAT_NAME, ".".join(map(str, sys.version_info[:2]))),
-    )
+    version_str = ".".join(map(str, sys.version_info[:2]))
+    return os.path.join("_skbuild", f"{_SKBUILD_PLAT_NAME}-{version_str}")
 
 
 def SKBUILD_MARKER_FILE():

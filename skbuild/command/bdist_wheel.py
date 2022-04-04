@@ -42,6 +42,7 @@ class bdist_wheel(set_build_base_mixin, new_style(_bdist_wheel)):
                 WheelFile.write_files = old_write_files
                 del WheelFile.distribution
         else:
+            # pylint: disable-next=used-before-assignment
             old_make_wheelfile_inner = _wheel_archive.make_wheelfile_inner
 
             def _make_wheelfile_inner(base_name, base_dir="."):
@@ -62,5 +63,5 @@ class bdist_wheel(set_build_base_mixin, new_style(_bdist_wheel)):
         """Write ``skbuild <version>`` as a wheel generator.
         See `PEP-0427 <https://www.python.org/dev/peps/pep-0427/#file-contents>`_ for more details.
         """
-        generator = "skbuild %s" % skbuild_version
+        generator = f"skbuild {skbuild_version}"
         super().write_wheelfile(wheelfile_base, generator)

@@ -5,11 +5,12 @@ import errno
 import os
 from collections import namedtuple
 from contextlib import contextmanager
+from functools import wraps
+
 from distutils.command.build_py import build_py as distutils_build_py
 from distutils.errors import DistutilsTemplateError
 from distutils.filelist import FileList
 from distutils.text_file import TextFile
-from functools import wraps
 
 try:
     import logging
@@ -213,7 +214,7 @@ def distribution_hide_listing(distribution):
             if hide_listing:
                 # The classic logger doesn't respond to set_threshold anymore,
                 # but it does log info and above to stdout, so let's hide that
-                with open(os.devnull, "w") as f, contextlib.redirect_stdout(f):
+                with open(os.devnull, "w", encoding="utf-8") as f, contextlib.redirect_stdout(f):
                     yield hide_listing
             else:
                 yield hide_listing
@@ -252,7 +253,7 @@ def parse_manifestin(template):
             # malformed lines, or a ValueError from the lower-level
             # convert_path function
             except (DistutilsTemplateError, ValueError) as msg:
-                print("%s, line %d: %s" % (template.filename, template.current_line, msg))
+                print(f"{template.filename}, line {template.current_line}: {msg}")
         return file_list.files
     finally:
         template.close()

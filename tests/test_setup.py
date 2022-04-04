@@ -10,12 +10,12 @@ import os
 import pprint
 import sys
 import textwrap
-from distutils.core import Distribution as distutils_Distribution
 from unittest.mock import patch
 
 import py.path
 import pytest
 from setuptools import Distribution as setuptool_Distribution
+from distutils.core import Distribution as distutils_Distribution
 
 from skbuild import setup as skbuild_setup
 from skbuild.constants import CMAKE_INSTALL_DIR, SKBUILD_DIR

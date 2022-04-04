@@ -23,6 +23,18 @@ line-length = 120
 
 [tool.isort]
 profile = "black"
+known_third_party = ["distutils"]
+force_to_top = ["setuptools"]
+
+[tool.mypy]
+files = ["skbuild"]
+python_version = "3.6"
+warn_unused_configs = true
+check_untyped_defs = true
+show_error_codes = true
+enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
+warn_unreachable = true
+
 
 
 [tool.pylint]
@@ -34,22 +46,19 @@ messages_control.enable = [
   "useless-suppression",
 ]
 messages_control.disable = [
+  "deprecated-module", # distutils usage
   "fixme",
   "invalid-name",
   "line-too-long",
   "missing-module-docstring",
   "no-member",
   "protected-access",
-  "raise-missing-from", # Python 3
-  "super-with-arguments", # Python 3
   "too-few-public-methods",
   "too-many-arguments",
   "too-many-branches",
   "too-many-locals",
   "too-many-statements",
   "ungrouped-imports",
-  "unspecified-encoding", # Python 3
-  "use-maxsplit-arg",  # Python 3
-  "useless-object-inheritance", # Python 3
+  "wrong-import-order",
   "wrong-import-position",
 ]

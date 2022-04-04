@@ -2,7 +2,6 @@ import sys
 import tarfile
 from zipfile import ZipFile
 
-import six
 import wheel
 from pkg_resources import parse_version
 
@@ -107,4 +106,4 @@ def check_wheel_content(wheel_archive, expected_distribution_name, expected_cont
             if line.startswith(b"Generator"):
                 current_generator = line.split(b":")[1].strip()
                 break
-    assert current_generator == six.b("skbuild %s" % skbuild_version)
+    assert current_generator == f"skbuild {skbuild_version}".encode()

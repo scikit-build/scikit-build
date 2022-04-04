@@ -1,6 +1,7 @@
 """This module defines custom implementation of ``build_ext`` setuptools command."""
 
 import os
+
 from distutils.file_util import copy_file
 
 try:

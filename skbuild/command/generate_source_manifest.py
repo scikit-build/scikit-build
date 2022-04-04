@@ -4,6 +4,7 @@ command."""
 import os
 import subprocess
 import sys
+
 from distutils.cmd import Command
 
 from ..constants import SKBUILD_DIR, SKBUILD_MARKER_FILE
@@ -71,7 +72,7 @@ class generate_source_manifest(set_build_base_mixin, new_style(Command)):
             if not os.path.exists(SKBUILD_DIR()):
                 os.makedirs(SKBUILD_DIR())
 
-            with open(SKBUILD_MARKER_FILE(), "w"):  # touch
+            with open(SKBUILD_MARKER_FILE(), "w", encoding="utf-8"):  # touch
                 pass
 
     def finalize_options(self, *args, **kwargs):
