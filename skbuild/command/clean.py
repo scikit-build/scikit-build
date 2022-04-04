@@ -10,11 +10,11 @@ except ImportError:
 from shutil import rmtree
 
 from ..constants import CMAKE_BUILD_DIR, CMAKE_INSTALL_DIR, SKBUILD_DIR
-from ..utils import distutils_log, new_style
+from ..utils import distutils_log
 from . import set_build_base_mixin
 
 
-class clean(set_build_base_mixin, new_style(_clean)):
+class clean(set_build_base_mixin, _clean):
     """Custom implementation of ``clean`` setuptools command."""
 
     def run(self):

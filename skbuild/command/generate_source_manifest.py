@@ -8,17 +8,15 @@ import sys
 from distutils.cmd import Command
 
 from ..constants import SKBUILD_DIR, SKBUILD_MARKER_FILE
-from ..utils import new_style
 from . import set_build_base_mixin
 
 
-class generate_source_manifest(set_build_base_mixin, new_style(Command)):
+class generate_source_manifest(set_build_base_mixin, Command):
     """Custom setuptools command generating a `MANIFEST` file if
     not already provided."""
 
     description = "generate source MANIFEST"
 
-    # pylint:disable=no-self-use
     def initialize_options(self):
         """Set default values for all the options that this command supports."""
 

@@ -694,20 +694,15 @@ class CMaker:
             raise SKBuildError(
                 "An error occurred while building with CMake.\n"
                 "  Command:\n"
-                "    {}\n"
+                f"    {self._formatArgsForDisplay(cmd)}\n"
                 "  Install target:\n"
-                "    {}\n"
+                f"    {install_target}\n"
                 "  Source directory:\n"
-                "    {}\n"
+                f"    {os.path.abspath(source_dir)}\n"
                 "  Working directory:\n"
-                "    {}\n"
+                f"    {os.path.abspath(CMAKE_BUILD_DIR())}\n"
                 "Please check the install target is valid and see CMake's output for more "
-                "information.".format(
-                    self._formatArgsForDisplay(cmd),
-                    install_target,
-                    os.path.abspath(source_dir),
-                    os.path.abspath(CMAKE_BUILD_DIR()),
-                )
+                "information."
             )
 
     def install(self):

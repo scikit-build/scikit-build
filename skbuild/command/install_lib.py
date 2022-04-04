@@ -3,11 +3,11 @@ command."""
 
 from setuptools.command.install_lib import install_lib as _install_lib
 
-from ..utils import distribution_hide_listing, distutils_log, new_style
+from ..utils import distribution_hide_listing, distutils_log
 from . import set_build_base_mixin
 
 
-class install_lib(set_build_base_mixin, new_style(_install_lib)):
+class install_lib(set_build_base_mixin, _install_lib):
     """Custom implementation of ``install_lib`` setuptools command."""
 
     def install(self):
