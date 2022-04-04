@@ -347,18 +347,18 @@ this next table references links for installing alternative environments:
     +-------------------+-------------------------------------------------+
     | CPython version   | Download links for Windows SDK or Visual Studio |
     +===================+=================================================+
-    | **3.6 and above** | - `Visual C++ Build Tools 2015`_                |
+    | **3.6 and above** | - `Visual C++ Build Tools`_                     |
     |                   |                                                 |
     |                   | or                                              |
     |                   |                                                 |
-    |                   | - `Visual Studio 2017`_                         |
+    |                   | - `Visual Studio`_  (2017 or newer)             |
     +-------------------+-------------------------------------------------+
 
 These links have been copied from the great article [#alternativevs]_ of
 Steve Dower, engineer at Microsoft.
 
-.. _Visual C++ Build Tools 2015: http://go.microsoft.com/fwlink/?LinkId=691126
-.. _Visual Studio 2017: https://visualstudio.com/
+.. _Visual C++ Build Tools: https://visualstudio.microsoft.com/downloads/
+.. _Visual Studio: https://visualstudio.microsoft.com/downloads/
 .. _Windows SDK for Windows 7 and .NET 4.0: https://www.microsoft.com/download/details.aspx?id=8279
 
 
@@ -369,6 +369,5 @@ Steve Dower, engineer at Microsoft.
 .. [#alternativevs] `How to deal with the pain of "unable to find vcvarsall.bat" <https://blogs.msdn.microsoft.com/pythonengineering/2016/04/11/unable-to-find-vcvarsall-bat/>`_
 
 .. [#automaticvsenv] Implementation details: This is made possible by internally using the function ``query_vcvarsall``
-                     from the ``distutils.msvc9compiler`` (or ``distutils._msvccompiler`` when visual studio ``>= 2015``
-                     is used). To ensure, the environment associated with the latest compiler is properly detected, the
+                     from ``distutils._msvccompiler``. To ensure, the environment associated with the latest compiler is properly detected, the
                      ``distutils`` modules are systematically patched using ``setuptools.monkey.patch_for_msvc_specialized_compiler()``.

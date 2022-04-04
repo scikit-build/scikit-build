@@ -461,7 +461,7 @@ For example::
     set CXXFLAGS=/MP4
     python setup.py bdist_wheel
 
-Starting with Visual Studio 2010, the target level parallelism can be set from command line
+The target level parallelism can be set from command line
 using ``/maxcpucount:N``. This defines the number of simultaneous ``MSBuild.exe`` processes.
 To learn more, read `Building Multiple Projects in Parallel with MSBuild
 <https://msdn.microsoft.com/en-us/library/bb651793.aspx>`_.
