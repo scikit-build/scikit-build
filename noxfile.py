@@ -30,7 +30,7 @@ def tests(session):
     env = os.environ.copy()
 
     # This should be handled via markers or some other pytest mechanism, but for now, this is usable.
-    # nox -s tests-3.9 -- 2015 2017 2019
+    # nox -s tests-3.9 -- 2017 2019
     if sys.platform.startswith("win") and MSVC_ALL_VERSIONS & set(posargs):
         known_MSVC = {arg for arg in posargs if arg in MSVC_ALL_VERSIONS}
         posargs = [arg for arg in posargs if arg not in MSVC_ALL_VERSIONS]

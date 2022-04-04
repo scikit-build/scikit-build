@@ -7,13 +7,11 @@ import re
 import subprocess
 import sys
 import textwrap
-from itertools import count
 
 from . import abstract
 from .abstract import CMakeGenerator
 
 VS_YEAR_TO_VERSION = {
-    "2015": 14,
     "2017": 15,
     "2019": 16,
     "2022": 17,
@@ -26,7 +24,6 @@ The different version are identified by their year.
 """
 
 VS_YEAR_TO_MSC_VER = {
-    "2015": "1900",  # VS 2015
     "2017": "1910",  # VS 2017 - can be +9
     "2019": "1920",  # VS 2019 - can be +9
     "2022": "1930",  # VS 2022 - can be +9
@@ -125,50 +122,6 @@ class CMakeVisualStudioIDEGenerator(CMakeGenerator):
         super().__init__(vs_base, toolset=toolset, arch=vs_arch)
 
 
-def _find_visual_studio_2010_to_2015(vs_version):
-    """Adapted from https://github.com/python/cpython/blob/3.5/Lib/distutils/_msvccompiler.py
-
-    The ``vs_version`` corresponds to the `Visual Studio` version to lookup.
-    See :data:`VS_YEAR_TO_VERSION`.
-
-    Return Visual Studio installation path found by looking up all key/value pairs
-    associated with the ``Software\\Microsoft\\VisualStudio\\SxS\\VC7`` registry key.
-    If no install is found, returns an empty string.
-
-    Each key/value pair is the visual studio version (e.g `14.0`) and the installation
-    path (e.g `C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/`).
-    """
-    # winreg module
-    import winreg  # pylint: disable=import-outside-toplevel
-
-    # get registry key associated with Visual Studio installations
-    try:
-        key = winreg.OpenKey(
-            winreg.HKEY_LOCAL_MACHINE,
-            r"Software\Microsoft\VisualStudio\SxS\VC7",
-            0,
-            winreg.KEY_READ | winreg.KEY_WOW64_32KEY,
-        )
-    except OSError:
-        return ""
-
-    with key:
-        for i in count():
-            try:
-                v, vc_dir, vt = winreg.EnumValue(key, i)
-            except OSError:
-                break
-            # winreg.REG_SZ means "A null-terminated string"
-            if v and vt == winreg.REG_SZ and os.path.isdir(vc_dir):
-                try:
-                    version = int(float(v))
-                except (ValueError, TypeError):
-                    continue
-                if version == vs_version:
-                    return vc_dir
-    return ""
-
-
 def _find_visual_studio_2017_or_newer(vs_version):
     """Adapted from https://github.com/python/cpython/blob/3.7/Lib/distutils/_msvccompiler.py
 
@@ -226,19 +179,8 @@ def find_visual_studio(vs_version):
 
         - For VS 2017 and newer, returns `path` based on the result of invoking ``vswhere.exe``.
 
-        - For VS 2010 to VS 2015, returns `path` by looking up all key/value pairs
-          associated with the ``Software\\Microsoft\\VisualStudio\\SxS\\VC7`` registry key. Each
-          key/value pair is the visual studio version (e.g `14.0`) and the installation
-          path (e.g `C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/`).
-
     """
-    if 15 <= vs_version:
-        return _find_visual_studio_2017_or_newer(vs_version)
-
-    if 10 <= vs_version <= 14:
-        return _find_visual_studio_2010_to_2015(vs_version)
-
-    return ""
+    return _find_visual_studio_2017_or_newer(vs_version)
 
 
 # To avoid multiple slow calls to ``subprocess.check_output()`` (either directly or
@@ -276,52 +218,39 @@ def _get_msvc_compiler_env(vs_version, vs_toolset=None):
 
     monkey.patch_for_msvc_specialized_compiler()
 
-    if vs_version < 14:
-        try:
-            import distutils.msvc9compiler  # pylint: disable=import-outside-toplevel
+    vc_dir = find_visual_studio(vs_version)
+    vcvarsall = os.path.join(vc_dir, "vcvarsall.bat")
+    if not os.path.exists(vcvarsall):
+        return {}
 
-            cached_env = distutils.msvc9compiler.query_vcvarsall(vs_version, arch)
-            __get_msvc_compiler_env_cache[cache_key] = cached_env
-            return cached_env
-        except ImportError:
-            print("failed to import 'distutils.msvc9compiler'")
-    else:
-        vc_dir = find_visual_studio(vs_version)
-        vcvarsall = os.path.join(vc_dir, "vcvarsall.bat")
-        if not os.path.exists(vcvarsall):
-            return {}
+    # Set vcvars_ver argument based on toolset
+    vcvars_ver = ""
+    if vs_toolset is not None and vs_version >= 15:
+        match = re.findall(r"^v(\d\d)(\d+)$", vs_toolset)[0]
+        if match:
+            vcvars_ver = "-vcvars_ver=%s.%s" % match
 
-        # Set vcvars_ver argument based on toolset
-        vcvars_ver = ""
-        if vs_toolset is not None and vs_version >= 15:
-            match = re.findall(r"^v(\d\d)(\d+)$", vs_toolset)[0]
-            if match:
-                vcvars_ver = "-vcvars_ver=%s.%s" % match
+    try:
+        out = subprocess.check_output(
+            f'cmd /u /c "{vcvarsall}" {arch} {vcvars_ver} && set',
+            stderr=subprocess.STDOUT,
+            shell=sys.platform.startswith("cygwin"),
+        )
+        out = out.decode("utf-16le", errors="replace")
 
-        try:
-            # TODO: should always be shell=True, but currently requires this
-            out = subprocess.check_output(
-                f'cmd /u /c "{vcvarsall}" {arch} {vcvars_ver} && set',
-                stderr=subprocess.STDOUT,
-                shell=sys.platform.startswith("cygwin"),
-            )
-            out = out.decode("utf-16le", errors="replace")
+        vc_env = {
+            key.lower(): value for key, _, value in (line.partition("=") for line in out.splitlines()) if key and value
+        }
 
-            vc_env = {
-                key.lower(): value
-                for key, _, value in (line.partition("=") for line in out.splitlines())
-                if key and value
-            }
-
-            cached_env = {
-                "PATH": vc_env.get("path", ""),
-                "INCLUDE": vc_env.get("include", ""),
-                "LIB": vc_env.get("lib", ""),
-            }
-            __get_msvc_compiler_env_cache[cache_key] = cached_env
-            return cached_env
-        except subprocess.CalledProcessError as exc:
-            print(exc.output)
+        cached_env = {
+            "PATH": vc_env.get("path", ""),
+            "INCLUDE": vc_env.get("include", ""),
+            "LIB": vc_env.get("lib", ""),
+        }
+        __get_msvc_compiler_env_cache[cache_key] = cached_env
+        return cached_env
+    except subprocess.CalledProcessError as exc:
+        print(exc.output)
 
     return {}
 

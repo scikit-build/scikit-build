@@ -31,22 +31,14 @@ def test_generator_selection():
 
     if this_platform == "windows":
         # Expected Visual Studio version
-        vs_generator = "Visual Studio 14 2015"
-        vs_version = 14
+        vs_generator = "Visual Studio 15 2017"
+        vs_version = 15
 
         vs_generator += " Win64" if arch == "64bit" else ""
 
         has_vs_2017 = find_visual_studio(vs_version=VS_YEAR_TO_VERSION["2017"])
         has_vs_2019 = find_visual_studio(vs_version=VS_YEAR_TO_VERSION["2019"])
         has_vs_2022 = find_visual_studio(vs_version=VS_YEAR_TO_VERSION["2022"])
-
-        # Apply to VS <= 14 (2015)
-        has_vs_ide_vcvars = any(
-            [
-                os.path.exists(path_pattern % vs_version)
-                for path_pattern in ["C:/Program Files (x86)/Microsoft Visual Studio %.1f/VC/vcvarsall.bat"]
-            ]
-        )
 
         # As of Dec 2016, this is available only for VS 9.0
         has_vs_for_python_vcvars = any(
@@ -60,7 +52,7 @@ def test_generator_selection():
         )
 
         # If environment exists, update the expected generator
-        if (has_vs_for_python_vcvars or has_vs_ide_vcvars) and which("ninja.exe"):
+        if has_vs_for_python_vcvars and which("ninja.exe"):
             assert get_best_generator().name == "Ninja"
 
         elif has_vs_2017:
@@ -72,9 +64,6 @@ def test_generator_selection():
             # ninja is provided by the CMake extension bundled with Visual Studio 2017
             # C:/Program Files (x86)/Microsoft Visual Studio/2017/Professional/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe  # noqa: E501
             assert get_best_generator().name == "Ninja"
-
-        elif has_vs_ide_vcvars:
-            assert get_best_generator().name == vs_generator
 
         elif has_vs_for_python_vcvars:
             assert get_best_generator().name == "NMake Makefiles"
