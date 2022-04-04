@@ -105,25 +105,14 @@ class push_dir(ContextDecorator):
         os.chdir(self.old_cwd)
 
 
-def new_style(klass):
-    """distutils/setuptools command classes are old-style classes, which
-    won't work with mixins.
-
-    To work around this limitation, we dynamically convert them to new style
-    classes by creating a new class that inherits from them and also <object>.
-    This ensures that <object> is always at the end of the MRO, even after
-    being mixed in with other classes.
-    """
-    return type(f"NewStyleClass<{klass.__name__}>", (klass, object), {})
-
-
-class PythonModuleFinder(new_style(distutils_build_py)):
+class PythonModuleFinder(distutils_build_py):
     """Convenience class to search for python modules.
 
     This class is based on ``distutils.command.build_py.build_by`` and
     provides a specialized version of ``find_all_modules()``.
     """
 
+    # pylint: disable-next=super-init-not-called
     def __init__(self, packages, package_dir, py_modules, alternative_build_base=None):
         """
         :param packages: List of packages to search.
@@ -131,12 +120,12 @@ class PythonModuleFinder(new_style(distutils_build_py)):
         :param py_modules: List of python modules.
         :param alternative_build_base: Additional directory to search in.
         """
-        self.distribution = namedtuple("Distribution", "script_name")
-        self.distribution.script_name = "setup.py"
         self.packages = packages
         self.package_dir = package_dir
         self.py_modules = py_modules
         self.alternative_build_base = alternative_build_base
+
+        self.distribution = Distribution("setup.py")
 
     def find_all_modules(self, project_dir=None):
         """Compute the list of all modules that would be built by

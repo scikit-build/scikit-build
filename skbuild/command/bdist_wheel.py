@@ -13,11 +13,11 @@ except ImportError:
 from wheel.bdist_wheel import bdist_wheel as _bdist_wheel
 
 from .. import __version__ as skbuild_version
-from ..utils import distribution_hide_listing, new_style
+from ..utils import distribution_hide_listing
 from . import set_build_base_mixin
 
 
-class bdist_wheel(set_build_base_mixin, new_style(_bdist_wheel)):
+class bdist_wheel(set_build_base_mixin, _bdist_wheel):
     """Custom implementation of ``bdist_wheel`` setuptools command."""
 
     def run(self, *args, **kwargs):

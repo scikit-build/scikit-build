@@ -5,9 +5,8 @@ try:
 except ImportError:
     from distutils.command.bdist import bdist as _bdist
 
-from ..utils import new_style
 from . import set_build_base_mixin
 
 
-class bdist(set_build_base_mixin, new_style(_bdist)):
+class bdist(set_build_base_mixin, _bdist):
     """Custom implementation of ``bdist`` setuptools command."""

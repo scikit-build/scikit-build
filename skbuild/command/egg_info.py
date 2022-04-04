@@ -7,15 +7,14 @@ import os.path
 from setuptools.command.egg_info import egg_info as _egg_info
 
 from ..constants import CMAKE_INSTALL_DIR
-from ..utils import new_style, to_unix_path
+from ..utils import to_unix_path
 from . import set_build_base_mixin
 
 
-class egg_info(set_build_base_mixin, new_style(_egg_info)):
+class egg_info(set_build_base_mixin, _egg_info):
     """Custom implementation of ``egg_info`` setuptools command."""
 
     def finalize_options(self, *args, **kwargs):
-        # pylint:disable=access-member-before-definition
         if self.egg_base is None:
             if self.distribution.package_dir is not None and len(self.distribution.package_dir) == 1:
                 # Recover directory specified in setup() function

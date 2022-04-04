@@ -6,11 +6,11 @@ import os
 from setuptools.command.build_py import build_py as _build_py
 
 from ..constants import CMAKE_INSTALL_DIR
-from ..utils import distribution_hide_listing, distutils_log, new_style
+from ..utils import distribution_hide_listing, distutils_log
 from . import set_build_base_mixin
 
 
-class build_py(set_build_base_mixin, new_style(_build_py)):
+class build_py(set_build_base_mixin, _build_py):
     """Custom implementation of ``build_py`` setuptools command."""
 
     def initialize_options(self):
@@ -19,7 +19,6 @@ class build_py(set_build_base_mixin, new_style(_build_py)):
         Initializes ``outfiles_count``.
         """
         super().initialize_options()
-        # pylint:disable=attribute-defined-outside-init
         self.outfiles_count = 0
 
     def build_module(self, module, module_file, package):
