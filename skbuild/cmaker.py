@@ -36,8 +36,8 @@ def pop_arg(arg, args, default=None):
     """
     parser = argparse.ArgumentParser(add_help=False)
     parser.add_argument(arg)
-    namespace, args = parser.parse_known_args(args)
-    namespace = tuple(vars(namespace).items())
+    namespace_names, args = parser.parse_known_args(args)
+    namespace = tuple(vars(namespace_names).items())
     if namespace and namespace[0][1] is not None:
         val = namespace[0][1]
     else:
@@ -722,8 +722,6 @@ class CMaker:
     def _parse_manifest(install_manifest_path):
         with open(install_manifest_path, encoding="utf-8") as manifest:
             return [_remove_cwd_prefix(path) for path in manifest]
-
-        return []
 
     @staticmethod
     def _formatArgsForDisplay(args):
