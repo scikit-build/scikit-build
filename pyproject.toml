@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=42", "wheel", "setuptools_scm[toml]"]
+requires = ["setuptools>=42", "setuptools_scm[toml]"]
 build-backend = "setuptools.build_meta"
 
 
@@ -26,7 +26,7 @@ profile = "black"
 
 
 [tool.pylint]
-master.py-version = "2.7"
+master.py-version = "3.6"
 master.jobs = "0"
 reports.output-format = "colorized"
 similarities.ignore-imports = "yes"
