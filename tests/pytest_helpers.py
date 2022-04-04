@@ -37,11 +37,7 @@ def check_sdist_content(sdist_archive, expected_distribution_name, expected_cont
         "%s/SOURCES.txt" % egg_info_dir,
     ]
 
-    if sdist_zip and (
-        (2, 7, 15) < sys.version_info[:3] < (3, 0, 0)
-        or (3, 6, 7) < sys.version_info[:3] < (3, 7, 0)
-        or (3, 7, 1) < sys.version_info[:3]
-    ):
+    if sdist_zip and ((3, 6, 7) < sys.version_info[:3] < (3, 7, 0) or (3, 7, 1) < sys.version_info[:3]):
         # Add directory entries in ZIP files created by distutils.
         # See https://github.com/python/cpython/pull/9419
         directories = set()

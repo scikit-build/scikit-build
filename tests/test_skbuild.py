@@ -21,7 +21,6 @@ from . import get_cmakecache_variables, project_setup_py_test, push_dir, push_en
 
 
 def test_generator_selection():
-    version = sys.version_info
     env_generator = os.environ.get("CMAKE_GENERATOR")
     this_platform = platform.system().lower()
     get_best_generator = get_platform().get_best_generator
@@ -31,25 +30,10 @@ def test_generator_selection():
         assert get_best_generator(env_generator).name == env_generator
 
     if this_platform == "windows":
-        # assert that we are running a supported version of python
-        py_27_32 = (version.major == 2 and version.minor >= 7) or (version.major == 3 and version.minor <= 2)
-
-        py_33_34 = version.major == 3 and (3 <= version.minor <= 4)
-
-        py_35 = version.major == 3 and version.minor >= 5
-
-        assert len(tuple(filter(bool, (py_27_32, py_33_34, py_35)))) == 1
-
         # Expected Visual Studio version
-        if py_27_32:
-            vs_generator = "Visual Studio 9 2008"
-            vs_version = 9
-        elif py_33_34:
-            vs_generator = "Visual Studio 10 2010"
-            vs_version = 10
-        else:
-            vs_generator = "Visual Studio 14 2015"
-            vs_version = 14
+        vs_generator = "Visual Studio 14 2015"
+        vs_version = 14
+
         vs_generator += " Win64" if arch == "64bit" else ""
 
         has_vs_2017 = find_visual_studio(vs_version=VS_YEAR_TO_VERSION["2017"])
@@ -153,7 +137,7 @@ def test_invalid_generator(generator_args):
 
 
 @pytest.mark.skipif(sys.platform != "win32", reason="Requires Windows")
-@pytest.mark.parametrize("vs_year", ["2008", "2010", "2012", "2013", "2015", "2017", "2019", "2022"])
+@pytest.mark.parametrize("vs_year", ["2015", "2017", "2019", "2022"])
 def test_platform_windows_find_visual_studio(vs_year):
     """If the environment variable ``SKBUILD_TEST_FIND_VS<vs_year>_INSTALLATION_EXPECTED`` is set,
     this test asserts the value returned by :func:`skbuild.platforms.windows.find_visual_studio()`.
@@ -174,11 +158,8 @@ def test_platform_windows_find_visual_studio(vs_year):
         assert vs_path == ""
 
 
-@pytest.mark.skipif(sys.version_info < (3, 5), reason="Python 3.5+ required on Windows")
 @pytest.mark.skipif(sys.platform != "win32", reason="Requires Windows")
 def test_toolset():
-    py_35 = sys.version_info[:2] == (3, 5)
-
     has_vs_2017 = find_visual_studio(vs_version=VS_YEAR_TO_VERSION["2017"])
     if not has_vs_2017:
         pytest.skip("Visual Studio 15 2017 is not found")
@@ -204,7 +185,4 @@ def test_toolset():
     var_toolset = variables["CMAKE_GENERATOR_TOOLSET"]
     toolset = var_toolset[1]
 
-    if py_35:
-        assert toolset == "v140"
-    else:
-        assert toolset == "v141"
+    assert toolset == "v141"

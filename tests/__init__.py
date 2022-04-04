@@ -8,21 +8,15 @@ except ImportError:
 
 import os
 import os.path
-
-import _pytest.tmpdir
-import pkg_resources
-
-try:
-    import pathlib
-except ImportError:
-    import pathlib2 as pathlib  # Python 2.7
-
+import pathlib
 import re
 import subprocess
 import sys
 from contextlib import contextmanager
 from unittest.mock import patch
 
+import _pytest.tmpdir
+import pkg_resources
 import py.path
 import requests
 import six
@@ -318,7 +312,4 @@ def list_ancestors(path):
 
 def get_ext_suffix():
     """Return python extension suffix."""
-    ext_suffix_var = "SO"
-    if sys.version_info[:2] >= (3, 5):
-        ext_suffix_var = "EXT_SUFFIX"
-    return distutils.sysconfig.get_config_var(ext_suffix_var)
+    return distutils.sysconfig.get_config_var("EXT_SUFFIX")
