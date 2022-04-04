@@ -140,10 +140,6 @@ def _find_visual_studio_2017_or_newer(vs_version):
         return ""
 
     try:
-        extra_args = {
-            "encoding": "utf-8" if sys.platform.startswith("cygwin") else "mbcs",
-            "errors": "strict",
-        }
         path = subprocess.check_output(
             [
                 os.path.join(root, "Microsoft Visual Studio", "Installer", "vswhere.exe"),
@@ -157,7 +153,8 @@ def _find_visual_studio_2017_or_newer(vs_version):
                 "-products",
                 "*",
             ],
-            **extra_args,
+            encoding="utf-8" if sys.platform.startswith("cygwin") else "mbcs",
+            errors="strict",
         ).strip()
     except (subprocess.CalledProcessError, OSError, UnicodeDecodeError):
         return ""

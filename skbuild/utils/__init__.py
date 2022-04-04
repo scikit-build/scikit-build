@@ -27,6 +27,9 @@ except ImportError:
     logging_module = False
 
 
+Distribution = namedtuple("Distribution", "script_name")
+
+
 def _log_warning(msg, *args):
     try:
         if logging_module:

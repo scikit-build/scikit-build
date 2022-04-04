@@ -6,6 +6,7 @@ import os
 import shutil
 import subprocess
 import textwrap
+from typing import Optional, Tuple
 
 from ..constants import CMAKE_DEFAULT_EXECUTABLE
 from ..exceptions import SKBuildGeneratorNotFoundError
@@ -297,8 +298,7 @@ class CMakeGenerator:
         return self._description
 
 
-def _parse_legacy_generator_name(generator_name, arch):
-    # type: (str, str | None) -> tuple[str, str | None]
+def _parse_legacy_generator_name(generator_name: str, arch: Optional[str]) -> Tuple[str, Optional[str]]:
     """
     Support classic names for MSVC generators. Architecture is stripped from
     the name and "arch" is replaced with the arch string if a legacy name is
