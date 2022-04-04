@@ -45,7 +45,7 @@ class CMakePlatform:
         requested ``languages`` are supported."""
         if not os.path.exists(test_folder):
             os.makedirs(test_folder)
-        with open("{:s}/{:s}".format(test_folder, "CMakeLists.txt"), "w") as f:
+        with open(f"{test_folder}/CMakeLists.txt", "w", encoding="utf-8") as f:
             f.write("cmake_minimum_required(VERSION 2.8.12)\n")
             f.write("PROJECT(compiler_test NONE)\n")
             for language in languages:
@@ -232,8 +232,9 @@ class CMakePlatform:
 
                 status = subprocess.call(cmd, env=generator.env)
 
-            _generator_discovery_status_msg(generator, " - %s" % ("success" if status == 0 else "failure"))
-            print("")
+            msg = "success" if status == 0 else "failure"
+            _generator_discovery_status_msg(generator, f" - {msg}")
+            print()
 
             # cmake succeeded, this generator should work
             if status == 0:

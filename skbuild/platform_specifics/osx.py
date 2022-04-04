@@ -21,6 +21,6 @@ class OSXPlatform(unix.UnixPlatform):
               https://developer.apple.com/xcode/
             """
             )
-            .format(pyver="%s.%s" % sys.version_info[:2])
+            .format(pyver=".".join(str(v) for v in sys.version_info[:2]))
             .strip()
         )

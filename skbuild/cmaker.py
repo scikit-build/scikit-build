@@ -4,7 +4,6 @@ This module provides an interface for invoking CMake executable.
 
 
 import argparse
-import distutils.sysconfig as du_sysconfig
 import glob
 import itertools
 import os
@@ -16,6 +15,8 @@ import subprocess
 import sys
 import sysconfig
 from shlex import quote
+
+import distutils.sysconfig as du_sysconfig
 
 from .constants import (
     CMAKE_BUILD_DIR,
@@ -85,10 +86,10 @@ def get_cmake_version(cmake_executable=CMAKE_DEFAULT_EXECUTABLE):
     """
     try:
         version_string = subprocess.check_output([cmake_executable, "--version"])
-    except (OSError, subprocess.CalledProcessError):
+    except (OSError, subprocess.CalledProcessError) as err:
         raise SKBuildError(
-            "Problem with the CMake installation, aborting build. CMake executable is %s" % cmake_executable
-        )
+            f"Problem with the CMake installation, aborting build. CMake executable is {cmake_executable}"
+        ) from err
 
     version_string = version_string.decode()
 
@@ -139,7 +140,7 @@ class CMaker:
         """If set, returns the variable cached value from the :func:`skbuild.constants.CMAKE_BUILD_DIR()`, otherwise returns None"""
         variable_name = f"{variable_name}:"
         try:
-            with open(os.path.join(CMAKE_BUILD_DIR(), "CMakeCache.txt")) as fp:
+            with open(os.path.join(CMAKE_BUILD_DIR(), "CMakeCache.txt"), encoding="utf-8") as fp:
                 for line in fp:
                     if line.startswith(variable_name):
                         return line.split("=", 1)[-1].strip()
@@ -262,7 +263,7 @@ class CMaker:
             "-G",
             generator.name,
             ("-DCMAKE_INSTALL_PREFIX:PATH=" + os.path.abspath(os.path.join(CMAKE_INSTALL_DIR(), cmake_install_dir))),
-            ("-DPYTHON_VERSION_STRING:STRING=" + sys.version.split(" ")[0]),
+            ("-DPYTHON_VERSION_STRING:STRING=" + sys.version.split(" ", maxsplit=1)[0]),
             ("-DSKBUILD:INTERNAL=" + "TRUE"),
             ("-DCMAKE_MODULE_PATH:PATH=" + os.path.join(os.path.dirname(__file__), "resources", "cmake")),
         ]
@@ -312,25 +313,21 @@ class CMaker:
         print(
             "Configuring Project\n"
             "  Working directory:\n"
-            "    {}\n"
+            f"    {os.path.abspath(CMAKE_BUILD_DIR())}\n"
             "  Command:\n"
-            "    {}\n".format(os.path.abspath(CMAKE_BUILD_DIR()), self._formatArgsForDisplay(cmd))
+            f"    {self._formatArgsForDisplay(cmd)}\n"
         )
         rtn = subprocess.call(cmd, cwd=CMAKE_BUILD_DIR(), env=generator.env)
         if rtn != 0:
             raise SKBuildError(
                 "An error occurred while configuring with CMake.\n"
                 "  Command:\n"
-                "    {}\n"
+                f"    {self._formatArgsForDisplay(cmd)}\n"
                 "  Source directory:\n"
-                "    {}\n"
+                f"    {os.path.abspath(cmake_source_dir)}\n"
                 "  Working directory:\n"
-                "    {}\n"
-                "Please see CMake's output for more information.".format(
-                    self._formatArgsForDisplay(cmd),
-                    os.path.abspath(cmake_source_dir),
-                    os.path.abspath(CMAKE_BUILD_DIR()),
-                )
+                f"    {os.path.abspath(CMAKE_BUILD_DIR())}\n"
+                "Please see CMake's output for more information."
             )
 
         CMaker.check_for_bad_installs()
@@ -656,9 +653,9 @@ class CMaker:
         clargs, install_target = pop_arg("--install-target", clargs, install_target)
         if not os.path.exists(CMAKE_BUILD_DIR()):
             raise SKBuildError(
-                ("CMake build folder ({}) does not exist. " "Did you forget to run configure before " "make?").format(
-                    CMAKE_BUILD_DIR()
-                )
+                f"CMake build folder ({CMAKE_BUILD_DIR()}) does not exist. "
+                "Did you forget to run configure before "
+                "make?"
             )
 
         # Workaround CMake issue #8438
@@ -728,7 +725,7 @@ class CMaker:
 
     @staticmethod
     def _parse_manifest(install_manifest_path):
-        with open(install_manifest_path) as manifest:
+        with open(install_manifest_path, encoding="utf-8") as manifest:
             return [_remove_cwd_prefix(path) for path in manifest]
 
         return []

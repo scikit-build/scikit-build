@@ -1,5 +1,4 @@
 distro
 packaging
-setuptools>=28.0.0;python_version>='3'
-setuptools>=28.0.0,<45;python_version<'3'  # rq.filter: <45
-wheel>=0.29.0
+setuptools>=42.0.0
+wheel>=0.32.0

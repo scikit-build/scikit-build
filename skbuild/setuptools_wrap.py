@@ -4,24 +4,21 @@ from distutils and setuptools.
 
 
 import argparse
+import contextlib
 import copy
+import glob
+import io
 import json
 import os
 import os.path
 import platform
+import shutil
 import stat
 import sys
 import warnings
-from contextlib import contextmanager
 
-# pylint: disable-next=wrong-import-order
-from distutils.errors import DistutilsArgError, DistutilsError, DistutilsGetoptError
-from glob import glob
-from io import StringIO
-from shutil import copyfile, copymode, which
-
-# Must be imported before distutils
 import setuptools
+from distutils.errors import DistutilsArgError, DistutilsError, DistutilsGetoptError
 from packaging.requirements import Requirement
 from packaging.version import parse as parse_version
 from setuptools.dist import Distribution as upstream_Distribution
@@ -142,10 +139,7 @@ def parse_args():
         if arg == separator:
             i += 1
             if i >= len(argsets):
-                sys.exit(
-                    'ERROR: Too many "{}" separators provided '
-                    "(expected at most {}).".format(separator, len(argsets) - 1)
-                )
+                sys.exit(f"ERROR: Too many '{separator}' separators provided (expected at most {len(argsets) - 1}).")
         else:
             argsets[i].append(arg)
 
@@ -154,17 +148,14 @@ def parse_args():
     return dutils, cmake_executable, skip_generator_test, cmake, make
 
 
-@contextmanager
+@contextlib.contextmanager
 def _capture_output():
-    oldout, olderr = sys.stdout, sys.stderr
-    try:
-        out = [StringIO(), StringIO()]
-        sys.stdout, sys.stderr = out
-        yield out
-    finally:
-        sys.stdout, sys.stderr = oldout, olderr
-        out[0] = out[0].getvalue()
-        out[1] = out[1].getvalue()
+    with contextlib.redirect_stdout(io.StringIO()) as stdout:
+        with contextlib.redirect_stderr(io.StringIO()) as stderr:
+            out = [stdout, stderr]
+            yield out
+    out[0] = out[0].getvalue()
+    out[1] = out[1].getvalue()
 
 
 def _parse_setuptools_arguments(setup_attrs):
@@ -206,7 +197,7 @@ def _parse_setuptools_arguments(setup_attrs):
     # when ``setuptools.setup`` is called.
     upstream_Distribution.global_options.extend(
         [
-            ("hide-listing", None, "do not display list of files being " "included in the distribution"),
+            ("hide-listing", None, "do not display list of files being included in the distribution"),
             ("force-cmake", None, "always run CMake"),
             ("skip-cmake", None, "do not run CMake"),
         ]
@@ -237,7 +228,9 @@ def _parse_setuptools_arguments(setup_attrs):
     if not plat_names:
         plat_names.add(None)
     elif len(plat_names) > 1:
-        raise SKBuildError("--plat-name is ambiguous: %s" % ", ".join(plat_names))
+        names = ", ".join(plat_names)
+        msg = f"--plat-name is ambiguous: {names}"
+        raise SKBuildError(msg)
     plat_name = list(plat_names)[0]
 
     build_ext_inplace = dist.get_command_obj("build_ext").inplace
@@ -257,25 +250,23 @@ def _parse_setuptools_arguments(setup_attrs):
 def _check_skbuild_parameters(skbuild_kw):
     cmake_install_dir = skbuild_kw["cmake_install_dir"]
     if os.path.isabs(cmake_install_dir):
-        raise SKBuildError(
-            (
-                "\n  setup parameter 'cmake_install_dir' is set to "
-                "an absolute path. A relative path is expected.\n"
-                "    Project Root  : {}\n"
-                "    CMake Install Directory: {}\n"
-            ).format(os.getcwd(), cmake_install_dir)
+        msg = (
+            "\n  setup parameter 'cmake_install_dir' is set to "
+            "an absolute path. A relative path is expected.\n"
+            f"    Project Root  : {os.getcwd()}\n"
+            f"    CMake Install Directory: {cmake_install_dir}\n"
         )
+        raise SKBuildError(msg)
 
     cmake_source_dir = skbuild_kw["cmake_source_dir"]
     if not os.path.exists(os.path.abspath(cmake_source_dir)):
-        raise SKBuildError(
-            (
-                "\n  setup parameter 'cmake_source_dir' set to "
-                "a nonexistent directory.\n"
-                "    Project Root  : {}\n"
-                "    CMake Source Directory: {}\n"
-            ).format(os.getcwd(), cmake_source_dir)
+        msg = (
+            "\n  setup parameter 'cmake_source_dir' set to "
+            "a nonexistent directory.\n"
+            f"    Project Root  : {os.getcwd()}\n"
+            f"    CMake Source Directory: {cmake_source_dir}\n"
         )
+        raise SKBuildError(msg)
 
 
 def strip_package(package_parts, module_file):
@@ -354,14 +345,14 @@ def _save_cmake_spec(args):
     except OSError:
         pass
 
-    with open(CMAKE_SPEC_FILE(), "w+") as fp:
+    with open(CMAKE_SPEC_FILE(), "w+", encoding="utf-8") as fp:
         json.dump(args, fp)
 
 
 def _load_cmake_spec():
     """Load and return the CMake spec from disk"""
     try:
-        with open(CMAKE_SPEC_FILE()) as fp:
+        with open(CMAKE_SPEC_FILE(), encoding="utf-8") as fp:
             return json.load(fp)
     except (OSError, ValueError):
         return None
@@ -385,9 +376,7 @@ def setup(*args, **kw):  # noqa: C901
     if "package_dir" in kw:
         for package, prefix in kw["package_dir"].items():
             if prefix.endswith("/"):
-                msg = "package_dir={{{!r}: {!r}}} ends with a trailing slash, which is not supported by setuptools.".format(
-                    package, prefix
-                )
+                msg = f"package_dir={{{package!r}: {prefix!r}}} ends with a trailing slash, which is not supported by setuptools."
                 warnings.warn(msg, FutureWarning, stacklevel=2)
                 kw["package_dir"][package] = prefix[:-1]
 
@@ -565,10 +554,10 @@ def setup(*args, **kw):  # noqa: C901
         # specified
         (_, version, machine) = skbuild_plat_name().split("-")
         if not cmaker.has_cmake_cache_arg(cmake_args, "CMAKE_OSX_DEPLOYMENT_TARGET"):
-            cmake_args.append("-DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=%s" % version)
+            cmake_args.append(f"-DCMAKE_OSX_DEPLOYMENT_TARGET:STRING={version}")
         if not cmaker.has_cmake_cache_arg(cmake_args, "CMAKE_OSX_ARCHITECTURES"):
             machine_archs = "x86_64;arm64" if machine == "universal2" else machine
-            cmake_args.append("-DCMAKE_OSX_ARCHITECTURES:STRING=%s" % machine_archs)
+            cmake_args.append(f"-DCMAKE_OSX_ARCHITECTURES:STRING={machine_archs}")
 
     # Install cmake if listed in `setup_requires`
     for package in kw.get("setup_requires", []):
@@ -604,15 +593,12 @@ def setup(*args, **kw):  # noqa: C901
             cmake_minimum_required_version = skbuild_kw["cmake_minimum_required_version"]
             if cmake_minimum_required_version is not None:
                 if parse_version(cmkr.cmake_version) < parse_version(cmake_minimum_required_version):
-                    raise SKBuildError(
-                        "CMake version {} or higher is required. CMake version {} is being used".format(
-                            cmake_minimum_required_version, cmkr.cmake_version
-                        )
-                    )
+                    msg = f"CMake version {cmake_minimum_required_version} or higher is required. CMake version {cmkr.cmake_version} is being used"
+                    raise SKBuildError(msg)
             # Used to confirm that the cmake executable is the same, and that the environment
             # didn't change
             cmake_spec = {
-                "args": [which(CMAKE_DEFAULT_EXECUTABLE)] + cmake_args,
+                "args": [shutil.which(CMAKE_DEFAULT_EXECUTABLE)] + cmake_args,
                 "version": cmkr.cmake_version,
                 "environment": {
                     "PYTHONNOUSERSITE": os.environ.get("PYTHONNOUSERSITE"),
@@ -802,13 +788,12 @@ def _classify_installed_files(
         # if this installed file is not within the project root, complain and
         # exit
         if not to_platform_path(path).startswith(CMAKE_INSTALL_DIR()):
-            raise SKBuildError(
-                (
-                    "\n  CMake-installed files must be within the project root.\n"
-                    "    Project Root  : {}\n"
-                    "    Violating File: {}\n"
-                ).format(install_root, to_platform_path(path))
+            msg = (
+                "\n  CMake-installed files must be within the project root.\n"
+                f"    Project Root  : {install_root}\n"
+                f"    Violating File: {to_platform_path(path)}\n"
             )
+            raise SKBuildError(msg)
 
         # peel off the 'skbuild' prefix
         path = to_unix_path(os.path.relpath(path, CMAKE_INSTALL_DIR()))
@@ -896,8 +881,8 @@ def _copy_file(src_file, dest_file, hide_listing=True):
     # Copy file
     if not hide_listing:
         print(f"copying {src_file} -> {dest_file}")
-    copyfile(src_file, dest_file)
-    copymode(src_file, dest_file)
+    shutil.copyfile(src_file, dest_file)
+    shutil.copymode(src_file, dest_file)
 
 
 def _consolidate_package_modules(cmake_source_dir, packages, package_dir, py_modules, package_data, hide_listing):
@@ -932,7 +917,7 @@ def _consolidate_package_modules(cmake_source_dir, packages, package_dir, py_mod
             packages, package_dir, py_modules, alternative_build_base=CMAKE_INSTALL_DIR()
         ).find_all_modules()
     except DistutilsError as msg:
-        raise SystemExit(f"error: {str(msg)}")
+        raise SystemExit(f"error: {str(msg)}") from None
 
     print("")
 
@@ -994,7 +979,7 @@ def _consolidate_package_data_files(original_package_data, package_prefixes, hid
         raw_patterns = original_package_data[package]
         for pattern in raw_patterns:
             expanded_package_dir = os.path.join(project_root, prefix, pattern)
-            for src_data_file in glob(expanded_package_dir):
+            for src_data_file in glob.glob(expanded_package_dir):
                 full_prefix_length = len(os.path.join(project_root, prefix)) + 1
                 data_file = src_data_file[full_prefix_length:]
                 dest_data_file = os.path.join(CMAKE_INSTALL_DIR(), prefix, data_file)

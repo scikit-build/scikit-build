@@ -6,6 +6,7 @@ try:
 except ImportError:
     import distutils  # Python < 3.10
 
+import functools
 import os
 import os.path
 import pathlib
@@ -19,7 +20,6 @@ import _pytest.tmpdir
 import pkg_resources
 import py.path
 import requests
-import six
 
 from skbuild.platform_specifics import get_platform
 from skbuild.utils import push_dir
@@ -249,7 +249,7 @@ def execute_setup_py(project_dir, setup_args, disable_languages_test=False):
 
 def project_setup_py_test(project, setup_args, tmp_dir=None, verbose_git=True, disable_languages_test=False):
     def dec(fun):
-        @six.wraps(fun)
+        @functools.wraps(fun)
         def wrapped(*iargs, **ikwargs):
 
             if wrapped.tmp_dir is None:

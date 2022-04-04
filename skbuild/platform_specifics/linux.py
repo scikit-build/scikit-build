@@ -47,18 +47,18 @@ class LinuxPlatform(unix.UnixPlatform):
         distribution_name, cmd = self.build_essential_install_cmd()
         install_help = ""
         if distribution_name:
-            install_help = "But scikit-build does *NOT* know how to install it on %s\n" % distribution_name
+            install_help = f"But scikit-build does *NOT* know how to install it on {distribution_name}\n"
         if distribution_name and cmd:
-            install_help = "It can be installed using %s package manager:\n" "\n" "  %s\n" % (distribution_name, cmd)
+            install_help = f"It can be installed using {distribution_name} package manager:\n\n  {cmd}\n"
 
         arch = "x64" if platform.architecture()[0] == "64bit" else "x86"
-        return (
-            textwrap.dedent(
-                """
-            Building Linux wheels for Python %s requires a compiler (e.g gcc).
-            %s
+        version_str = ".".join(str(v) for v in sys.version_info[:2])
+        return textwrap.dedent(
+            f"""
+            Building Linux wheels for Python {version_str} requires a compiler (e.g gcc).
+            {install_help}
             To build compliant wheels, consider using the manylinux system described in PEP-513.
-            Get it with "dockcross/manylinux-%s" docker image:
+            Get it with "dockcross/manylinux-{arch}" docker image:
 
               https://github.com/dockcross/dockcross#readme
 
@@ -66,6 +66,4 @@ class LinuxPlatform(unix.UnixPlatform):
 
               http://scikit-build.readthedocs.io/en/latest/generators.html#linux
             """  # noqa: E501
-            ).strip()
-            % ("%s.%s" % sys.version_info[:2], install_help, arch)
-        )
+        ).strip()
