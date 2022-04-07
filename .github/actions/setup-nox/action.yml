@@ -15,6 +15,12 @@ runs:
         python-version: "pypy-3.9"
     - uses: actions/setup-python@v3
       with:
+        python-version: "2.7"
+    - uses: actions/setup-python@v3
+      with:
+        python-version: "3.5"
+    - uses: actions/setup-python@v3
+      with:
         python-version: "3.6"
     - uses: actions/setup-python@v3
       with:

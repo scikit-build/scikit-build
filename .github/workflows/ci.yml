@@ -19,8 +19,8 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-python@v2
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v3
     - uses: pre-commit/action@v2.0.3
 
   tests:
@@ -75,18 +75,6 @@ jobs:
     - name: Setup nox
       uses: ./.github/actions/setup-nox
 
-    - name: Setup Python 3.5
-      uses: actions/setup-python@v2
-      if: matrix.runs-on != 'windows-2022'
-      with:
-        python-version: 3.5
-
-    - name: Setup Python 3.6
-      uses: actions/setup-python@v2
-      if: runner.os == 'Linux'
-      with:
-        python-version: 3.6
-
     # We check all Python's on Linux, because it's fast.
     # We check Python 2.7 on Linux and macOS, it's not supported on Windows.
     # We check minimum Python 3, and maximum Python 3 on all OS's.
@@ -123,7 +111,7 @@ jobs:
     name: Tests on 🐍 PyPy • ${{ matrix.runs-on }}
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 0
 
@@ -134,10 +122,6 @@ jobs:
     - name: Setup nox
       uses: ./.github/actions/setup-nox
 
-    - uses: actions/setup-python@v2
-      with:
-        python-version: pypy-3.7
-
     - name: Test on 🐍 PyPy 3.7
       run: nox -s tests-pypy3.7
 
@@ -146,7 +130,7 @@ jobs:
     name: Distribution
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 0
 
