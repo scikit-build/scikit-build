@@ -286,8 +286,8 @@ class CMaker(object):
         cmd.extend(clargs)
 
         # Parse CMAKE_ARGS only if SKBUILD_CONFIGURE_OPTIONS is not present
-        if "SKBUILD_CONFIGURE_OPTIONS" not in os.environ:
-            env_cmake_args = filter(None, shlex.split(os.environ.get("SKBUILD_CONFIGURE_OPTIONS", "")))
+        if "SKBUILD_CONFIGURE_OPTIONS" in os.environ:
+            env_cmake_args = filter(None, shlex.split(os.environ["SKBUILD_CONFIGURE_OPTIONS"]))
         else:
             env_cmake_args = filter(None, shlex.split(os.environ.get("CMAKE_ARGS", "")))
             env_cmake_args = [s for s in env_cmake_args if "CMAKE_INSTALL_PREFIX" not in s]
