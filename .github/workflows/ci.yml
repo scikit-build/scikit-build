@@ -19,8 +19,8 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-python@v2
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v3
     - uses: pre-commit/action@v2.0.3
 
   tests:
@@ -29,7 +29,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runs-on: [ubuntu-latest, macos-latest, windows-2016, windows-2019, windows-2022]
+        runs-on: [ubuntu-latest, macos-latest, windows-2019, windows-2022]
 
     name: Tests on ${{ matrix.runs-on }}
     steps:
@@ -44,15 +44,6 @@ jobs:
         echo "SKBUILD_TEST_FIND_VS2008_INSTALLATION_EXPECTED=0" >> $GITHUB_ENV
         echo "SKBUILD_TEST_FIND_VS2010_INSTALLATION_EXPECTED=0" >> $GITHUB_ENV
         echo "SKBUILD_TEST_FIND_VS2012_INSTALLATION_EXPECTED=0" >> $GITHUB_ENV
-
-    - name: Set environment for available GHA MSVCs
-      if: matrix.runs-on == 'windows-2016'
-      shell: bash
-      run: |
-        echo "SKBUILD_TEST_FIND_VS2015_INSTALLATION_EXPECTED=1" >> $GITHUB_ENV
-        echo "SKBUILD_TEST_FIND_VS2017_INSTALLATION_EXPECTED=1" >> $GITHUB_ENV
-        echo "SKBUILD_TEST_FIND_VS2019_INSTALLATION_EXPECTED=0" >> $GITHUB_ENV
-        echo "SKBUILD_TEST_FIND_VS2022_INSTALLATION_EXPECTED=0" >> $GITHUB_ENV
 
     - name: Set environment for available GHA MSVCs
       if: matrix.runs-on == 'windows-2019'
@@ -73,19 +64,7 @@ jobs:
         echo "SKBUILD_TEST_FIND_VS2022_INSTALLATION_EXPECTED=1" >> $GITHUB_ENV
 
     - name: Setup nox
-      uses: excitedleigh/setup-nox@v2.0.0
-
-    - name: Setup Python 3.5
-      uses: actions/setup-python@v2
-      if: matrix.runs-on != 'windows-2022'
-      with:
-        python-version: 3.5
-
-    - name: Setup Python 3.6
-      uses: actions/setup-python@v2
-      if: runner.os == 'Linux'
-      with:
-        python-version: 3.6
+      uses: ./.github/actions/setup-nox
 
     # We check all Python's on Linux, because it's fast.
     # We check Python 2.7 on Linux and macOS, it's not supported on Windows.
@@ -123,30 +102,22 @@ jobs:
     name: Tests on 🐍 PyPy • ${{ matrix.runs-on }}
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 0
 
-    - name: Set min macOS version
-      run: |
-        echo "MACOS_DEPLOYMENT_TARGET=10.9" >> $GITHUB_ENV
-
     - name: Setup nox
-      uses: excitedleigh/setup-nox@v2.0.0
+      uses: ./.github/actions/setup-nox
 
-    - uses: actions/setup-python@v2
-      with:
-        python-version: pypy-3.7
-
-    - name: Test on 🐍 PyPy 3.7
-      run: nox -s tests-pypy3.7
+    - name: Test on 🐍 PyPy 3.8
+      run: nox -s tests-pypy3.8
 
 
   dist:
     name: Distribution
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 0
 
