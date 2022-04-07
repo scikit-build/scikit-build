@@ -5,6 +5,18 @@ Release Notes
 This is the list of changes to scikit-build between each release. For full
 details, see the commit logs at http://github.com/scikit-build/scikit-build
 
+Scikit-build 0.14.1
+===================
+
+This release fixes a regression, and reverts a fix in 0.14.0. Some changes made
+to CI to fix recent removals.
+
+Bug fixes
+---------
+
+* Fix issue with ``SKBUILD_CONFIGURE_OPTIONS`` not being read.
+* Reverted manifest install changes.
+
 
 Scikit-build 0.14.0
 ===================
@@ -22,7 +34,7 @@ Bug fixes
 ---------
 
 * The manifest install location computation was fixed. Thanks :user:`kratsg`
-  for the contribution in :pr:`682`.
+  for the contribution in :pr:`682`. (Reverted in 0.14.1)
 * Byte-compilation was skipped due to a missing return. Thanks :user:`pekkarr`
   in :pr:`678`.
 * Packages can now be computed from the same shared collections, before this
