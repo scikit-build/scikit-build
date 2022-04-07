@@ -73,16 +73,16 @@ jobs:
         echo "SKBUILD_TEST_FIND_VS2022_INSTALLATION_EXPECTED=1" >> $GITHUB_ENV
 
     - name: Setup nox
-      uses: excitedleigh/setup-nox@v2.0.0
+      uses: henryiii/nox@henryiii/feat/action
 
     - name: Setup Python 3.5
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       if: matrix.runs-on != 'windows-2022'
       with:
         python-version: 3.5
 
     - name: Setup Python 3.6
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       if: runner.os == 'Linux'
       with:
         python-version: 3.6
@@ -132,11 +132,7 @@ jobs:
         echo "MACOS_DEPLOYMENT_TARGET=10.9" >> $GITHUB_ENV
 
     - name: Setup nox
-      uses: excitedleigh/setup-nox@v2.0.0
-
-    - uses: actions/setup-python@v2
-      with:
-        python-version: pypy-3.7
+      uses: henryiii/nox@henryiii/feat/action
 
     - name: Test on 🐍 PyPy 3.7
       run: nox -s tests-pypy3.7
