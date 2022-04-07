@@ -106,15 +106,11 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Set min macOS version
-      run: |
-        echo "MACOS_DEPLOYMENT_TARGET=10.9" >> $GITHUB_ENV
-
     - name: Setup nox
       uses: ./.github/actions/setup-nox
 
-    - name: Test on 🐍 PyPy 3.7
-      run: nox -s tests-pypy3.7
+    - name: Test on 🐍 PyPy 3.8
+      run: nox -s tests-pypy3.8
 
 
   dist:

@@ -37,6 +37,3 @@ runs:
     - name: "Install nox"
       run: pipx install nox
       shell: bash
-    - name: Prepare color
-      run: FORCE_COLOR=3 >> $GITHUB_ENV
-      shell: bash
