@@ -98,7 +98,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runs-on: [ubuntu-latest, macos-latest]
+        runs-on: [ubuntu-latest]
     name: Tests on 🐍 PyPy • ${{ matrix.runs-on }}
 
     steps:
