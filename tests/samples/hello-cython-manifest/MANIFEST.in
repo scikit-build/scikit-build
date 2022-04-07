@@ -1,7 +1,0 @@
-prune **
-graft hello
-include setup.py
-include include-me.txt
-include MANIFEST.in
-include CMakeLists.txt
-exclude exclude-me.txt
