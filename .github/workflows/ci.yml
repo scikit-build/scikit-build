@@ -75,6 +75,12 @@ jobs:
     - name: Setup nox
       uses: henryiii/nox@henryiii/feat/action
 
+    - name: Setup Python 2.7
+      uses: actions/setup-python@v3
+      if: runner.os != 'Windows'
+      with:
+        python-version: 2.7
+
     - name: Setup Python 3.5
       uses: actions/setup-python@v3
       if: matrix.runs-on != 'windows-2022'
