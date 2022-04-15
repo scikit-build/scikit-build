@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import setuptools
+import setuptools  # noqa: F401
 
 try:
     import distutils.dir_util
