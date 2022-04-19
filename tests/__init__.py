@@ -1,6 +1,13 @@
 # -*- coding: utf-8 -*-
 
-import distutils
+import setuptools  # noqa: F401
+
+try:
+    import distutils.dir_util
+    import distutils.sysconfig
+except ImportError:
+    import distutils  # Python < 3.10
+
 import os
 import os.path
 
