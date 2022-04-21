@@ -333,14 +333,25 @@ function(_set_python_extension_symbol_visibility _target)
         "/EXPORT:${_modinit_prefix}${_target}"
     )
   elseif("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU" AND NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    # Option to not run version script. See https://github.com/scikit-build/scikit-build/issues/668
+    if(NOT DEFINED SKBUILD_GNU_SKIP_LOCAL_SYMBOL_EXPORT_OVERRIDE)
+       set(SKBUILD_GNU_SKIP_LOCAL_SYMBOL_EXPORT_OVERRIDE FALSE)
+    endif()
     set(_script_path
       ${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/${_target}-version-script.map
     )
-    file(WRITE ${_script_path}
-               "{global: ${_modinit_prefix}${_target}; local: *; };"
-    )
+    # Export all symbols. See https://github.com/scikit-build/scikit-build/issues/668
+    if(SKBUILD_GNU_SKIP_LOCAL_SYMBOL_EXPORT_OVERRIDE)
+      file(WRITE ${_script_path}
+                 "{global: ${_modinit_prefix}${_target};};"
+      )
+    else()
+      file(WRITE ${_script_path}
+                 "{global: ${_modinit_prefix}${_target}; local: *;};"
+      )
+    endif()
     set_property(TARGET ${_target} APPEND_STRING PROPERTY LINK_FLAGS
-        " -Wl,--version-script=\"${_script_path}\""
+      " -Wl,--version-script=\"${_script_path}\""
     )
   endif()
 endfunction()
