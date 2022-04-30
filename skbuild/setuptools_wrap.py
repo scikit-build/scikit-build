@@ -16,8 +16,13 @@ import shutil
 import stat
 import sys
 import warnings
+from typing import Any, Iterable, Optional
 
+# Must be imported before distutils
 import setuptools
+from distutils.dist import Distribution
+
+# pylint: disable-next=wrong-import-order
 from distutils.errors import DistutilsArgError, DistutilsError, DistutilsGetoptError
 from packaging.requirements import Requirement
 from packaging.version import parse as parse_version
@@ -358,6 +363,29 @@ def _load_cmake_spec():
         return None
 
 
+class SetupCfg:
+    """Parse `setup.cfg` (or equivalent) file to retrieve entries that matter to :mod:`skbuild`"""
+
+    relevant_options = (
+        "packages",
+        "package_data",
+        "package_dir",
+        "include_package_data",
+        "exclude_package_data",
+        "py_modules",
+        "data_files",
+        "entry_points",
+        "scripts",
+    )
+
+    def __init__(self, files: Optional[Iterable[str]] = None):
+        self.dist = Distribution()
+        self.dist.parse_config_files(files)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {k: v for k in self.relevant_options if (v := getattr(self.dist, k))}
+
+
 # pylint:disable=too-many-locals, too-many-branches
 def setup(*args, **kw):  # noqa: C901
     """This function wraps setup() so that we can run cmake, make,
@@ -369,6 +397,10 @@ def setup(*args, **kw):  # noqa: C901
     version in :func:`skbuild.constants.CMAKE_SPEC_FILE()`: and (3) re-configuring only if either the generator or
     the CMake specs change.
     """
+
+    file_kw = SetupCfg().to_dict()
+    file_kw.update(kw)
+    kw = file_kw
 
     # If any, strip ending slash from each package directory
     # Regular setuptools does not support this

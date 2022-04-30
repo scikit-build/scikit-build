@@ -21,7 +21,7 @@ from skbuild import setup as skbuild_setup
 from skbuild.constants import CMAKE_INSTALL_DIR, SKBUILD_DIR
 from skbuild.exceptions import SKBuildError
 from skbuild.platform_specifics import get_platform
-from skbuild.setuptools_wrap import strip_package
+from skbuild.setuptools_wrap import SetupCfg, strip_package
 from skbuild.utils import push_dir, to_platform_path
 
 from . import (
@@ -1111,3 +1111,69 @@ def test_zip_safe_default(zip_safe, mocker):
         assert setup_kw["zip_safe"]
     else:  # zip_safe is False
         assert not setup_kw["zip_safe"]
+
+
+@pytest.mark.parametrize(
+    "cfg,expected",
+    [
+        (
+            """
+    [options]
+    packages =
+        foo
+        bar
+    package_dir =
+        foo = src/foo
+        bar = src/bar
+
+    [options.package_data]
+    foo = foo.txt,foo2.txt
+    bar = bar.json
+    """,
+            {
+                "packages": ["foo", "bar"],
+                "package_dir": {"foo": "src/foo", "bar": "src/bar"},
+                "package_data": {"foo": ["foo.txt", "foo2.txt"], "bar": ["bar.json"]},
+            },
+        ),
+        (
+            """
+    [options]
+    packages =
+        foo
+        bar
+    package_dir =
+        foo = src/foo
+        bar = src/bar
+    """,
+            {
+                "packages": ["foo", "bar"],
+                "package_dir": {"foo": "src/foo", "bar": "src/bar"},
+            },
+        ),
+        (
+            """
+    """,
+            {},
+        ),
+    ],
+)
+def test_setup_cfg_parsing(cfg, expected, tmp_path):
+    setup_cfg = tmp_path / "setup.cfg"
+
+    with open(setup_cfg, "w") as f:
+        f.write(
+            textwrap.dedent(
+                """
+            [metadata]
+            name = dummy
+            version = 0.0.0
+
+            {cfg}
+            """.format(
+                    cfg=cfg
+                )
+            )
+        )
+
+    assert SetupCfg([str(setup_cfg)]).to_dict() == expected
