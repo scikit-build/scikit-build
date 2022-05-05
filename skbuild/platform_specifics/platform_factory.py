@@ -21,7 +21,7 @@ def get_platform():
 
         return linux.LinuxPlatform()
 
-    if this_platform == "cygwin":
+    if this_platform.startswith("cygwin"):
         from . import cygwin
 
         return cygwin.CygwinPlatform()
