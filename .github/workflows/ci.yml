@@ -101,15 +101,18 @@ jobs:
       with:
         fetch-depth: 0
 
-    - uses: egor-tensin/setup-cygwin@v3
+    - uses: cygwin/cygwin-install-action@v2
       with:
-        platform: x64
-        packages: cmake gcc-g++ python39 python39-pip
+        platform: x86_64
+        packages: cmake ninja make gcc-g++ gcc-fortran python39 python39-devel python39-pip
 
     - name: Install nox
       run: python3.9 -m pip install nox
 
     - name: Run tests
+      env:
+        TMP: /tmp
+        TEMP: /tmp
       run: python3.9 -m nox -s tests-3.9
 
 
