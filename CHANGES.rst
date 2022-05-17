@@ -9,7 +9,7 @@ Scikit-build 0.15.0
 ===================
 
 This release is the final (again) release for Python < 3.6 and MSVC<2017. Support
-for FindPython from CMake 3.12+ was added, inluding FindPython2.
+for FindPython from CMake 3.12+ was added, including FindPython2.
 
 New Features
 ------------
