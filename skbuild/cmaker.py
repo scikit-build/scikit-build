@@ -274,6 +274,8 @@ class CMaker(object):
             ("-DPYTHON_LIBRARY:FILEPATH=" + python_library),
             ("-DSKBUILD:INTERNAL=" + "TRUE"),
             ("-DCMAKE_MODULE_PATH:PATH=" + os.path.join(os.path.dirname(__file__), "resources", "cmake")),
+            ("-DPython_EXECUTABLE=" + sys.executable),
+            ("-DPython3_EXECUTABLE=" + sys.executable),
         ]
 
         if generator.toolset:

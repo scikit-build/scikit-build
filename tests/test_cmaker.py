@@ -206,6 +206,8 @@ def test_configure_with_cmake_args(capfd):
               ${PYTHON_LIBRARY}
               ${PYTHON_VERSION_STRING}
               ${SKBUILD}
+              ${Python_EXECUTABLE}
+              ${Python3_EXECUTABLE}
               )
             endforeach()
             """

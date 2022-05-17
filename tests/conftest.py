@@ -32,6 +32,7 @@ def pep518_wheelhouse(tmpdir_factory):
             "wheel",
             "ninja",
             "cmake",
+            "numpy",
         ]
     )
     return str(wheelhouse)
