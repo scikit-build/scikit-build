@@ -9,6 +9,7 @@ Tests for CMaker functionality.
 
 import os
 import re
+import sys
 import textwrap
 
 import pytest
@@ -190,6 +191,34 @@ def test_make_with_install_target(install_target, capfd):
 def test_configure_with_cmake_args(capfd):
     tmp_dir = _tmpdir("test_configure_with_cmake_args")
     with push_dir(str(tmp_dir)):
+        unused_vars = [
+            "CMAKE_EXPECTED_BAR",
+            "CMAKE_EXPECTED_FOO",
+            "PYTHON_VERSION_STRING",
+            "SKBUILD",
+        ]
+
+        find_python_prefixes = [
+            "Python{}".format(sys.version_info[0]),
+            "Python",
+            "PYTHON",
+        ]
+
+        for prefix in find_python_prefixes:
+            unused_vars.extend(
+                [
+                    (prefix + "_EXECUTABLE"),
+                    (prefix + "_INCLUDE_DIR"),
+                    (prefix + "_LIBRARY"),
+                ]
+            )
+
+            try:
+                import numpy as np  # noqa: F401
+
+                unused_vars.append(prefix + "_NumPy_INCLUDE_DIRS")
+            except ImportError:
+                pass
 
         tmp_dir.join("CMakeLists.txt").write(
             textwrap.dedent(
@@ -199,19 +228,11 @@ def test_configure_with_cmake_args(capfd):
             # Do not complain about missing arguments passed to the main
             # project
             foreach(unused_var IN ITEMS
-              ${CMAKE_EXPECTED_BAR}
-              ${CMAKE_EXPECTED_FOO}
-              ${PYTHON_EXECUTABLE}
-              ${PYTHON_INCLUDE_DIR}
-              ${PYTHON_LIBRARY}
-              ${PYTHON_VERSION_STRING}
-              ${SKBUILD}
-              ${Python_EXECUTABLE}
-              ${Python3_EXECUTABLE}
+            {}
               )
             endforeach()
             """
-            )
+            ).format("\n".join("  ${{{}}}".format(unused) for unused in unused_vars))
         )
 
         with push_dir(str(tmp_dir)):

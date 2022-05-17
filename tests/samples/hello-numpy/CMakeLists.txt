@@ -5,7 +5,7 @@ project(hello-pybind11 VERSION "0.1")
 # Define CMAKE_INSTALL_xxx: LIBDIR, INCLUDEDIR
 include(GNUInstallDirs)
 
-find_package(Python3 REQUIRED COMPONENTS Development NumPy)
+find_package(Python REQUIRED COMPONENTS Development NumPy)
 
 # Fetch pybind11
 include(FetchContent)
@@ -24,7 +24,7 @@ pybind11_add_module(${python_module_name} MODULE
 
 target_link_libraries(
   ${python_module_name}
-  PUBLIC Python3::NumPy
+  PUBLIC Python::NumPy
          pybind11::module
 )
 

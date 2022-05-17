@@ -24,6 +24,6 @@ setup(
     license="MIT",
     packages=["hello"],
     package_dir={"": "src"},
-    install_requires=["numpy>=1.21"],
+    install_requires=["numpy>=1.7"],
     cmake_install_dir="src/hello",
 )
