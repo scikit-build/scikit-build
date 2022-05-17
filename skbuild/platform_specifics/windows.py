@@ -244,7 +244,7 @@ def _find_visual_studio_2017_or_newer(vs_version):
 
     try:
         extra_args = {}
-        if sys.version_info[:3] >= (3, 6, 0):
+        if not sys.platform.startswith("cygwin") and sys.version_info[:3] >= (3, 6, 0):
             extra_args = {"encoding": "mbcs", "errors": "strict"}
         path = subprocess.check_output(
             [
