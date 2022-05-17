@@ -262,19 +262,39 @@ class CMaker(object):
         python_library = CMaker.get_python_library(python_version)
 
         cmake_source_dir = os.path.abspath(cmake_source_dir)
+
         cmd = [
             self.cmake_executable,
             cmake_source_dir,
             "-G",
             generator.name,
             ("-DCMAKE_INSTALL_PREFIX:PATH=" + os.path.abspath(os.path.join(CMAKE_INSTALL_DIR(), cmake_install_dir))),
-            ("-DPYTHON_EXECUTABLE:FILEPATH=" + sys.executable),
             ("-DPYTHON_VERSION_STRING:STRING=" + sys.version.split(" ")[0]),
-            ("-DPYTHON_INCLUDE_DIR:PATH=" + python_include_dir),
-            ("-DPYTHON_LIBRARY:FILEPATH=" + python_library),
             ("-DSKBUILD:INTERNAL=" + "TRUE"),
             ("-DCMAKE_MODULE_PATH:PATH=" + os.path.join(os.path.dirname(__file__), "resources", "cmake")),
         ]
+
+        find_python_prefixes = [
+            "-DPython{}".format(python_version[0]),
+            "-DPython",
+            "-DPYTHON",
+        ]
+
+        for prefix in find_python_prefixes:
+            cmd.extend(
+                [
+                    (prefix + "_EXECUTABLE:FILEPATH=" + sys.executable),
+                    (prefix + "_INCLUDE_DIR:PATH=" + python_include_dir),
+                    (prefix + "_LIBRARY:PATH=" + python_library),
+                ]
+            )
+
+            try:
+                import numpy as np
+
+                cmd.append(prefix + "_NumPy_INCLUDE_DIRS:PATH=" + np.get_include())
+            except ImportError:
+                pass
 
         if generator.toolset:
             cmd.extend(["-T", generator.toolset])

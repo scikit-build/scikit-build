@@ -5,6 +5,20 @@ Release Notes
 This is the list of changes to scikit-build between each release. For full
 details, see the commit logs at http://github.com/scikit-build/scikit-build
 
+Scikit-build 0.15.0
+===================
+
+This release is the final (again) release for Python < 3.6 and MSVC<2017. Support
+for FindPython from CMake 3.12+ was added, including FindPython2.
+
+New Features
+------------
+
+* Add support for FindPython (including 2 and 3).
+
+
+Thanks :user:`hameerabbasi` for the contribution. See :pr:`712`.
+
 Scikit-build 0.14.1
 ===================
 
