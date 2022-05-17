@@ -22,7 +22,7 @@ from skbuild.utils import (
 
 from . import SAMPLES_DIR, list_ancestors, push_env
 
-saved_cwd = os.path.abspath(".")
+saved_cwd = os.getcwd()
 
 
 def setup_module():
@@ -44,24 +44,24 @@ def test_context_decorator():
 
 
 def test_push_dir(tmpdir):
-    old_cwd = os.path.abspath(".")
+    old_cwd = os.getcwd()
     try:
         level1 = tmpdir.mkdir("level1")
         level2 = level1.mkdir("level2")
 
         os.chdir(str(level2))
-        assert os.path.split(os.path.abspath("."))[-1] == "level2"
+        assert os.path.split(os.getcwd())[-1] == "level2"
 
         # No directory
         with push_dir():
-            os.chdir(os.path.join(os.path.abspath("."), ".."))
-            assert os.path.split(os.path.abspath("."))[-1] == "level1"
-        assert os.path.split(os.path.abspath("."))[-1] == "level2"
+            os.chdir(os.path.join(os.getcwd(), ".."))
+            assert os.path.split(os.getcwd())[-1] == "level1"
+        assert os.path.split(os.getcwd())[-1] == "level2"
 
         # With existing directory
-        with push_dir(directory=os.path.join(os.path.abspath("."), "..")):
-            assert os.path.split(os.path.abspath("."))[-1] == "level1"
-        assert os.path.split(os.path.abspath("."))[-1] == "level2"
+        with push_dir(directory=os.path.join(os.getcwd(), "..")):
+            assert os.path.split(os.getcwd())[-1] == "level1"
+        assert os.path.split(os.getcwd())[-1] == "level2"
 
         foo_directory = os.path.join(str(tmpdir), "foo")
 
@@ -77,37 +77,37 @@ def test_push_dir(tmpdir):
 
         # With make_directory option
         with push_dir(directory=foo_directory, make_directory=True):
-            assert os.path.abspath(".") == foo_directory
-        assert os.path.split(os.path.abspath("."))[-1] == "level2"
+            assert os.getcwd() == foo_directory
+        assert os.path.split(os.getcwd())[-1] == "level2"
         assert os.path.isdir(foo_directory)
     finally:
         os.chdir(old_cwd)
 
 
 def test_push_dir_decorator(tmpdir):
-    old_cwd = os.path.abspath(".")
+    old_cwd = os.getcwd()
     try:
         level1 = tmpdir.mkdir("level1")
         level2 = level1.mkdir("level2")
         os.chdir(str(level2))
-        assert os.path.split(os.path.abspath("."))[-1] == "level2"
+        assert os.path.split(os.getcwd())[-1] == "level2"
 
         # No directory
         @push_dir()
         def test_default():
-            os.chdir(os.path.join(os.path.abspath("."), ".."))
-            assert os.path.split(os.path.abspath("."))[-1] == "level1"
+            os.chdir(os.path.join(os.getcwd(), ".."))
+            assert os.path.split(os.getcwd())[-1] == "level1"
 
         test_default()
-        assert os.path.split(os.path.abspath("."))[-1] == "level2"
+        assert os.path.split(os.getcwd())[-1] == "level2"
 
         # With existing directory
-        @push_dir(directory=os.path.join(os.path.abspath("."), ".."))
+        @push_dir(directory=os.path.join(os.getcwd(), ".."))
         def test():
-            assert os.path.split(os.path.abspath("."))[-1] == "level1"
+            assert os.path.split(os.getcwd())[-1] == "level1"
 
         test()
-        assert os.path.split(os.path.abspath("."))[-1] == "level2"
+        assert os.path.split(os.getcwd())[-1] == "level2"
 
         foo_directory = os.path.join(str(tmpdir), "foo")
 
@@ -128,10 +128,10 @@ def test_push_dir_decorator(tmpdir):
         # With make_directory option
         @push_dir(directory=foo_directory, make_directory=True)
         def test():
-            assert os.path.abspath(".") == foo_directory
+            assert os.getcwd() == foo_directory
 
         test()
-        assert os.path.split(os.path.abspath("."))[-1] == "level2"
+        assert os.path.split(os.getcwd())[-1] == "level2"
         assert os.path.isdir(foo_directory)
     finally:
         os.chdir(old_cwd)
