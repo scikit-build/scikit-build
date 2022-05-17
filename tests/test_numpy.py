@@ -7,10 +7,5 @@ HELLO_NUMPY = os.path.join(DIR, "samples/hello-numpy")
 BASE = os.path.dirname(DIR)
 
 
-def test_pep518(pep518):
-    subprocess.check_call([sys.executable, "-m", "build", "--wheel"], cwd=HELLO_NUMPY)
-
-
-def test_dual_pep518(pep518):
-    subprocess.check_call([sys.executable, "-m", "build", "--wheel"], cwd=HELLO_NUMPY)
+def test_pep518_findpython(pep518):
     subprocess.check_call([sys.executable, "-m", "build", "--wheel"], cwd=HELLO_NUMPY)

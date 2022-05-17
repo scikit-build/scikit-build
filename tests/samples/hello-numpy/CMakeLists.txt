@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 3.14...3.18)
+cmake_minimum_required(VERSION 3.18...3.22)
 
-project(hello-pybind11 VERSION "0.1")
+project(hello-numpy VERSION "0.1")
 
 # Define CMAKE_INSTALL_xxx: LIBDIR, INCLUDEDIR
 include(GNUInstallDirs)
@@ -32,6 +32,3 @@ target_compile_definitions(${python_module_name}
                            PRIVATE VERSION_INFO=${EXAMPLE_VERSION_INFO})
 
 install(TARGETS ${python_module_name} DESTINATION .)
-
-# Quiet a warning, since this project is only valid with SKBUILD
-set(ignoreMe "${SKBUILD}")
