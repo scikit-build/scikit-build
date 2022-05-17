@@ -6,6 +6,7 @@ from __future__ import print_function
 
 import argparse
 import copy
+import functools
 import json
 import os
 import os.path
@@ -13,7 +14,6 @@ import platform
 import stat
 import sys
 import warnings
-import functools
 from contextlib import contextmanager
 
 # pylint: disable-next=wrong-import-order
@@ -958,7 +958,9 @@ def _consolidate_package_modules(cmake_source_dir, packages, package_dir, py_mod
 
         # Copy missing module file
         if os.path.exists(src_module_file):
-            dest_module_file = functools.reduce(os.path.join, [CMAKE_INSTALL_DIR()] + package.split(".") + [os.path.basename(src_module_file)])
+            dest_module_file = functools.reduce(
+                os.path.join, [CMAKE_INSTALL_DIR()] + package.split(".") + [os.path.basename(src_module_file)]
+            )
             _copy_file(src_module_file, dest_module_file, hide_listing)
 
         # Since the mapping in package_data expects the package to be associated
