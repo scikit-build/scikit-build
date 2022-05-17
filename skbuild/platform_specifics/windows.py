@@ -362,6 +362,7 @@ def _get_msvc_compiler_env(vs_version, vs_toolset=None):
             out = subprocess.check_output(
                 'cmd /u /c "{}" {} {} && set'.format(vcvarsall, arch, vcvars_ver),
                 stderr=subprocess.STDOUT,
+                shell=sys.platform.startswith("cygwin"),
             )
             out = out.decode("utf-16le", errors="replace")
             if sys.version_info[0] < 3:
