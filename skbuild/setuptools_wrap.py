@@ -383,7 +383,7 @@ class SetupCfg:
         self.dist.parse_config_files(files)
 
     def to_dict(self) -> dict[str, Any]:
-        return {k: v for k in self.relevant_options if (v := getattr(self.dist, k))}
+        return {k: getattr(self.dist, k) for k in self.relevant_options if getattr(self.dist, k, None)}
 
 
 # pylint:disable=too-many-locals, too-many-branches
