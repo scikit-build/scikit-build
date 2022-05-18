@@ -889,6 +889,18 @@ def _classify_file(path, package_data, package_prefixes, py_modules, new_py_modu
     file_set.add(os.path.join(CMAKE_INSTALL_DIR(), path))
 
 
+if sys.version_info.major < 3:
+    def _copy_file_and_mode(src_file, dest_file):
+        """Copy file and its mode"""
+        copyfile(src_file, dest_file)
+        copymode(src_file, dest_file)
+else:
+    def _copy_file_and_mode(src_file, dest_file):
+        """Copy file and its mode, preserving symbolic links"""
+        copyfile(src_file, dest_file, follow_symlinks=False)
+        copymode(src_file, dest_file, follow_symlinks=False)
+
+
 def _copy_file(src_file, dest_file, hide_listing=True):
     """Copy ``src_file`` to ``dest_file`` ensuring parent directory exists.
 
@@ -907,8 +919,7 @@ def _copy_file(src_file, dest_file, hide_listing=True):
     # Copy file
     if not hide_listing:
         print("copying {} -> {}".format(src_file, dest_file))
-    copyfile(src_file, dest_file)
-    copymode(src_file, dest_file)
+    _copy_file_and_mode(src_file, dest_file)
 
 
 def _consolidate_package_modules(cmake_source_dir, packages, package_dir, py_modules, package_data, hide_listing):
