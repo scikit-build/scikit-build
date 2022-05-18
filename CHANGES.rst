@@ -20,6 +20,13 @@ New Features
 
 * Add support for Cygwin.
   Thanks :user:`ax3l` and :user:`DWesl` and :user:`poikilos` for the help!
+  See :pr:`485`.
+
+Bug fixes
+---------
+
+* Fixed issue with distutils usage in Python 3.10. Thanks to :user:`SuperSandro2000`
+  for the contribution in :pr:`700`.
 
 Scikit-build 0.14.1
 ===================
