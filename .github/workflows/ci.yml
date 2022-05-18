@@ -113,7 +113,7 @@ jobs:
       env:
         TMP: /tmp
         TEMP: /tmp
-        SETUPTOOLS_SCM_PRETEND_VERSION: "0.14"
+        SETUPTOOLS_SCM_PRETEND_VERSION: "0.15"
       run: python3.9 -m nox -s tests-3.9
 
 
