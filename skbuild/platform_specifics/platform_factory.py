@@ -21,6 +21,11 @@ def get_platform():
 
         return linux.LinuxPlatform()
 
+    if this_platform.startswith("cygwin"):
+        from . import cygwin
+
+        return cygwin.CygwinPlatform()
+
     if this_platform == "darwin":
         from . import osx
 

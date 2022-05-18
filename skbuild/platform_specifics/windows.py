@@ -244,8 +244,9 @@ def _find_visual_studio_2017_or_newer(vs_version):
 
     try:
         extra_args = {}
-        if sys.version_info[:3] >= (3, 6, 0):
-            extra_args = {"encoding": "mbcs", "errors": "strict"}
+        if sys.version_info >= (3, 6):
+            extra_args["encoding"] = "utf-8" if sys.platform.startswith("cygwin") else "mbcs"
+            extra_args["errors"] = "strict"
         path = subprocess.check_output(
             [
                 os.path.join(root, "Microsoft Visual Studio", "Installer", "vswhere.exe"),
@@ -356,9 +357,11 @@ def _get_msvc_compiler_env(vs_version, vs_toolset=None):
                 vcvars_ver = "-vcvars_ver=%s.%s" % match
 
         try:
+            # TODO: should always be shell=True, but currently requires this
             out = subprocess.check_output(
                 'cmd /u /c "{}" {} {} && set'.format(vcvarsall, arch, vcvars_ver),
                 stderr=subprocess.STDOUT,
+                shell=sys.platform.startswith("cygwin"),
             )
             out = out.decode("utf-16le", errors="replace")
             if sys.version_info[0] < 3:
