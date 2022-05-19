@@ -16,7 +16,7 @@ import shutil
 import stat
 import sys
 import warnings
-from typing import Any, Iterable, Optional
+from typing import Any, Dict, Iterable, Optional
 
 # Must be imported before distutils
 import setuptools
@@ -382,7 +382,7 @@ class SetupCfg:
         self.dist = Distribution()
         self.dist.parse_config_files(files)
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {k: getattr(self.dist, k) for k in self.relevant_options if getattr(self.dist, k, None)}
 
 
