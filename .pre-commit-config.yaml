@@ -86,5 +86,5 @@ repos:
   - id: mypy
     files: ^skbuild
     args: []
-    additional_dependencies: ["types-setuptools"]
+    additional_dependencies: ["types-setuptools", "packaging"]
     stages: [manual]

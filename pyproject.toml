@@ -26,6 +26,7 @@ profile = "black"
 known_third_party = ["distutils"]
 force_to_top = ["setuptools"]
 
+
 [tool.mypy]
 files = ["skbuild"]
 python_version = "3.6"
@@ -35,6 +36,16 @@ show_error_codes = true
 enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
 warn_unreachable = true
 
+[[tool.mypy.overrides]]
+module = [
+  "wheel.*",
+  "setuptools.logging",
+  "setuptools.command.*",
+  "ninja",
+  "cmake",
+  "numpy",
+]
+ignore_missing_imports = true
 
 [tool.pylint]
 master.py-version = "3.6"
