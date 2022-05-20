@@ -4,6 +4,18 @@ import contextlib
 import os
 from collections import namedtuple
 from contextlib import ContextDecorator, contextmanager
+from types import SimpleNamespace
+from typing import (
+    Any,
+    Dict,
+    Iterator,
+    List,
+    NamedTuple,
+    Optional,
+    Tuple,
+    TypeVar,
+    Union,
+)
 
 from distutils.command.build_py import build_py as distutils_build_py
 from distutils.errors import DistutilsTemplateError
@@ -25,7 +37,11 @@ except ImportError:
     logging_module = False
 
 
-Distribution = namedtuple("Distribution", "script_name")
+Self = TypeVar("Self")
+
+
+class Distribution(NamedTuple):
+    script_name: str
 
 
 def _log_warning(msg, *args):
@@ -39,17 +55,17 @@ def _log_warning(msg, *args):
         print(msg % args)
 
 
-def mkdir_p(path):
+def mkdir_p(path: str) -> None:
     """Ensure directory ``path`` exists. If needed, parent directories
     are created.
     """
     return os.makedirs(path, exist_ok=True)
 
 
-class push_dir(ContextDecorator):
+class push_dir(contextlib.ContextDecorator):
     """Context manager to change current directory."""
 
-    def __init__(self, directory=None, make_directory=False):
+    def __init__(self, directory: Optional[str] = None, make_directory: bool = False) -> None:
         """
         :param directory:
           Path to set as current working directory. If ``None``
@@ -63,7 +79,7 @@ class push_dir(ContextDecorator):
         self.make_directory = make_directory
         self.old_cwd = None
 
-    def __enter__(self):
+    def __enter__(self) -> Self:
         self.old_cwd = os.getcwd()
         if self.directory:
             if self.make_directory:
@@ -71,7 +87,7 @@ class push_dir(ContextDecorator):
             os.chdir(self.directory)
         return self
 
-    def __exit__(self, typ, val, traceback):
+    def __exit__(self, typ: None, val: None, traceback: None) -> None:
         os.chdir(self.old_cwd)
 
 
@@ -83,7 +99,13 @@ class PythonModuleFinder(distutils_build_py):
     """
 
     # pylint: disable-next=super-init-not-called
-    def __init__(self, packages, package_dir, py_modules, alternative_build_base=None):
+    def __init__(
+        self,
+        packages: List[Union[Any, str]],
+        package_dir: Dict[str, str],
+        py_modules: List[Union[Any, str]],
+        alternative_build_base: Optional[str] = None,
+    ) -> None:
         """
         :param packages: List of packages to search.
         :param package_dir: Dictionary mapping ``package`` with ``directory``.
@@ -97,7 +119,7 @@ class PythonModuleFinder(distutils_build_py):
 
         self.distribution = Distribution("setup.py")
 
-    def find_all_modules(self, project_dir=None):
+    def find_all_modules(self, project_dir: Optional[str] = None) -> List[Union[Any, Tuple[str, str, str]]]:
         """Compute the list of all modules that would be built by
         project located in current directory, whether they are
         specified one-module-at-a-time ``py_modules`` or by whole
@@ -112,7 +134,7 @@ class PythonModuleFinder(distutils_build_py):
         with push_dir(project_dir):
             return super().find_all_modules()
 
-    def find_package_modules(self, package, package_dir):
+    def find_package_modules(self, package: str, package_dir: str) -> map:
         """Temporally prepend the ``alternative_build_base`` to ``module_file``.
         Doing so will ensure modules can also be found in other location
         (e.g ``skbuild.constants.CMAKE_INSTALL_DIR``).
@@ -131,7 +153,7 @@ class PythonModuleFinder(distutils_build_py):
 
         return map(_strip_directory, modules)
 
-    def check_module(self, module, module_file):
+    def check_module(self, module: str, module_file: str) -> bool:
         """Return True if ``module_file`` belongs to ``module``."""
         if self.alternative_build_base is not None:
             updated_module_file = os.path.join(self.alternative_build_base, module_file)
@@ -143,18 +165,18 @@ class PythonModuleFinder(distutils_build_py):
         return True
 
 
-def to_platform_path(path):
+def to_platform_path(path: Optional[str]) -> Optional[str]:
     """Return a version of ``path`` where all separator are :attr:`os.sep`"""
     return path.replace("/", os.sep).replace("\\", os.sep) if path is not None else None
 
 
-def to_unix_path(path):
+def to_unix_path(path: Optional[str]) -> Optional[str]:
     """Return a version of ``path`` where all separator are ``/``"""
     return path.replace("\\", "/") if path is not None else None
 
 
 @contextmanager
-def distribution_hide_listing(distribution):
+def distribution_hide_listing(distribution: Union[Distribution, SimpleNamespace]) -> Iterator[Union[bool, int]]:
     """Given a ``distribution``, this context manager temporarily
     sets distutils threshold to WARN if ``--hide-listing`` argument
     was provided.
@@ -190,7 +212,7 @@ def distribution_hide_listing(distribution):
             distutils_log.set_threshold(old_threshold)
 
 
-def parse_manifestin(template):
+def parse_manifestin(template: str) -> List[str]:
     """This function parses template file (usually MANIFEST.in)"""
     if not os.path.exists(template):
         return []
