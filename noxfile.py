@@ -26,7 +26,7 @@ def tests(session):
     """
     Run the tests.
     """
-    posargs = list(session.posargs)
+    posargs = list(session.posargs) or ["--cov", "--cov-report=xml"]
     env = os.environ.copy()
 
     # This should be handled via markers or some other pytest mechanism, but for now, this is usable.

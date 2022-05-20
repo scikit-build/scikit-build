@@ -320,6 +320,7 @@ def test_cmake_minimum_required_version_keyword():
         assert "CMake version 99.98.97 or higher is required." in message
 
 
+@pytest.mark.filterwarnings("ignore:setuptools.installer is deprecated:Warning")
 @pytest.mark.skipif(
     os.environ.get("CONDA_BUILD", "0") == "1",
     reason="running tests expecting network connection in Conda is not possible. "
