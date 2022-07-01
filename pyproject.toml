@@ -36,7 +36,6 @@ enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
 warn_unreachable = true
 
 
-
 [tool.pylint]
 master.py-version = "3.6"
 master.jobs = "0"
@@ -61,4 +60,25 @@ messages_control.disable = [
   "ungrouped-imports",
   "wrong-import-order",
   "wrong-import-position",
+]
+
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+testpaths = ["tests"]
+addopts = ["-ra", "--strict-markers", "--strict-config", "--showlocals"]
+norecursedirs = ["_skbuild"]
+xfail_strict = true
+filterwarnings = [
+  "error",
+  "ignore:setup.py install is deprecated:Warning",
+  "ignore:easy_install command is deprecated:Warning",
+  "ignore:.*ends with a trailing slash, which is not supported by setuptools:FutureWarning",
+  "ignore:Config variable 'Py_DEBUG' is unset:RuntimeWarning",
+  "ignore:Config variable 'WITH_PYMALLOC' is unset, Python ABI tag may be incorrect:RuntimeWarning",
+  'ignore:\s*Installing .* as data is deprecated:Warning',
+]
+log_cli_level = "info"
+markers = [
+  "fortran: fortran testing",
 ]

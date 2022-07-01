@@ -8,8 +8,14 @@ Tries to build and test the `hello-cython` sample project.
 
 import glob
 
+import pytest
+
 from . import get_ext_suffix, project_setup_py_test
 from .pytest_helpers import check_sdist_content, check_wheel_content
+
+pytestmark = pytest.mark.filterwarnings(
+    "ignore:.*ends with a trailing slash, which is not supported by setuptools:FutureWarning"
+)
 
 
 @project_setup_py_test("hello-cython", ["build"])
