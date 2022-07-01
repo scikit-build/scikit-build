@@ -75,6 +75,8 @@ filterwarnings = [
   "ignore:easy_install command is deprecated:Warning",
   "ignore:.*ends with a trailing slash, which is not supported by setuptools:FutureWarning",
   "ignore:Config variable 'Py_DEBUG' is unset:RuntimeWarning",
+  "ignore:Config variable 'WITH_PYMALLOC' is unset, Python ABI tag may be incorrect:RuntimeWarning",
+  'ignore:\s*Installing .* as data is deprecated:Warning',
 ]
 log_cli_level = "info"
 markers = [
