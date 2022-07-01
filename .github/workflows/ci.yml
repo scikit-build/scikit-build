@@ -86,7 +86,7 @@ jobs:
     - uses: cygwin/cygwin-install-action@v2
       with:
         platform: x86_64
-        packages: cmake ninja git make gcc-g++ gcc-fortran python39 python39-devel python39-pip
+        packages: cmake ninja git make gcc-g++ gcc-fortran python39 python39-devel python39-pip libcurl-devel
 
     - name: Install nox
       run: python3.9 -m pip install nox

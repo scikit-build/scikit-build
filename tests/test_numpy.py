@@ -3,6 +3,8 @@ import platform
 import subprocess
 import sys
 
+import pytest
+
 DIR = os.path.dirname(os.path.abspath(__file__))
 HELLO_NUMPY = os.path.join(DIR, "samples/hello-numpy")
 BASE = os.path.dirname(DIR)
