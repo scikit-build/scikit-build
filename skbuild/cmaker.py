@@ -15,7 +15,7 @@ import subprocess
 import sys
 import sysconfig
 from shlex import quote
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, Iterable, List, Optional, Tuple, Union, overload
 
 import distutils.sysconfig as du_sysconfig
 
@@ -31,9 +31,17 @@ from .platform_specifics import get_platform
 RE_FILE_INSTALL = re.compile(r"""[ \t]*file\(INSTALL DESTINATION "([^"]+)".*"([^"]+)"\).*""")
 
 
-def pop_arg(
-    arg: str, args: Union[Tuple[()], List[str]], default: Optional[str] = None
-) -> Union[Tuple[List[Any], str], Tuple[List[str], None], Tuple[List[str], str], Tuple[List[Any], None]]:
+@overload
+def pop_arg(arg: str, args: Iterable[str], default: None = None) -> Tuple[List[str], Optional[str]]:
+    ...
+
+
+@overload
+def pop_arg(arg: str, args: Iterable[str], default: str) -> Tuple[List[str], str]:
+    ...
+
+
+def pop_arg(arg: str, args: Iterable[str], default: Optional[str] = None) -> Tuple[List[str], Optional[str]]:
     """Pops an argument ``arg`` from an argument list ``args`` and returns the
     new list and the value of the argument if present and a default otherwise.
     """

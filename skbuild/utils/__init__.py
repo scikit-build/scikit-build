@@ -2,8 +2,7 @@
 
 import contextlib
 import os
-from collections import namedtuple
-from contextlib import ContextDecorator, contextmanager
+from contextlib import contextmanager
 from types import SimpleNamespace
 from typing import (
     Any,
