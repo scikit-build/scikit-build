@@ -33,7 +33,7 @@ repos:
     args: [--py36-plus]
 
 - repo: https://github.com/psf/black
-  rev: "22.3.0" # Keep in sync with blacken-docs
+  rev: "22.6.0" # Keep in sync with blacken-docs
   hooks:
   - id: black
     exclude: ^docs/conf\.py$
