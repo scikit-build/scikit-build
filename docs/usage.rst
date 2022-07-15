@@ -44,7 +44,6 @@ Then, add a ``pyproject.toml`` to list the build system requirements::
     [build-system]
     requires = [
       "setuptools>=42",
-      "wheel",
       "scikit-build",
       "cmake",
       "ninja; platform_system!='Windows'"
