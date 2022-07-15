@@ -391,17 +391,17 @@ For this purpose place the following configuration in your ``pyproject.toml``::
 then you can implement a thin wrapper around ``build_meta`` in the ``_custom_build/backend.py`` file::
 
     from setuptools import build_meta as _orig
-    from packaging.version import LegacyVersion
-    from skbuild.exceptions import SKBuildError
-    from skbuild.cmaker import get_cmake_version
 
     prepare_metadata_for_build_wheel = _orig.prepare_metadata_for_build_wheel
     build_wheel = _orig.build_wheel
     build_sdist = _orig.build_sdist
 
     def _get_requires():
+      from packaging.version import version
+      from skbuild.exceptions import SKBuildError
+      from skbuild.cmaker import get_cmake_version
         try:
-            if LegacyVersion(get_cmake_version()) < LegacyVersion("3.4"):
+            if version.parse(get_cmake_version()) < version.parse("3.4"):
                 return ['cmake']
             return []
         except SKBuildError:
