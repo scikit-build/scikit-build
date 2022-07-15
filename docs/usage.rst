@@ -398,16 +398,20 @@ then you can implement a thin wrapper around ``build_meta`` in the ``_custom_bui
     prepare_metadata_for_build_wheel = _orig.prepare_metadata_for_build_wheel
     build_wheel = _orig.build_wheel
     build_sdist = _orig.build_sdist
-    get_requires_for_build_sdist = _orig.get_requires_for_build_sdist
 
-    def get_requires_for_build_wheel(self, config_settings=None):
-        requirements = []
+    def _get_requires():
         try:
             if LegacyVersion(get_cmake_version()) < LegacyVersion("3.4"):
-                requirements.append('cmake')
+                return ['cmake']
+            return []
         except SKBuildError:
-            requirements.append('cmake')
-        return _orig.get_requires_for_build_wheel(config_settings) + requirements
+            return ['cmake']
+
+    def get_requires_for_build_wheel(self, config_settings=None):
+        return _orig.get_requires_for_build_wheel(config_settings) + _get_requires()
+
+    def get_requires_for_build_sdist(self, config_settings=None):
+        return _orig.get_requires_for_build_sdist(config_settings) + _get_requires()
 
 
 .. _usage_enabling_parallel_build:
