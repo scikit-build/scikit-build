@@ -397,9 +397,9 @@ then you can implement a thin wrapper around ``build_meta`` in the ``_custom_bui
     build_sdist = _orig.build_sdist
 
     def _get_requires():
-      from packaging.version import version
-      from skbuild.exceptions import SKBuildError
-      from skbuild.cmaker import get_cmake_version
+        from packaging.version import version
+        from skbuild.exceptions import SKBuildError
+        from skbuild.cmaker import get_cmake_version
         try:
             if version.parse(get_cmake_version()) < version.parse("3.4"):
                 return ['cmake']
