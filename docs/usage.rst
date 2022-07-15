@@ -375,20 +375,38 @@ and a python wheel, it is possible to test for the variable ``SKBUILD``:
 Adding cmake as building requirement only if not installed or too low a version
 -------------------------------------------------------------------------------
 
-If systematically installing cmake wheel is not desired, the ``setup_requires`` list
-can be set using the following approach::
+If systematically installing cmake wheel is not desired, it is possible to set it using an ``in-tree backend``.
+For this purpose place the following configuration in your ``pyproject.toml``::
 
+    [build-system]
+    requires = [
+      "setuptools>=42",
+      "scikit-build",
+      "ninja; platform_system!='Windows'"
+    ]
+    build-backend = "backend"
+    backend-path = ["_custom_build"]
+
+then you can implement a thin wrapper around ``build_meta`` in the ``_custom_build/backend.py`` file::
+
+    from setuptools import build_meta as _orig
     from packaging.version import LegacyVersion
     from skbuild.exceptions import SKBuildError
     from skbuild.cmaker import get_cmake_version
 
-    # Add CMake as a build requirement if cmake is not installed or is too low a version
-    setup_requires = []
-    try:
-        if LegacyVersion(get_cmake_version()) < LegacyVersion("3.4"):
-            setup_requires.append('cmake')
-    except SKBuildError:
-        setup_requires.append('cmake')
+    prepare_metadata_for_build_wheel = _orig.prepare_metadata_for_build_wheel
+    build_wheel = _orig.build_wheel
+    build_sdist = _orig.build_sdist
+    get_requires_for_build_sdist = _orig.get_requires_for_build_sdist
+
+    def get_requires_for_build_wheel(self, config_settings=None):
+        requirements = []
+        try:
+            if LegacyVersion(get_cmake_version()) < LegacyVersion("3.4"):
+                requirements.append('cmake')
+        except SKBuildError:
+            requirements.append('cmake')
+        return _orig.get_requires_for_build_wheel(config_settings) + requirements
 
 
 .. _usage_enabling_parallel_build:
