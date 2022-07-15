@@ -381,6 +381,7 @@ For this purpose place the following configuration in your ``pyproject.toml``::
     [build-system]
     requires = [
       "setuptools>=42",
+      "packaging",
       "scikit-build",
       "ninja; platform_system!='Windows'"
     ]
