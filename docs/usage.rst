@@ -395,23 +395,20 @@ then you can implement a thin wrapper around ``build_meta`` in the ``_custom_bui
     prepare_metadata_for_build_wheel = _orig.prepare_metadata_for_build_wheel
     build_wheel = _orig.build_wheel
     build_sdist = _orig.build_sdist
+    get_requires_for_build_sdist = _orig.get_requires_for_build_sdist
 
-    def _get_requires():
+    def get_requires_for_build_wheel(self, config_settings=None):
         from packaging.version import version
         from skbuild.exceptions import SKBuildError
         from skbuild.cmaker import get_cmake_version
+        packages = []
         try:
             if version.parse(get_cmake_version()) < version.parse("3.4"):
-                return ['cmake']
-            return []
+                packages.append('cmake')
         except SKBuildError:
-            return ['cmake']
+            packages.append('cmake')
 
-    def get_requires_for_build_wheel(self, config_settings=None):
-        return _orig.get_requires_for_build_wheel(config_settings) + _get_requires()
-
-    def get_requires_for_build_sdist(self, config_settings=None):
-        return _orig.get_requires_for_build_sdist(config_settings) + _get_requires()
+        return _orig.get_requires_for_build_wheel(config_settings) + packages
 
 
 .. _usage_enabling_parallel_build:
