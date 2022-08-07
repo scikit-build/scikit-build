@@ -46,7 +46,7 @@ from .constants import (
     set_skbuild_plat_name,
     skbuild_plat_name,
 )
-from .exceptions import SKBuildError, SKBuildGeneratorNotFoundError
+from .exceptions import SKBuildError, SKBuildInvalidFileInstallationError, SKBuildGeneratorNotFoundError
 from .utils import (
     PythonModuleFinder,
     mkdir_p,
@@ -793,7 +793,7 @@ def _classify_installed_files(
                 f"    Project Root  : {install_root}\n"
                 f"    Violating File: {to_platform_path(path)}\n"
             )
-            raise SKBuildError(msg)
+            raise SKBuildInvalidFileInstallationError(msg)
 
         # peel off the 'skbuild' prefix
         path = to_unix_path(os.path.relpath(path, CMAKE_INSTALL_DIR()))
