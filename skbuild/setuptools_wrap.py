@@ -46,7 +46,11 @@ from .constants import (
     set_skbuild_plat_name,
     skbuild_plat_name,
 )
-from .exceptions import SKBuildError, SKBuildInvalidFileInstallationError, SKBuildGeneratorNotFoundError
+from .exceptions import (
+    SKBuildError,
+    SKBuildGeneratorNotFoundError,
+    SKBuildInvalidFileInstallationError,
+)
 from .utils import (
     PythonModuleFinder,
     mkdir_p,
