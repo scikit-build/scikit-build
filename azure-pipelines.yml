@@ -47,6 +47,6 @@ jobs:
         env:
           # Used in 'test_platform_windows_find_visual_studio'
           # See https://github.com/Microsoft/azure-pipelines-image-generation/blob/master/images/win/Vs2017-Server2016-Readme.md
-          SKBUILD_TEST_FIND_VS2017_INSTALLATION_EXPECTED: 1
-          SKBUILD_TEST_FIND_VS2019_INSTALLATION_EXPECTED: 0
+          SKBUILD_TEST_FIND_VS2017_INSTALLATION_EXPECTED: 0
+          SKBUILD_TEST_FIND_VS2019_INSTALLATION_EXPECTED: 1
           SKBUILD_TEST_FIND_VS2022_INSTALLATION_EXPECTED: 0
