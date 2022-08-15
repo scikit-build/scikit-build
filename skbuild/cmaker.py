@@ -252,8 +252,8 @@ class CMaker:
             os.makedirs(SETUPTOOLS_INSTALL_DIR())
 
         python_version = CMaker.get_python_version()
-        python_include_dir = CMaker.get_python_include_dir(python_version)
-        python_library = CMaker.get_python_library(python_version)
+        python_include_dir = os.path.abspath(CMaker.get_python_include_dir(python_version))
+        python_library = os.path.abspath(CMaker.get_python_library(python_version))
 
         cmake_source_dir = os.path.abspath(cmake_source_dir)
 
@@ -265,7 +265,7 @@ class CMaker:
             ("-DCMAKE_INSTALL_PREFIX:PATH=" + os.path.abspath(os.path.join(CMAKE_INSTALL_DIR(), cmake_install_dir))),
             ("-DPYTHON_VERSION_STRING:STRING=" + sys.version.split(" ", maxsplit=1)[0]),
             ("-DSKBUILD:INTERNAL=" + "TRUE"),
-            ("-DCMAKE_MODULE_PATH:PATH=" + os.path.join(os.path.dirname(__file__), "resources", "cmake")),
+            ("-DCMAKE_MODULE_PATH:PATH=" + os.path.abspath(os.path.join(os.path.dirname(__file__), "resources", "cmake"))),
         ]
 
         find_python_prefixes = [
