@@ -265,7 +265,10 @@ class CMaker:
             ("-DCMAKE_INSTALL_PREFIX:PATH=" + os.path.abspath(os.path.join(CMAKE_INSTALL_DIR(), cmake_install_dir))),
             ("-DPYTHON_VERSION_STRING:STRING=" + sys.version.split(" ", maxsplit=1)[0]),
             ("-DSKBUILD:INTERNAL=" + "TRUE"),
-            ("-DCMAKE_MODULE_PATH:PATH=" + os.path.abspath(os.path.join(os.path.dirname(__file__), "resources", "cmake"))),
+            (
+                "-DCMAKE_MODULE_PATH:PATH="
+                + os.path.abspath(os.path.join(os.path.dirname(__file__), "resources", "cmake"))
+            ),
         ]
 
         find_python_prefixes = [
