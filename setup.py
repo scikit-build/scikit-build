@@ -36,7 +36,7 @@ setuptools.setup(
         "Mailing List": "https://groups.google.com/forum/#!forum/scikit-build",
         "Examples": "https://github.com/scikit-build/scikit-build-sample-projects",
     },
-    package_data={"skbuild": "resources"},
+    package_data={"skbuild": ["resources"]},
     install_requires=requirements,
     license="MIT",
     zip_safe=False,
