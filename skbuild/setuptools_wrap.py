@@ -763,12 +763,10 @@ def _collect_package_prefixes(package_dir, packages):
     "top.not_a_subpackage" instead of "top", proper -- had such a package been
     specified.
     """
-    return list(
-        sorted(
-            ((package_dir[package].replace(".", "/"), package) for package in packages),
-            key=lambda tup: len(tup[0]),
-            reverse=True,
-        )
+    return sorted(
+        ((package_dir[package].replace(".", "/"), package) for package in packages),
+        key=lambda tup: len(tup[0]),
+        reverse=True,
     )
 
 
