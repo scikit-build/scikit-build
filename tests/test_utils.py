@@ -10,7 +10,14 @@ import os
 
 import pytest
 
-from skbuild.utils import PythonModuleFinder, push_dir, to_platform_path, to_unix_path
+from skbuild.utils import (
+    ContextDecorator,
+    PythonModuleFinder,
+    mkdir_p,
+    push_dir,
+    to_platform_path,
+    to_unix_path,
+)
 
 from . import SAMPLES_DIR, list_ancestors, push_env
 
@@ -27,6 +34,12 @@ def teardown_module():
     method.
     """
     os.chdir(saved_cwd)
+
+
+def test_context_decorator():
+    with ContextDecorator(foo=42) as context:
+        assert hasattr(context, "foo")
+        assert context.foo == 42
 
 
 def test_push_dir(tmpdir):
@@ -121,6 +134,20 @@ def test_push_dir_decorator(tmpdir):
         assert os.path.isdir(foo_directory)
     finally:
         os.chdir(old_cwd)
+
+
+def test_mkdir_p(tmpdir):
+    tmp_dir = str(tmpdir)
+    assert os.path.isdir(tmp_dir)
+
+    foo_bar_dir = os.path.join(tmp_dir, "foo", "bar")
+
+    mkdir_p(foo_bar_dir)
+    assert os.path.isdir(foo_bar_dir)
+
+    # Make sure calling function twice does not raise an exception
+    mkdir_p(foo_bar_dir)
+    assert os.path.isdir(foo_bar_dir)
 
 
 def test_push_env():

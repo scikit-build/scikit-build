@@ -39,6 +39,13 @@ def _log_warning(msg, *args):
         print(msg % args)
 
 
+def mkdir_p(path):
+    """Ensure directory ``path`` exists. If needed, parent directories
+    are created.
+    """
+    return os.makedirs(path, exist_ok=True)
+
+
 class push_dir(ContextDecorator):
     """Context manager to change current directory."""
 
@@ -51,10 +58,10 @@ class push_dir(ContextDecorator):
         :param make_directory:
           If True, ``directory`` is created.
         """
-        self.directory = None
-        self.make_directory = None
+        super().__init__()
+        self.directory = directory
+        self.make_directory = make_directory
         self.old_cwd = None
-        super().__init__(directory=directory, make_directory=make_directory)
 
     def __enter__(self):
         self.old_cwd = os.getcwd()
