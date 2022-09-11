@@ -11,7 +11,6 @@ import os
 import pytest
 
 from skbuild.utils import (
-    ContextDecorator,
     PythonModuleFinder,
     mkdir_p,
     push_dir,
@@ -34,12 +33,6 @@ def teardown_module():
     method.
     """
     os.chdir(saved_cwd)
-
-
-def test_context_decorator():
-    with ContextDecorator(foo=42) as context:
-        assert hasattr(context, "foo")
-        assert context.foo == 42
 
 
 def test_push_dir(tmpdir):
