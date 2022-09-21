@@ -1,0 +1,6 @@
+[flake8]
+max-line-length = 120
+max-complexity = 18
+show-source = True
+extend-ignore = E203, E501, B950
+extend-select = B9
