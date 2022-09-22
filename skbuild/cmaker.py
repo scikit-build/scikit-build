@@ -282,6 +282,8 @@ class CMaker:
                     (prefix + "_LIBRARY:PATH=" + python_library),
                 ]
             )
+            if sys.implementation.name == "pypy":
+                cmd.append(prefix + "_FIND_IMPLEMENTATIONS:STRING=PyPy"),
 
             try:
                 import numpy as np

@@ -209,6 +209,7 @@ def test_configure_with_cmake_args(capfd):
                     (prefix + "_EXECUTABLE"),
                     (prefix + "_INCLUDE_DIR"),
                     (prefix + "_LIBRARY"),
+                    (prefix + "_FIND_IMPLEMENTATIONS"),
                 ]
             )
 
