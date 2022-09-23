@@ -200,15 +200,22 @@ function(add_cython_target _name)
 
   set(comment "Generating ${_output_syntax} source ${generated_file_relative}")
   set(cython_include_directories "")
-  set(pxd_dependencies "")
+  set(pxd_dependencies "${args_DEPENDS}")
   set(c_header_dependencies "")
+
+  # Filter pxd_dependencies so that it only contains pxd files
+  list(FILTER pxd_dependencies INCLUDE REGEX .pxd$)
 
   # Get the include directories.
   get_source_file_property(pyx_location ${_source_file} LOCATION)
   get_filename_component(pyx_path ${pyx_location} PATH)
-  get_directory_property(cmake_include_directories
-                         DIRECTORY ${pyx_path}
-                         INCLUDE_DIRECTORIES)
+  
+  if(EXISTS "${_source_file}")
+    get_directory_property(cmake_include_directories
+                          DIRECTORY ${pyx_path}
+                          INCLUDE_DIRECTORIES)
+  endif()
+
   list(APPEND cython_include_directories ${cmake_include_directories})
 
   # Determine dependencies.
@@ -222,6 +229,7 @@ function(add_cython_target _name)
     list(APPEND pxd_dependencies "${corresponding_pxd_file}")
   endif()
 
+  
   # pxd files to check for additional dependencies
   set(pxds_to_check "${_source_file}" "${pxd_dependencies}")
   set(pxds_checked "")
@@ -230,11 +238,15 @@ function(add_cython_target _name)
     foreach(pxd ${pxds_to_check})
       list(APPEND pxds_checked "${pxd}")
       list(REMOVE_ITEM pxds_to_check "${pxd}")
+      get_filename_component(pxd_absolute "${pxd}" ABSOLUTE)
+      if(NOT EXISTS "${pxd_absolute}")
+        continue()
+      endif()
 
       # look for C headers
       file(STRINGS "${pxd}" extern_from_statements
-           REGEX "cdef[ ]+extern[ ]+from.*$")
-      foreach(statement ${extern_from_statements})
+            REGEX "cdef[ ]+extern[ ]+from.*$")
+      foreach(statement IN LISTS extern_from_statements)
         # Had trouble getting the quote in the regex
         string(REGEX REPLACE
                "cdef[ ]+extern[ ]+from[ ]+[\"]([^\"]+)[\"].*" "\\1"
@@ -253,7 +265,7 @@ function(add_cython_target _name)
       # Look for cimport statements.
       set(module_dependencies "")
       file(STRINGS "${pxd}" cimport_statements REGEX cimport)
-      foreach(statement ${cimport_statements})
+      foreach(statement IN LISTS cimport_statements)
         if(${statement} MATCHES from)
           string(REGEX REPLACE
                  "from[ ]+([^ ]+).*" "\\1"
@@ -269,8 +281,8 @@ function(add_cython_target _name)
       # check for pxi dependencies
       # Look for include statements.
       set(include_dependencies "")
-      file(STRINGS "${pxd}" include_statements REGEX include)
-      foreach(statement ${include_statements})
+      file(STRINGS "${pxd}" include_statements REGEX include)        
+      foreach(statement IN LISTS include_statements)
         string(REGEX REPLACE
                "include[ ]+[\"]([^\"]+)[\"].*" "\\1"
                module "${statement}")
@@ -281,8 +293,12 @@ function(add_cython_target _name)
       list(REMOVE_DUPLICATES include_dependencies)
 
       # Add modules to the files to check, if appropriate.
-      foreach(module ${module_dependencies})
+      foreach(module IN LISTS module_dependencies)
         unset(pxd_location CACHE)
+        string(REPLACE "." "/" module ${module})
+        # TODO: Handle relative import paths, as well as establishing
+        #       The project root directory
+
         find_file(pxd_location ${module}.pxd
                   PATHS "${pyx_path}" ${cmake_include_directories}
                   NO_DEFAULT_PATH)
@@ -299,7 +315,7 @@ function(add_cython_target _name)
       endforeach() # for each module dependency discovered
 
       # Add includes to the files to check, if appropriate.
-      foreach(_include ${include_dependencies})
+      foreach(_include IN LISTS include_dependencies)
         unset(pxi_location CACHE)
         find_file(pxi_location ${_include}
                   PATHS "${pyx_path}" ${cmake_include_directories}
@@ -319,6 +335,40 @@ function(add_cython_target _name)
 
     list(LENGTH pxds_to_check number_pxds_to_check)
   endwhile()
+
+
+  set(cython_binary_include_directories "")
+  # For each pxd_dependency in the build directory, create __init__.py files
+  foreach(pxd_dependency IN LISTS pxd_dependencies)
+    file(RELATIVE_PATH pxd_relative ${CMAKE_BINARY_DIR} ${pxd_dependency})
+    if(NOT "${pxd_relative}" MATCHES "^\\.\\.")
+        while(1)
+          get_filename_component(pxd_relative "${pxd_relative}/" DIRECTORY)
+          
+          message(STATUS "In ${_name}, checking ${CMAKE_SOURCE_DIR}/${pxd_relative}/__init__.py")
+
+          if(EXISTS "${CMAKE_SOURCE_DIR}/${pxd_relative}/__init__.py")
+            list(APPEND cython_binary_include_directories
+              "${CMAKE_BINARY_DIR}/${pxd_relative}"
+            )
+          else()
+            break()
+          endif()
+        endwhile()
+    endif()
+  endforeach()
+
+  set(cython_binary_touch_commands "")
+  list(REMOVE_DUPLICATES cython_binary_include_directories)
+  foreach(cython_binary_include_directory IN LISTS
+          cython_binary_include_directories)
+    list(APPEND cython_binary_touch_commands
+      COMMAND ${CMAKE_COMMAND}
+      ARGS -E touch "${cython_binary_include_directory}/__init__.py"
+    )
+  endforeach()
+  
+  list(APPEND cython_include_directories ${cython_binary_include_directories})
 
   # Set additional flags.
   set(annotate_arg "")
@@ -349,6 +399,7 @@ function(add_cython_target _name)
 
   # Add the command to run the compiler.
   add_custom_command(OUTPUT ${generated_file}
+                     ${cython_binary_touch_commands}
                      COMMAND ${CYTHON_EXECUTABLE}
                      ARGS ${cxx_arg} ${include_directory_arg} ${py_version_arg}
                           ${embed_arg} ${annotate_arg} ${cython_debug_arg}
