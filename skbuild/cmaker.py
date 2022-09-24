@@ -14,6 +14,7 @@ import shlex
 import subprocess
 import sys
 import sysconfig
+from pathlib import Path
 from shlex import quote
 
 import distutils.sysconfig as du_sysconfig
@@ -28,6 +29,8 @@ from .exceptions import SKBuildError
 from .platform_specifics import get_platform
 
 RE_FILE_INSTALL = re.compile(r"""[ \t]*file\(INSTALL DESTINATION "([^"]+)".*"([^"]+)"\).*""")
+
+DIR = Path(__file__).parent.resolve()
 
 
 def pop_arg(arg, args, default=None):
@@ -256,39 +259,42 @@ class CMaker:
         python_library = CMaker.get_python_library(python_version)
 
         cmake_source_dir = os.path.abspath(cmake_source_dir)
+        cmake_resource_dir = DIR / "resources/cmake"
+        cmake_install_prefix = Path(CMAKE_INSTALL_DIR()).joinpath(cmake_install_dir).resolve()
+        python_version_string = sys.version.split(" ", maxsplit=1)[0]
 
         cmd = [
             self.cmake_executable,
             cmake_source_dir,
             "-G",
             generator.name,
-            ("-DCMAKE_INSTALL_PREFIX:PATH=" + os.path.abspath(os.path.join(CMAKE_INSTALL_DIR(), cmake_install_dir))),
-            ("-DPYTHON_VERSION_STRING:STRING=" + sys.version.split(" ", maxsplit=1)[0]),
-            ("-DSKBUILD:INTERNAL=" + "TRUE"),
-            ("-DCMAKE_MODULE_PATH:PATH=" + os.path.join(os.path.dirname(__file__), "resources", "cmake")),
+            f"-DCMAKE_INSTALL_PREFIX:PATH={cmake_install_prefix}",
+            f"-DPYTHON_VERSION_STRING:STRING={python_version_string}",
+            "-DSKBUILD:INTERNAL=TRUE",
+            f"-DCMAKE_MODULE_PATH:PATH={cmake_resource_dir}",
         ]
 
         find_python_prefixes = [
-            f"-DPython{python_version[0]}",
             "-DPython",
+            "-DPython3",
             "-DPYTHON",
         ]
 
         for prefix in find_python_prefixes:
             cmd.extend(
                 [
-                    (prefix + "_EXECUTABLE:FILEPATH=" + sys.executable),
-                    (prefix + "_INCLUDE_DIR:PATH=" + python_include_dir),
-                    (prefix + "_LIBRARY:PATH=" + python_library),
+                    f"{prefix}_EXECUTABLE:FILEPATH={sys.executable}",
+                    f"{prefix}_INCLUDE_DIR:PATH={python_include_dir}",
+                    f"{prefix}_LIBRARY:PATH={python_library}",
                 ]
             )
             if sys.implementation.name == "pypy":
-                cmd.append(prefix + "_FIND_IMPLEMENTATIONS:STRING=PyPy"),
+                cmd.append(f"{prefix}_FIND_IMPLEMENTATIONS:STRING=PyPy"),
 
             try:
                 import numpy as np
 
-                cmd.append(prefix + "_NumPy_INCLUDE_DIRS:PATH=" + np.get_include())
+                cmd.append(f"{prefix}_NumPy_INCLUDE_DIRS:PATH=" + np.get_include())
             except ImportError:
                 pass
 
@@ -297,7 +303,7 @@ class CMaker:
         if generator.architecture:
             cmd.extend(["-A", generator.architecture])
         if ninja_executable_path is not None:
-            cmd.append("-DCMAKE_MAKE_PROGRAM:FILEPATH=" + ninja_executable_path)
+            cmd.append(f"-DCMAKE_MAKE_PROGRAM:FILEPATH={ninja_executable_path}")
 
         cmd.extend(clargs)
 
