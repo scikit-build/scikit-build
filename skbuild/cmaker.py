@@ -30,8 +30,6 @@ from .platform_specifics import get_platform
 
 RE_FILE_INSTALL = re.compile(r"""[ \t]*file\(INSTALL DESTINATION "([^"]+)".*"([^"]+)"\).*""")
 
-DIR = Path(__file__).parent.resolve()
-
 
 def pop_arg(arg, args, default=None):
     """Pops an argument ``arg`` from an argument list ``args`` and returns the
@@ -259,7 +257,7 @@ class CMaker:
         python_library = CMaker.get_python_library(python_version)
 
         cmake_source_dir = os.path.abspath(cmake_source_dir)
-        cmake_resource_dir = DIR / "resources/cmake"
+        cmake_resource_dir = Path(__file__).parent / "resources/cmake"
         cmake_install_prefix = Path(CMAKE_INSTALL_DIR()).joinpath(cmake_install_dir).resolve()
         python_version_string = sys.version.split(" ", maxsplit=1)[0]
 
