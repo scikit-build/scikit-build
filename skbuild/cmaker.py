@@ -14,7 +14,6 @@ import shlex
 import subprocess
 import sys
 import sysconfig
-from pathlib import Path
 from shlex import quote
 
 import distutils.sysconfig as du_sysconfig
@@ -257,8 +256,8 @@ class CMaker:
         python_library = CMaker.get_python_library(python_version)
 
         cmake_source_dir = os.path.abspath(cmake_source_dir)
-        cmake_resource_dir = Path(__file__).parent / "resources/cmake"
-        cmake_install_prefix = Path(CMAKE_INSTALL_DIR()).joinpath(cmake_install_dir).resolve()
+        cmake_resource_dir = os.path.join(os.path.dirname(__file__), "resources", "cmake")
+        cmake_install_prefix = os.path.abspath(os.path.join(CMAKE_INSTALL_DIR(), cmake_install_dir))
         python_version_string = sys.version.split(" ", maxsplit=1)[0]
 
         cmd = [
