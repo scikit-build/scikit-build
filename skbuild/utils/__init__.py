@@ -1,6 +1,7 @@
 """This module defines functions generally useful in scikit-build."""
 
 import contextlib
+import logging
 import os
 from contextlib import contextmanager
 from typing import (
@@ -21,9 +22,9 @@ from distutils.errors import DistutilsTemplateError
 from distutils.filelist import FileList
 from distutils.text_file import TextFile
 
-try:
-    import logging
+distutils_log: logging.Logger
 
+try:
     import setuptools.logging  # noqa: F401
 
     distutils_log = logging.getLogger("skbuild")
@@ -34,9 +35,6 @@ except ImportError:
     from distutils import log as distutils_log  # type: ignore[misc]
 
     logging_module = False
-
-
-Self = TypeVar("Self")
 
 
 class Distribution(NamedTuple):
@@ -61,6 +59,9 @@ def mkdir_p(path: str) -> None:
     return os.makedirs(path, exist_ok=True)
 
 
+Self = TypeVar("Self", bound="push_dir")
+
+
 class push_dir(contextlib.ContextDecorator):
     """Context manager to change current directory."""
 
@@ -76,7 +77,7 @@ class push_dir(contextlib.ContextDecorator):
         super().__init__()
         self.directory = directory
         self.make_directory = make_directory
-        self.old_cwd = None
+        self.old_cwd: Optional[str] = None
 
     def __enter__(self: Self) -> Self:
         self.old_cwd = os.getcwd()
@@ -87,6 +88,7 @@ class push_dir(contextlib.ContextDecorator):
         return self
 
     def __exit__(self, typ: None, val: None, traceback: None) -> None:
+        assert self.old_cwd is not None
         os.chdir(self.old_cwd)
 
 
@@ -190,7 +192,7 @@ def distribution_hide_listing(distribution: Distribution) -> Iterator[Union[bool
     It yields True if ``--hide-listing`` argument was provided.
     """
 
-    hide_listing = hasattr(distribution, "hide_listing") and distribution.hide_listing
+    hide_listing = hasattr(distribution, "hide_listing") and distribution.hide_listing  # type: ignore[attr-defined]
 
     if logging_module:
         # Setuptools 60.2+, will always be on Python 3.6+
@@ -209,13 +211,13 @@ def distribution_hide_listing(distribution: Distribution) -> Iterator[Union[bool
             distutils_log.setLevel(old_level)
 
     else:
-        old_threshold = distutils_log._global_log.threshold
+        old_threshold = distutils_log._global_log.threshold  # type: ignore[attr-defined]
         if hide_listing:
-            distutils_log.set_threshold(distutils_log.WARN)
+            distutils_log.set_threshold(distutils_log.WARN)  # type: ignore[attr-defined]
         try:
             yield hide_listing
         finally:
-            distutils_log.set_threshold(old_threshold)
+            distutils_log.set_threshold(old_threshold)  # type: ignore[attr-defined]
 
 
 def parse_manifestin(template: str) -> List[str]:
@@ -246,7 +248,9 @@ def parse_manifestin(template: str) -> List[str]:
             # malformed lines, or a ValueError from the lower-level
             # convert_path function
             except (DistutilsTemplateError, ValueError) as msg:
-                print(f"{template_file.filename}, line {template_file.current_line}: {msg}")
+                filename = template_file.filename if hasattr(template_file, "filename") else "Unknown"  # type: ignore[attr-defined]
+                current_line = template_file.current_line if hasattr(template_file, "current_line") else "Unknown"  # type: ignore[attr-defined]
+                print(f"{filename}, line {current_line}: {msg}")
         return file_list.files
     finally:
         template_file.close()

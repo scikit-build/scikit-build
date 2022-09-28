@@ -297,7 +297,7 @@ class CMaker:
                 ]
             )
             if sys.implementation.name == "pypy":
-                cmd.append(f"{prefix}_FIND_IMPLEMENTATIONS:STRING=PyPy"),
+                cmd.append(f"{prefix}_FIND_IMPLEMENTATIONS:STRING=PyPy")
 
             try:
                 import numpy as np
@@ -377,7 +377,7 @@ class CMaker:
     # NOTE(opadron): The try-excepts raise the cyclomatic complexity, but we
     # need them for this function.
     @staticmethod  # noqa: C901
-    def get_python_include_dir(python_version: str) -> str:
+    def get_python_include_dir(python_version: str) -> Optional[str]:
         """Get include directory associated with the current python
         interpreter.
 
@@ -396,7 +396,7 @@ class CMaker:
             python_include_dir = '.../conda/envs/py37/include/python3.7m'
         """
         # determine python include dir
-        python_include_dir = sysconfig.get_config_var("INCLUDEPY")
+        python_include_dir: Optional[str] = sysconfig.get_config_var("INCLUDEPY")
 
         # if Python.h not found (or python_include_dir is None), try to find a
         # suitable include dir
@@ -407,12 +407,12 @@ class CMaker:
             # NOTE(opadron): these possible prefixes must be guarded against
             # AttributeErrors and KeyErrors because they each can throw on
             # different platforms or even different builds on the same platform.
-            include_py = sysconfig.get_config_var("INCLUDEPY")
-            include_dir = sysconfig.get_config_var("INCLUDEDIR")
-            include = None
-            plat_include = None
-            python_inc = None
-            python_inc2 = None
+            include_py: Optional[str] = sysconfig.get_config_var("INCLUDEPY")
+            include_dir: Optional[str] = sysconfig.get_config_var("INCLUDEDIR")
+            include: Optional[str] = None
+            plat_include: Optional[str] = None
+            python_inc: Optional[str] = None
+            python_inc2: Optional[str] = None
 
             try:
                 include = sysconfig.get_path("include")
@@ -425,7 +425,7 @@ class CMaker:
                 pass
 
             try:
-                python_inc = sysconfig.get_python_inc()
+                python_inc = sysconfig.get_python_inc()  # type: ignore[attr-defined]
             except AttributeError:
                 pass
 
@@ -438,21 +438,10 @@ class CMaker:
             if python_inc is not None:
                 python_inc2 = os.path.join(python_inc, ".".join(map(str, sys.version_info[:2])))
 
-            candidate_prefixes = list(
-                filter(
-                    bool,
-                    (
-                        include_py,
-                        include_dir,
-                        include,
-                        plat_include,
-                        python_inc,
-                        python_inc2,
-                    ),
-                )
-            )
+            all_candidate_prefixes = [include_py, include_dir, include, plat_include, python_inc, python_inc2]
+            candidate_prefixes: List[str] = [pre for pre in all_candidate_prefixes if pre]
 
-            candidate_versions = (python_version,)
+            candidate_versions: Tuple[str, ...] = (python_version,)
             if python_version:
                 candidate_versions += ("",)
 
@@ -482,7 +471,7 @@ class CMaker:
         return python_include_dir
 
     @staticmethod
-    def get_python_library(python_version: str) -> str:
+    def get_python_library(python_version: str) -> Optional[str]:
         """Get path to the python library associated with the current python
         interpreter.
 
@@ -564,10 +553,10 @@ class CMaker:
             # get the value of `LIBDIR`.
             candidate_libdirs = []
             libdir_a = du_sysconfig.get_config_var("LIBDIR")
+            assert not isinstance(libdir_a, int)
             if libdir_a is None:
-                candidate_libdirs.append(
-                    os.path.abspath(os.path.join(sysconfig.get_config_var("LIBDEST"), "..", "libs"))
-                )
+                libdest = sysconfig.get_config_var("LIBDEST")
+                candidate_libdirs.append(os.path.abspath(os.path.join(libdest, "..", "libs") if libdest else "libs"))
             libdir_b = sysconfig.get_config_var("LIBDIR")
             for libdir in (libdir_a, libdir_b):
                 if libdir is None:

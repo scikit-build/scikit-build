@@ -34,7 +34,6 @@ warn_unused_configs = true
 check_untyped_defs = true
 show_error_codes = true
 enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
-warn_unreachable = true
 
 [[tool.mypy.overrides]]
 module = [

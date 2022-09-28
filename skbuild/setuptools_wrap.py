@@ -146,9 +146,9 @@ def parse_args() -> Tuple[List[str], Optional[str], bool, List[str], List[str]]:
     """This function parses the command-line arguments ``sys.argv`` and returns
     the tuple ``(setuptools_args, cmake_executable, skip_generator_test, cmake_args, build_tool_args)``
     where each ``*_args`` element corresponds to a set of arguments separated by ``--``."""
-    dutils = []
-    cmake = []
-    make = []
+    dutils: List[str] = []
+    cmake: List[str] = []
+    make: List[str] = []
     argsets = [dutils, cmake, make]
     i = 0
     separator = "--"
@@ -220,7 +220,7 @@ def _parse_setuptools_arguments(
 
     # Update class attribute to also ensure the argument is processed
     # when ``setuptools.setup`` is called.
-    upstream_Distribution.global_options.extend(
+    upstream_Distribution.global_options.extend(  # type: ignore[attr-defined]
         [
             ("hide-listing", None, "do not display list of files being included in the distribution"),
             ("force-cmake", None, "always run CMake"),
@@ -237,19 +237,20 @@ def _parse_setuptools_arguments(
     # SystemExit to suppress tracebacks.
 
     with _capture_output():
-        result = dist.parse_command_line()
+        result = dist.parse_command_line()  # type: ignore[attr-defined]
         display_only = not result
         if not hasattr(dist, "hide_listing"):
-            dist.hide_listing = False
+            dist.hide_listing = False  # type: ignore[attr-defined]
         if not hasattr(dist, "force_cmake"):
-            dist.force_cmake = False
+            dist.force_cmake = False  # type: ignore[attr-defined]
         if not hasattr(dist, "skip_cmake"):
-            dist.skip_cmake = False
+            dist.skip_cmake = False  # type: ignore[attr-defined]
 
     plat_names = set()
-    for cmd in [dist.get_command_obj(command) for command in dist.commands]:
-        if getattr(cmd, "plat_name", None) is not None:
-            plat_names.add(cmd.plat_name)
+    for cmd in [dist.get_command_obj(command) for command in dist.commands]:  # type: ignore[attr-defined]
+        plat_name = getattr(cmd, "plat_name", None)
+        if plat_name is not None:
+            plat_names.add(plat_name)
     if not plat_names:
         plat_names.add(None)
     elif len(plat_names) > 1:
@@ -258,15 +259,16 @@ def _parse_setuptools_arguments(
         raise SKBuildError(msg)
     plat_name = list(plat_names)[0]
 
-    build_ext_inplace = dist.get_command_obj("build_ext").inplace
+    build_ext_cmd = dist.get_command_obj("build_ext")
+    build_ext_inplace: bool = getattr(build_ext_cmd, "inplace", False)
 
     return (
         display_only,
-        dist.help_commands,
-        dist.commands,
-        dist.hide_listing,
-        dist.force_cmake,
-        dist.skip_cmake,
+        dist.help_commands,  # type: ignore[attr-defined]
+        dist.commands,  # type: ignore[attr-defined]
+        dist.hide_listing,  # type: ignore[attr-defined]
+        dist.force_cmake,  # type: ignore[attr-defined]
+        dist.skip_cmake,  # type: ignore[attr-defined]
         plat_name,
         build_ext_inplace,
     )
@@ -470,7 +472,7 @@ def setup(*args, **kw) -> None:  # noqa: C901
     # * no CMakeLists.txt if found
     display_only = has_invalid_arguments = help_commands = False
     force_cmake = skip_cmake = False
-    commands = []
+    commands: List[str] = []
     try:
         (
             display_only,
