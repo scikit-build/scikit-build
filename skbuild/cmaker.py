@@ -15,6 +15,7 @@ import subprocess
 import sys
 import sysconfig
 from shlex import quote
+from typing import Dict, List, Mapping, Optional, Sequence, Tuple, overload
 
 import distutils.sysconfig as du_sysconfig
 
@@ -30,7 +31,17 @@ from .platform_specifics import get_platform
 RE_FILE_INSTALL = re.compile(r"""[ \t]*file\(INSTALL DESTINATION "([^"]+)".*"([^"]+)"\).*""")
 
 
-def pop_arg(arg, args, default=None):
+@overload
+def pop_arg(arg: str, args: Sequence[str], default: None = None) -> Tuple[List[str], Optional[str]]:
+    ...
+
+
+@overload
+def pop_arg(arg: str, args: Sequence[str], default: str) -> Tuple[List[str], str]:
+    ...
+
+
+def pop_arg(arg: str, args: Sequence[str], default: Optional[str] = None) -> Tuple[List[str], Optional[str]]:
     """Pops an argument ``arg`` from an argument list ``args`` and returns the
     new list and the value of the argument if present and a default otherwise.
     """
@@ -45,7 +56,7 @@ def pop_arg(arg, args, default=None):
     return args, val
 
 
-def _remove_cwd_prefix(path):
+def _remove_cwd_prefix(path: str) -> str:
     cwd = os.getcwd()
 
     result = path.replace("/", os.sep)
@@ -60,7 +71,7 @@ def _remove_cwd_prefix(path):
     return result
 
 
-def has_cmake_cache_arg(cmake_args, arg_name, arg_value=None):
+def has_cmake_cache_arg(cmake_args: List[str], arg_name: str, arg_value: Optional[str] = None) -> bool:
     """Return True if ``-D<arg_name>:TYPE=<arg_value>`` is found
     in ``cmake_args``. If ``arg_value`` is None, return True only if
     ``-D<arg_name>:`` is found in the list."""
@@ -73,7 +84,7 @@ def has_cmake_cache_arg(cmake_args, arg_name, arg_value=None):
     return False
 
 
-def get_cmake_version(cmake_executable=CMAKE_DEFAULT_EXECUTABLE):
+def get_cmake_version(cmake_executable: str = CMAKE_DEFAULT_EXECUTABLE) -> str:
     """
     Runs CMake and extracts associated version information.
     Raises :class:`skbuild.exceptions.SKBuildError` if it failed to execute CMake.
@@ -85,13 +96,13 @@ def get_cmake_version(cmake_executable=CMAKE_DEFAULT_EXECUTABLE):
         3.14.4
     """
     try:
-        version_string = subprocess.check_output([cmake_executable, "--version"])
+        version_string_bytes = subprocess.check_output([cmake_executable, "--version"])
     except (OSError, subprocess.CalledProcessError) as err:
         raise SKBuildError(
             f"Problem with the CMake installation, aborting build. CMake executable is {cmake_executable}"
         ) from err
 
-    version_string = version_string.decode()
+    version_string = version_string_bytes.decode()
 
     return version_string.splitlines()[0].split(" ")[-1]
 
@@ -130,13 +141,13 @@ class CMaker:
         >>>     cmkr.make(env=env)
     """
 
-    def __init__(self, cmake_executable=CMAKE_DEFAULT_EXECUTABLE):
+    def __init__(self, cmake_executable: str = CMAKE_DEFAULT_EXECUTABLE) -> None:
         self.cmake_executable = cmake_executable
         self.cmake_version = get_cmake_version(self.cmake_executable)
         self.platform = get_platform()
 
     @staticmethod
-    def get_cached(variable_name):
+    def get_cached(variable_name: str) -> Optional[str]:
         """If set, returns the variable cached value from the :func:`skbuild.constants.CMAKE_BUILD_DIR()`, otherwise returns None"""
         variable_name = f"{variable_name}:"
         try:
@@ -150,13 +161,13 @@ class CMaker:
         return None
 
     @classmethod
-    def get_cached_generator_name(cls):
+    def get_cached_generator_name(cls) -> Optional[str]:
         """Reads and returns the cached generator from the :func:`skbuild.constants.CMAKE_BUILD_DIR()`:.
         Returns None if not found.
         """
         return cls.get_cached("CMAKE_GENERATOR")
 
-    def get_cached_generator_env(self):
+    def get_cached_generator_env(self) -> Optional[Dict[str, str]]:
         """If any, return a mapping of environment associated with the cached generator."""
         generator_name = self.get_cached_generator_name()
         if generator_name is not None:
@@ -166,14 +177,14 @@ class CMaker:
 
     def configure(
         self,
-        clargs=(),
-        generator_name=None,
-        skip_generator_test=False,
-        cmake_source_dir=".",
-        cmake_install_dir="",
-        languages=("C", "CXX"),
-        cleanup=True,
-    ):
+        clargs: Sequence[str] = (),
+        generator_name: Optional[str] = None,
+        skip_generator_test: bool = False,
+        cmake_source_dir: str = ".",
+        cmake_install_dir: str = "",
+        languages: Sequence[str] = ("C", "CXX"),
+        cleanup: bool = True,
+    ) -> Dict[str, str]:
         """Calls cmake to generate the Makefile/VS Solution/XCode project.
 
         clargs: tuple
@@ -286,7 +297,7 @@ class CMaker:
                 ]
             )
             if sys.implementation.name == "pypy":
-                cmd.append(f"{prefix}_FIND_IMPLEMENTATIONS:STRING=PyPy"),
+                cmd.append(f"{prefix}_FIND_IMPLEMENTATIONS:STRING=PyPy")
 
             try:
                 import numpy as np
@@ -306,10 +317,10 @@ class CMaker:
 
         # Parse CMAKE_ARGS only if SKBUILD_CONFIGURE_OPTIONS is not present
         if "SKBUILD_CONFIGURE_OPTIONS" in os.environ:
-            env_cmake_args = filter(None, shlex.split(os.environ["SKBUILD_CONFIGURE_OPTIONS"]))
+            env_cmake_args = list(filter(None, shlex.split(os.environ["SKBUILD_CONFIGURE_OPTIONS"])))
         else:
-            env_cmake_args = filter(None, shlex.split(os.environ.get("CMAKE_ARGS", "")))
-            env_cmake_args = [s for s in env_cmake_args if "CMAKE_INSTALL_PREFIX" not in s]
+            env_cmake_args_filtered = filter(None, shlex.split(os.environ.get("CMAKE_ARGS", "")))
+            env_cmake_args = [s for s in env_cmake_args_filtered if "CMAKE_INSTALL_PREFIX" not in s]
 
         cmd.extend(env_cmake_args)
 
@@ -340,7 +351,7 @@ class CMaker:
         return generator.env
 
     @staticmethod
-    def get_python_version():
+    def get_python_version() -> str:
         """Get version associated with the current python interpreter.
 
         Returns:
@@ -366,7 +377,7 @@ class CMaker:
     # NOTE(opadron): The try-excepts raise the cyclomatic complexity, but we
     # need them for this function.
     @staticmethod  # noqa: C901
-    def get_python_include_dir(python_version):
+    def get_python_include_dir(python_version: str) -> Optional[str]:
         """Get include directory associated with the current python
         interpreter.
 
@@ -385,7 +396,7 @@ class CMaker:
             python_include_dir = '.../conda/envs/py37/include/python3.7m'
         """
         # determine python include dir
-        python_include_dir = sysconfig.get_config_var("INCLUDEPY")
+        python_include_dir: Optional[str] = sysconfig.get_config_var("INCLUDEPY")
 
         # if Python.h not found (or python_include_dir is None), try to find a
         # suitable include dir
@@ -396,12 +407,12 @@ class CMaker:
             # NOTE(opadron): these possible prefixes must be guarded against
             # AttributeErrors and KeyErrors because they each can throw on
             # different platforms or even different builds on the same platform.
-            include_py = sysconfig.get_config_var("INCLUDEPY")
-            include_dir = sysconfig.get_config_var("INCLUDEDIR")
-            include = None
-            plat_include = None
-            python_inc = None
-            python_inc2 = None
+            include_py: Optional[str] = sysconfig.get_config_var("INCLUDEPY")
+            include_dir: Optional[str] = sysconfig.get_config_var("INCLUDEDIR")
+            include: Optional[str] = None
+            plat_include: Optional[str] = None
+            python_inc: Optional[str] = None
+            python_inc2: Optional[str] = None
 
             try:
                 include = sysconfig.get_path("include")
@@ -414,7 +425,7 @@ class CMaker:
                 pass
 
             try:
-                python_inc = sysconfig.get_python_inc()
+                python_inc = sysconfig.get_python_inc()  # type: ignore[attr-defined]
             except AttributeError:
                 pass
 
@@ -427,21 +438,10 @@ class CMaker:
             if python_inc is not None:
                 python_inc2 = os.path.join(python_inc, ".".join(map(str, sys.version_info[:2])))
 
-            candidate_prefixes = list(
-                filter(
-                    bool,
-                    (
-                        include_py,
-                        include_dir,
-                        include,
-                        plat_include,
-                        python_inc,
-                        python_inc2,
-                    ),
-                )
-            )
+            all_candidate_prefixes = [include_py, include_dir, include, plat_include, python_inc, python_inc2]
+            candidate_prefixes: List[str] = [pre for pre in all_candidate_prefixes if pre]
 
-            candidate_versions = (python_version,)
+            candidate_versions: Tuple[str, ...] = (python_version,)
             if python_version:
                 candidate_versions += ("",)
 
@@ -471,7 +471,7 @@ class CMaker:
         return python_include_dir
 
     @staticmethod
-    def get_python_library(python_version):
+    def get_python_library(python_version: str) -> Optional[str]:
         """Get path to the python library associated with the current python
         interpreter.
 
@@ -511,7 +511,7 @@ class CMaker:
         return CMaker._guess_python_library(python_version)
 
     @staticmethod
-    def _guess_python_library(python_version):
+    def _guess_python_library(python_version: str) -> Optional[str]:
         # determine direct path to libpython
         python_library = sysconfig.get_config_var("LIBRARY")
 
@@ -553,10 +553,10 @@ class CMaker:
             # get the value of `LIBDIR`.
             candidate_libdirs = []
             libdir_a = du_sysconfig.get_config_var("LIBDIR")
+            assert not isinstance(libdir_a, int)
             if libdir_a is None:
-                candidate_libdirs.append(
-                    os.path.abspath(os.path.join(sysconfig.get_config_var("LIBDEST"), "..", "libs"))
-                )
+                libdest = sysconfig.get_config_var("LIBDEST")
+                candidate_libdirs.append(os.path.abspath(os.path.join(libdest, "..", "libs") if libdest else "libs"))
             libdir_b = sysconfig.get_config_var("LIBDIR")
             for libdir in (libdir_a, libdir_b):
                 if libdir is None:
@@ -593,7 +593,7 @@ class CMaker:
         return python_library
 
     @staticmethod
-    def check_for_bad_installs():
+    def check_for_bad_installs() -> None:
         """This function tries to catch files that are meant to be installed
         outside the project root before they are actually installed.
 
@@ -639,7 +639,14 @@ class CMaker:
                 )
             )
 
-    def make(self, clargs=(), config="Release", source_dir=".", install_target="install", env=None):
+    def make(
+        self,
+        clargs: Sequence[str] = (),
+        config: str = "Release",
+        source_dir: str = ".",
+        install_target: str = "install",
+        env: Optional[Mapping[str, str]] = None,
+    ) -> None:
         """Calls the system-specific make program to compile code.
 
         install_target: string
@@ -674,7 +681,14 @@ class CMaker:
 
         self.make_impl(clargs=clargs, config=config, source_dir=source_dir, install_target=install_target, env=env)
 
-    def make_impl(self, clargs, config, source_dir, install_target, env=None):
+    def make_impl(
+        self,
+        clargs: List[str],
+        config: str,
+        source_dir: str,
+        install_target: Optional[str],
+        env: Optional[Mapping[str, str]] = None,
+    ) -> None:
         """
         Precondition: clargs does not have --config nor --install-target options.
         These command line arguments are extracted in the caller function
@@ -710,13 +724,13 @@ class CMaker:
                 "information."
             )
 
-    def install(self):
+    def install(self) -> List[str]:
         """Returns a list of file paths to install via setuptools that is
         compatible with the data_files keyword argument.
         """
         return self._parse_manifests()
 
-    def _parse_manifests(self):
+    def _parse_manifests(self) -> List[str]:
         paths = glob.glob(os.path.join(CMAKE_BUILD_DIR(), "install_manifest*.txt"))
         try:
             return [self._parse_manifest(path) for path in paths][0]
@@ -724,12 +738,12 @@ class CMaker:
             return []
 
     @staticmethod
-    def _parse_manifest(install_manifest_path):
+    def _parse_manifest(install_manifest_path: str) -> List[str]:
         with open(install_manifest_path, encoding="utf-8") as manifest:
             return [_remove_cwd_prefix(path) for path in manifest]
 
     @staticmethod
-    def _formatArgsForDisplay(args):
+    def _formatArgsForDisplay(args: Sequence[str]) -> str:
         """Format a list of arguments appropriately for display. When formatting
         a command and its arguments, the user should be able to execute the
         command by copying and pasting the output directly into a shell.

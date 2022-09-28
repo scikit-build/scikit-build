@@ -2,6 +2,7 @@
 command."""
 
 import os
+from typing import Dict, List, Tuple
 
 from setuptools.command.build_py import build_py as _build_py
 
@@ -54,10 +55,10 @@ class build_py(set_build_base_mixin, _build_py):
         #   this package
         # checked - true if we have checked that the package directory
         #   is valid (exists, contains __init__.py, ... ?)
-        packages = {}
+        packages: Dict[str, Tuple[str, bool]] = {}
 
         # List of (package, module, filename) tuples to return
-        modules = []
+        modules: List[Tuple[str, str, str]] = []
 
         # We treat modules-in-packages almost the same as toplevel modules,
         # just the "package" for a toplevel is empty (either an empty
@@ -72,11 +73,11 @@ class build_py(set_build_base_mixin, _build_py):
                 (package_dir, checked) = packages[package]
             except KeyError:
                 package_dir = self.get_package_dir(package)
-                checked = 0
+                checked = False
 
             if not checked:
                 init_py = self.check_package(package, package_dir)
-                packages[package] = (package_dir, 1)
+                packages[package] = (package_dir, True)
                 if init_py:
                     modules.append((package, "__init__", init_py))
 

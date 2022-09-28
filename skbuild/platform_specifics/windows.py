@@ -7,7 +7,9 @@ import re
 import subprocess
 import sys
 import textwrap
+from typing import Dict
 
+from ..typing import TypedDict
 from . import abstract
 from .abstract import CMakeGenerator
 
@@ -28,6 +30,12 @@ VS_YEAR_TO_MSC_VER = {
     "2019": "1920",  # VS 2019 - can be +9
     "2022": "1930",  # VS 2022 - can be +9
 }
+
+
+class CachedEnv(TypedDict):
+    PATH: str
+    INCLUDE: str
+    LIB: str
 
 
 class WindowsPlatform(abstract.CMakePlatform):
@@ -182,7 +190,7 @@ def find_visual_studio(vs_version):
 
 # To avoid multiple slow calls to ``subprocess.check_output()`` (either directly or
 # indirectly through ``query_vcvarsall``), results of previous calls are cached.
-__get_msvc_compiler_env_cache = {}
+__get_msvc_compiler_env_cache: Dict[str, CachedEnv] = {}
 
 
 def _get_msvc_compiler_env(vs_version, vs_toolset=None):
@@ -229,18 +237,18 @@ def _get_msvc_compiler_env(vs_version, vs_toolset=None):
             vcvars_ver = f"-vcvars_ver={match_str}"
 
     try:
-        out = subprocess.check_output(
+        out_bytes = subprocess.check_output(
             f'cmd /u /c "{vcvarsall}" {arch} {vcvars_ver} && set',
             stderr=subprocess.STDOUT,
             shell=sys.platform.startswith("cygwin"),
         )
-        out = out.decode("utf-16le", errors="replace")
+        out = out_bytes.decode("utf-16le", errors="replace")
 
         vc_env = {
             key.lower(): value for key, _, value in (line.partition("=") for line in out.splitlines()) if key and value
         }
 
-        cached_env = {
+        cached_env: CachedEnv = {
             "PATH": vc_env.get("path", ""),
             "INCLUDE": vc_env.get("include", ""),
             "LIB": vc_env.get("lib", ""),

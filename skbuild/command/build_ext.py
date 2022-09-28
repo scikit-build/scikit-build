@@ -7,7 +7,7 @@ from distutils.file_util import copy_file
 try:
     from setuptools.command.build_ext import build_ext as _build_ext
 except ImportError:
-    from distutils.command.build_ext import build_ext as _build_ext
+    from distutils.command.build_ext import build_ext as _build_ext  # type: ignore[misc]
 
 from ..constants import CMAKE_INSTALL_DIR
 from . import set_build_base_mixin
@@ -28,7 +28,7 @@ class build_ext(set_build_base_mixin, _build_ext):
             filename = self.get_ext_filename(fullname)
             modpath = fullname.split(".")
             package = ".".join(modpath[:-1])
-            package_dir = build_py.get_package_dir(package)
+            package_dir = build_py.get_package_dir(package)  # type: ignore[attr-defined]
             # skbuild: strip install dir for inplace build
             package_dir = package_dir[len(CMAKE_INSTALL_DIR()) + 1 :]
             dest_filename = os.path.join(package_dir, os.path.basename(filename))
@@ -37,6 +37,6 @@ class build_ext(set_build_base_mixin, _build_ext):
             # Always copy, even if source is older than destination, to ensure
             # that the right extensions for the current Python/platform are
             # used.
-            copy_file(src_filename, dest_filename, verbose=self.verbose, dry_run=self.dry_run)
+            copy_file(src_filename, dest_filename, verbose=self.verbose, dry_run=self.dry_run)  # type: ignore[attr-defined]
             if ext._needs_stub:
                 self.write_stub(package_dir or os.curdir, ext, True)

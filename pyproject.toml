@@ -26,6 +26,7 @@ profile = "black"
 known_third_party = ["distutils"]
 force_to_top = ["setuptools"]
 
+
 [tool.mypy]
 files = ["skbuild"]
 python_version = "3.6"
@@ -33,8 +34,30 @@ warn_unused_configs = true
 check_untyped_defs = true
 show_error_codes = true
 enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
-warn_unreachable = true
+strict_equality = true
+strict_concatenate = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+no_implicit_reexport = true
+disallow_any_generics = true
+disallow_incomplete_defs = true
 
+# disallow_subclassing_any = true 4
+# warn_return_any = true 5
+# disallow_untyped_calls = true 39
+# disallow_untyped_defs = true 61
+
+[[tool.mypy.overrides]]
+module = [
+  "wheel.*",
+  "setuptools.logging",
+  "setuptools.command.*",
+  "numpy",
+  "distro",
+]
+ignore_missing_imports = true
 
 [tool.pylint]
 master.py-version = "3.6"

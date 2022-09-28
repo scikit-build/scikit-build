@@ -1,24 +1,26 @@
 """This module defines custom implementation of ``sdist`` setuptools command."""
 
+from typing import Sequence
+
 from setuptools.command.sdist import sdist as _sdist
 
 from ..utils import distribution_hide_listing, distutils_log
-from . import set_build_base_mixin
+from . import CommandMixinProtocol, set_build_base_mixin
 
 
 class sdist(set_build_base_mixin, _sdist):
     """Custom implementation of ``sdist`` setuptools command."""
 
-    def make_release_tree(self, base_dir, files):
+    def make_release_tree(self: CommandMixinProtocol, base_dir: str, files: Sequence[str]) -> None:
         """Handle --hide-listing option."""
         with distribution_hide_listing(self.distribution):
-            super().make_release_tree(base_dir, files)
+            super().make_release_tree(base_dir, files)  # type: ignore[misc]
         distutils_log.info("copied %d files", len(files))
 
     def make_archive(self, base_name, _format, root_dir=None, base_dir=None, owner=None, group=None):
         """Handle --hide-listing option."""
         distutils_log.info("creating '%s' %s archive and adding '%s' to it", base_name, _format, base_dir)
-        with distribution_hide_listing(self.distribution):
+        with distribution_hide_listing(self.distribution):  # type: ignore[attr-defined]
             super().make_archive(base_name, _format, root_dir, base_dir)
 
     def run(self, *args, **kwargs):

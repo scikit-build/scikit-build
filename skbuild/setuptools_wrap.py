@@ -16,6 +16,18 @@ import shutil
 import stat
 import sys
 import warnings
+from typing import (
+    Any,
+    Dict,
+    Generator,
+    List,
+    Mapping,
+    Optional,
+    Sequence,
+    Set,
+    Tuple,
+    Union,
+)
 
 import setuptools
 from distutils.errors import DistutilsArgError, DistutilsError, DistutilsGetoptError
@@ -60,7 +72,7 @@ from .utils import (
 )
 
 
-def create_skbuild_argparser():
+def create_skbuild_argparser() -> argparse.ArgumentParser:
     """Create and return a scikit-build argument parser."""
     parser = argparse.ArgumentParser(add_help=False)
     parser.add_argument(
@@ -83,7 +95,7 @@ def create_skbuild_argparser():
     return parser
 
 
-def _is_cmake_configure_argument(arg):
+def _is_cmake_configure_argument(arg: str) -> bool:
     """Return True if ``arg`` is a relevant argument to pass to cmake when configuring a project."""
 
     for cmake_arg in (
@@ -95,7 +107,9 @@ def _is_cmake_configure_argument(arg):
     return False
 
 
-def parse_skbuild_args(args, cmake_args, build_tool_args):
+def parse_skbuild_args(
+    args: Sequence[str], cmake_args: List[str], build_tool_args: List[str]
+) -> Tuple[List[str], Optional[str], bool]:
     """
     Parse arguments in the scikit-build argument set. Convert specified
     arguments to proper format and append to cmake_args and build_tool_args.
@@ -128,13 +142,13 @@ def parse_skbuild_args(args, cmake_args, build_tool_args):
     return remaining_args, namespace.cmake_executable, namespace.skip_generator_test
 
 
-def parse_args():
+def parse_args() -> Tuple[List[str], Optional[str], bool, List[str], List[str]]:
     """This function parses the command-line arguments ``sys.argv`` and returns
     the tuple ``(setuptools_args, cmake_executable, skip_generator_test, cmake_args, build_tool_args)``
     where each ``*_args`` element corresponds to a set of arguments separated by ``--``."""
-    dutils = []
-    cmake = []
-    make = []
+    dutils: List[str] = []
+    cmake: List[str] = []
+    make: List[str] = []
     argsets = [dutils, cmake, make]
     i = 0
     separator = "--"
@@ -153,16 +167,23 @@ def parse_args():
 
 
 @contextlib.contextmanager
-def _capture_output():
+def _capture_output() -> Generator[List[Union[io.StringIO, str]], None, None]:
+    out: List[Union[io.StringIO, str]]
+
     with contextlib.redirect_stdout(io.StringIO()) as stdout:
         with contextlib.redirect_stderr(io.StringIO()) as stderr:
             out = [stdout, stderr]
             yield out
+
+    assert isinstance(out[0], io.StringIO)
+    assert isinstance(out[1], io.StringIO)
     out[0] = out[0].getvalue()
     out[1] = out[1].getvalue()
 
 
-def _parse_setuptools_arguments(setup_attrs):
+def _parse_setuptools_arguments(
+    setup_attrs: Mapping[str, Any]
+) -> Tuple[bool, bool, List[str], bool, bool, bool, str, bool]:
     """This function instantiates a Distribution object and
     parses the command line arguments.
 
@@ -199,7 +220,7 @@ def _parse_setuptools_arguments(setup_attrs):
 
     # Update class attribute to also ensure the argument is processed
     # when ``setuptools.setup`` is called.
-    upstream_Distribution.global_options.extend(
+    upstream_Distribution.global_options.extend(  # type: ignore[attr-defined]
         [
             ("hide-listing", None, "do not display list of files being included in the distribution"),
             ("force-cmake", None, "always run CMake"),
@@ -216,19 +237,20 @@ def _parse_setuptools_arguments(setup_attrs):
     # SystemExit to suppress tracebacks.
 
     with _capture_output():
-        result = dist.parse_command_line()
+        result = dist.parse_command_line()  # type: ignore[attr-defined]
         display_only = not result
         if not hasattr(dist, "hide_listing"):
-            dist.hide_listing = False
+            dist.hide_listing = False  # type: ignore[attr-defined]
         if not hasattr(dist, "force_cmake"):
-            dist.force_cmake = False
+            dist.force_cmake = False  # type: ignore[attr-defined]
         if not hasattr(dist, "skip_cmake"):
-            dist.skip_cmake = False
+            dist.skip_cmake = False  # type: ignore[attr-defined]
 
     plat_names = set()
-    for cmd in [dist.get_command_obj(command) for command in dist.commands]:
-        if getattr(cmd, "plat_name", None) is not None:
-            plat_names.add(cmd.plat_name)
+    for cmd in [dist.get_command_obj(command) for command in dist.commands]:  # type: ignore[attr-defined]
+        plat_name = getattr(cmd, "plat_name", None)
+        if plat_name is not None:
+            plat_names.add(plat_name)
     if not plat_names:
         plat_names.add(None)
     elif len(plat_names) > 1:
@@ -237,21 +259,22 @@ def _parse_setuptools_arguments(setup_attrs):
         raise SKBuildError(msg)
     plat_name = list(plat_names)[0]
 
-    build_ext_inplace = dist.get_command_obj("build_ext").inplace
+    build_ext_cmd = dist.get_command_obj("build_ext")
+    build_ext_inplace: bool = getattr(build_ext_cmd, "inplace", False)
 
     return (
         display_only,
-        dist.help_commands,
-        dist.commands,
-        dist.hide_listing,
-        dist.force_cmake,
-        dist.skip_cmake,
+        dist.help_commands,  # type: ignore[attr-defined]
+        dist.commands,  # type: ignore[attr-defined]
+        dist.hide_listing,  # type: ignore[attr-defined]
+        dist.force_cmake,  # type: ignore[attr-defined]
+        dist.skip_cmake,  # type: ignore[attr-defined]
         plat_name,
         build_ext_inplace,
     )
 
 
-def _check_skbuild_parameters(skbuild_kw):
+def _check_skbuild_parameters(skbuild_kw: Mapping[str, Any]) -> None:
     cmake_install_dir = skbuild_kw["cmake_install_dir"]
     if os.path.isabs(cmake_install_dir):
         msg = (
@@ -273,7 +296,7 @@ def _check_skbuild_parameters(skbuild_kw):
         raise SKBuildError(msg)
 
 
-def strip_package(package_parts, module_file):
+def strip_package(package_parts: Sequence[str], module_file: str) -> str:
     """Given ``package_parts`` (e.g. ``['foo', 'bar']``) and a
     ``module_file`` (e.g. ``foo/bar/jaz/rock/roll.py``), starting
     from the left, this function will strip the parts of the path
@@ -294,7 +317,7 @@ def strip_package(package_parts, module_file):
     return module_file[len(package) + 1 :] if package != "" and module_dir.startswith(package) else module_file
 
 
-def _package_data_contain_module(module, package_data):
+def _package_data_contain_module(module: Tuple[str, str, str], package_data: Mapping[str, List[str]]) -> bool:
     """Return True if the ``module`` is contained
     in the ``package_data``.
 
@@ -317,7 +340,7 @@ def _package_data_contain_module(module, package_data):
     return False
 
 
-def _should_run_cmake(commands, cmake_with_sdist):
+def _should_run_cmake(commands: Sequence[str], cmake_with_sdist: bool) -> bool:
     """Return True if at least one command requiring ``cmake`` to run
     is found in ``commands``."""
     for expected_command in [
@@ -341,7 +364,7 @@ def _should_run_cmake(commands, cmake_with_sdist):
     return False
 
 
-def _save_cmake_spec(args):
+def _save_cmake_spec(args: Mapping[str, Any]) -> None:
     """Save the CMake spec to disk"""
     # We use JSON here because readability is more important than performance
     try:
@@ -353,7 +376,7 @@ def _save_cmake_spec(args):
         json.dump(args, fp)
 
 
-def _load_cmake_spec():
+def _load_cmake_spec() -> Optional[Dict[str, Any]]:
     """Load and return the CMake spec from disk"""
     try:
         with open(CMAKE_SPEC_FILE(), encoding="utf-8") as fp:
@@ -363,7 +386,7 @@ def _load_cmake_spec():
 
 
 # pylint:disable=too-many-locals, too-many-branches
-def setup(*args, **kw):  # noqa: C901
+def setup(*args: Any, **kw: Any) -> None:  # noqa: C901
     """This function wraps setup() so that we can run cmake, make,
     CMake build, then proceed as usual with setuptools, appending the
     CMake-generated output as necessary.
@@ -449,7 +472,7 @@ def setup(*args, **kw):  # noqa: C901
     # * no CMakeLists.txt if found
     display_only = has_invalid_arguments = help_commands = False
     force_cmake = skip_cmake = False
-    commands = []
+    commands: List[str] = []
     try:
         (
             display_only,
@@ -463,6 +486,8 @@ def setup(*args, **kw):  # noqa: C901
         ) = _parse_setuptools_arguments(kw)
     except (DistutilsArgError, DistutilsGetoptError):
         has_invalid_arguments = True
+        plat_name = None
+        hide_listing = False
 
     has_cmakelists = os.path.exists(os.path.join(cmake_source_dir, "CMakeLists.txt"))
     if not has_cmakelists:
@@ -729,7 +754,9 @@ def setup(*args, **kw):  # noqa: C901
     return setuptools.setup(*args, **kw)
 
 
-def _collect_package_prefixes(package_dir, packages):
+def _collect_package_prefixes(
+    package_dir: Dict[str, str], packages: List[Union[Any, str]]
+) -> List[Union[Any, Tuple[str, str]]]:
     """
     Collect the list of prefixes for all packages
 
@@ -771,17 +798,17 @@ def _collect_package_prefixes(package_dir, packages):
 
 
 def _classify_installed_files(
-    install_paths,
-    package_data,
-    package_prefixes,
-    py_modules,
-    new_py_modules,
-    scripts,
-    new_scripts,
-    data_files,
-    cmake_source_dir,
-    _cmake_install_dir,
-):
+    install_paths: Sequence[str],
+    package_data: Dict[str, List[str]],
+    package_prefixes: Sequence[Tuple[str, str]],
+    py_modules: Sequence[str],
+    new_py_modules: Dict[str, bool],
+    scripts: Sequence[str],
+    new_scripts: Dict[str, bool],
+    data_files: Dict[Any, Any],
+    cmake_source_dir: str,
+    _cmake_install_dir: str,
+) -> None:
     assert not os.path.isabs(cmake_source_dir)
     assert cmake_source_dir != "."
 
@@ -805,7 +832,16 @@ def _classify_installed_files(
         )
 
 
-def _classify_file(path, package_data, package_prefixes, py_modules, new_py_modules, scripts, new_scripts, data_files):
+def _classify_file(
+    path: str,
+    package_data: Dict[str, List[str]],
+    package_prefixes: Sequence[Tuple[str, str]],
+    py_modules: Sequence[str],
+    new_py_modules: Dict[str, bool],
+    scripts: Sequence[str],
+    new_scripts: Dict[str, bool],
+    data_files: Dict[str, Set[str]],
+) -> None:
     found_package = False
     found_module = False
     found_script = False
@@ -818,7 +854,7 @@ def _classify_file(path, package_data, package_prefixes, py_modules, new_py_modu
             # peel off the package prefix
             path = to_unix_path(os.path.relpath(path, prefix))
 
-            package_file_list = package_data.get(package, [])
+            package_file_list = list(package_data.get(package, []))
             package_file_list.append(path)
             package_data[package] = package_file_list
 
@@ -865,7 +901,7 @@ def _classify_file(path, package_data, package_prefixes, py_modules, new_py_modu
     file_set.add(os.path.join(CMAKE_INSTALL_DIR(), path))
 
 
-def _copy_file(src_file, dest_file, hide_listing=True):
+def _copy_file(src_file: str, dest_file: str, hide_listing: Union[bool, int] = True) -> None:
     """Copy ``src_file`` to ``dest_file`` ensuring parent directory exists.
 
     By default, message like `creating directory /path/to/package` and
@@ -887,7 +923,14 @@ def _copy_file(src_file, dest_file, hide_listing=True):
     shutil.copymode(src_file, dest_file)
 
 
-def _consolidate_package_modules(cmake_source_dir, packages, package_dir, py_modules, package_data, hide_listing):
+def _consolidate_package_modules(
+    cmake_source_dir: str,
+    packages: List[Union[Any, str]],
+    package_dir: Dict[str, str],
+    py_modules: List[Union[Any, str]],
+    package_data: Dict[str, List[str]],
+    hide_listing: Union[bool, int],
+) -> None:
     """This function consolidates packages having modules located in
     both the source tree and the CMake install tree into one location.
 
@@ -956,7 +999,11 @@ def _consolidate_package_modules(cmake_source_dir, packages, package_dir, py_mod
             package_data[package] = [stripped_module_file]
 
 
-def _consolidate_package_data_files(original_package_data, package_prefixes, hide_listing):
+def _consolidate_package_data_files(
+    original_package_data: Dict[str, List[str]],
+    package_prefixes: List[Union[Any, Tuple[str, str]]],
+    hide_listing: Union[bool, int],
+) -> None:
     """This function copies package data files specified using the ``package_data`` keyword
     into :func:`.constants.CMAKE_INSTALL_DIR()`.
 

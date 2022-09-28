@@ -1,18 +1,31 @@
 """This module defines functions generally useful in scikit-build."""
 
 import contextlib
+import logging
 import os
-from collections import namedtuple
-from contextlib import ContextDecorator, contextmanager
+from contextlib import contextmanager
+from typing import (
+    Any,
+    Iterable,
+    Iterator,
+    List,
+    Mapping,
+    NamedTuple,
+    Optional,
+    Sequence,
+    Tuple,
+    TypeVar,
+    Union,
+)
 
 from distutils.command.build_py import build_py as distutils_build_py
 from distutils.errors import DistutilsTemplateError
 from distutils.filelist import FileList
 from distutils.text_file import TextFile
 
-try:
-    import logging
+distutils_log: logging.Logger
 
+try:
     import setuptools.logging  # noqa: F401
 
     distutils_log = logging.getLogger("skbuild")
@@ -20,12 +33,13 @@ try:
     logging_module = True
 
 except ImportError:
-    from distutils import log as distutils_log
+    from distutils import log as distutils_log  # type: ignore[misc]
 
     logging_module = False
 
 
-Distribution = namedtuple("Distribution", "script_name")
+class Distribution(NamedTuple):
+    script_name: str
 
 
 def _log_warning(msg, *args):
@@ -39,17 +53,20 @@ def _log_warning(msg, *args):
         print(msg % args)
 
 
-def mkdir_p(path):
+def mkdir_p(path: str) -> None:
     """Ensure directory ``path`` exists. If needed, parent directories
     are created.
     """
     return os.makedirs(path, exist_ok=True)
 
 
-class push_dir(ContextDecorator):
+Self = TypeVar("Self", bound="push_dir")
+
+
+class push_dir(contextlib.ContextDecorator):
     """Context manager to change current directory."""
 
-    def __init__(self, directory=None, make_directory=False):
+    def __init__(self, directory: Optional[str] = None, make_directory: bool = False) -> None:
         """
         :param directory:
           Path to set as current working directory. If ``None``
@@ -61,9 +78,9 @@ class push_dir(ContextDecorator):
         super().__init__()
         self.directory = directory
         self.make_directory = make_directory
-        self.old_cwd = None
+        self.old_cwd: Optional[str] = None
 
-    def __enter__(self):
+    def __enter__(self: Self) -> Self:
         self.old_cwd = os.getcwd()
         if self.directory:
             if self.make_directory:
@@ -71,7 +88,8 @@ class push_dir(ContextDecorator):
             os.chdir(self.directory)
         return self
 
-    def __exit__(self, typ, val, traceback):
+    def __exit__(self, typ: None, val: None, traceback: None) -> None:
+        assert self.old_cwd is not None
         os.chdir(self.old_cwd)
 
 
@@ -83,7 +101,13 @@ class PythonModuleFinder(distutils_build_py):
     """
 
     # pylint: disable-next=super-init-not-called
-    def __init__(self, packages, package_dir, py_modules, alternative_build_base=None):
+    def __init__(
+        self,
+        packages: Sequence[str],
+        package_dir: Mapping[str, str],
+        py_modules: Sequence[str],
+        alternative_build_base: Optional[str] = None,
+    ) -> None:
         """
         :param packages: List of packages to search.
         :param package_dir: Dictionary mapping ``package`` with ``directory``.
@@ -97,7 +121,7 @@ class PythonModuleFinder(distutils_build_py):
 
         self.distribution = Distribution("setup.py")
 
-    def find_all_modules(self, project_dir=None):
+    def find_all_modules(self, project_dir: Optional[str] = None) -> List[Union[Any, Tuple[str, str, str]]]:
         """Compute the list of all modules that would be built by
         project located in current directory, whether they are
         specified one-module-at-a-time ``py_modules`` or by whole
@@ -112,7 +136,7 @@ class PythonModuleFinder(distutils_build_py):
         with push_dir(project_dir):
             return super().find_all_modules()
 
-    def find_package_modules(self, package, package_dir):
+    def find_package_modules(self, package: str, package_dir: str) -> Iterable[Tuple[str, str, str]]:
         """Temporally prepend the ``alternative_build_base`` to ``module_file``.
         Doing so will ensure modules can also be found in other location
         (e.g ``skbuild.constants.CMAKE_INSTALL_DIR``).
@@ -123,7 +147,7 @@ class PythonModuleFinder(distutils_build_py):
         modules = super().find_package_modules(package, package_dir)
 
         # Strip the alternative base from module_file
-        def _strip_directory(entry):
+        def _strip_directory(entry: Tuple[str, str, str]) -> Tuple[str, str, str]:
             module_file = entry[2]
             if self.alternative_build_base is not None and module_file.startswith(self.alternative_build_base):
                 module_file = module_file[len(self.alternative_build_base) + 1 :]
@@ -131,7 +155,7 @@ class PythonModuleFinder(distutils_build_py):
 
         return map(_strip_directory, modules)
 
-    def check_module(self, module, module_file):
+    def check_module(self, module: str, module_file: str) -> bool:
         """Return True if ``module_file`` belongs to ``module``."""
         if self.alternative_build_base is not None:
             updated_module_file = os.path.join(self.alternative_build_base, module_file)
@@ -143,18 +167,25 @@ class PythonModuleFinder(distutils_build_py):
         return True
 
 
-def to_platform_path(path):
+OptStr = TypeVar("OptStr", str, None)
+
+
+def to_platform_path(path: OptStr) -> OptStr:
     """Return a version of ``path`` where all separator are :attr:`os.sep`"""
-    return path.replace("/", os.sep).replace("\\", os.sep) if path is not None else None
+    if path is None:
+        return path
+    return path.replace("/", os.sep).replace("\\", os.sep)
 
 
-def to_unix_path(path):
+def to_unix_path(path: OptStr) -> OptStr:
     """Return a version of ``path`` where all separator are ``/``"""
-    return path.replace("\\", "/") if path is not None else None
+    if path is None:
+        return path
+    return path.replace("\\", "/")
 
 
 @contextmanager
-def distribution_hide_listing(distribution):
+def distribution_hide_listing(distribution: Distribution) -> Iterator[Union[bool, int]]:
     """Given a ``distribution``, this context manager temporarily
     sets distutils threshold to WARN if ``--hide-listing`` argument
     was provided.
@@ -162,7 +193,7 @@ def distribution_hide_listing(distribution):
     It yields True if ``--hide-listing`` argument was provided.
     """
 
-    hide_listing = hasattr(distribution, "hide_listing") and distribution.hide_listing
+    hide_listing = hasattr(distribution, "hide_listing") and distribution.hide_listing  # type: ignore[attr-defined]
 
     if logging_module:
         # Setuptools 60.2+, will always be on Python 3.6+
@@ -181,28 +212,34 @@ def distribution_hide_listing(distribution):
             distutils_log.setLevel(old_level)
 
     else:
-        old_threshold = distutils_log._global_log.threshold
+        old_threshold = distutils_log._global_log.threshold  # type: ignore[attr-defined]
         if hide_listing:
-            distutils_log.set_threshold(distutils_log.WARN)
+            distutils_log.set_threshold(distutils_log.WARN)  # type: ignore[attr-defined]
         try:
             yield hide_listing
         finally:
-            distutils_log.set_threshold(old_threshold)
+            distutils_log.set_threshold(old_threshold)  # type: ignore[attr-defined]
 
 
-def parse_manifestin(template):
+def parse_manifestin(template: str) -> List[str]:
     """This function parses template file (usually MANIFEST.in)"""
     if not os.path.exists(template):
         return []
 
-    template = TextFile(
-        template, strip_comments=1, skip_blanks=1, join_lines=1, lstrip_ws=1, rstrip_ws=1, collapse_join=1
+    template_file = TextFile(
+        template,
+        strip_comments=True,
+        skip_blanks=True,
+        join_lines=True,
+        lstrip_ws=True,
+        rstrip_ws=True,
+        collapse_join=True,
     )
 
     file_list = FileList()
     try:
         while True:
-            line = template.readline()
+            line = template_file.readline()
             if line is None:  # end of file
                 break
 
@@ -212,7 +249,9 @@ def parse_manifestin(template):
             # malformed lines, or a ValueError from the lower-level
             # convert_path function
             except (DistutilsTemplateError, ValueError) as msg:
-                print(f"{template.filename}, line {template.current_line}: {msg}")
+                filename = template_file.filename if hasattr(template_file, "filename") else "Unknown"  # type: ignore[attr-defined]
+                current_line = template_file.current_line if hasattr(template_file, "current_line") else "Unknown"  # type: ignore[attr-defined]
+                print(f"{filename}, line {current_line}: {msg}")
         return file_list.files
     finally:
-        template.close()
+        template_file.close()

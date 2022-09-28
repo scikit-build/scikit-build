@@ -1,12 +1,10 @@
+from types import SimpleNamespace
+
 import pytest
 
 from skbuild.utils import distribution_hide_listing, distutils_log
 
 setuptools_logging = pytest.importorskip("setuptools.logging")
-
-
-class SimpleNamespace:
-    pass
 
 
 def test_hide_listing(caplog):
