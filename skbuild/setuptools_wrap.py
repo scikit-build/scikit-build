@@ -16,14 +16,23 @@ import shutil
 import stat
 import sys
 import warnings
-from typing import Any, Dict, Iterator, List, Optional, Set, Tuple, Union
-from unittest.mock import MagicMock
+from typing import (
+    Any,
+    Dict,
+    Generator,
+    List,
+    Mapping,
+    Optional,
+    Sequence,
+    Set,
+    Tuple,
+    Union,
+)
 
 import setuptools
 from distutils.errors import DistutilsArgError, DistutilsError, DistutilsGetoptError
 from packaging.requirements import Requirement
 from packaging.version import parse as parse_version
-from setuptools.dist import Distribution
 from setuptools.dist import Distribution as upstream_Distribution
 
 from . import cmaker
@@ -99,8 +108,8 @@ def _is_cmake_configure_argument(arg: str) -> bool:
 
 
 def parse_skbuild_args(
-    args: List[str], cmake_args: List[Union[Any, str]], build_tool_args: List[Any]
-) -> Union[Tuple[List[str], None, bool], Tuple[List[str], str, bool]]:
+    args: Sequence[str], cmake_args: List[str], build_tool_args: List[str]
+) -> Tuple[List[str], Optional[str], bool]:
     """
     Parse arguments in the scikit-build argument set. Convert specified
     arguments to proper format and append to cmake_args and build_tool_args.
@@ -133,9 +142,7 @@ def parse_skbuild_args(
     return remaining_args, namespace.cmake_executable, namespace.skip_generator_test
 
 
-def parse_args() -> Union[
-    Tuple[List[str], None, bool, List[str], List[str]], Tuple[List[str], str, bool, List[str], List[str]]
-]:
+def parse_args() -> Tuple[List[str], Optional[str], bool, List[str], List[str]]:
     """This function parses the command-line arguments ``sys.argv`` and returns
     the tuple ``(setuptools_args, cmake_executable, skip_generator_test, cmake_args, build_tool_args)``
     where each ``*_args`` element corresponds to a set of arguments separated by ``--``."""
@@ -160,16 +167,23 @@ def parse_args() -> Union[
 
 
 @contextlib.contextmanager
-def _capture_output() -> Iterator[List[io.StringIO]]:
+def _capture_output() -> Generator[List[Union[io.StringIO, str]], None, None]:
+    out: List[Union[io.StringIO, str]]
+
     with contextlib.redirect_stdout(io.StringIO()) as stdout:
         with contextlib.redirect_stderr(io.StringIO()) as stderr:
             out = [stdout, stderr]
             yield out
+
+    assert isinstance(out[0], io.StringIO)
+    assert isinstance(out[1], io.StringIO)
     out[0] = out[0].getvalue()
     out[1] = out[1].getvalue()
 
 
-def _parse_setuptools_arguments(setup_attrs: Dict[str, Any]) -> Any:
+def _parse_setuptools_arguments(
+    setup_attrs: Mapping[str, Any]
+) -> Tuple[bool, bool, List[str], bool, bool, bool, str, bool]:
     """This function instantiates a Distribution object and
     parses the command line arguments.
 
@@ -258,7 +272,7 @@ def _parse_setuptools_arguments(setup_attrs: Dict[str, Any]) -> Any:
     )
 
 
-def _check_skbuild_parameters(skbuild_kw: Dict[str, Any]) -> None:
+def _check_skbuild_parameters(skbuild_kw: Mapping[str, Any]) -> None:
     cmake_install_dir = skbuild_kw["cmake_install_dir"]
     if os.path.isabs(cmake_install_dir):
         msg = (
@@ -280,7 +294,7 @@ def _check_skbuild_parameters(skbuild_kw: Dict[str, Any]) -> None:
         raise SKBuildError(msg)
 
 
-def strip_package(package_parts: List[Union[Any, str]], module_file: str) -> str:
+def strip_package(package_parts: Sequence[str], module_file: str) -> str:
     """Given ``package_parts`` (e.g. ``['foo', 'bar']``) and a
     ``module_file`` (e.g. ``foo/bar/jaz/rock/roll.py``), starting
     from the left, this function will strip the parts of the path
@@ -301,7 +315,7 @@ def strip_package(package_parts: List[Union[Any, str]], module_file: str) -> str
     return module_file[len(package) + 1 :] if package != "" and module_dir.startswith(package) else module_file
 
 
-def _package_data_contain_module(module: Tuple[str, str, str], package_data: Dict[str, List[str]]) -> bool:
+def _package_data_contain_module(module: Tuple[str, str, str], package_data: Mapping[str, List[str]]) -> bool:
     """Return True if the ``module`` is contained
     in the ``package_data``.
 
@@ -324,7 +338,7 @@ def _package_data_contain_module(module: Tuple[str, str, str], package_data: Dic
     return False
 
 
-def _should_run_cmake(commands: List[str], cmake_with_sdist: bool) -> bool:
+def _should_run_cmake(commands: Sequence[str], cmake_with_sdist: bool) -> bool:
     """Return True if at least one command requiring ``cmake`` to run
     is found in ``commands``."""
     for expected_command in [
@@ -348,9 +362,7 @@ def _should_run_cmake(commands: List[str], cmake_with_sdist: bool) -> bool:
     return False
 
 
-def _save_cmake_spec(
-    args: Dict[str, Union[List[str], str, Dict[str, Optional[str]], Dict[str, str], Dict[str, None]]]
-) -> None:
+def _save_cmake_spec(args: Mapping[str, Any]) -> None:
     """Save the CMake spec to disk"""
     # We use JSON here because readability is more important than performance
     try:
@@ -362,7 +374,7 @@ def _save_cmake_spec(
         json.dump(args, fp)
 
 
-def _load_cmake_spec() -> Dict[str, Union[List[str], str, Dict[str, Optional[str]], Dict[str, str], Dict[str, None]]]:
+def _load_cmake_spec() -> Optional[Dict[str, Any]]:
     """Load and return the CMake spec from disk"""
     try:
         with open(CMAKE_SPEC_FILE(), encoding="utf-8") as fp:
@@ -372,7 +384,7 @@ def _load_cmake_spec() -> Dict[str, Union[List[str], str, Dict[str, Optional[str
 
 
 # pylint:disable=too-many-locals, too-many-branches
-def setup(*args, **kw) -> Union[MagicMock, Distribution]:  # noqa: C901
+def setup(*args, **kw) -> None:  # noqa: C901
     """This function wraps setup() so that we can run cmake, make,
     CMake build, then proceed as usual with setuptools, appending the
     CMake-generated output as necessary.
@@ -472,6 +484,8 @@ def setup(*args, **kw) -> Union[MagicMock, Distribution]:  # noqa: C901
         ) = _parse_setuptools_arguments(kw)
     except (DistutilsArgError, DistutilsGetoptError):
         has_invalid_arguments = True
+        plat_name = None
+        hide_listing = False
 
     has_cmakelists = os.path.exists(os.path.join(cmake_source_dir, "CMakeLists.txt"))
     if not has_cmakelists:
@@ -782,12 +796,12 @@ def _collect_package_prefixes(
 
 
 def _classify_installed_files(
-    install_paths: List[Union[Any, str]],
+    install_paths: Sequence[str],
     package_data: Dict[str, List[str]],
-    package_prefixes: List[Union[Any, Tuple[str, str]]],
-    py_modules: List[Union[Any, str]],
+    package_prefixes: Sequence[Tuple[str, str]],
+    py_modules: Sequence[str],
     new_py_modules: Dict[str, bool],
-    scripts: List[Union[Any, str]],
+    scripts: Sequence[str],
     new_scripts: Dict[str, bool],
     data_files: Dict[Any, Any],
     cmake_source_dir: str,
@@ -819,10 +833,10 @@ def _classify_installed_files(
 def _classify_file(
     path: str,
     package_data: Dict[str, List[str]],
-    package_prefixes: List[Union[Any, Tuple[str, str]]],
-    py_modules: List[Union[Any, str]],
+    package_prefixes: Sequence[Tuple[str, str]],
+    py_modules: Sequence[str],
     new_py_modules: Dict[str, bool],
-    scripts: List[Union[Any, str]],
+    scripts: Sequence[str],
     new_scripts: Dict[str, bool],
     data_files: Dict[str, Set[str]],
 ) -> None:
@@ -838,7 +852,7 @@ def _classify_file(
             # peel off the package prefix
             path = to_unix_path(os.path.relpath(path, prefix))
 
-            package_file_list = package_data.get(package, [])
+            package_file_list = list(package_data.get(package, []))
             package_file_list.append(path)
             package_data[package] = package_file_list
 

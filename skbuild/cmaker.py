@@ -15,7 +15,7 @@ import subprocess
 import sys
 import sysconfig
 from shlex import quote
-from typing import Any, Dict, Iterable, List, Optional, Tuple, Union, overload
+from typing import Dict, List, Mapping, Optional, Sequence, Tuple, overload
 
 import distutils.sysconfig as du_sysconfig
 
@@ -32,16 +32,16 @@ RE_FILE_INSTALL = re.compile(r"""[ \t]*file\(INSTALL DESTINATION "([^"]+)".*"([^
 
 
 @overload
-def pop_arg(arg: str, args: Iterable[str], default: None = None) -> Tuple[List[str], Optional[str]]:
+def pop_arg(arg: str, args: Sequence[str], default: None = None) -> Tuple[List[str], Optional[str]]:
     ...
 
 
 @overload
-def pop_arg(arg: str, args: Iterable[str], default: str) -> Tuple[List[str], str]:
+def pop_arg(arg: str, args: Sequence[str], default: str) -> Tuple[List[str], str]:
     ...
 
 
-def pop_arg(arg: str, args: Iterable[str], default: Optional[str] = None) -> Tuple[List[str], Optional[str]]:
+def pop_arg(arg: str, args: Sequence[str], default: Optional[str] = None) -> Tuple[List[str], Optional[str]]:
     """Pops an argument ``arg`` from an argument list ``args`` and returns the
     new list and the value of the argument if present and a default otherwise.
     """
@@ -96,13 +96,13 @@ def get_cmake_version(cmake_executable: str = CMAKE_DEFAULT_EXECUTABLE) -> str:
         3.14.4
     """
     try:
-        version_string = subprocess.check_output([cmake_executable, "--version"])
+        version_string_bytes = subprocess.check_output([cmake_executable, "--version"])
     except (OSError, subprocess.CalledProcessError) as err:
         raise SKBuildError(
             f"Problem with the CMake installation, aborting build. CMake executable is {cmake_executable}"
         ) from err
 
-    version_string = version_string.decode()
+    version_string = version_string_bytes.decode()
 
     return version_string.splitlines()[0].split(" ")[-1]
 
@@ -177,12 +177,12 @@ class CMaker:
 
     def configure(
         self,
-        clargs: Union[Tuple[()], List[str]] = (),
-        generator_name: None = None,
+        clargs: Sequence[str] = (),
+        generator_name: Optional[str] = None,
         skip_generator_test: bool = False,
         cmake_source_dir: str = ".",
         cmake_install_dir: str = "",
-        languages: Union[Tuple[str, str], Tuple[()]] = ("C", "CXX"),
+        languages: Sequence[str] = ("C", "CXX"),
         cleanup: bool = True,
     ) -> Dict[str, str]:
         """Calls cmake to generate the Makefile/VS Solution/XCode project.
@@ -317,10 +317,10 @@ class CMaker:
 
         # Parse CMAKE_ARGS only if SKBUILD_CONFIGURE_OPTIONS is not present
         if "SKBUILD_CONFIGURE_OPTIONS" in os.environ:
-            env_cmake_args = filter(None, shlex.split(os.environ["SKBUILD_CONFIGURE_OPTIONS"]))
+            env_cmake_args = list(filter(None, shlex.split(os.environ["SKBUILD_CONFIGURE_OPTIONS"])))
         else:
-            env_cmake_args = filter(None, shlex.split(os.environ.get("CMAKE_ARGS", "")))
-            env_cmake_args = [s for s in env_cmake_args if "CMAKE_INSTALL_PREFIX" not in s]
+            env_cmake_args_filtered = filter(None, shlex.split(os.environ.get("CMAKE_ARGS", "")))
+            env_cmake_args = [s for s in env_cmake_args_filtered if "CMAKE_INSTALL_PREFIX" not in s]
 
         cmd.extend(env_cmake_args)
 
@@ -522,7 +522,7 @@ class CMaker:
         return CMaker._guess_python_library(python_version)
 
     @staticmethod
-    def _guess_python_library(python_version: str) -> str:
+    def _guess_python_library(python_version: str) -> Optional[str]:
         # determine direct path to libpython
         python_library = sysconfig.get_config_var("LIBRARY")
 
@@ -652,11 +652,11 @@ class CMaker:
 
     def make(
         self,
-        clargs: Union[Tuple[()], List[str]] = (),
+        clargs: Sequence[str] = (),
         config: str = "Release",
         source_dir: str = ".",
         install_target: str = "install",
-        env: Optional[Dict[str, str]] = None,
+        env: Optional[Mapping[str, str]] = None,
     ) -> None:
         """Calls the system-specific make program to compile code.
 
@@ -694,11 +694,11 @@ class CMaker:
 
     def make_impl(
         self,
-        clargs: List[Any],
+        clargs: List[str],
         config: str,
         source_dir: str,
         install_target: Optional[str],
-        env: Optional[Dict[str, str]] = None,
+        env: Optional[Mapping[str, str]] = None,
     ) -> None:
         """
         Precondition: clargs does not have --config nor --install-target options.
@@ -735,13 +735,13 @@ class CMaker:
                 "information."
             )
 
-    def install(self) -> List[Union[Any, str]]:
+    def install(self) -> List[str]:
         """Returns a list of file paths to install via setuptools that is
         compatible with the data_files keyword argument.
         """
         return self._parse_manifests()
 
-    def _parse_manifests(self) -> List[Union[Any, str]]:
+    def _parse_manifests(self) -> List[str]:
         paths = glob.glob(os.path.join(CMAKE_BUILD_DIR(), "install_manifest*.txt"))
         try:
             return [self._parse_manifest(path) for path in paths][0]
@@ -749,12 +749,12 @@ class CMaker:
             return []
 
     @staticmethod
-    def _parse_manifest(install_manifest_path: str) -> List[Union[Any, str]]:
+    def _parse_manifest(install_manifest_path: str) -> List[str]:
         with open(install_manifest_path, encoding="utf-8") as manifest:
             return [_remove_cwd_prefix(path) for path in manifest]
 
     @staticmethod
-    def _formatArgsForDisplay(args: List[str]) -> str:
+    def _formatArgsForDisplay(args: Sequence[str]) -> str:
         """Format a list of arguments appropriately for display. When formatting
         a command and its arguments, the user should be able to execute the
         command by copying and pasting the output directly into a shell.

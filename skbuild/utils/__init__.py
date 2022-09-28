@@ -3,14 +3,14 @@
 import contextlib
 import os
 from contextlib import contextmanager
-from types import SimpleNamespace
 from typing import (
     Any,
-    Dict,
     Iterator,
     List,
+    Mapping,
     NamedTuple,
     Optional,
+    Sequence,
     Tuple,
     TypeVar,
     Union,
@@ -31,7 +31,7 @@ try:
     logging_module = True
 
 except ImportError:
-    from distutils import log as distutils_log
+    from distutils import log as distutils_log  # type: ignore[misc]
 
     logging_module = False
 
@@ -78,7 +78,7 @@ class push_dir(contextlib.ContextDecorator):
         self.make_directory = make_directory
         self.old_cwd = None
 
-    def __enter__(self) -> Self:
+    def __enter__(self: Self) -> Self:
         self.old_cwd = os.getcwd()
         if self.directory:
             if self.make_directory:
@@ -100,9 +100,9 @@ class PythonModuleFinder(distutils_build_py):
     # pylint: disable-next=super-init-not-called
     def __init__(
         self,
-        packages: List[Union[Any, str]],
-        package_dir: Dict[str, str],
-        py_modules: List[Union[Any, str]],
+        packages: Sequence[str],
+        package_dir: Mapping[str, str],
+        py_modules: Sequence[str],
         alternative_build_base: Optional[str] = None,
     ) -> None:
         """
@@ -164,18 +164,25 @@ class PythonModuleFinder(distutils_build_py):
         return True
 
 
-def to_platform_path(path: Optional[str]) -> Optional[str]:
+OptStr = TypeVar("OptStr", str, None)
+
+
+def to_platform_path(path: OptStr) -> OptStr:
     """Return a version of ``path`` where all separator are :attr:`os.sep`"""
-    return path.replace("/", os.sep).replace("\\", os.sep) if path is not None else None
+    if path is None:
+        return path
+    return path.replace("/", os.sep).replace("\\", os.sep)
 
 
-def to_unix_path(path: Optional[str]) -> Optional[str]:
+def to_unix_path(path: OptStr) -> OptStr:
     """Return a version of ``path`` where all separator are ``/``"""
-    return path.replace("\\", "/") if path is not None else None
+    if path is None:
+        return path
+    return path.replace("\\", "/")
 
 
 @contextmanager
-def distribution_hide_listing(distribution: Union[Distribution, SimpleNamespace]) -> Iterator[Union[bool, int]]:
+def distribution_hide_listing(distribution: Distribution) -> Iterator[Union[bool, int]]:
     """Given a ``distribution``, this context manager temporarily
     sets distutils threshold to WARN if ``--hide-listing`` argument
     was provided.
@@ -216,14 +223,20 @@ def parse_manifestin(template: str) -> List[str]:
     if not os.path.exists(template):
         return []
 
-    template = TextFile(
-        template, strip_comments=1, skip_blanks=1, join_lines=1, lstrip_ws=1, rstrip_ws=1, collapse_join=1
+    template_file = TextFile(
+        template,
+        strip_comments=True,
+        skip_blanks=True,
+        join_lines=True,
+        lstrip_ws=True,
+        rstrip_ws=True,
+        collapse_join=True,
     )
 
     file_list = FileList()
     try:
         while True:
-            line = template.readline()
+            line = template_file.readline()
             if line is None:  # end of file
                 break
 
@@ -233,7 +246,7 @@ def parse_manifestin(template: str) -> List[str]:
             # malformed lines, or a ValueError from the lower-level
             # convert_path function
             except (DistutilsTemplateError, ValueError) as msg:
-                print(f"{template.filename}, line {template.current_line}: {msg}")
+                print(f"{template_file.filename}, line {template_file.current_line}: {msg}")
         return file_list.files
     finally:
-        template.close()
+        template_file.close()

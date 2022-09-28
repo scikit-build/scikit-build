@@ -229,12 +229,12 @@ def _get_msvc_compiler_env(vs_version, vs_toolset=None):
             vcvars_ver = f"-vcvars_ver={match_str}"
 
     try:
-        out = subprocess.check_output(
+        out_bytes = subprocess.check_output(
             f'cmd /u /c "{vcvarsall}" {arch} {vcvars_ver} && set',
             stderr=subprocess.STDOUT,
             shell=sys.platform.startswith("cygwin"),
         )
-        out = out.decode("utf-16le", errors="replace")
+        out = out_bytes.decode("utf-16le", errors="replace")
 
         vc_env = {
             key.lower(): value for key, _, value in (line.partition("=") for line in out.splitlines()) if key and value

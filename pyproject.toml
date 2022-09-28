@@ -41,9 +41,8 @@ module = [
   "wheel.*",
   "setuptools.logging",
   "setuptools.command.*",
-  "ninja",
-  "cmake",
   "numpy",
+  "distro",
 ]
 ignore_missing_imports = true
 
