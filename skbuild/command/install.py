@@ -1,6 +1,8 @@
 """This module defines custom implementation of ``install`` setuptools
 command."""
 
+from typing import Any
+
 from setuptools.command.install import install as _install
 
 from . import CommandMixinProtocol, set_build_base_mixin
@@ -9,7 +11,7 @@ from . import CommandMixinProtocol, set_build_base_mixin
 class install(set_build_base_mixin, _install):
     """Custom implementation of ``install`` setuptools command."""
 
-    def finalize_options(self: CommandMixinProtocol, *args, **kwargs):
+    def finalize_options(self: CommandMixinProtocol, *args: Any, **kwargs: Any) -> None:
         """Ensure that if the distribution is non-pure, all modules
         are installed in ``self.install_platlib``.
 

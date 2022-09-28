@@ -386,7 +386,7 @@ def _load_cmake_spec() -> Optional[Dict[str, Any]]:
 
 
 # pylint:disable=too-many-locals, too-many-branches
-def setup(*args, **kw) -> None:  # noqa: C901
+def setup(*args: Any, **kw: Any) -> None:  # noqa: C901
     """This function wraps setup() so that we can run cmake, make,
     CMake build, then proceed as usual with setuptools, appending the
     CMake-generated output as necessary.

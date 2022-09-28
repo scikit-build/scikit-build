@@ -6,6 +6,7 @@ import os
 from contextlib import contextmanager
 from typing import (
     Any,
+    Iterable,
     Iterator,
     List,
     Mapping,
@@ -135,7 +136,7 @@ class PythonModuleFinder(distutils_build_py):
         with push_dir(project_dir):
             return super().find_all_modules()
 
-    def find_package_modules(self, package: str, package_dir: str) -> map:
+    def find_package_modules(self, package: str, package_dir: str) -> Iterable[Tuple[str, str, str]]:
         """Temporally prepend the ``alternative_build_base`` to ``module_file``.
         Doing so will ensure modules can also be found in other location
         (e.g ``skbuild.constants.CMAKE_INSTALL_DIR``).
@@ -146,7 +147,7 @@ class PythonModuleFinder(distutils_build_py):
         modules = super().find_package_modules(package, package_dir)
 
         # Strip the alternative base from module_file
-        def _strip_directory(entry):
+        def _strip_directory(entry: Tuple[str, str, str]) -> Tuple[str, str, str]:
             module_file = entry[2]
             if self.alternative_build_base is not None and module_file.startswith(self.alternative_build_base):
                 module_file = module_file[len(self.alternative_build_base) + 1 :]
