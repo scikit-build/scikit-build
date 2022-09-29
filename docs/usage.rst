@@ -67,9 +67,9 @@ Make a hello folder inside my_project folder and place `_hello.cxx <https://gith
 Now every thing is ready, go to my_project's parent folder and type following command to install your extension::
 
     pip install my_project/.
-    
+
 If you want to see the detail of installation::
-    
+
     pip install my_project/. -v
 
 Try your new extension::
@@ -80,7 +80,7 @@ Try your new extension::
     >>> import hello
     >>> hello.hello("scikit-build")
     Hello, scikit-build!
-    >>> 
+    >>>
 
 You can add lower limits to ``cmake`` or ``scikit-build`` as needed. Ninja
 should be limited to non-Windows systems, as MSVC 2017+ ships with Ninja
