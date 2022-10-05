@@ -343,7 +343,8 @@ def _package_data_contain_module(module: Tuple[str, str, str], package_data: Map
 def _should_run_cmake(commands: Sequence[str], cmake_with_sdist: bool) -> bool:
     """Return True if at least one command requiring ``cmake`` to run
     is found in ``commands``."""
-    for expected_command in [
+    given_commands = set(commands)
+    expected_commands = {
         "build",
         "build_ext",
         "develop",
@@ -356,10 +357,11 @@ def _should_run_cmake(commands: Sequence[str], cmake_with_sdist: bool) -> bool:
         "bdist_wininst",
         "bdist_wheel",
         "test",
-    ]:
-        if expected_command in commands:
-            return True
-    if "sdist" in commands and cmake_with_sdist:
+    }
+
+    if expected_commands & given_commands:
+        return True
+    if "sdist" in given_commands and cmake_with_sdist:
         return True
     return False
 
@@ -367,10 +369,8 @@ def _should_run_cmake(commands: Sequence[str], cmake_with_sdist: bool) -> bool:
 def _save_cmake_spec(args: Mapping[str, Any]) -> None:
     """Save the CMake spec to disk"""
     # We use JSON here because readability is more important than performance
-    try:
+    with contextlib.suppress(OSError):
         os.makedirs(os.path.dirname(CMAKE_SPEC_FILE()))
-    except OSError:
-        pass
 
     with open(CMAKE_SPEC_FILE(), "w+", encoding="utf-8") as fp:
         json.dump(args, fp)
@@ -378,11 +378,9 @@ def _save_cmake_spec(args: Mapping[str, Any]) -> None:
 
 def _load_cmake_spec() -> Optional[Dict[str, Any]]:
     """Load and return the CMake spec from disk"""
-    try:
-        with open(CMAKE_SPEC_FILE(), encoding="utf-8") as fp:
-            return json.load(fp)
-    except (OSError, ValueError):
-        return None
+    with contextlib.suppress(OSError, ValueError), open(CMAKE_SPEC_FILE(), encoding="utf-8") as fp:
+        return json.load(fp)
+    return None
 
 
 # pylint:disable=too-many-locals, too-many-branches
@@ -453,7 +451,7 @@ def setup(*args: Any, **kw: Any) -> None:  # noqa: C901
 
         print("Traceback (most recent call last):")
         traceback.print_tb(sys.exc_info()[2])
-        print("")
+        print()
         sys.exit(ex)
 
     # Convert source dir to a path relative to the root
@@ -507,10 +505,10 @@ def setup(*args: Any, **kw: Any) -> None:  # noqa: C901
             arg_descriptions = [line for line in skbuild_parser.format_help().split("\n") if line.startswith("  ")]
             print("scikit-build options:")
             print("\n".join(arg_descriptions))
-            print("")
+            print()
             print('Arguments following a "--" are passed directly to CMake ' "(e.g. -DMY_VAR:BOOL=TRUE).")
             print('Arguments following a second "--" are passed directly to ' " the build tool.")
-            print("")
+            print()
         return setuptools.setup(*args, **kw)
 
     developer_mode = "develop" in commands or "test" in commands or build_ext_inplace
@@ -601,7 +599,7 @@ def setup(*args: Any, **kw: Any) -> None:  # noqa: C901
             # taking care of it below.
             import cmake  # pylint: disable=import-outside-toplevel
 
-            for executable in ["cmake", "cpack", "ctest"]:
+            for executable in ("cmake", "cpack", "ctest"):
                 executable = os.path.join(cmake.CMAKE_BIN_DIR, executable)
                 if platform.system().lower() == "windows":
                     executable += ".exe"
@@ -654,7 +652,7 @@ def setup(*args: Any, **kw: Any) -> None:  # noqa: C901
 
         print("Traceback (most recent call last):")
         traceback.print_tb(sys.exc_info()[2])
-        print("")
+        print()
         sys.exit(ex)
 
     # If needed, set reasonable defaults for package_dir
@@ -749,7 +747,7 @@ def setup(*args: Any, **kw: Any) -> None:  # noqa: C901
 
     kw["distclass"] = BinaryDistribution
 
-    print("")
+    print()
 
     return setuptools.setup(*args, **kw)
 
@@ -962,9 +960,9 @@ def _consolidate_package_modules(
             packages, package_dir, py_modules, alternative_build_base=CMAKE_INSTALL_DIR()
         ).find_all_modules()
     except DistutilsError as msg:
-        raise SystemExit(f"error: {str(msg)}") from None
+        raise SystemExit(f"error: {msg}") from None
 
-    print("")
+    print()
 
     for entry in modules:
 
