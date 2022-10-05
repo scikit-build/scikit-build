@@ -27,7 +27,7 @@ class set_build_base_mixin:
 
     def finalize_options(self: CommandMixinProtocol, *args: object, **kwargs: object) -> None:
         """Override built-in function and set a new `build_base`."""
-        build_base = getattr(self, "build_base", "")
+        build_base = getattr(self, "build_base", "build")
         if not build_base or build_base != "build":
             self.build_base = SETUPTOOLS_INSTALL_DIR()
 
