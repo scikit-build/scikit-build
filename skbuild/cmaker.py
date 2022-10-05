@@ -4,6 +4,7 @@ This module provides an interface for invoking CMake executable.
 
 
 import argparse
+import contextlib
 import glob
 import itertools
 import os
@@ -14,6 +15,7 @@ import shlex
 import subprocess
 import sys
 import sysconfig
+from pathlib import Path
 from shlex import quote
 from typing import Dict, List, Mapping, Optional, Sequence, Tuple, overload
 
@@ -150,13 +152,12 @@ class CMaker:
     def get_cached(variable_name: str) -> Optional[str]:
         """If set, returns the variable cached value from the :func:`skbuild.constants.CMAKE_BUILD_DIR()`, otherwise returns None"""
         variable_name = f"{variable_name}:"
-        try:
-            with open(os.path.join(CMAKE_BUILD_DIR(), "CMakeCache.txt"), encoding="utf-8") as fp:
-                for line in fp:
-                    if line.startswith(variable_name):
-                        return line.split("=", 1)[-1].strip()
-        except OSError:
-            pass
+        cmake_cache = Path(CMAKE_BUILD_DIR()) / "CMakeCache.txt"
+
+        with contextlib.suppress(OSError):
+            for line in cmake_cache.read_text("utf8").splitlines():
+                if line.startswith(variable_name):
+                    return line.split("=", 1)[-1].strip()
 
         return None
 
@@ -246,12 +247,10 @@ class CMaker:
 
         ninja_executable_path = None
         if generator.name == "Ninja":
-            try:
+            with contextlib.suppress(ImportError):
                 import ninja  # pylint: disable=import-outside-toplevel
 
                 ninja_executable_path = os.path.join(ninja.BIN_DIR, "ninja")
-            except ImportError:
-                pass
 
         if not os.path.exists(CMAKE_BUILD_DIR()):
             os.makedirs(CMAKE_BUILD_DIR())
@@ -299,12 +298,10 @@ class CMaker:
             if sys.implementation.name == "pypy":
                 cmd.append(f"{prefix}_FIND_IMPLEMENTATIONS:STRING=PyPy")
 
-            try:
+            with contextlib.suppress(ImportError):
                 import numpy as np
 
                 cmd.append(f"{prefix}_NumPy_INCLUDE_DIRS:PATH=" + np.get_include())
-            except ImportError:
-                pass
 
         if generator.toolset:
             cmd.extend(["-T", generator.toolset])
@@ -414,20 +411,14 @@ class CMaker:
             python_inc: Optional[str] = None
             python_inc2: Optional[str] = None
 
-            try:
+            with contextlib.suppress(AttributeError, KeyError):
                 include = sysconfig.get_path("include")
-            except (AttributeError, KeyError):
-                pass
 
-            try:
+            with contextlib.suppress(AttributeError, KeyError):
                 plat_include = sysconfig.get_path("platinclude")
-            except (AttributeError, KeyError):
-                pass
 
-            try:
+            with contextlib.suppress(AttributeError):
                 python_inc = sysconfig.get_python_inc()  # type: ignore[attr-defined]
-            except AttributeError:
-                pass
 
             if include_py is not None:
                 include_py = os.path.dirname(include_py)
@@ -446,10 +437,8 @@ class CMaker:
                 candidate_versions += ("",)
 
                 pymalloc = None
-                try:
+                with contextlib.suppress(AttributeError):
                     pymalloc = bool(sysconfig.get_config_var("WITH_PYMALLOC"))
-                except AttributeError:
-                    pass
 
                 if pymalloc:
                     candidate_versions += (python_version + "m",)
