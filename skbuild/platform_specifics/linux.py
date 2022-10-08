@@ -3,6 +3,7 @@
 import platform
 import sys
 import textwrap
+from typing import Tuple
 
 import distro
 
@@ -13,7 +14,7 @@ class LinuxPlatform(unix.UnixPlatform):
     """Linux implementation of :class:`.abstract.CMakePlatform`"""
 
     @staticmethod
-    def build_essential_install_cmd():
+    def build_essential_install_cmd() -> Tuple[str, str]:
         """Return a tuple of the form ``(distribution_name, cmd)``.
 
         ``cmd`` is the command allowing to install the build tools
@@ -42,7 +43,7 @@ class LinuxPlatform(unix.UnixPlatform):
         return distribution_name, cmd
 
     @property
-    def generator_installation_help(self):
+    def generator_installation_help(self) -> str:
         """Return message guiding the user for installing a valid toolchain."""
         distribution_name, cmd = self.build_essential_install_cmd()
         install_help = ""

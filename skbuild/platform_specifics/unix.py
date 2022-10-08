@@ -10,7 +10,7 @@ from .abstract import CMakeGenerator
 class UnixPlatform(abstract.CMakePlatform):
     """Unix implementation of :class:`.abstract.CMakePlatform`."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         try:
             import ninja  # pylint: disable=import-outside-toplevel

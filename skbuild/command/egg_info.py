@@ -14,7 +14,7 @@ from . import set_build_base_mixin
 class egg_info(set_build_base_mixin, _egg_info):
     """Custom implementation of ``egg_info`` setuptools command."""
 
-    def finalize_options(self, *args, **kwargs):
+    def finalize_options(self, *args: object, **kwargs: object) -> None:
         if self.egg_base is None:
             if self.distribution.package_dir is not None and len(self.distribution.package_dir) == 1:  # type: ignore[attr-defined]
                 # Recover directory specified in setup() function

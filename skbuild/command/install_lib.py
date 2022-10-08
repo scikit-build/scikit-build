@@ -15,7 +15,7 @@ class install_lib(set_build_base_mixin, _install_lib):
     def install(self: CommandMixinProtocol) -> List[str]:
         """Handle --hide-listing option."""
         with distribution_hide_listing(self.distribution):
-            outfiles = super().install()  # type: ignore[misc]
+            outfiles: List[str] = super().install()  # type: ignore[misc]
         if outfiles is not None:
             distutils_log.info("copied %d files", len(outfiles))
         return outfiles

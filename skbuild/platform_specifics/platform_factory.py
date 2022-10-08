@@ -5,8 +5,10 @@
 
 import platform
 
+from . import abstract
 
-def get_platform():
+
+def get_platform() -> "abstract.CMakePlatform":
     """Return an instance of :class:`.abstract.CMakePlatform` corresponding
     to the current platform."""
     this_platform = platform.system().lower()
