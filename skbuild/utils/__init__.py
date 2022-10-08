@@ -134,7 +134,8 @@ class PythonModuleFinder(distutils_build_py):
         Return a list of tuples ``(package, module, module_file)``.
         """
         with push_dir(project_dir):
-            return super().find_all_modules()
+            # TODO: typestubs for distutils
+            return super().find_all_modules()  # type: ignore[no-any-return, no-untyped-call]
 
     def find_package_modules(self, package: str, package_dir: str) -> Iterable[Tuple[str, str, str]]:
         """Temporally prepend the ``alternative_build_base`` to ``module_file``.
@@ -144,7 +145,7 @@ class PythonModuleFinder(distutils_build_py):
         if package_dir != "" and not os.path.exists(package_dir) and self.alternative_build_base is not None:
             package_dir = os.path.join(self.alternative_build_base, package_dir)
 
-        modules = super().find_package_modules(package, package_dir)
+        modules: Iterable[Tuple[str, str, str]] = super().find_package_modules(package, package_dir)  # type: ignore[no-untyped-call]
 
         # Strip the alternative base from module_file
         def _strip_directory(entry: Tuple[str, str, str]) -> Tuple[str, str, str]:

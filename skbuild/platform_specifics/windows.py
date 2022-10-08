@@ -9,6 +9,8 @@ import sys
 import textwrap
 from typing import Dict, Iterable, Optional, Union
 
+from setuptools import monkey
+
 from ..typing import TypedDict
 from . import abstract
 from .abstract import CMakeGenerator
@@ -219,9 +221,7 @@ def _get_msvc_compiler_env(vs_version: int, vs_toolset: Optional[str] = None) ->
     if cache_key in __get_msvc_compiler_env_cache:
         return __get_msvc_compiler_env_cache[cache_key]
 
-    from setuptools import monkey  # pylint: disable=import-outside-toplevel
-
-    monkey.patch_for_msvc_specialized_compiler()
+    monkey.patch_for_msvc_specialized_compiler()  # type: ignore[no-untyped-call]
 
     vc_dir = find_visual_studio(vs_version)
     vcvarsall = os.path.join(vc_dir, "vcvarsall.bat")

@@ -376,7 +376,7 @@ def _save_cmake_spec(args: Mapping[str, Any]) -> None:
         json.dump(args, fp)
 
 
-def _load_cmake_spec() -> Optional[Dict[str, Any]]:
+def _load_cmake_spec() -> Any:
     """Load and return the CMake spec from disk"""
     with contextlib.suppress(OSError, ValueError), open(CMAKE_SPEC_FILE(), encoding="utf-8") as fp:
         return json.load(fp)
@@ -591,7 +591,7 @@ def setup(*args: Any, **kw: Any) -> None:  # noqa: C901
         if Requirement(package).name == "cmake":
             setup_requires = [package]
             dist = upstream_Distribution({"setup_requires": setup_requires})
-            dist.fetch_build_eggs(setup_requires)
+            dist.fetch_build_eggs(setup_requires)  # type: ignore[no-untyped-call]
 
             # Considering packages associated with "setup_requires" keyword are
             # installed in .eggs subdirectory without honoring setuptools "console_scripts"

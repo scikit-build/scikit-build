@@ -27,7 +27,7 @@ class build_py(set_build_base_mixin, _build_py):
 
         Increments ``outfiles_count``.
         """
-        super().build_module(module, module_file, package)
+        super().build_module(module, module_file, package)  # type: ignore[no-untyped-call]
         self.outfiles_count += 1
 
     def run(self, *args: object, **kwargs: object) -> None:
@@ -72,11 +72,11 @@ class build_py(set_build_base_mixin, _build_py):
             try:
                 (package_dir, checked) = packages[package]
             except KeyError:
-                package_dir = self.get_package_dir(package)
+                package_dir = self.get_package_dir(package)  # type: ignore[no-untyped-call]
                 checked = False
 
             if not checked:
-                init_py = self.check_package(package, package_dir)
+                init_py = self.check_package(package, package_dir)  # type: ignore[no-untyped-call]
                 packages[package] = (package_dir, True)
                 if init_py:
                     modules.append((package, "__init__", init_py))
@@ -91,7 +91,7 @@ class build_py(set_build_base_mixin, _build_py):
             if os.path.exists(os.path.join(CMAKE_INSTALL_DIR(), module_file)):
                 module_file = os.path.join(CMAKE_INSTALL_DIR(), module_file)
 
-            if not self.check_module(module, module_file):
+            if not self.check_module(module, module_file):  # type: ignore[no-untyped-call]
                 continue
 
             modules.append((package, module_base, module_file))
