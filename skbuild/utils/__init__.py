@@ -42,7 +42,7 @@ class Distribution(NamedTuple):
     script_name: str
 
 
-def _log_warning(msg, *args):
+def _log_warning(msg: str, *args: object) -> None:
     try:
         if logging_module:
             distutils_log.warning(msg, *args)

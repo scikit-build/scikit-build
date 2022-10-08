@@ -17,10 +17,10 @@ class generate_source_manifest(set_build_base_mixin, Command):
 
     description = "generate source MANIFEST"
 
-    def initialize_options(self):
+    def initialize_options(self) -> None:
         """Set default values for all the options that this command supports."""
 
-    def run(self):
+    def run(self) -> None:
         """
         If neither a `MANIFEST`, nor a `MANIFEST.in` file is provided, and
         we are in a git repo, try to create a `MANIFEST.in` file from the output of
@@ -73,5 +73,5 @@ class generate_source_manifest(set_build_base_mixin, Command):
             with open(SKBUILD_MARKER_FILE(), "w", encoding="utf-8"):  # touch
                 pass
 
-    def finalize_options(self, *args, **kwargs):
+    def finalize_options(self, *args: object, **kwargs: object) -> None:
         """Set final values for all the options that this command supports."""

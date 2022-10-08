@@ -43,11 +43,11 @@ warn_unused_ignores = true
 no_implicit_reexport = true
 disallow_any_generics = true
 disallow_incomplete_defs = true
+disallow_untyped_defs = true
 
-# disallow_subclassing_any = true 4
-# warn_return_any = true 5
-# disallow_untyped_calls = true 39
-# disallow_untyped_defs = true 61
+# disallow_subclassing_any = true # 3
+# warn_return_any = true # 3
+# disallow_untyped_calls = true # 10
 
 [[tool.mypy.overrides]]
 module = [

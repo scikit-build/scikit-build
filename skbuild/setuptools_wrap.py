@@ -742,7 +742,7 @@ def setup(*args: Any, **kw: Any) -> None:  # noqa: C901
 
     # Adapted from espdev/ITKPythonInstaller/setup.py.in
     class BinaryDistribution(upstream_Distribution):  # pylint: disable=missing-class-docstring
-        def has_ext_modules(self):  # pylint: disable=no-self-use,missing-function-docstring
+        def has_ext_modules(self) -> bool:  # pylint: disable=no-self-use,missing-function-docstring
             return has_cmakelists
 
     kw["distclass"] = BinaryDistribution

@@ -20,13 +20,13 @@ from . import set_build_base_mixin
 class bdist_wheel(set_build_base_mixin, _bdist_wheel):
     """Custom implementation of ``bdist_wheel`` setuptools command."""
 
-    def run(self, *args, **kwargs):
+    def run(self, *args: object, **kwargs: object) -> None:
         """Handle --hide-listing option."""
 
         if _USE_WHEELFILE:
             old_write_files = WheelFile.write_files
 
-            def update_write_files(wheelfile_self, base_dir):
+            def update_write_files(wheelfile_self: "bdist_wheel", base_dir: str) -> None:
                 with distribution_hide_listing(self.distribution) as hide_listing:
                     if hide_listing:
                         zip_filename = wheelfile_self.filename
@@ -45,7 +45,7 @@ class bdist_wheel(set_build_base_mixin, _bdist_wheel):
             # pylint: disable-next=used-before-assignment
             old_make_wheelfile_inner = _wheel_archive.make_wheelfile_inner
 
-            def _make_wheelfile_inner(base_name, base_dir="."):
+            def _make_wheelfile_inner(base_name: str, base_dir: str = ".") -> None:
                 with distribution_hide_listing(self.distribution) as hide_listing:
                     if hide_listing:
                         zip_filename = base_name + ".whl"
@@ -59,7 +59,7 @@ class bdist_wheel(set_build_base_mixin, _bdist_wheel):
             finally:
                 _wheel_archive.make_wheelfile_inner = old_make_wheelfile_inner
 
-    def write_wheelfile(self, wheelfile_base, _=None):
+    def write_wheelfile(self, wheelfile_base: str, _: None = None) -> None:
         """Write ``skbuild <version>`` as a wheel generator.
         See `PEP-0427 <https://www.python.org/dev/peps/pep-0427/#file-contents>`_ for more details.
         """

@@ -2,7 +2,7 @@
 command."""
 
 import os
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Union
 
 from setuptools.command.build_py import build_py as _build_py
 
@@ -14,7 +14,7 @@ from . import set_build_base_mixin
 class build_py(set_build_base_mixin, _build_py):
     """Custom implementation of ``build_py`` setuptools command."""
 
-    def initialize_options(self):
+    def initialize_options(self) -> None:
         """Handle --hide-listing option.
 
         Initializes ``outfiles_count``.
@@ -22,7 +22,7 @@ class build_py(set_build_base_mixin, _build_py):
         super().initialize_options()
         self.outfiles_count = 0
 
-    def build_module(self, module, module_file, package):
+    def build_module(self, module: Union[str, List[str], Tuple[str, ...]], module_file: str, package: str) -> None:
         """Handle --hide-listing option.
 
         Increments ``outfiles_count``.
@@ -30,7 +30,7 @@ class build_py(set_build_base_mixin, _build_py):
         super().build_module(module, module_file, package)
         self.outfiles_count += 1
 
-    def run(self, *args, **kwargs):
+    def run(self, *args: object, **kwargs: object) -> None:
         """Handle --hide-listing option.
 
         Display number of copied files. It corresponds to the value
@@ -40,7 +40,7 @@ class build_py(set_build_base_mixin, _build_py):
             super().run(*args, **kwargs)
         distutils_log.info("copied %d files", self.outfiles_count)
 
-    def find_modules(self):
+    def find_modules(self) -> List[Tuple[str, str, str]]:
         """Finds individually-specified Python modules, ie. those listed by
         module name in 'self.py_modules'.  Returns a list of tuples (package,
         module_base, filename): 'package' is a tuple of the path through

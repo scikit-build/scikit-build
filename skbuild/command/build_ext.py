@@ -3,11 +3,7 @@
 import os
 
 from distutils.file_util import copy_file
-
-try:
-    from setuptools.command.build_ext import build_ext as _build_ext
-except ImportError:
-    from distutils.command.build_ext import build_ext as _build_ext  # type: ignore[misc]
+from setuptools.command.build_ext import build_ext as _build_ext
 
 from ..constants import CMAKE_INSTALL_DIR
 from . import set_build_base_mixin
@@ -16,7 +12,7 @@ from . import set_build_base_mixin
 class build_ext(set_build_base_mixin, _build_ext):
     """Custom implementation of ``build_ext`` setuptools command."""
 
-    def copy_extensions_to_source(self):
+    def copy_extensions_to_source(self) -> None:
         """This function is only-called when doing inplace build.
 
         It is customized to ensure the extensions compiled using distutils

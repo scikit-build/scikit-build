@@ -7,7 +7,7 @@ import re
 import subprocess
 import sys
 import textwrap
-from typing import Dict
+from typing import Dict, Iterable, Optional, Union
 
 from ..typing import TypedDict
 from . import abstract
@@ -41,7 +41,7 @@ class CachedEnv(TypedDict):
 class WindowsPlatform(abstract.CMakePlatform):
     """Windows implementation of :class:`.abstract.CMakePlatform`."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self._vs_help = ""
         vs_help_template = (
@@ -101,7 +101,7 @@ class WindowsPlatform(abstract.CMakePlatform):
         self.default_generators.extend(extra)
 
     @property
-    def generator_installation_help(self):
+    def generator_installation_help(self) -> str:
         """Return message guiding the user for installing a valid toolchain."""
         return self._vs_help
 
@@ -113,7 +113,7 @@ class CMakeVisualStudioIDEGenerator(CMakeGenerator):
     .. automethod:: __init__
     """
 
-    def __init__(self, year, toolset=None):
+    def __init__(self, year: str, toolset: Optional[str] = None) -> None:
         """Instantiate a generator object with its name set to the `Visual
         Studio` generator associated with the given ``year``
         (see :data:`VS_YEAR_TO_VERSION`), the current platform (32-bit
@@ -130,7 +130,7 @@ class CMakeVisualStudioIDEGenerator(CMakeGenerator):
         super().__init__(vs_base, toolset=toolset, arch=vs_arch)
 
 
-def _find_visual_studio_2017_or_newer(vs_version):
+def _find_visual_studio_2017_or_newer(vs_version: int) -> str:
     """Adapted from https://github.com/python/cpython/blob/3.7/Lib/distutils/_msvccompiler.py
 
     The ``vs_version`` corresponds to the `Visual Studio` version to lookup.
@@ -174,7 +174,7 @@ def _find_visual_studio_2017_or_newer(vs_version):
     return ""
 
 
-def find_visual_studio(vs_version):
+def find_visual_studio(vs_version: int) -> str:
     """Return Visual Studio installation path associated with ``vs_version`` or an empty string if any.
 
     The ``vs_version`` corresponds to the `Visual Studio` version to lookup.
@@ -193,7 +193,7 @@ def find_visual_studio(vs_version):
 __get_msvc_compiler_env_cache: Dict[str, CachedEnv] = {}
 
 
-def _get_msvc_compiler_env(vs_version, vs_toolset=None):
+def _get_msvc_compiler_env(vs_version: int, vs_toolset: Optional[str] = None) -> Union[CachedEnv, Dict[str, str]]:
     """
     Return a dictionary of environment variables corresponding to ``vs_version``
     that can be used with  :class:`CMakeVisualStudioCommandLineGenerator`.
@@ -269,7 +269,7 @@ class CMakeVisualStudioCommandLineGenerator(CMakeGenerator):
     .. automethod:: __init__
     """
 
-    def __init__(self, name, year, toolset=None, args=None):
+    def __init__(self, name: str, year: str, toolset: Optional[str] = None, args: Optional[Iterable[str]] = None):
         """Instantiate CMake command-line generator.
 
         The generator ``name`` can be values like `Ninja`, `NMake Makefiles`
