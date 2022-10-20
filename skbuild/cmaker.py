@@ -279,20 +279,17 @@ class CMaker:
             f"-DPYTHON_VERSION_STRING:STRING={python_version_string}",
             "-DSKBUILD:INTERNAL=TRUE",
             f"-DCMAKE_MODULE_PATH:PATH={cmake_resource_dir}",
+            f"-DPYTHON_EXECUTABLE:PATH={sys.executable}",
+            f"-DPYTHON_INCLUDE_DIR:PATH={python_include_dir}",
+            f"-DPYTHON_LIBRARY:PATH={python_library}",
         ]
 
-        find_python_prefixes = [
-            "-DPython",
-            "-DPython3",
-            "-DPYTHON",
-        ]
-
-        for prefix in find_python_prefixes:
+        for prefix in ["-DPython", "-DPython3"]:
             cmd.extend(
                 [
-                    f"{prefix}_EXECUTABLE:FILEPATH={sys.executable}",
-                    f"{prefix}_INCLUDE_DIR:PATH={python_include_dir}",
-                    f"{prefix}_LIBRARY:PATH={python_library}",
+                    f"{prefix}_EXECUTABLE:PATH={sys.executable}",
+                    f"{prefix}_ROOT_DIR:PATH={sys.prefix}",
+                    f"{prefix}_FIND_REGISTRY:STRING=NEVER",
                 ]
             )
             if sys.implementation.name == "pypy":

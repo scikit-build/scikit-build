@@ -8,7 +8,6 @@ Tests for CMaker functionality.
 
 import os
 import re
-import sys
 import textwrap
 
 import pytest
@@ -195,21 +194,18 @@ def test_configure_with_cmake_args(capfd):
             "CMAKE_EXPECTED_FOO",
             "PYTHON_VERSION_STRING",
             "SKBUILD",
+            "PYTHON_EXECUTABLE",
+            "PYTHON_INCLUDE_DIR",
+            "PYTHON_LIBRARY",
         ]
 
-        find_python_prefixes = [
-            f"Python{sys.version_info[0]}",
-            "Python",
-            "PYTHON",
-        ]
-
-        for prefix in find_python_prefixes:
+        for prefix in ["Python3", "Python"]:
             unused_vars.extend(
                 [
-                    (prefix + "_EXECUTABLE"),
-                    (prefix + "_INCLUDE_DIR"),
-                    (prefix + "_LIBRARY"),
-                    (prefix + "_FIND_IMPLEMENTATIONS"),
+                    f"{prefix}_EXECUTABLE",
+                    f"{prefix}_ROOT_DIR",
+                    f"{prefix}_FIND_IMPLEMENTATIONS",
+                    f"{prefix}_FIND_REGISTRY",
                 ]
             )
 
