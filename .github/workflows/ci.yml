@@ -72,6 +72,8 @@ jobs:
       run: nox -s tests-3.9
     - name: Test on 🐍 3.10
       run: nox -s tests-3.10
+    - name: Test on 🐍 3.11
+      run: nox -s tests-3.11
 
   cygwin:
     name: Tests on 🐍 3.9 • cygwin
