@@ -36,7 +36,7 @@ setuptools.setup(
         "Mailing List": "https://groups.google.com/forum/#!forum/scikit-build",
         "Examples": "https://github.com/scikit-build/scikit-build-sample-projects",
     },
-    package_data={"skbuild": ["resources"]},
+    package_data={"skbuild": ["resources", "py.typed"]},
     install_requires=requirements,
     license="MIT",
     zip_safe=False,
@@ -53,6 +53,7 @@ setuptools.setup(
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
+        "Typing :: Typed",
     ],
     extras_require={"test": dev_requirements, "docs": doc_requirements},
 )
