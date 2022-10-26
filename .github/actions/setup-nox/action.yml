@@ -29,13 +29,8 @@ runs:
       with:
         python-version: "3.10"
     - uses: actions/setup-python@v4
-      if: runner.os != 'macOS'
       with:
         python-version: "3.11"
-    - uses: actions/setup-python@v4
-      if: runner.os == 'macOS'
-      with:
-        python-version: "3.11-dev"
     - name: "Install nox"
       run: pipx install nox
       shell: bash
