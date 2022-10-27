@@ -50,7 +50,7 @@ def _log_warning(msg: str, *args: object) -> None:
             distutils_log.warn(msg, *args)  # pylint: disable=deprecated-method
     except ValueError:
         # Setuptools might disconnect the logger. That shouldn't be an error for a warning.
-        print(msg % args)
+        print(msg % args, flush=True)
 
 
 def mkdir_p(path: str) -> None:
@@ -252,7 +252,7 @@ def parse_manifestin(template: str) -> List[str]:
             except (DistutilsTemplateError, ValueError) as msg:
                 filename = template_file.filename if hasattr(template_file, "filename") else "Unknown"  # type: ignore[attr-defined]
                 current_line = template_file.current_line if hasattr(template_file, "current_line") else "Unknown"  # type: ignore[attr-defined]
-                print(f"{filename}, line {current_line}: {msg}")
+                print(f"{filename}, line {current_line}: {msg}", flush=True)
         return file_list.files
     finally:
         template_file.close()

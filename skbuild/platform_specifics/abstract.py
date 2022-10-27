@@ -214,10 +214,10 @@ class CMakePlatform:
             inner = ["-" * ((idx * 5) - 3) for idx in range(1, 8)]
             print(outer if suffix == "" else "\n".join(inner))
             print(f'-- Trying "{_generator.description}" generator{suffix}')
-            print(outer if suffix != "" else "\n".join(inner[::-1]))
+            print(outer if suffix != "" else "\n".join(inner[::-1]), flush=True)
 
         for generator in candidate_generators:
-            print("\n")
+            print("\n", flush=True)
             _generator_discovery_status_msg(generator)
 
             # clear the cache for each attempted generator type
@@ -239,7 +239,7 @@ class CMakePlatform:
 
             msg = "success" if status == 0 else "failure"
             _generator_discovery_status_msg(generator, f" - {msg}")
-            print()
+            print(flush=True)
 
             # cmake succeeded, this generator should work
             if status == 0:

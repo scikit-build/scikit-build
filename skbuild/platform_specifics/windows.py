@@ -256,7 +256,7 @@ def _get_msvc_compiler_env(vs_version: int, vs_toolset: Optional[str] = None) ->
         __get_msvc_compiler_env_cache[cache_key] = cached_env
         return cached_env
     except subprocess.CalledProcessError as exc:
-        print(exc.output)
+        print(exc.output, file=sys.stderr, flush=True)
 
     return {}
 
