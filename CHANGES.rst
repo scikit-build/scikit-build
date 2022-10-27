@@ -35,6 +35,8 @@ Bug fixes
 
 * FindPython mode uses a new path specification, should help make it usable. :pr:`774`
 
+* Better flushing and output streams for more consistent output ordering. :pr:`781`
+
 Scikit-build 0.15.0
 ===================
 
