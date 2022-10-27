@@ -235,7 +235,7 @@ class CMakePlatform:
                 cmd.extend(cmake_args)
                 cmd.extend(generator.args)
 
-                status = subprocess.call(cmd, env=generator.env)
+                status = subprocess.run(cmd, env=generator.env, check=False).returncode
 
             msg = "success" if status == 0 else "failure"
             _generator_discovery_status_msg(generator, f" - {msg}")

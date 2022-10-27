@@ -99,7 +99,9 @@ def get_cmake_version(cmake_executable: str = CMAKE_DEFAULT_EXECUTABLE) -> str:
         3.14.4
     """
     try:
-        version_string_bytes = subprocess.check_output([cmake_executable, "--version"])
+        version_string_bytes = subprocess.run(
+            [cmake_executable, "--version"], check=True, stdout=subprocess.PIPE
+        ).stdout
     except (OSError, subprocess.CalledProcessError) as err:
         raise SKBuildError(
             f"Problem with the CMake installation, aborting build. CMake executable is {cmake_executable}"
@@ -330,7 +332,7 @@ class CMaker:
             f"    {self._formatArgsForDisplay(cmd)}\n",
             flush=True,
         )
-        rtn = subprocess.call(cmd, cwd=CMAKE_BUILD_DIR(), env=generator.env)
+        rtn = subprocess.run(cmd, cwd=CMAKE_BUILD_DIR(), env=generator.env, check=False).returncode
         if rtn != 0:
             raise SKBuildError(
                 "An error occurred while configuring with CMake.\n"
@@ -706,7 +708,7 @@ class CMaker:
         cmd.extend(clargs)
         cmd.extend(filter(bool, shlex.split(os.environ.get("SKBUILD_BUILD_OPTIONS", ""))))
 
-        rtn = subprocess.call(cmd, cwd=CMAKE_BUILD_DIR(), env=env)
+        rtn = subprocess.run(cmd, cwd=CMAKE_BUILD_DIR(), env=env, check=False).returncode
         # For reporting errors (if any)
         if not install_target:
             install_target = "internal build step [valid]"
