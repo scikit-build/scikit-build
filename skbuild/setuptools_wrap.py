@@ -18,6 +18,7 @@ import sys
 import warnings
 from typing import (
     Any,
+    Callable,
     Dict,
     Generator,
     List,
@@ -274,8 +275,7 @@ def _parse_setuptools_arguments(
     )
 
 
-def _check_skbuild_parameters(skbuild_kw: Mapping[str, Any]) -> None:
-    cmake_install_dir = skbuild_kw["cmake_install_dir"]
+def _check_skbuild_parameters(cmake_install_dir: str, cmake_source_dir: str) -> None:
     if os.path.isabs(cmake_install_dir):
         msg = (
             "\n  setup parameter 'cmake_install_dir' is set to "
@@ -285,7 +285,6 @@ def _check_skbuild_parameters(skbuild_kw: Mapping[str, Any]) -> None:
         )
         raise SKBuildError(msg)
 
-    cmake_source_dir = skbuild_kw["cmake_source_dir"]
     if not os.path.exists(os.path.abspath(cmake_source_dir)):
         msg = (
             "\n  setup parameter 'cmake_source_dir' set to "
@@ -384,7 +383,18 @@ def _load_cmake_spec() -> Any:
 
 
 # pylint:disable=too-many-locals, too-many-branches
-def setup(*args: Any, **kw: Any) -> None:  # noqa: C901
+def setup(  # noqa: C901
+    *,
+    cmake_args: Sequence[str] = (),
+    cmake_install_dir: str = "",
+    cmake_source_dir: str = "",
+    cmake_with_sdist: bool = False,
+    cmake_languages: Sequence[str] = ("C", "CXX"),
+    cmake_minimum_required_version: Optional[str] = None,
+    cmake_process_manifest_hook: Optional[Callable[[List[str]], List[str]]] = None,
+    cmake_install_target: str = "install",
+    **kw: Any,
+) -> None:
     """This function wraps setup() so that we can run cmake, make,
     CMake build, then proceed as usual with setuptools, appending the
     CMake-generated output as necessary.
@@ -405,7 +415,7 @@ def setup(*args: Any, **kw: Any) -> None:  # noqa: C901
                 warnings.warn(msg, FutureWarning, stacklevel=2)
                 kw["package_dir"][package] = prefix[:-1]
 
-    sys.argv, cmake_executable, skip_generator_test, cmake_args, make_args = parse_args()
+    sys.argv, cmake_executable, skip_generator_test, cmake_args_from_args, make_args = parse_args()
 
     # work around https://bugs.python.org/issue1011113
     # (patches provided, but no updates since 2014)
@@ -431,21 +441,10 @@ def setup(*args: Any, **kw: Any) -> None:  # noqa: C901
     # Removing the keyword from kw need to be done here otherwise, the
     # following call to _parse_setuptools_arguments would complain about
     # unknown setup options.
-    parameters = {
-        "cmake_args": [],
-        "cmake_install_dir": "",
-        "cmake_source_dir": "",
-        "cmake_with_sdist": False,
-        "cmake_languages": ("C", "CXX"),
-        "cmake_minimum_required_version": None,
-        "cmake_process_manifest_hook": None,
-        "cmake_install_target": "install",
-    }
-    skbuild_kw = {param: kw.pop(param, value) for param, value in parameters.items()}
 
     # ... and validate them
     try:
-        _check_skbuild_parameters(skbuild_kw)
+        _check_skbuild_parameters(cmake_install_dir, cmake_source_dir)
     except SKBuildError as ex:
         import traceback  # pylint: disable=import-outside-toplevel
 
@@ -456,7 +455,6 @@ def setup(*args: Any, **kw: Any) -> None:  # noqa: C901
 
     # Convert source dir to a path relative to the root
     # of the project
-    cmake_source_dir = skbuild_kw["cmake_source_dir"]
     if cmake_source_dir == ".":
         cmake_source_dir = ""
     if os.path.isabs(cmake_source_dir):
@@ -492,10 +490,7 @@ def setup(*args: Any, **kw: Any) -> None:  # noqa: C901
         print("skipping skbuild (no CMakeLists.txt found)")
 
     skip_skbuild = (
-        display_only
-        or has_invalid_arguments
-        or not _should_run_cmake(commands, skbuild_kw["cmake_with_sdist"])
-        or not has_cmakelists
+        display_only or has_invalid_arguments or not _should_run_cmake(commands, cmake_with_sdist) or not has_cmakelists
     )
     if skip_skbuild and not force_cmake:
         if help_commands:
@@ -509,7 +504,7 @@ def setup(*args: Any, **kw: Any) -> None:  # noqa: C901
             print('Arguments following a "--" are passed directly to CMake ' "(e.g. -DMY_VAR:BOOL=TRUE).")
             print('Arguments following a second "--" are passed directly to ' " the build tool.")
             print()
-        return setuptools.setup(*args, **kw)
+        return setuptools.setup(**kw)
 
     developer_mode = "develop" in commands or "test" in commands or build_ext_inplace
 
@@ -528,14 +523,14 @@ def setup(*args: Any, **kw: Any) -> None:  # noqa: C901
     # Since CMake arguments provided through the command line have more
     # weight and when CMake is given multiple times a argument, only the last
     # one is considered, let's prepend the one provided in the setup call.
-    cmake_args = skbuild_kw["cmake_args"] + cmake_args
+    cmake_args = list(cmake_args) + cmake_args_from_args
 
     # Handle cmake_install_target
     # get the target (next item after '--install-target') or return '' if no --install-target
     cmake_install_target_from_command = next(
         (make_args[index + 1] for index, item in enumerate(make_args) if item == "--install-target"), ""
     )
-    cmake_install_target_from_setup = skbuild_kw["cmake_install_target"]
+    cmake_install_target_from_setup = cmake_install_target
     # Setting target from command takes precedence
     # cmake_install_target_from_setup has the default 'install',
     # so cmake_install_target would never be empty.
@@ -610,14 +605,12 @@ def setup(*args: Any, **kw: Any) -> None:  # noqa: C901
             break
 
     # Languages are used to determine a working generator
-    cmake_languages = skbuild_kw["cmake_languages"]
 
     try:
         if cmake_executable is None:
             cmake_executable = CMAKE_DEFAULT_EXECUTABLE
         cmkr = cmaker.CMaker(cmake_executable)
         if not skip_cmake:
-            cmake_minimum_required_version = skbuild_kw["cmake_minimum_required_version"]
             if cmake_minimum_required_version is not None:
                 if parse_version(cmkr.cmake_version) < parse_version(cmake_minimum_required_version):
                     msg = f"CMake version {cmake_minimum_required_version} or higher is required. CMake version {cmkr.cmake_version} is being used"
@@ -640,7 +633,7 @@ def setup(*args: Any, **kw: Any) -> None:  # noqa: C901
                     cmake_args,
                     skip_generator_test=skip_generator_test,
                     cmake_source_dir=cmake_source_dir,
-                    cmake_install_dir=skbuild_kw["cmake_install_dir"],
+                    cmake_install_dir=cmake_install_dir,
                     languages=cmake_languages,
                 )
                 _save_cmake_spec(cmake_spec)
@@ -668,7 +661,7 @@ def setup(*args: Any, **kw: Any) -> None:  # noqa: C901
 
     # This hook enables custom processing of the cmake manifest
     cmake_manifest = cmkr.install()
-    process_manifest = skbuild_kw.get("cmake_process_manifest_hook")
+    process_manifest = cmake_process_manifest_hook
     if process_manifest is not None:
         if callable(process_manifest):
             cmake_manifest = process_manifest(cmake_manifest)
@@ -685,7 +678,7 @@ def setup(*args: Any, **kw: Any) -> None:  # noqa: C901
         new_scripts,
         data_files,
         cmake_source_dir,
-        skbuild_kw["cmake_install_dir"],
+        cmake_install_dir,
     )
 
     original_manifestin_data_files = []
@@ -749,7 +742,7 @@ def setup(*args: Any, **kw: Any) -> None:  # noqa: C901
 
     print()
 
-    return setuptools.setup(*args, **kw)
+    return setuptools.setup(**kw)
 
 
 def _collect_package_prefixes(
