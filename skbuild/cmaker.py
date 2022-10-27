@@ -325,7 +325,8 @@ class CMaker:
             "  Working directory:\n"
             f"    {os.path.abspath(CMAKE_BUILD_DIR())}\n"
             "  Command:\n"
-            f"    {self._formatArgsForDisplay(cmd)}\n"
+            f"    {self._formatArgsForDisplay(cmd)}\n",
+            flush=True,
         )
         rtn = subprocess.call(cmd, cwd=CMAKE_BUILD_DIR(), env=generator.env)
         if rtn != 0:

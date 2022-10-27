@@ -448,9 +448,9 @@ def setup(  # noqa: C901
     except SKBuildError as ex:
         import traceback  # pylint: disable=import-outside-toplevel
 
-        print("Traceback (most recent call last):")
+        print("Traceback (most recent call last):", file=sys.stderr)
         traceback.print_tb(sys.exc_info()[2])
-        print()
+        print(file=sys.stderr, flush=True)
         sys.exit(ex)
 
     # Convert source dir to a path relative to the root
@@ -487,7 +487,7 @@ def setup(  # noqa: C901
 
     has_cmakelists = os.path.exists(os.path.join(cmake_source_dir, "CMakeLists.txt"))
     if not has_cmakelists:
-        print("skipping skbuild (no CMakeLists.txt found)")
+        print("skipping skbuild (no CMakeLists.txt found)", flush=True)
 
     skip_skbuild = (
         display_only or has_invalid_arguments or not _should_run_cmake(commands, cmake_with_sdist) or not has_cmakelists
@@ -503,7 +503,7 @@ def setup(  # noqa: C901
             print()
             print('Arguments following a "--" are passed directly to CMake ' "(e.g. -DMY_VAR:BOOL=TRUE).")
             print('Arguments following a second "--" are passed directly to ' " the build tool.")
-            print()
+            print(flush=True)
         return setuptools.setup(**kw)
 
     developer_mode = "develop" in commands or "test" in commands or build_ext_inplace
@@ -643,9 +643,9 @@ def setup(  # noqa: C901
     except SKBuildError as ex:
         import traceback  # pylint: disable=import-outside-toplevel
 
-        print("Traceback (most recent call last):")
+        print("Traceback (most recent call last):", file=sys.stderr)
         traceback.print_tb(sys.exc_info()[2])
-        print()
+        print(file=sys.stderr, flush=True)
         sys.exit(ex)
 
     # If needed, set reasonable defaults for package_dir
@@ -740,7 +740,7 @@ def setup(  # noqa: C901
 
     kw["distclass"] = BinaryDistribution
 
-    print()
+    print(flush=True)
 
     return setuptools.setup(**kw)
 
@@ -904,12 +904,12 @@ def _copy_file(src_file: str, dest_file: str, hide_listing: Union[bool, int] = T
     dest_dir = os.path.dirname(dest_file)
     if dest_dir != "" and not os.path.exists(dest_dir):
         if not hide_listing:
-            print(f"creating directory {dest_dir}")
+            print(f"creating directory {dest_dir}", flush=True)
         mkdir_p(dest_dir)
 
     # Copy file
     if not hide_listing:
-        print(f"copying {src_file} -> {dest_file}")
+        print(f"copying {src_file} -> {dest_file}", flush=True)
     shutil.copyfile(src_file, dest_file)
     shutil.copymode(src_file, dest_file)
 
@@ -955,7 +955,7 @@ def _consolidate_package_modules(
     except DistutilsError as msg:
         raise SystemExit(f"error: {msg}") from None
 
-    print()
+    print(flush=True)
 
     for entry in modules:
 

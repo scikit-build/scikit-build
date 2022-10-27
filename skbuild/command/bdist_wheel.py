@@ -21,7 +21,7 @@ class bdist_wheel(set_build_base_mixin, _bdist_wheel):  # type: ignore[misc]
             with distribution_hide_listing(self.distribution) as hide_listing:
                 if hide_listing:
                     zip_filename = wheelfile_self.filename
-                    print(f"creating '{zip_filename}' and adding '{base_dir}' to it")
+                    print(f"creating '{zip_filename}' and adding '{base_dir}' to it", flush=True)
                 old_write_files(wheelfile_self, base_dir)
 
         WheelFile.distribution = self.distribution
