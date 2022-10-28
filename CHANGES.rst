@@ -12,7 +12,7 @@ Scikit-build 0.16.0
 This release adds support for Python 3.11 and removes support for Python 2.7
 and 3.5 (:pr:`688`). Testing and static checking improved, including being
 fully statically typed internally (though setuptools is not fully typed, so
-it's of limited use).
+it is of limited use).
 
 All deprecated setuptools/distutils features are also deprecated in
 scikit-build, like the ``test`` command, ``easy_install``, etc. Editable mode
