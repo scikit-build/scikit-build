@@ -15,6 +15,7 @@ import platform
 import shutil
 import stat
 import sys
+import traceback
 import warnings
 from typing import (
     Any,
@@ -138,7 +139,7 @@ def parse_skbuild_args(
         build_tool_args.extend(["--install-target", namespace.install_target])
 
     if namespace.generator is None and namespace.skip_generator_test is True:
-        sys.exit("ERROR: Specifying --skip-generator-test requires --generator to also be specified.")
+        raise SystemExit("ERROR: Specifying --skip-generator-test requires --generator to also be specified.")
 
     return remaining_args, namespace.cmake_executable, namespace.skip_generator_test
 
@@ -158,7 +159,8 @@ def parse_args() -> Tuple[List[str], Optional[str], bool, List[str], List[str]]:
         if arg == separator:
             i += 1
             if i >= len(argsets):
-                sys.exit(f"ERROR: Too many '{separator}' separators provided (expected at most {len(argsets) - 1}).")
+                msg = f"ERROR: Too many '{separator}' separators provided (expected at most {len(argsets) - 1})."
+                raise SystemExit(msg)
         else:
             argsets[i].append(arg)
 
@@ -445,13 +447,11 @@ def setup(  # noqa: C901
     # ... and validate them
     try:
         _check_skbuild_parameters(cmake_install_dir, cmake_source_dir)
-    except SKBuildError as ex:
-        import traceback  # pylint: disable=import-outside-toplevel
-
+    except SKBuildError:
         print("Traceback (most recent call last):", file=sys.stderr)
         traceback.print_tb(sys.exc_info()[2])
         print(file=sys.stderr, flush=True)
-        sys.exit(ex)
+        raise SystemExit(2) from None
 
     # Convert source dir to a path relative to the root
     # of the project
@@ -638,15 +638,15 @@ def setup(  # noqa: C901
                 )
                 _save_cmake_spec(cmake_spec)
             cmkr.make(make_args, install_target=cmake_install_target, env=env)
-    except SKBuildGeneratorNotFoundError as ex:
-        sys.exit(ex)
-    except SKBuildError as ex:
-        import traceback  # pylint: disable=import-outside-toplevel
-
+    except SKBuildGeneratorNotFoundError:
+        print("Traceback (most recent call last):", file=sys.stderr)
+        traceback.print_tb(sys.exc_info()[2])
+        raise SystemExit(3) from None
+    except SKBuildError:
         print("Traceback (most recent call last):", file=sys.stderr)
         traceback.print_tb(sys.exc_info()[2])
         print(file=sys.stderr, flush=True)
-        sys.exit(ex)
+        raise SystemExit(4) from None
 
     # If needed, set reasonable defaults for package_dir
     for package in packages:
