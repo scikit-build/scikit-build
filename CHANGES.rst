@@ -5,6 +5,38 @@ Release Notes
 This is the list of changes to scikit-build between each release. For full
 details, see the commit logs at http://github.com/scikit-build/scikit-build
 
+
+Scikit-build 0.16.0
+===================
+
+This release adds support for Python 3.11 and removes support for Python 2.7
+and 3.5 (:pr:`688`). Testing and static checking improved, including being
+fully statically typed internally (though setuptools is not fully typed, so
+it is of limited use).
+
+All deprecated setuptools/distutils features are also deprecated in
+scikit-build, like the ``test`` command, ``easy_install``, etc. Editable mode
+is still unsupported.  Python 3.6 support is deprecated. Older versions of
+CMake (<3.15) are not recommended; a future version will remove support for older
+CMake's (along with providing a better mechanism for ensuring a proper CMake is
+available). If you need any of these features, please open or find an issue
+explaining what and why you need something.
+
+
+New Features
+------------
+
+* Cython module now supports FindPython mode. :pr:`743`
+
+* PyPy is discovered without extra settings in FindPython mode :pr:`744`
+
+Bug fixes
+---------
+
+* FindPython mode uses a new path specification, should help make it usable. :pr:`774`
+
+* Better flushing and output streams for more consistent output ordering. :pr:`781`
+
 Scikit-build 0.15.0
 ===================
 
