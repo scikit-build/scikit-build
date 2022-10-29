@@ -86,7 +86,7 @@ filterwarnings = [
   "ignore:Config variable 'Py_DEBUG' is unset:RuntimeWarning",
   "ignore:Config variable 'WITH_PYMALLOC' is unset, Python ABI tag may be incorrect:RuntimeWarning",
   'ignore:\s*Installing .* as data is deprecated:Warning',
-  "ignore:shell/Perl-style substitions are deprecated:DeprecationWarning",
+  "ignore:shell/Perl-style subs.* are deprecated:DeprecationWarning",
 ]
 log_cli_level = "info"
 markers = [
