@@ -37,6 +37,7 @@ setuptools.setup(
         "Examples": "https://github.com/scikit-build/scikit-build-sample-projects",
     },
     package_data={"skbuild": ["resources", "py.typed"]},
+    include_package_data=True,
     install_requires=requirements,
     license="MIT",
     zip_safe=False,
