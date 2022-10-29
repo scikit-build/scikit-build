@@ -36,7 +36,7 @@ setuptools.setup(
         "Mailing List": "https://groups.google.com/forum/#!forum/scikit-build",
         "Examples": "https://github.com/scikit-build/scikit-build-sample-projects",
     },
-    package_data={"skbuild": ["resources", "py.typed"]},
+    package_data={"skbuild": ["resources/cmake/*.cmake", "py.typed", "*.pyi"]},
     install_requires=requirements,
     license="MIT",
     zip_safe=False,
