@@ -11,6 +11,15 @@ Next Release
 We are hard at work on the next generation of scikit-build. We are also
 continuing to fix bugs, make improvements, and backport changes here.
 
+Scikit-build 0.16.1
+===================
+
+This was a quick patch release that fixed a missing Python requires setting and
+some missing files :pr:`790`, and addressed a warning from setuptools in the
+tests.
+
+* Ignored distutils warning :pr:`785`. thanks to :user:`bnavigator`.
+
 
 Scikit-build 0.16.0
 ===================
