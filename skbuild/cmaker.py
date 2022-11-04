@@ -289,6 +289,7 @@ class CMaker:
                 [
                     f"{prefix}_EXECUTABLE:PATH={sys.executable}",
                     f"{prefix}_ROOT_DIR:PATH={sys.prefix}",
+                    f"{prefix}_INCLUDE_DIR:PATH={python_include_dir}",
                     f"{prefix}_FIND_REGISTRY:STRING=NEVER",
                 ]
             )
