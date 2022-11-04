@@ -11,6 +11,13 @@ Next Release
 We are hard at work on the next generation of scikit-build. We are also
 continuing to fix bugs, make improvements, and backport changes here.
 
+
+Scikit-build 0.16.2
+===================
+
+This addresses one more small regression with the FindPython change from
+0.16.0 that was affecting conda. :pr:`793`.
+
 Scikit-build 0.16.1
 ===================
 
