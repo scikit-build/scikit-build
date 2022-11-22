@@ -84,7 +84,7 @@ def test_generator(generator, expected_make_program):
     if this_platform not in generator_platform[generator]:
         pytest.skip(f"{generator} generator is available only on {this_platform.title()}")
 
-    @project_setup_py_test("hello-cpp", ["build"])
+    @project_setup_py_test("hello-cpp", ["build"], ret=True)
     def run_build():
         pass
 
@@ -160,7 +160,7 @@ def test_toolset():
     if arch == "64bit":
         vs_generator += " Win64"
 
-    @project_setup_py_test("hello-cpp", ["build", "-G", vs_generator])
+    @project_setup_py_test("hello-cpp", ["build", "-G", vs_generator], ret=True)
     def run_build():
         pass
 

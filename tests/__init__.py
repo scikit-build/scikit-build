@@ -247,7 +247,7 @@ def execute_setup_py(project_dir, setup_args, disable_languages_test=False):
         yield
 
 
-def project_setup_py_test(project, setup_args, tmp_dir=None, verbose_git=True, disable_languages_test=False):
+def project_setup_py_test(project, setup_args, tmp_dir=None, verbose_git=True, disable_languages_test=False, ret=False):
     def dec(fun):
         @functools.wraps(fun)
         def wrapped(*iargs, **ikwargs):
@@ -260,7 +260,9 @@ def project_setup_py_test(project, setup_args, tmp_dir=None, verbose_git=True, d
             with execute_setup_py(wrapped.tmp_dir, wrapped.setup_args, disable_languages_test=disable_languages_test):
                 result2 = fun(*iargs, **ikwargs)
 
-            return wrapped.tmp_dir, result2
+            if ret:
+                return wrapped.tmp_dir, result2
+            return None
 
         wrapped.project = project
         wrapped.setup_args = setup_args

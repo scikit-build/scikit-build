@@ -21,7 +21,7 @@ from .pytest_helpers import check_sdist_content, check_wheel_content
 def test_hello_builds():
     with push_dir():
 
-        @project_setup_py_test("hello-cpp", ["build"])
+        @project_setup_py_test("hello-cpp", ["build"], ret=True)
         def run():
             pass
 
@@ -84,7 +84,7 @@ def test_hello_wheel():
 
     expected_distribution_name = "hello-1.2.3"
 
-    @project_setup_py_test("hello-cpp", ["bdist_wheel"])
+    @project_setup_py_test("hello-cpp", ["bdist_wheel"], ret=True)
     def build_wheel():
         whls = glob.glob("dist/*.whl")
         assert len(whls) == 1
@@ -113,7 +113,7 @@ def test_hello_clean(dry_run, capfd):
 
         dry_run = dry_run == "with-dry-run"
 
-        @project_setup_py_test("hello-cpp", ["build"])
+        @project_setup_py_test("hello-cpp", ["build"], ret=True)
         def run_build():
             pass
 
