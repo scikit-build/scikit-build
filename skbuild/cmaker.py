@@ -368,6 +368,8 @@ class CMaker:
         if not python_version:
             python_version = ".".join(map(str, sys.version_info[:2]))
 
+        assert isinstance(python_version, str)
+
         return python_version
 
     # NOTE(opadron): The try-excepts raise the cyclomatic complexity, but we
@@ -481,8 +483,8 @@ class CMaker:
         # modern python versions that avoids the complicated construct below.
         # It avoids guessing the library name. Tested with cpython 3.8 and
         # pypy 3.8 on Ubuntu.
-        libdir = sysconfig.get_config_var("LIBDIR")
-        ldlibrary = sysconfig.get_config_var("LDLIBRARY")
+        libdir: Optional[str] = sysconfig.get_config_var("LIBDIR")
+        ldlibrary: Optional[str] = sysconfig.get_config_var("LDLIBRARY")
         if libdir and ldlibrary and os.path.exists(libdir):
             if sysconfig.get_config_var("MULTIARCH"):
                 masd = sysconfig.get_config_var("multiarchsubdir")
@@ -493,7 +495,7 @@ class CMaker:
                     if os.path.exists(libdir_masd):
                         libdir = libdir_masd
             libpath = os.path.join(libdir, ldlibrary)
-            if os.path.exists(libpath):
+            if libpath and os.path.exists(libpath):
                 return libpath
 
         return CMaker._guess_python_library(python_version)
@@ -501,7 +503,7 @@ class CMaker:
     @staticmethod
     def _guess_python_library(python_version: str) -> Optional[str]:
         # determine direct path to libpython
-        python_library = sysconfig.get_config_var("LIBRARY")
+        python_library: Optional[str] = sysconfig.get_config_var("LIBRARY")
 
         # if static (or nonexistent), try to find a suitable dynamic libpython
         if not python_library or os.path.splitext(python_library)[1][-2:] == ".a":

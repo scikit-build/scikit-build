@@ -1,8 +1,9 @@
+import logging
 from types import SimpleNamespace
 
 import pytest
 
-from skbuild.utils import distribution_hide_listing, distutils_log
+from skbuild.utils import distribution_hide_listing
 
 setuptools_logging = pytest.importorskip("setuptools.logging")
 
@@ -14,7 +15,7 @@ def test_hide_listing(caplog):
     distribution.hide_listing = True
 
     with distribution_hide_listing(distribution):
-        distutils_log.info("This is hidden")
+        logging.getLogger("wheel").info("This is hidden")
 
     assert "This is hidden" not in caplog.text
 
@@ -26,6 +27,6 @@ def test_no_hide_listing(caplog):
     distribution.hide_listing = False
 
     with distribution_hide_listing(distribution):
-        distutils_log.info("This is not hidden")
+        logging.getLogger("wheel").info("This is not hidden")
 
     assert "This is not hidden" in caplog.text

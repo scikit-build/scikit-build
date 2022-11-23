@@ -451,7 +451,7 @@ def setup(  # noqa: C901
         print("Traceback (most recent call last):", file=sys.stderr)
         traceback.print_tb(sys.exc_info()[2])
         print(file=sys.stderr, flush=True)
-        sys.exit(ex)
+        sys.exit(ex)  # type: ignore[arg-type]
 
     # Convert source dir to a path relative to the root
     # of the project
@@ -639,14 +639,14 @@ def setup(  # noqa: C901
                 _save_cmake_spec(cmake_spec)
             cmkr.make(make_args, install_target=cmake_install_target, env=env)
     except SKBuildGeneratorNotFoundError as ex:
-        sys.exit(ex)
+        sys.exit(ex)  # type: ignore[arg-type]
     except SKBuildError as ex:
         import traceback  # pylint: disable=import-outside-toplevel
 
         print("Traceback (most recent call last):", file=sys.stderr)
         traceback.print_tb(sys.exc_info()[2])
         print(file=sys.stderr, flush=True)
-        sys.exit(ex)
+        sys.exit(ex)  # type: ignore[arg-type]
 
     # If needed, set reasonable defaults for package_dir
     for package in packages:
