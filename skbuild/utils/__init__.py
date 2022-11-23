@@ -3,6 +3,7 @@
 import contextlib
 import logging
 import os
+import sys
 from contextlib import contextmanager
 from typing import (
     Any,
@@ -23,18 +24,31 @@ from distutils.errors import DistutilsTemplateError
 from distutils.filelist import FileList
 from distutils.text_file import TextFile
 
-distutils_log: logging.Logger
+if sys.version_info >= (3, 8):
+    from typing import Protocol
+else:
+    from typing_extensions import Protocol
+
+
+class CommonLog(Protocol):
+    def info(self, __msg: str, *args: object) -> None:
+        ...
+
+
+logger: CommonLog
 
 try:
     import setuptools.logging  # noqa: F401
 
-    distutils_log = logging.getLogger("skbuild")
-    distutils_log.setLevel(logging.INFO)
+    skb_log = logging.getLogger("skbuild")
+    skb_log.setLevel(logging.INFO)
     logging_module = True
+    logger = skb_log
 
 except ImportError:
-    from distutils import log as distutils_log  # type: ignore[misc]
+    from distutils import log as distutils_log
 
+    logger = distutils_log
     logging_module = False
 
 
@@ -45,7 +59,7 @@ class Distribution(NamedTuple):
 def _log_warning(msg: str, *args: object) -> None:
     try:
         if logging_module:
-            distutils_log.warning(msg, *args)
+            skb_log.warning(msg, *args)
         else:
             distutils_log.warn(msg, *args)  # pylint: disable=deprecated-method
     except ValueError:
@@ -198,10 +212,8 @@ def distribution_hide_listing(distribution: Distribution) -> Iterator[Union[bool
     wheel_log = logging.getLogger("wheel")
     if logging_module:
         # Setuptools 60.2+, will always be on Python 3.6+
-        old_level = distutils_log.getEffectiveLevel()
         old_wheel_level = wheel_log.getEffectiveLevel()
         if hide_listing:
-            distutils_log.setLevel(logging.WARNING)
             wheel_log.setLevel(logging.WARNING)
         try:
             if hide_listing:
@@ -212,17 +224,16 @@ def distribution_hide_listing(distribution: Distribution) -> Iterator[Union[bool
             else:
                 yield hide_listing
         finally:
-            distutils_log.setLevel(old_level)
             wheel_log.setLevel(old_wheel_level)
 
     else:
         old_threshold = distutils_log._global_log.threshold  # type: ignore[attr-defined]
         if hide_listing:
-            distutils_log.set_threshold(distutils_log.WARN)  # type: ignore[attr-defined]
+            distutils_log.set_threshold(distutils_log.WARN)
         try:
             yield hide_listing
         finally:
-            distutils_log.set_threshold(old_threshold)  # type: ignore[attr-defined]
+            distutils_log.set_threshold(old_threshold)
 
 
 def parse_manifestin(template: str) -> List[str]:
@@ -253,8 +264,8 @@ def parse_manifestin(template: str) -> List[str]:
             # malformed lines, or a ValueError from the lower-level
             # convert_path function
             except (DistutilsTemplateError, ValueError) as msg:
-                filename = template_file.filename if hasattr(template_file, "filename") else "Unknown"  # type: ignore[attr-defined]
-                current_line = template_file.current_line if hasattr(template_file, "current_line") else "Unknown"  # type: ignore[attr-defined]
+                filename = template_file.filename if hasattr(template_file, "filename") else "Unknown"
+                current_line = template_file.current_line if hasattr(template_file, "current_line") else "Unknown"
                 print(f"{filename}, line {current_line}: {msg}", flush=True)
         return file_list.files
     finally:

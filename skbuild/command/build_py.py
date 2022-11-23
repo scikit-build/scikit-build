@@ -7,7 +7,7 @@ from typing import Dict, List, Tuple, Union
 from setuptools.command.build_py import build_py as _build_py
 
 from ..constants import CMAKE_INSTALL_DIR
-from ..utils import distribution_hide_listing, distutils_log
+from ..utils import distribution_hide_listing, logger
 from . import set_build_base_mixin
 
 
@@ -38,7 +38,7 @@ class build_py(set_build_base_mixin, _build_py):
         """
         with distribution_hide_listing(self.distribution):
             super().run(*args, **kwargs)
-        distutils_log.info("copied %d files", self.outfiles_count)
+        logger.info("copied %d files", self.outfiles_count)
 
     def find_modules(self) -> List[Tuple[str, str, str]]:
         """Finds individually-specified Python modules, ie. those listed by
