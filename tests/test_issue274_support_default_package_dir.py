@@ -1,3 +1,5 @@
+import pytest
+
 from . import (
     _tmpdir,
     execute_setup_py,
@@ -8,11 +10,13 @@ from . import (
 )
 
 
+@pytest.mark.deprecated
 @project_setup_py_test("issue-274-support-default-package-dir", ["install"], disable_languages_test=True)
 def test_install_command():
     pass
 
 
+@pytest.mark.deprecated
 def test_test_command():
     with push_dir():
 
