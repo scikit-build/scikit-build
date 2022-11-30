@@ -4,7 +4,6 @@ coverage>=4.2
 cython>=0.25.1
 flake8>=3.0.4
 importlib-metadata;python_version<"3.8"
-path.py>=11.5.0
 pytest>=6.0.0
 pytest-cov>=2.7.1
 pytest-mock>=1.10.4
