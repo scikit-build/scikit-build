@@ -210,13 +210,15 @@ def distribution_hide_listing(distribution: Distribution) -> Iterator[Union[bool
 
     hide_listing = hasattr(distribution, "hide_listing") and distribution.hide_listing  # type: ignore[attr-defined]
     wheel_log = logging.getLogger("wheel")
+    root_log = logging.getLogger()  # setuptools 65.6+ needs this hidden too
     if logging_module:
         # Setuptools 60.2+, will always be on Python 3.6+
         old_wheel_level = wheel_log.getEffectiveLevel()
-        if hide_listing:
-            wheel_log.setLevel(logging.WARNING)
+        old_root_level = root_log.getEffectiveLevel()
         try:
             if hide_listing:
+                wheel_log.setLevel(logging.WARNING)
+                root_log.setLevel(logging.WARNING)
                 # The classic logger doesn't respond to set_threshold anymore,
                 # but it does log info and above to stdout, so let's hide that
                 with open(os.devnull, "w", encoding="utf-8") as f, contextlib.redirect_stdout(f):
@@ -224,7 +226,9 @@ def distribution_hide_listing(distribution: Distribution) -> Iterator[Union[bool
             else:
                 yield hide_listing
         finally:
-            wheel_log.setLevel(old_wheel_level)
+            if hide_listing:
+                wheel_log.setLevel(old_wheel_level)
+                root_log.setLevel(old_root_level)
 
     else:
         old_threshold = distutils_log._global_log.threshold  # type: ignore[attr-defined]

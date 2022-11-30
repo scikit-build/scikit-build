@@ -38,6 +38,8 @@ def tests(session):
             contained = "1" if version in known_MSVC else "0"
             env[f"SKBUILD_TEST_FIND_VS{version}_INSTALLATION_EXPECTED"] = contained
 
+    # Latest versions may break things, so grab them for testing!
+    session.install("-U", "setuptools", "wheel")
     session.install("-e", ".[test]")
     session.run("pytest", *posargs, env=env)
 
