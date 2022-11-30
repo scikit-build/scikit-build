@@ -146,7 +146,7 @@ def test_cmake_args_keyword(cmake_args, capfd):
         ("banana", False, str),
     ),
 )
-def test_cmake_install_dir_keyword(cmake_install_dir, expected_failed, error_code_type, capsys):
+def test_cmake_install_dir_keyword(cmake_install_dir, expected_failed, error_code_type, capsys, caplog):
 
     # -------------------------------------------------------------------------
     # "SOURCE" tree layout:
@@ -220,6 +220,7 @@ def test_cmake_install_dir_keyword(cmake_install_dir, expected_failed, error_cod
         message = str(e)
 
     out, _ = capsys.readouterr()
+    out += caplog.text
 
     assert failed == expected_failed
     if failed:
@@ -379,7 +380,7 @@ def test_setup_requires_keyword_include_cmake(mocker, capsys):
 
 
 @pytest.mark.parametrize("distribution_type", ("pure", "skbuild"))
-def test_script_keyword(distribution_type, capsys):
+def test_script_keyword(distribution_type, capsys, caplog):
 
     # -------------------------------------------------------------------------
     #
@@ -458,12 +459,13 @@ def test_script_keyword(distribution_type, capsys):
         pass
 
     out, _ = capsys.readouterr()
+    out += caplog.text
     for message in messages:
         assert to_platform_path(message) in out
 
 
 @pytest.mark.parametrize("distribution_type", ("pure", "skbuild"))
-def test_py_modules_keyword(distribution_type, capsys):
+def test_py_modules_keyword(distribution_type, capsys, caplog):
 
     # -------------------------------------------------------------------------
     #
@@ -539,6 +541,7 @@ def test_py_modules_keyword(distribution_type, capsys):
         pass
 
     out, _ = capsys.readouterr()
+    out += caplog.text
     for message in messages:
         assert to_platform_path(message) in out
 
@@ -943,7 +946,7 @@ def test_setup_inputs(
 
 
 @pytest.mark.parametrize("with_cmake_source_dir", [0, 1])
-def test_cmake_install_into_pure_package(with_cmake_source_dir, capsys):
+def test_cmake_install_into_pure_package(with_cmake_source_dir, capsys, caplog):
 
     # -------------------------------------------------------------------------
     # "SOURCE" tree layout:
@@ -1056,6 +1059,7 @@ def test_cmake_install_into_pure_package(with_cmake_source_dir, capsys):
     ]
 
     out, _ = capsys.readouterr()
+    out += caplog.text
     for message in messages:
         assert to_platform_path(message) in out
 

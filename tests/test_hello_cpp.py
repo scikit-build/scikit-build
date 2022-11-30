@@ -11,7 +11,7 @@ import os
 
 import pytest
 
-from skbuild.constants import CMAKE_BUILD_DIR, CMAKE_INSTALL_DIR, SKBUILD_DIR
+from skbuild.constants import CMAKE_BUILD_DIR, SKBUILD_DIR
 from skbuild.utils import push_dir
 
 from . import SAMPLES_DIR, _copy_dir, _tmpdir, get_ext_suffix, project_setup_py_test
@@ -163,23 +163,19 @@ def test_hello_cleans(capfd, caplog):
 
         # Check that a project can be cleaned twice in a row
         run_build()
-        print("<<-->>")
+        capfd.readouterr()
+        caplog.clear()
+
         run_clean()
-        print("<<-->>")
+        txt1 = caplog.text
+        msg = capfd.readouterr().out + txt1
+        assert "running clean" in msg
+        caplog.clear()
+
         run_clean()
-
-    _, clean1_out, clean2_out = capfd.readouterr()[0].split("<<-->>")
-
-    clean1_out = clean1_out.strip()
-    clean2_out = clean2_out.strip()
-
-    assert "running clean" == clean1_out.splitlines()[0]
-    if caplog.text.count("removing") != 3:
-        assert f"removing '{CMAKE_INSTALL_DIR()}'" == clean1_out.splitlines()[1]
-        assert f"removing '{CMAKE_BUILD_DIR()}'" == clean1_out.splitlines()[2]
-        assert f"removing '{SKBUILD_DIR()}'" == clean1_out.splitlines()[3]
-
-    assert "running clean" == clean2_out
+        txt2 = caplog.text
+        msg = capfd.readouterr().out + txt2
+        assert "running clean" in msg
 
 
 @project_setup_py_test("hello-cpp", ["develop"])
