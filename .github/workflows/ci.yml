@@ -97,7 +97,6 @@ jobs:
       env:
         TMP: /tmp
         TEMP: /tmp
-        SETUPTOOLS_SCM_PRETEND_VERSION: "0.15"
       run: python3.9 -m nox -s tests-3.9
 
 
@@ -144,3 +143,10 @@ jobs:
 
     - name: Check metadata
       run: pipx run twine check dist/*
+
+
+  pass:
+    needs: [tests, tests-pypy, dist]
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "All jobs passed"
