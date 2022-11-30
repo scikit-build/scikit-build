@@ -91,5 +91,6 @@ filterwarnings = [
 ]
 log_cli_level = "info"
 markers = [
-  "fortran: fortran testing",
+  "fortran: Fortran testing",
+  "deprecated: These tests deprecated setuptools features",
 ]
