@@ -3,13 +3,31 @@ Release Notes
 =============
 
 This is the list of changes to scikit-build between each release. For full
-details, see the commit logs at http://github.com/scikit-build/scikit-build
+details, see the commit logs at https://github.com/scikit-build/scikit-build
 
 Next Release
 ============
 
-We are hard at work on the next generation of scikit-build. We are also
-continuing to fix bugs, make improvements, and backport changes here.
+We are hard at work on the next generation of scikit-build
+`scikit-build-core <https://github.com/scikit-build/scikit-build-core>`_, which
+has had it's first non-development release. We are also continuing to fix bugs,
+make improvements, and backport changes here.
+
+
+Scikit-build 0.16.3
+===================
+
+This release fixes logging issues using setuptools 65.6+ affecting our tests.
+Pytest 7.2+ is now supported. ``setup.py <command>`` and ``setup_requires``
+are deprecated, and tests are marked as such.
+
+
+* Fix typo in usage.rst in :pr:`795`, thanks to :user:`chohner`.
+* Support pytest 7.2+ in :pr:`801`.
+* Change warning filtering in :pr:`802`.
+* Handle logging changes in setuptools 65.6+ in :pr:`807`.
+* Add deprecated markers to some tests in :pr:`807`.
+* Allow known warnings to show up in the tests :pr:`807`.
 
 
 Scikit-build 0.16.2
