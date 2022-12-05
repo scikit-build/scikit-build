@@ -29,7 +29,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runs-on: [ubuntu-latest, macos-latest, windows-2019, windows-2022]
+        runs-on: [ubuntu-20.04, macos-latest, windows-2019, windows-2022]
 
     name: Tests on ${{ matrix.runs-on }}
     steps:
@@ -54,7 +54,9 @@ jobs:
         echo "SKBUILD_TEST_FIND_VS2022_INSTALLATION_EXPECTED=1" >> $GITHUB_ENV
 
     - name: Setup nox
-      uses: ./.github/actions/setup-nox
+      uses: wntrblm/nox@2022.11.21
+      with:
+        python-versions: "3.6,3.7,3.8,3.9,3.10,3.11"
 
     # We check all Python's on Linux, because it's fast.
     # We check minimum Python and maximum Python on all OS's.
@@ -116,7 +118,7 @@ jobs:
         fetch-depth: 0
 
     - name: Setup nox
-      uses: ./.github/actions/setup-nox
+      uses: wntrblm/nox@2022.11.21
 
     - uses: actions/setup-python@v4
       with:
