@@ -22,18 +22,18 @@ repos:
   - id: fix-smartquotes
 
 - repo: https://github.com/PyCQA/isort
-  rev: "5.10.1"
+  rev: "5.11.1"
   hooks:
   - id: isort
 
 - repo: https://github.com/asottile/pyupgrade
-  rev: "v3.3.0"
+  rev: "v3.3.1"
   hooks:
   - id: pyupgrade
     args: [--py36-plus]
 
 - repo: https://github.com/psf/black
-  rev: "22.10.0" # Keep in sync with blacken-docs
+  rev: "22.12.0" # Keep in sync with blacken-docs
   hooks:
   - id: black
     exclude: ^docs/conf\.py$
