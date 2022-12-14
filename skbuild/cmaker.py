@@ -303,7 +303,7 @@ class CMaker:
 
         if generator.toolset:
             cmd.extend(["-T", generator.toolset])
-        if generator.architecture:
+        if generator.architecture and "Visual Studio" in generator.name:
             cmd.extend(["-A", generator.architecture])
         if ninja_executable_path is not None:
             cmd.append(f"-DCMAKE_MAKE_PROGRAM:FILEPATH={ninja_executable_path}")

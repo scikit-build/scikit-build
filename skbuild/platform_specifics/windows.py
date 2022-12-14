@@ -33,6 +33,12 @@ VS_YEAR_TO_MSC_VER = {
     "2022": "1930",  # VS 2022 - can be +9
 }
 
+ARCH_TO_MSVC_ARCH = {
+    "Win32": "x86",
+    "ARM64": "x86_arm64",
+    "x64": "x86_amd64",
+}
+
 
 class CachedEnv(TypedDict):
     PATH: str
@@ -106,6 +112,15 @@ class WindowsPlatform(abstract.CMakePlatform):
     def generator_installation_help(self) -> str:
         """Return message guiding the user for installing a valid toolchain."""
         return self._vs_help
+
+
+def _compute_arch() -> str:
+    """Currently only supports Intel -> ARM cross-compilation."""
+    if platform.machine() == "ARM64" or "arm64" in os.environ.get("SETUPTOOLS_EXT_SUFFIX", "").lower():
+        return "ARM64"
+    if platform.architecture()[0] == "64bit":
+        return "x64"
+    return "Win32"
 
 
 class CMakeVisualStudioIDEGenerator(CMakeGenerator):
@@ -184,7 +199,7 @@ def find_visual_studio(vs_version: int) -> str:
 
     .. note::
 
-        - For VS 2017 and newer, returns `path` based on the result of invoking ``vswhere.exe``.
+        - Returns `path` based on the result of invoking ``vswhere.exe``.
 
     """
     return _find_visual_studio_2017_or_newer(vs_version)
@@ -200,24 +215,17 @@ def _get_msvc_compiler_env(vs_version: int, vs_toolset: Optional[str] = None) ->
     Return a dictionary of environment variables corresponding to ``vs_version``
     that can be used with  :class:`CMakeVisualStudioCommandLineGenerator`.
 
-    The ``vs_toolset`` is used only for Visual Studio 2017 or newer (``vs_version >= 14``).
+    The ``vs_toolset`` is used only for Visual Studio 2017 or newer (``vs_version >= 15``).
 
     If specified, ``vs_toolset`` is used to set the `-vcvars_ver=XX.Y` argument passed to
     ``vcvarsall.bat`` script.
     """
 
     # Set architecture
-    arch = "x86"
-    if platform.machine() == "ARM64":
-        arch = "x86_arm64"
-    elif platform.architecture()[0] == "64bit":
-        if vs_version < 14:
-            arch = "amd64"
-        else:
-            arch = "x86_amd64"
+    vc_arch = ARCH_TO_MSVC_ARCH[_compute_arch()]
 
     # If any, return cached version
-    cache_key = ",".join([str(vs_version), arch, str(vs_toolset)])
+    cache_key = ",".join([str(vs_version), vc_arch, str(vs_toolset)])
     if cache_key in __get_msvc_compiler_env_cache:
         return __get_msvc_compiler_env_cache[cache_key]
 
@@ -230,7 +238,7 @@ def _get_msvc_compiler_env(vs_version: int, vs_toolset: Optional[str] = None) ->
 
     # Set vcvars_ver argument based on toolset
     vcvars_ver = ""
-    if vs_toolset is not None and vs_version >= 15:
+    if vs_toolset is not None:
         match = re.findall(r"^v(\d\d)(\d+)$", vs_toolset)[0]
         if match:
             match_str = ".".join(match)
@@ -238,7 +246,7 @@ def _get_msvc_compiler_env(vs_version: int, vs_toolset: Optional[str] = None) ->
 
     try:
         out_bytes = subprocess.check_output(
-            f'cmd /u /c "{vcvarsall}" {arch} {vcvars_ver} && set',
+            f'cmd /u /c "{vcvarsall}" {vc_arch} {vcvars_ver} && set',
             stderr=subprocess.STDOUT,
             shell=sys.platform.startswith("cygwin"),
         )
@@ -280,10 +288,10 @@ class CMakeVisualStudioCommandLineGenerator(CMakeGenerator):
 
         If set, the ``toolset`` defines the `Visual Studio Toolset` to select.
 
-        The platform (32-bit or 64-bit) is automatically selected based
-        on the value of ``platform.architecture()[0]``.
+        The platform (32-bit or 64-bit or ARM) is automatically selected.
         """
+        arch = _compute_arch()
         vc_env = _get_msvc_compiler_env(VS_YEAR_TO_VERSION[year], toolset)
         env = {str(key.upper()): str(value) for key, value in vc_env.items()}
-        super().__init__(name, env, args=args)
+        super().__init__(name, env, arch=arch, args=args)
         self._description = f"{self.name} ({CMakeVisualStudioIDEGenerator(year, toolset).description})"

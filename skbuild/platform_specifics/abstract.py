@@ -230,7 +230,7 @@ class CMakePlatform:
                 cmd = [cmake_exe_path, "../", "-G", generator.name]
                 if generator.toolset:
                     cmd.extend(["-T", generator.toolset])
-                if generator.architecture:
+                if generator.architecture and "Visual Studio" in generator.name:
                     cmd.extend(["-A", generator.architecture])
                 cmd.extend(cmake_args)
                 cmd.extend(generator.args)

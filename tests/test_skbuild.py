@@ -82,7 +82,7 @@ def test_generator(generator, expected_make_program):
 
     this_platform = platform.system().lower()
     if this_platform not in generator_platform[generator]:
-        pytest.skip(f"{generator} generator is available only on {this_platform.title()}")
+        pytest.skip(f"{generator} generator is not available on {this_platform.title()}")
 
     @project_setup_py_test("hello-cpp", ["build"], ret=True)
     def run_build():
@@ -127,8 +127,8 @@ def test_invalid_generator(generator_args):
 
 
 @pytest.mark.skipif(sys.platform != "win32", reason="Requires Windows")
-@pytest.mark.parametrize("vs_year", ["2015", "2017", "2019", "2022"])
-def test_platform_windows_find_visual_studio(vs_year):
+@pytest.mark.parametrize("vs_year", ["2017", "2019", "2022"])
+def test_platform_windows_find_visual_studio(vs_year, capsys):
     """If the environment variable ``SKBUILD_TEST_FIND_VS<vs_year>_INSTALLATION_EXPECTED`` is set,
     this test asserts the value returned by :func:`skbuild.platforms.windows.find_visual_studio()`.
     It skips the test otherwise.
@@ -143,6 +143,8 @@ def test_platform_windows_find_visual_studio(vs_year):
     valid_path_expected = bool(int(os.environ[env_var]))
     vs_path = find_visual_studio(VS_YEAR_TO_VERSION[vs_year])
     if valid_path_expected:
+        with capsys.disabled():
+            print(f"\nFound VS {vs_year} @ {vs_path}")
         assert os.path.exists(vs_path)
     else:
         assert vs_path == ""
