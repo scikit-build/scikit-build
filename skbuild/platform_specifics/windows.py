@@ -116,7 +116,7 @@ class WindowsPlatform(abstract.CMakePlatform):
 
 def _compute_arch() -> str:
     """Currently only supports Intel -> ARM cross-compilation."""
-    if platform.machine() == "ARM64" or "arm" in os.environ.get("SETUPTOOLS_EXT_SUFFIX", "").lower():
+    if platform.machine() == "ARM64" or "arm64" in os.environ.get("SETUPTOOLS_EXT_SUFFIX", "").lower():
         return "ARM64"
     if platform.architecture()[0] == "64bit":
         return "x64"
