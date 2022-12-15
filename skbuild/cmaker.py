@@ -4,6 +4,7 @@ This module provides an interface for invoking CMake executable.
 
 
 import argparse
+import configparser
 import contextlib
 import glob
 import itertools
@@ -479,6 +480,17 @@ class CMaker:
             >>> print('python_library = {!r}'.format(python_library))
             python_library = '.../conda/envs/py37/include/python3.7m'
         """
+        # On Windows, support cross-compiling in the same way as setuptools
+        # When cross-compiling, check DIST_EXTRA_CONFIG first
+        config_file = os.environ.get("DIST_EXTRA_CONFIG", None)
+        if config_file and Path(config_file).is_file():
+            cp = configparser.ConfigParser()
+            cp.read(config_file)
+            result = cp.get("build_ext", "library_dirs", fallback="")
+            if result:
+                minor = sys.version_info[1]
+                return str(Path(result) / f"python3{minor}.lib")
+
         # This seems to be the simplest way to detect the library path with
         # modern python versions that avoids the complicated construct below.
         # It avoids guessing the library name. Tested with cpython 3.8 and
