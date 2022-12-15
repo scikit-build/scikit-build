@@ -12,6 +12,10 @@ scikit-build
     :target: https://codecov.io/gh/scikit-build/scikit-build
     :alt: Code coverage status
 
+.. image:: https://img.shields.io/static/v1?label=Discussions&message=Ask&color=blue&logo=github
+    :target: https://github.com/orgs/scikit-build/discussions
+    :alt: GitHub Discussion
+
 Improved build system generator for CPython C/C++/Fortran/Cython extensions.
 
 Better support is available for additional compilers, build systems, cross
