@@ -148,21 +148,11 @@ Setting up environment
 
 
 
-10. Send an email to the `scikit-build mailing list`_ based on the following template:
-
-  ::
-
-    On behalf of the scikit-build team, I am pleased to announce that the version X.Y.Z is available for download:
-
-      pip install --upgrade scikit-build   <--- This line should be formatted using fixed size font
-
-    Thank you to everyone who contributed their time to test, write issue reports and contribute patches!
-
-    <copy here content of the changelog for release X.Y.X including the release name>
+10. Add an entry to the ``Announcements`` category of the `scikit-build discussions board`_.
 
   .. note::
 
-    For examples of announcements, see https://groups.google.com/g/scikit-build/search?q=announce%20subject%3Ascikit-build
+    For examples of announcements, see https://github.com/orgs/scikit-build/discussions/categories/announcements
 
 
 .. _virtualenvwrapper: https://virtualenvwrapper.readthedocs.io/
@@ -175,7 +165,7 @@ Setting up environment
 .. _PyPI: https://pypi.org/project/scikit-build
 .. _TestPyPI: https://test.pypi.org/project/scikit-build
 
-.. _scikit-build mailing list: https://groups.google.com/g/scikit-build
+.. _scikit-build discussions board: https://github.com/orgs/scikit-build/discussions/categories/announcements
 
 -----------------------
 `Conda`_: Step-by-step

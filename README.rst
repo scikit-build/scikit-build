@@ -76,7 +76,7 @@ Miscellaneous
 * Free software: MIT license
 * Documentation: http://scikit-build.readthedocs.org
 * Source code: https://github.com/scikit-build/scikit-build
-* Mailing list: https://groups.google.com/forum/#!forum/scikit-build
+* Discussions: https://github.com/orgs/scikit-build/discussions
 
 
 Support for this work was provided by NSF cooperative agreement `OAC-2209877 <https://www.nsf.gov/awardsearch/showAward?AWD_ID=2209877>`_.
