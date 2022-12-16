@@ -16,9 +16,20 @@ make improvements, and backport changes here.
 Documentation
 -------------
 
-* scikit-build mailing list transition to the `scikit-build GitHub Discussions board <https://github.com/orgs/scikit-build/discussions>`_. See :issue:`800`.
+* scikit-build mailing list transitioned to the `scikit-build GitHub Discussions board <https://github.com/orgs/scikit-build/discussions>`_. See :issue:`800`.
   * Transitioning away from the mailing list and adopting the GitHub Discussions will provide a more integrated platform enabling us to more effectively engage with the community.
   * After sending a `last message <https://groups.google.com/g/scikit-build/c/jU7-EvvMPb8>`_ describing the transition, the mailing list was updated to be read-only and the welcome message was updated to redirect visitor toward the Discussions board.
+
+
+Scikit-build 0.16.4
+===================
+
+This releases backports additions for Windows ARM cross-compiling via
+cibuildwheel from scikit-build-core 0.1.4.
+
+* Initial experimental support for Windows ARM cross-compile in :pr:`824` and :pr:`818`
+* Replace mailing list with GitHub Discussions board in :pr:`823`
+* Some CI updates in :pr:`811` and :pr:`812`
 
 
 Scikit-build 0.16.3
