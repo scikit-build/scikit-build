@@ -26,7 +26,6 @@ setuptools.setup(
     long_description_content_type="text/x-rst; charset=UTF-8",
     long_description=readme + "\n\n" + history,
     author="The scikit-build team",
-    author_email="jcfr@kitware.com,henryfs@princeton.edu,matt.mccormick@kitware.com",
     url="https://github.com/scikit-build/scikit-build",
     packages=setuptools.find_packages(include=["skbuild*"]),
     project_urls={
