@@ -427,7 +427,7 @@ then you can implement a thin wrapper around ``build_meta`` in the ``_custom_bui
     build_sdist = _orig.build_sdist
     get_requires_for_build_sdist = _orig.get_requires_for_build_sdist
 
-    def get_requires_for_build_wheel(self, config_settings=None):
+    def get_requires_for_build_wheel(config_settings=None):
         from packaging import version
         from skbuild.exceptions import SKBuildError
         from skbuild.cmaker import get_cmake_version
