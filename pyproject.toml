@@ -94,4 +94,5 @@ markers = [
   "fortran: Fortran testing",
   "deprecated: These tests deprecated setuptools features",
   "nosetuptoolsscm: Requires setuptools_scm to not be installed",
+  "isolated: Downloads dependencies and sets up isolated environments",
 ]
