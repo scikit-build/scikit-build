@@ -1,4 +1,5 @@
 import os
+import platform
 import subprocess
 import sys
 
@@ -71,4 +72,6 @@ def pytest_report_header() -> str:
     reqs = " ".join(sorted(valid))
     pkg_line = f"installed packages of interest: {reqs}"
 
-    return "\n".join([pkg_line])
+    plat_line = f"platform.system: {platform.system().lower()}"
+
+    return "\n".join([pkg_line, plat_line])
