@@ -8,10 +8,13 @@ Tries to build and test the `manifest-in` sample project.
 
 import glob
 
+import pytest
+
 from . import project_setup_py_test
 from .pytest_helpers import check_sdist_content, check_wheel_content
 
 
+@pytest.mark.nosetuptoolsscm
 @project_setup_py_test("manifest-in", ["sdist"], disable_languages_test=True)
 def test_manifest_in_sdist():
     sdists_tar = glob.glob("dist/*.tar.gz")
