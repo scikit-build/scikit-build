@@ -1,3 +1,4 @@
+import importlib.util
 import os
 import subprocess
 import sys
@@ -9,6 +10,8 @@ if sys.version_info < (3, 8):
 else:
     from importlib import metadata
 
+
+HAS_SETUPTOOLS_SCM = importlib.util.find_spec("setuptools_scm") is not None
 
 DIR = os.path.dirname(os.path.abspath(__file__))
 BASE = os.path.dirname(DIR)
@@ -58,6 +61,7 @@ def pytest_report_header() -> str:
         "packaging",
         "pip",
         "setuptools",
+        "setuptools_scm",
         "virtualenv",
         "wheel",
     }
@@ -72,3 +76,8 @@ def pytest_report_header() -> str:
     pkg_line = f"installed packages of interest: {reqs}"
 
     return "\n".join([pkg_line])
+
+
+def pytest_runtest_setup(item: pytest.Item) -> None:
+    if HAS_SETUPTOOLS_SCM and tuple(item.iter_markers(name="nosetuptoolsscm")):
+        pytest.exit("Setuptools_scm installed and nosetuptoolsscm tests not skipped.")
