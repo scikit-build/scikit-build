@@ -1,5 +1,0 @@
-distro
-packaging
-setuptools>=42.0.0
-typing-extensions>=3.7; python_version < "3.8"
-wheel>=0.32.0

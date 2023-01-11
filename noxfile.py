@@ -40,7 +40,7 @@ def tests(session):
 
     # Latest versions may break things, so grab them for testing!
     session.install("-U", "setuptools", "wheel")
-    session.install("-e", ".[test]")
+    session.install("-e", ".[test,cov,doctest]")
     session.run("pytest", *posargs, env=env)
 
 
@@ -60,8 +60,7 @@ def docs(session):
     Build the docs.
     """
 
-    session.install("-r", "requirements-docs.txt")
-    session.install(".")
+    session.install(".[docs]")
 
     session.chdir("docs")
     session.run("sphinx-build", "-M", "html", ".", "_build")
