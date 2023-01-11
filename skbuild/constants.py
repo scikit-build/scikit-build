@@ -2,13 +2,35 @@
 This module defines constants commonly used in scikit-build.
 """
 
+import contextlib
 import os
 import platform
+import shutil
 import sys
+from pathlib import Path
 
 from distutils.util import get_platform
 
-CMAKE_DEFAULT_EXECUTABLE = "cmake"
+
+def _get_cmake_executable() -> str:
+    with contextlib.suppress(ModuleNotFoundError):
+        import cmake  # pylint: disable=import-outside-toplevel
+
+        path = f"{cmake.CMAKE_BIN_DIR}/cmake"
+        if Path(f"{path}.exe").is_file():
+            return f"{path}.exe"
+        return path
+
+    for name in ("cmake3", "cmake"):
+        prog = shutil.which(name)
+        if prog:
+            return prog
+
+    # Just guess otherwise
+    return "cmake"
+
+
+CMAKE_DEFAULT_EXECUTABLE = _get_cmake_executable()
 """Default path to CMake executable."""
 
 
