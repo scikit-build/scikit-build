@@ -7,6 +7,7 @@ import os
 import platform
 import shutil
 import sys
+from pathlib import Path
 
 from distutils.util import get_platform
 
@@ -15,7 +16,10 @@ def _get_cmake_executable() -> str:
     with contextlib.suppress(ModuleNotFoundError):
         import cmake  # pylint: disable=import-outside-toplevel
 
-        return f"{cmake.CMAKE_BIN_DIR}/cmake"
+        path = f"{cmake.CMAKE_BIN_DIR}/cmake"
+        if Path(f"{path}.exe").is_file():
+            return f"{path}.exe"
+        return path
 
     for name in ("cmake3", "cmake"):
         prog = shutil.which(name)
