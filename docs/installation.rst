@@ -35,7 +35,7 @@ Python Packages
 ^^^^^^^^^^^^^^^
 
 The project has a few common Python package dependencies. These can be seen in
-``setup.py``.
+``setup.py`` and ``pyproject.toml``.
 
 Compiler Toolchain
 ^^^^^^^^^^^^^^^^^^

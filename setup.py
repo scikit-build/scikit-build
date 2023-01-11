@@ -40,7 +40,6 @@ extras_require = {
     ],
 }
 
-extras_require["dev"] = extras_require["test"] + extras_require["cov"] + extras_require["doctest"]
 
 setuptools.setup(
     name="scikit-build",
