@@ -28,6 +28,11 @@ def get_platform() -> "abstract.CMakePlatform":
 
         return cygwin.CygwinPlatform()
 
+    if this_platform.startswith("msys_nt"):
+        from . import msys
+
+        return msys.MSYSPlatform()
+
     if this_platform == "darwin":
         from . import osx
 

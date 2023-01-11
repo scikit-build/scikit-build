@@ -101,6 +101,66 @@ jobs:
         TEMP: /tmp
       run: python3.9 -m nox -s tests-3.9
 
+  msys:
+    name: Tests on 🐍 3 • msys
+    runs-on: windows-latest
+
+    defaults:
+      run:
+        shell: msys2 {0}
+
+    steps:
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: msys
+          path-type: strict
+          update: true
+          install: >-
+            base-devel git
+          pacboy: >-
+            python python-pip gcc cmake ninja
+
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Install
+        run: python3 -m pip install .[test]
+
+      - name: Test package
+        run: python3 -m pytest -ra --showlocals
+
+  mingw64:
+    name: Tests on 🐍 3 • mingw64
+    runs-on: windows-latest
+
+    defaults:
+      run:
+        shell: msys2 {0}
+
+    steps:
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: mingw64
+          path-type: strict
+          update: true
+          install: >-
+            base-devel git
+          pacboy: >-
+            python:p python-pip:p gcc:p cmake:p ninja:p
+
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Install
+        run: python3 -m pip install .[test]
+
+      - name: Test package
+        run: python3 -m pytest -ra --showlocals
+        env:
+          SETUPTOOLS_USE_DISTUTILS: "local"
+
 
   tests-pypy:
     runs-on: ${{ matrix.runs-on }}
