@@ -11,14 +11,36 @@ with open("README.rst") as fp:
 with open("HISTORY.rst") as fp:
     history = fp.read().replace(".. :changelog:", "")
 
-with open("requirements.txt") as fp:
-    requirements = list(filter(bool, (line.strip() for line in fp)))
+extras_require = {
+    "test": [
+        "build>=0.7",
+        "cython>=0.25.1",
+        'importlib-metadata;python_version<"3.8"',
+        "pytest>=6.0.0",
+        "pytest-mock>=1.10.4",
+        "pytest-virtualenv>=1.2.5",
+        "requests",
+        "virtualenv",
+    ],
+    "doctest": [
+        "ubelt >= 0.8.2",
+        "xdoctest>=0.10.0",
+    ],
+    "cov": [
+        "codecov>=2.0.5",
+        "coverage>=4.2",
+        "pytest-cov>=2.7.1",
+    ],
+    "docs": [
+        "pygments",
+        "sphinx>=4",
+        "sphinx-issues",
+        "sphinx-rtd-theme>=1.0",
+        "sphinxcontrib-moderncmakedomain>=3.19",
+    ],
+}
 
-with open("requirements-dev.txt") as fp:
-    dev_requirements = list(filter(bool, (line.strip() for line in fp)))
-
-with open("requirements-docs.txt") as fp:
-    doc_requirements = list(filter(bool, (line.strip() for line in fp)))
+extras_require["dev"] = extras_require["test"] + extras_require["cov"] + extras_require["doctest"]
 
 setuptools.setup(
     name="scikit-build",
@@ -37,7 +59,13 @@ setuptools.setup(
     },
     package_data={"skbuild": ["resources/cmake/*.cmake", "py.typed", "*.pyi"]},
     python_requires=">=3.6",
-    install_requires=requirements,
+    install_requires=[
+        "distro",
+        "packaging",
+        "setuptools>=42.0.0",
+        'typing-extensions>=3.7; python_version < "3.8"',
+        "wheel>=0.32.0",
+    ],
     license="MIT",
     zip_safe=False,
     keywords="scikit-build",
@@ -55,5 +83,5 @@ setuptools.setup(
         "Programming Language :: Python :: 3.11",
         "Typing :: Typed",
     ],
-    extras_require={"test": dev_requirements, "docs": doc_requirements},
+    extras_require=extras_require,
 )

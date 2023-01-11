@@ -1,6 +1,5 @@
 include *.rst
 include LICENSE
-include requirements*.txt
 recursive-include skbuild *.cmake *.rst
 
 recursive-include tests *.py *.toml *.pyx *.txt *.in *.cxx dummy VERSION* README
