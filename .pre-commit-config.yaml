@@ -39,7 +39,7 @@ repos:
     exclude: ^docs/conf\.py$
 
 - repo: https://github.com/asottile/blacken-docs
-  rev: v1.12.1
+  rev: 1.13.0
   hooks:
   - id: "blacken-docs"
     additional_dependencies:
@@ -62,7 +62,7 @@ repos:
     args: ["-L", "ba,endwhile,unparseable"]
 
 - repo: https://github.com/pre-commit/pygrep-hooks
-  rev: "v1.9.0"
+  rev: "v1.10.0"
   hooks:
   - id: python-check-blanket-noqa
   - id: python-check-blanket-type-ignore
