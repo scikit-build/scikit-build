@@ -213,7 +213,7 @@ class CMakePlatform:
             outer = "-" * 80
             inner = ["-" * ((idx * 5) - 3) for idx in range(1, 8)]
             print(outer if suffix == "" else "\n".join(inner))
-            print(f'-- Trying "{_generator.description}" generator{suffix}')
+            print(f"-- Trying {_generator.description!r} generator{suffix}")
             print(outer if suffix != "" else "\n".join(inner[::-1]), flush=True)
 
         for generator in candidate_generators:
