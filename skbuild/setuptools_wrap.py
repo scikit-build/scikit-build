@@ -158,7 +158,7 @@ def parse_args() -> Tuple[List[str], Optional[str], bool, List[str], List[str]]:
         if arg == separator:
             i += 1
             if i >= len(argsets):
-                sys.exit(f"ERROR: Too many '{separator}' separators provided (expected at most {len(argsets) - 1}).")
+                sys.exit(f"ERROR: Too many {separator!r} separators provided (expected at most {len(argsets) - 1}).")
         else:
             argsets[i].append(arg)
 

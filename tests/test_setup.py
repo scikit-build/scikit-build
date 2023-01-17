@@ -172,7 +172,7 @@ def test_cmake_install_dir_keyword(cmake_install_dir, expected_failed, error_cod
 
     setup_kwarg = ""
     if cmake_install_dir is not None:
-        setup_kwarg = f"cmake_install_dir=r'{cmake_install_dir}'"
+        setup_kwarg = f"cmake_install_dir={str(cmake_install_dir)!r}"
 
     tmp_dir.join("setup.py").write(
         textwrap.dedent(
