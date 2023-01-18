@@ -564,6 +564,10 @@ def setup(  # noqa: C901
                 machine = cmake_arg.split("=")[1]
                 if set(machine.split(";")) == {"x86_64", "arm64"}:
                     machine = "universal2"
+            elif "CMAKE_SYSTEM_PROCESSOR" in cmake_arg:
+                machine = cmake_arg.split("=")[1]
+
+        assert machine in {"x86_64", "arm64", "universal2"}, f"macOS arch {machine} not understood"
 
         set_skbuild_plat_name(f"macosx-{version}-{machine}")
 

@@ -69,7 +69,8 @@ def _default_skbuild_plat_name() -> str:
 
     # Use CMAKE_OSX_ARCHITECTURES if that is set, otherwise use ARCHFLAGS,
     # which is the variable used by Setuptools. Fall back to the machine arch
-    # if neither of those is given.
+    # if neither of those is given. Not that -D flags like CMAKE_SYSTEM_PROCESSOR
+    # will override this by setting it later.
 
     archflags = os.environ.get("ARCHFLAGS")
     if archflags is not None:
