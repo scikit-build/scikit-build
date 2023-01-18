@@ -8,7 +8,7 @@ attempt fails with a SystemExit exception that has an SKBuildError exception as
 its value.
 """
 
-from subprocess import CalledProcessError, check_output
+from subprocess import CalledProcessError, run
 
 import pytest
 
@@ -85,14 +85,14 @@ def test_invalid_cmake(exception, mocker):
         CalledProcessError: CalledProcessError([CMAKE_DEFAULT_EXECUTABLE, "--version"], 1),
     }
 
-    check_output_original = check_output
+    run_original = run
 
-    def check_output_mock(*args, **kwargs):
+    def run_mock(*args, **kwargs):
         if args[0] == [CMAKE_DEFAULT_EXECUTABLE, "--version"]:
             raise exceptions[exception]
-        return check_output_original(*args, **kwargs)
+        return run_original(*args, **kwargs)
 
-    mocker.patch("skbuild.cmaker.subprocess.check_output", new=check_output_mock)
+    mocker.patch("skbuild.cmaker.subprocess.run", new=run_mock)
 
     with push_dir():
 

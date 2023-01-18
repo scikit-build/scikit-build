@@ -11,10 +11,10 @@ BASE = os.path.dirname(DIR)
 
 @pytest.mark.skipif(sys.platform.startswith("cygwin"), reason="Needs release of scikit-build to make cmake work")
 def test_pep518(pep518):
-    subprocess.check_call([sys.executable, "-m", "build", "--wheel"], cwd=HELLO_PEP518)
+    subprocess.run([sys.executable, "-m", "build", "--wheel"], cwd=HELLO_PEP518, check=True)
 
 
 @pytest.mark.skipif(sys.platform.startswith("cygwin"), reason="Needs release of scikit-build to make cmake work")
 def test_dual_pep518(pep518):
-    subprocess.check_call([sys.executable, "-m", "build", "--wheel"], cwd=HELLO_PEP518)
-    subprocess.check_call([sys.executable, "-m", "build", "--wheel"], cwd=HELLO_PEP518)
+    subprocess.run([sys.executable, "-m", "build", "--wheel"], cwd=HELLO_PEP518, check=True)
+    subprocess.run([sys.executable, "-m", "build", "--wheel"], cwd=HELLO_PEP518, check=True)

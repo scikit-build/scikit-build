@@ -21,10 +21,10 @@ pytest.register_assert_rewrite("tests.pytest_helpers")
 def pep518_wheelhouse(tmpdir_factory):
     wheelhouse = tmpdir_factory.mktemp("wheelhouse")
     dist = tmpdir_factory.mktemp("dist")
-    subprocess.check_call([sys.executable, "-m", "build", "--wheel", "--outdir", str(dist)], cwd=BASE)
+    subprocess.run([sys.executable, "-m", "build", "--wheel", "--outdir", str(dist)], cwd=BASE, check=True)
     (wheel_path,) = dist.visit("*.whl")
-    subprocess.check_call([sys.executable, "-m", "pip", "download", "-q", "-d", str(wheelhouse), str(wheel_path)])
-    subprocess.check_call(
+    subprocess.run([sys.executable, "-m", "pip", "download", "-q", "-d", str(wheelhouse), str(wheel_path)], check=True)
+    subprocess.run(
         [
             sys.executable,
             "-m",
@@ -39,7 +39,8 @@ def pep518_wheelhouse(tmpdir_factory):
             "ninja",
             "cmake",
             "numpy",
-        ]
+        ],
+        check=True,
     )
     return str(wheelhouse)
 

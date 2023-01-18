@@ -16,4 +16,4 @@ BASE = os.path.dirname(DIR)
     reason="NumPy not released for PyPy 3.9 yet",
 )
 def test_pep518_findpython(pep518):
-    subprocess.check_call([sys.executable, "-m", "build", "--wheel"], cwd=HELLO_NUMPY)
+    subprocess.run([sys.executable, "-m", "build", "--wheel"], cwd=HELLO_NUMPY, check=True)
