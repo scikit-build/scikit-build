@@ -165,7 +165,7 @@ def _find_visual_studio_2017_or_newer(vs_version: int) -> str:
         return ""
 
     try:
-        path = subprocess.check_output(
+        path = subprocess.run(
             [
                 os.path.join(root, "Microsoft Visual Studio", "Installer", "vswhere.exe"),
                 "-version",
@@ -179,8 +179,10 @@ def _find_visual_studio_2017_or_newer(vs_version: int) -> str:
                 "*",
             ],
             encoding="utf-8" if sys.platform.startswith("cygwin") else "mbcs",
+            check=True,
+            stdout=subprocess.PIPE,
             errors="strict",
-        ).strip()
+        ).stdout.strip()
     except (subprocess.CalledProcessError, OSError, UnicodeDecodeError):
         return ""
 
@@ -205,7 +207,7 @@ def find_visual_studio(vs_version: int) -> str:
     return _find_visual_studio_2017_or_newer(vs_version)
 
 
-# To avoid multiple slow calls to ``subprocess.check_output()`` (either directly or
+# To avoid multiple slow calls to ``subprocess.run()`` (either directly or
 # indirectly through ``query_vcvarsall``), results of previous calls are cached.
 __get_msvc_compiler_env_cache: Dict[str, CachedEnv] = {}
 
@@ -245,11 +247,13 @@ def _get_msvc_compiler_env(vs_version: int, vs_toolset: Optional[str] = None) ->
             vcvars_ver = f"-vcvars_ver={match_str}"
 
     try:
-        out_bytes = subprocess.check_output(
+        out_bytes = subprocess.run(
             f'cmd /u /c "{vcvarsall}" {vc_arch} {vcvars_ver} && set',
+            stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             shell=sys.platform.startswith("cygwin"),
-        )
+            check=True,
+        ).stdout
         out = out_bytes.decode("utf-16le", errors="replace")
 
         vc_env = {
