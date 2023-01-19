@@ -21,6 +21,18 @@ Documentation
   * After sending a `last message <https://groups.google.com/g/scikit-build/c/jU7-EvvMPb8>`_ describing the transition, the mailing list was updated to be read-only and the welcome message was updated to redirect visitor toward the Discussions board.
 
 
+Scikit-build 0.16.5
+===================
+
+
+* Use cmake module if installed over system installs in :pr:`839`.
+* Support setting of ``-DCMAKE_SYSTEM_PROCESSOR`` if passed for selecting an arch, useful for cross compiling on conda-forge in :pr:`843`.
+* Fixed a rare encoded error output string on Windows in :pr:`842`.
+* Better granularity in extras in :pr:`838`.
+* Add test markers for nosetuptoolsscm and isolated (helpful for package distributions building scikit-build itself like conda) in :pr:`837`.
+
+
+
 Scikit-build 0.16.4
 ===================
 
