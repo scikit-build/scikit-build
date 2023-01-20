@@ -13,7 +13,7 @@ from distutils.util import get_platform
 
 
 def _get_cmake_executable() -> str:
-    with contextlib.suppress(ModuleNotFoundError):
+    with contextlib.suppress(AttributeError, ModuleNotFoundError):
         import cmake  # pylint: disable=import-outside-toplevel
 
         path = f"{cmake.CMAKE_BIN_DIR}/cmake"
