@@ -13,7 +13,7 @@ pytest.importorskip("pytest_virtualenv", reason="pytest_virtualenv not available
 
 
 def test_source_distribution(virtualenv):
-    sdists = DIST_DIR.glob("*.tar.gz") if DIST_DIR.exists() else []
+    sdists = list(DIST_DIR.glob("*.tar.gz")) if DIST_DIR.exists() else []
     if not sdists:
         pytest.skip("no source distribution available")
     assert len(sdists) == 1
@@ -28,7 +28,7 @@ def test_source_distribution(virtualenv):
 
 
 def test_wheel(virtualenv):
-    wheels = DIST_DIR.glob("*.whl") if DIST_DIR.exists() else []
+    wheels = list(DIST_DIR.glob("*.whl")) if DIST_DIR.exists() else []
     if not wheels:
         pytest.skip("no wheel available")
     assert len(wheels) == 1
