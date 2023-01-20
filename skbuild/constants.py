@@ -13,10 +13,10 @@ from distutils.util import get_platform
 
 
 def _get_cmake_executable() -> str:
-    with contextlib.suppress(ModuleNotFoundError):
-        import cmake  # pylint: disable=import-outside-toplevel
+    with contextlib.suppress(ImportError):
+        from cmake import CMAKE_BIN_DIR  # pylint: disable=import-outside-toplevel
 
-        path = f"{cmake.CMAKE_BIN_DIR}/cmake"
+        path = f"{CMAKE_BIN_DIR}/cmake"
         if Path(f"{path}.exe").is_file():
             return f"{path}.exe"
         return path

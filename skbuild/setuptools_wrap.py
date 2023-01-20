@@ -592,21 +592,25 @@ def setup(  # noqa: C901
             dist = upstream_Distribution({"setup_requires": setup_requires})
             dist.fetch_build_eggs(setup_requires)  # type: ignore[no-untyped-call]
 
-            with contextlib.suppress(ModuleNotFoundError):
+            with contextlib.suppress(ImportError):
                 # Considering packages associated with "setup_requires" keyword are
                 # installed in .eggs subdirectory without honoring setuptools "console_scripts"
                 # entry_points and without settings the expected executable permissions, we are
                 # taking care of it below.
-                import cmake  # pylint: disable=import-outside-toplevel
+
+                # A local "cmake" folder can be imported by mistake, keep going if it is
+                from cmake import (
+                    CMAKE_BIN_DIR,  # pylint: disable=import-outside-toplevel
+                )
 
                 for executable in ("cmake", "cpack", "ctest"):
-                    executable = os.path.join(cmake.CMAKE_BIN_DIR, executable)
+                    executable = os.path.join(CMAKE_BIN_DIR, executable)
                     if platform.system().lower() == "windows":
                         executable += ".exe"
                     st = os.stat(executable)
                     permissions = st.st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
                     os.chmod(executable, permissions)
-                cmake_executable = os.path.join(cmake.CMAKE_BIN_DIR, "cmake")
+                cmake_executable = os.path.join(CMAKE_BIN_DIR, "cmake")
                 break
 
     # Languages are used to determine a working generator
