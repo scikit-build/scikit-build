@@ -35,7 +35,6 @@ from . import (
 
 @pytest.mark.parametrize("distribution_type", ["unknown", "py_modules", "packages", "skbuild"])
 def test_distribution_is_pure(distribution_type, tmpdir):
-
     skbuild_setup_kwargs = {}
 
     if distribution_type == "unknown":
@@ -74,7 +73,6 @@ def test_distribution_is_pure(distribution_type, tmpdir):
         original_write_test_cmakelist([])
 
     with patch.object(type(platform), "write_test_cmakelist", new=write_test_cmakelist_no_languages):
-
         with push_dir(str(tmpdir)), push_argv(["setup.py", "build"]):
             distribution = skbuild_setup(
                 name="test",
@@ -147,7 +145,6 @@ def test_cmake_args_keyword(cmake_args, capfd):
     ),
 )
 def test_cmake_install_dir_keyword(cmake_install_dir, expected_failed, error_code_type, capsys, caplog):
-
     # -------------------------------------------------------------------------
     # "SOURCE" tree layout:
     #
@@ -333,7 +330,6 @@ def test_cmake_minimum_required_version_keyword():
     sys.platform.startswith("cygwin"), strict=False, reason="Cygwin needs a release of scikit-build first"
 )
 def test_setup_requires_keyword_include_cmake(mocker, capsys):
-
     mock_setup = mocker.patch("skbuild.setuptools_wrap.setuptools.setup")
 
     tmp_dir = _tmpdir("setup_requires_keyword_include_cmake")
@@ -382,7 +378,6 @@ def test_setup_requires_keyword_include_cmake(mocker, capsys):
 
 @pytest.mark.parametrize("distribution_type", ("pure", "skbuild"))
 def test_script_keyword(distribution_type, capsys, caplog):
-
     # -------------------------------------------------------------------------
     #
     # "SOURCE" tree layout for "pure" distribution:
@@ -467,7 +462,6 @@ def test_script_keyword(distribution_type, capsys, caplog):
 
 @pytest.mark.parametrize("distribution_type", ("pure", "skbuild"))
 def test_py_modules_keyword(distribution_type, capsys, caplog):
-
     # -------------------------------------------------------------------------
     #
     # "SOURCE" tree layout for "pure" distribution:
@@ -816,7 +810,7 @@ def test_setup_inputs(
     # Commented paths are the one expected to be installed by CMake. For
     # this reason, corresponding files should NOT be created in the source
     # tree.
-    for (_type, path) in select_paths(
+    for _type, path in select_paths(
         [
             # ('c', 'cmake/__init__.py'),
             # ('c', 'cmake/cmake.py'),
@@ -858,7 +852,6 @@ def test_setup_inputs(
         )
 
     with execute_setup_py(tmp_dir, ["build"], disable_languages_test=True):
-
         assert mock_setup.call_count == 1
         setup_kw = mock_setup.call_args[1]
 
@@ -948,7 +941,6 @@ def test_setup_inputs(
 
 @pytest.mark.parametrize("with_cmake_source_dir", [0, 1])
 def test_cmake_install_into_pure_package(with_cmake_source_dir, capsys, caplog):
-
     # -------------------------------------------------------------------------
     # "SOURCE" tree layout:
     #
@@ -1067,7 +1059,6 @@ def test_cmake_install_into_pure_package(with_cmake_source_dir, capsys, caplog):
 
 @pytest.mark.parametrize("zip_safe", [None, False, True])
 def test_zip_safe_default(zip_safe, mocker):
-
     mock_setup = mocker.patch("skbuild.setuptools_wrap.setuptools.setup")
 
     tmp_dir = _tmpdir("zip_safe_default")

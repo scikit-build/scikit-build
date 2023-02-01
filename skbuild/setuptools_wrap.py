@@ -547,7 +547,6 @@ def setup(  # noqa: C901
     cmake_args = env_cmake_args + cmake_args
 
     if sys.platform == "darwin":
-
         # If no ``--plat-name`` argument was passed, set default value.
         if plat_name is None:
             plat_name = skbuild_plat_name()
@@ -967,7 +966,6 @@ def _consolidate_package_modules(
     print(flush=True)
 
     for entry in modules:
-
         # Check if module file should be copied into the CMake install tree.
         if _package_data_contain_module(entry, package_data):
             continue

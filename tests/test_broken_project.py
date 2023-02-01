@@ -21,7 +21,6 @@ from . import project_setup_py_test, push_env
 
 
 def test_cmakelists_with_fatalerror_fails(capfd):
-
     with push_dir():
 
         @project_setup_py_test("fail-with-fatal-error-cmakelists", ["build"], disable_languages_test=True)
@@ -40,7 +39,6 @@ def test_cmakelists_with_fatalerror_fails(capfd):
 
 
 def test_cmakelists_with_syntaxerror_fails(capfd):
-
     with push_dir():
 
         @project_setup_py_test("fail-with-syntax-error-cmakelists", ["build"], disable_languages_test=True)
@@ -59,7 +57,6 @@ def test_cmakelists_with_syntaxerror_fails(capfd):
 
 
 def test_hello_with_compileerror_fails(capfd):
-
     with push_dir():
 
         @project_setup_py_test("fail-hello-with-compile-error", ["build"])
@@ -79,7 +76,6 @@ def test_hello_with_compileerror_fails(capfd):
 
 @pytest.mark.parametrize("exception", [CalledProcessError, OSError])
 def test_invalid_cmake(exception, mocker):
-
     exceptions = {
         OSError: OSError("Unknown error"),
         CalledProcessError: CalledProcessError([CMAKE_DEFAULT_EXECUTABLE, "--version"], 1),

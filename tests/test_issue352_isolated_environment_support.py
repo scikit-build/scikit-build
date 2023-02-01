@@ -10,7 +10,6 @@ from . import _tmpdir, execute_setup_py
 
 
 def test_isolated_env_trigger_reconfigure(mocker):
-
     tmp_dir = _tmpdir("isolated_env_trigger_reconfigure")
 
     tmp_dir.join("setup.py").write(

@@ -68,7 +68,6 @@ def test_no_command():
 
 
 def test_invalid_command():
-
     with push_dir():
 
         @project_setup_py_test("hello-no-language", ["unknown"], disable_languages_test=True)
@@ -135,7 +134,6 @@ def test_cmake_initial_cache_as_global_option(tmpdir):
 
 
 def test_cmake_executable_arg():
-
     cmake_executable = "/path/to/invalid/cmake"
 
     @project_setup_py_test(
@@ -159,7 +157,6 @@ def test_cmake_executable_arg():
 @pytest.mark.parametrize("action", ["sdist", "bdist_wheel"])
 @pytest.mark.parametrize("hide_listing", [True, False])
 def test_hide_listing(action, hide_listing, capfd, caplog):
-
     cmd = [action]
     if hide_listing:
         cmd.insert(0, "--hide-listing")
