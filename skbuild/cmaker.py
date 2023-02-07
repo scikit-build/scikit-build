@@ -404,7 +404,6 @@ class CMaker:
         found_python_h = python_include_dir is not None and os.path.exists(os.path.join(python_include_dir, "Python.h"))
 
         if not found_python_h:
-
             # NOTE(opadron): these possible prefixes must be guarded against
             # AttributeErrors and KeyErrors because they each can throw on
             # different platforms or even different builds on the same platform.
@@ -521,7 +520,6 @@ class CMaker:
 
         # if static (or nonexistent), try to find a suitable dynamic libpython
         if not python_library or os.path.splitext(python_library)[1][-2:] == ".a":
-
             candidate_lib_prefixes = ["", "lib"]
 
             candidate_suffixes = [""]

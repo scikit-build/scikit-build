@@ -137,7 +137,6 @@ def test_cmake_args_keyword_osx_default(
     mocker,
     monkeypatch,
 ):
-
     tmp_dir = _tmpdir("cmake_args_keyword_osx_default")
 
     tmp_dir.join("setup.py").write(

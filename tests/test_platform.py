@@ -40,7 +40,6 @@ def test_write_compiler_test_file():
 
 
 def test_cxx_compiler():
-
     # Create a unique subdirectory 'foo' that is expected to be removed.
     test_build_folder = os.path.join(test_folder, "build", "foo")
     mkdir_p(test_build_folder)
