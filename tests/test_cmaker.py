@@ -89,7 +89,6 @@ def test_make_without_configure_fails(capfd):
 def test_make(configure_with_cmake_source_dir, capfd):
     tmp_dir = _tmpdir("test_make")
     with push_dir(str(tmp_dir)):
-
         src_dir = tmp_dir.ensure("SRC", dir=1)
         src_dir.join("CMakeLists.txt").write(
             textwrap.dedent(
@@ -138,7 +137,6 @@ def test_make(configure_with_cmake_source_dir, capfd):
 def test_make_with_install_target(install_target, capfd):
     tmp_dir = _tmpdir("test_make_with_install_target")
     with push_dir(str(tmp_dir)):
-
         tmp_dir.join("CMakeLists.txt").write(
             textwrap.dedent(
                 """

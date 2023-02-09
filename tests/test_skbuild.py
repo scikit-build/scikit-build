@@ -76,7 +76,6 @@ def test_generator_selection():
 
 @pytest.mark.parametrize("generator, expected_make_program", [("NMake Makefiles", "nmake"), ("Unix Makefiles", "make")])
 def test_generator(generator, expected_make_program):
-
     generator_platform = {"NMake Makefiles": ["windows"], "Unix Makefiles": ["darwin", "linux"]}
     assert generator in generator_platform
 
@@ -106,7 +105,6 @@ def test_generator(generator, expected_make_program):
 )
 def test_invalid_generator(generator_args):
     with push_dir():
-
         build_args = ["build"]
         build_args.extend(generator_args)
 

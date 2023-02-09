@@ -42,7 +42,6 @@ class generate_source_manifest(set_build_base_mixin, Command):
         )
 
         if do_generate:
-
             try:
                 with open("MANIFEST.in", "wb") as manifest_in_file:
                     # Since Git < 2.11 does not support --recurse-submodules option, fallback to

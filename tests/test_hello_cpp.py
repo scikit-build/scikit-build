@@ -110,7 +110,6 @@ def test_hello_wheel():
 @pytest.mark.parametrize("dry_run", ["with-dry-run", "without-dry-run"])
 def test_hello_clean(dry_run, capfd):
     with push_dir():
-
         dry_run = dry_run == "with-dry-run"
 
         @project_setup_py_test("hello-cpp", ["build"], ret=True)
@@ -148,7 +147,6 @@ def test_hello_clean(dry_run, capfd):
 
 def test_hello_cleans(capfd, caplog):
     with push_dir():
-
         tmp_dir = _tmpdir("test_hello_cleans")
 
         _copy_dir(tmp_dir, os.path.join(SAMPLES_DIR, "hello-cpp"))

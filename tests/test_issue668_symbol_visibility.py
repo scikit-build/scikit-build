@@ -22,7 +22,6 @@ from . import (
 @pytest.mark.parametrize("skip_override", ["ON", "OFF"])
 def test_symbol_visibility(skip_override):
     with push_dir():
-
         tmp_dir = _tmpdir("test_issue668_symbol_visibility")
         project = "issue-668-symbol-visibility"
         prepare_project(project, tmp_dir)

@@ -49,7 +49,7 @@ def push_env(**kwargs):
             del os.environ[var]
     yield
     os.environ.clear()
-    for (saved_var, saved_value) in saved_env.items():
+    for saved_var, saved_value in saved_env.items():
         os.environ[saved_var] = saved_value
 
 
@@ -219,7 +219,6 @@ def execute_setup_py(project_dir, setup_args, disable_languages_test=False):
         del os.environ["_PYTHON_HOST_PLATFORM"]
 
     with push_dir(str(project_dir)), push_argv(["setup.py"] + setup_args), prepend_sys_path([str(project_dir)]):
-
         # Restore master working set that is reset following call to "python setup.py test"
         # See function "project_on_sys_path()" in setuptools.command.test
         pkg_resources._initialize_master_working_set()
@@ -228,9 +227,7 @@ def execute_setup_py(project_dir, setup_args, disable_languages_test=False):
             setup_code = compile(fp.read(), "setup.py", mode="exec")
 
             if setup_code is not None:
-
                 if disable_languages_test:
-
                     platform = get_platform()
                     original_write_test_cmakelist = platform.write_test_cmakelist
 
@@ -250,7 +247,6 @@ def project_setup_py_test(project, setup_args, tmp_dir=None, verbose_git=True, d
     def dec(fun):
         @functools.wraps(fun)
         def wrapped(*iargs, **ikwargs):
-
             if wrapped.tmp_dir is None:
                 wrapped.tmp_dir = _tmpdir(fun.__name__)
                 prepare_project(wrapped.project, wrapped.tmp_dir)
