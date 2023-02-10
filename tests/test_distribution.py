@@ -18,7 +18,7 @@ def test_source_distribution(virtualenv):
         pytest.skip("no source distribution available")
     assert len(sdists) == 1
 
-    virtualenv.run("pip install %s" % sdists[0])
+    virtualenv.run(f"pip install {sdists[0]}")
     assert "scikit-build" in virtualenv.installed_packages()
 
     prepare_project("hello-no-language", virtualenv.workspace, force=True)
@@ -33,7 +33,7 @@ def test_wheel(virtualenv):
         pytest.skip("no wheel available")
     assert len(wheels) == 1
 
-    virtualenv.run("pip install %s" % wheels[0])
+    virtualenv.run(f"pip install {wheels[0]}")
     assert "scikit-build" in virtualenv.installed_packages()
 
     prepare_project("hello-no-language", virtualenv.workspace, force=True)

@@ -188,9 +188,9 @@ def test_python_module_finder():
     [
         (None, None),
         ("", ""),
-        ("/bar/foo/baz", "{s}bar{s}foo{s}baz".format(s=os.sep)),
-        ("C:\\bar\\foo\\baz", "C:{s}bar{s}foo{s}baz".format(s=os.sep)),
-        ("C:\\bar/foo\\baz/", "C:{s}bar{s}foo{s}baz{s}".format(s=os.sep)),
+        ("/bar/foo/baz", f"{os.sep}bar{os.sep}foo{os.sep}baz"),
+        ("C:\\bar\\foo\\baz", f"C:{os.sep}bar{os.sep}foo{os.sep}baz"),
+        ("C:\\bar/foo\\baz/", f"C:{os.sep}bar{os.sep}foo{os.sep}baz{os.sep}"),
     ],
 )
 def test_to_platform_path(input_path, expected_path):

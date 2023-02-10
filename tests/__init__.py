@@ -102,7 +102,7 @@ def _copy(src, target):
     Copied from pytest-datafiles/pytest_datafiles.py (MIT License)
     """
     if not src.exists():
-        raise ValueError("'%s' does not exist!" % src)
+        raise ValueError(f"'{src}' does not exist!")
 
     if src.isdir():
         src.copy(target / src.basename)

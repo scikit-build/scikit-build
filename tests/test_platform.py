@@ -94,7 +94,7 @@ def test_known_platform(supported_platform, mocker):
         "os400": "BSD",
         "cygwin": "Cygwin",
     }
-    expected_platform_classname = "%sPlatform" % platforms[supported_platform]
+    expected_platform_classname = f"{platforms[supported_platform]}Platform"
     assert get_platform().__class__.__name__ == expected_platform_classname
 
 

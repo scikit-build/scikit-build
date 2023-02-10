@@ -70,7 +70,7 @@ def test_hello_sdist():
 
 def test_hello_wheel():
     expected_content = [
-        "hello/_hello%s" % get_ext_suffix(),
+        f"hello/_hello{get_ext_suffix()}",
         "hello/__init__.py",
         "hello/__main__.py",
         "hello/world.py",
@@ -191,7 +191,7 @@ def test_hello_develop():
         "hello/CMakeLists.txt",
         # These files are "generated" by CMake and
         # are copied from CMAKE_INSTALL_DIR
-        "hello/_hello%s" % get_ext_suffix(),
+        f"hello/_hello{get_ext_suffix()}",
         "hello/world.py",
         "helloModule.py",
     ]:

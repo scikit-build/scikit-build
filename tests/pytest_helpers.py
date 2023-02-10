@@ -28,12 +28,12 @@ def check_sdist_content(sdist_archive, expected_distribution_name, expected_cont
         egg_info_dir = f"{expected_distribution_name}/{package_dir}/{expected_name}.egg-info"
 
     expected_content += [
-        "%s/PKG-INFO" % expected_distribution_name,
-        "%s/setup.cfg" % expected_distribution_name,
-        "%s/dependency_links.txt" % egg_info_dir,
-        "%s/top_level.txt" % egg_info_dir,
-        "%s/PKG-INFO" % egg_info_dir,
-        "%s/SOURCES.txt" % egg_info_dir,
+        f"{expected_distribution_name}/PKG-INFO",
+        f"{expected_distribution_name}/setup.cfg",
+        f"{egg_info_dir}/dependency_links.txt",
+        f"{egg_info_dir}/top_level.txt",
+        f"{egg_info_dir}/PKG-INFO",
+        f"{egg_info_dir}/SOURCES.txt",
     ]
 
     if sdist_zip and ((3, 6, 7) < sys.version_info[:3] < (3, 7, 0) or sys.version_info[:3] > (3, 7, 1)):
@@ -65,18 +65,18 @@ def check_wheel_content(wheel_archive, expected_distribution_name, expected_cont
 
     expected_content = list(expected_content)
     expected_content += [
-        "%s.dist-info/top_level.txt" % expected_distribution_name,
-        "%s.dist-info/WHEEL" % expected_distribution_name,
-        "%s.dist-info/RECORD" % expected_distribution_name,
-        "%s.dist-info/METADATA" % expected_distribution_name,
+        f"{expected_distribution_name}.dist-info/top_level.txt",
+        f"{expected_distribution_name}.dist-info/WHEEL",
+        f"{expected_distribution_name}.dist-info/RECORD",
+        f"{expected_distribution_name}.dist-info/METADATA",
     ]
 
     if parse_version(wheel.__version__) < parse_version("0.31.0"):
         # These files were specified in the now-withdrawn PEP 426
         # See https://github.com/pypa/wheel/issues/195
         expected_content += [
-            "%s.dist-info/DESCRIPTION.rst" % expected_distribution_name,
-            "%s.dist-info/metadata.json" % expected_distribution_name,
+            f"{expected_distribution_name}.dist-info/DESCRIPTION.rst",
+            f"{expected_distribution_name}.dist-info/metadata.json",
         ]
 
     if parse_version("0.33.1") < parse_version(wheel.__version__) < parse_version("0.33.4"):
@@ -101,7 +101,7 @@ def check_wheel_content(wheel_archive, expected_distribution_name, expected_cont
     # software that produced the archive.
     # See https://www.python.org/dev/peps/pep-0427/#file-contents
     current_generator = None
-    with archive.open("%s.dist-info/WHEEL" % expected_distribution_name) as wheel_file:
+    with archive.open(f"{expected_distribution_name}.dist-info/WHEEL") as wheel_file:
         for line in wheel_file:
             if line.startswith(b"Generator"):
                 current_generator = line.split(b":")[1].strip()

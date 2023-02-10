@@ -62,9 +62,9 @@ def check_sdist(proj, base=""):
         to_unix_path(os.path.join(proj, base, "hello2/hello2_include_from_manifest.txt")),
     ]
 
-    sdist_archive = "dist/%s.zip" % proj
+    sdist_archive = f"dist/{proj}.zip"
     if sdists_tar:
-        sdist_archive = "dist/%s.tar.gz" % proj
+        sdist_archive = f"dist/{proj}.tar.gz"
 
     check_sdist_content(sdist_archive, proj, expected_content, package_dir=base)
 

@@ -40,7 +40,7 @@ def test_cmake_source_dir(cmake_source_dir, expected_failed):
 
     tmp_dir.join("setup.py").write(
         textwrap.dedent(
-            """
+            f"""
         from skbuild import setup
         setup(
             name="test_cmake_source_dir",
@@ -50,9 +50,7 @@ def test_cmake_source_dir(cmake_source_dir, expected_failed):
             license="MIT",
             cmake_source_dir="{cmake_source_dir}"
         )
-        """.format(
-                cmake_source_dir=cmake_source_dir
-            )
+        """
         )
     )
 
