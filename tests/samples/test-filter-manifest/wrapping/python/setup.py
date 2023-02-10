@@ -2,7 +2,7 @@ from skbuild import setup
 
 
 def exclude_dev_files(cmake_manifest):
-    return list(filter(lambda name: not (name.endswith(".a") or name.endswith(".h")), cmake_manifest))
+    return list(filter(lambda name: not name.endswith((".a", ".h")), cmake_manifest))
 
 
 setup(

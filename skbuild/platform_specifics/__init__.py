@@ -5,7 +5,7 @@ This folder contains files the define CMake's defaults for given platforms.  Any
 command line or by environment variables.
 """
 
-from .abstract import CMakeGenerator  # noqa: F401
-from .platform_factory import get_platform  # noqa: F401
+from .abstract import CMakeGenerator
+from .platform_factory import get_platform
 
 __all__ = ["CMakeGenerator", "get_platform"]

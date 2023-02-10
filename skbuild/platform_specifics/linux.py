@@ -66,5 +66,5 @@ class LinuxPlatform(unix.UnixPlatform):
             For more details, please refer to scikit-build documentation:
 
               http://scikit-build.readthedocs.io/en/latest/generators.html#linux
-            """  # noqa: E501
+            """
         ).strip()

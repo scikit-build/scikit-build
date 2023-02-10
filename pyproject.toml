@@ -45,6 +45,7 @@ module = [
 ]
 ignore_missing_imports = true
 
+
 [tool.pylint]
 master.py-version = "3.6"
 master.jobs = "0"
@@ -96,3 +97,35 @@ markers = [
   "nosetuptoolsscm: Requires setuptools_scm to not be installed",
   "isolated: Downloads dependencies and sets up isolated environments",
 ]
+
+
+[tool.ruff]
+select = [
+  "E", "F", "W", # flake8
+  "B",  "B904",  # flake8-bugbear
+  "ARG",         # flake8-unused-arguments
+  "C4",          # flake8-comprehensions
+  "ICN",         # flake8-import-conventions
+  "ISC",         # flake8-implicit-str-concat
+  "PGH",         # pygrep-hooks
+  "PIE",         # flake8-pie
+  "PL",          # pylint
+  "PT",          # flake8-pytest-style
+  "RET",         # flake8-return
+  "RUF",         # Ruff-specific
+  "SIM",         # flake8-simplify
+  "UP",          # pyupgrade
+  "YTT",         # flake8-2020
+]
+extend-ignore = ["PLR", "E501", "SIM117"]
+target-version = "py37"
+typing-modules = ["scikit_build_core._compat.typing"]
+line-length = 120
+src = ["src"]
+unfixable = ["T20", "F841"]
+exclude = []
+flake8-unused-arguments.ignore-variadic-names = true
+
+[tool.ruff.per-file-ignores]
+"tests/**" = ["T20"]
+"noxfile.py" = ["T20"]

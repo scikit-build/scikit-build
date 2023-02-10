@@ -46,8 +46,8 @@ def test_metadata_display(capsys):
     assert "scikit-build options" not in out
     assert "Global options:" not in out
     assert "usage:" not in out
-    assert "The scikit-build team" == out.splitlines()[0]
-    assert "hello_no_language" == out.splitlines()[1]
+    assert out.splitlines()[0] == "The scikit-build team"
+    assert out.splitlines()[1] == "hello_no_language"
 
 
 def test_no_command():
@@ -126,7 +126,7 @@ def test_cmake_initial_cache_as_global_option(tmpdir):
         with execute_setup_py(tmpdir, ["-C%s" % str(initial_cache), "build"], disable_languages_test=True):
             pass
     except SystemExit as exc:
-        assert exc.code == 0
+        assert exc.code == 0  # noqa: PT017
 
     cmakecache_txt = tmpdir.join(CMAKE_BUILD_DIR(), "CMakeCache.txt")
     assert cmakecache_txt.exists()

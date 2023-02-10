@@ -184,43 +184,43 @@ def test_python_module_finder():
 
 
 @pytest.mark.parametrize(
-    "input_path, expected_path",
-    (
+    ("input_path", "expected_path"),
+    [
         (None, None),
         ("", ""),
         ("/bar/foo/baz", "{s}bar{s}foo{s}baz".format(s=os.sep)),
         ("C:\\bar\\foo\\baz", "C:{s}bar{s}foo{s}baz".format(s=os.sep)),
         ("C:\\bar/foo\\baz/", "C:{s}bar{s}foo{s}baz{s}".format(s=os.sep)),
-    ),
+    ],
 )
 def test_to_platform_path(input_path, expected_path):
     assert to_platform_path(input_path) == expected_path
 
 
 @pytest.mark.parametrize(
-    "input_path, expected_path",
-    (
+    ("input_path", "expected_path"),
+    [
         (None, None),
         ("", ""),
         ("/bar/foo/baz", "/bar/foo/baz"),
         ("C:\\bar\\foo\\baz", "C:/bar/foo/baz"),
         ("C:\\bar/foo\\baz/", "C:/bar/foo/baz/"),
-    ),
+    ],
 )
 def test_to_unix_path(input_path, expected_path):
     assert to_unix_path(input_path) == expected_path
 
 
 @pytest.mark.parametrize(
-    "input_path, expected_ancestors",
-    (
+    ("input_path", "expected_ancestors"),
+    [
         ("", []),
         (".", []),
         ("part1/part2/part3/part4", ["part1/part2/part3", "part1/part2", "part1"]),
         ("part1\\part2\\part3\\part4", []),
         ("/part1/part2/part3/part4", ["/part1/part2/part3", "/part1/part2", "/part1", "/"]),
         ("C:/part1/part2/part3/part4", ["C:/part1/part2/part3", "C:/part1/part2", "C:/part1", "C:"]),
-    ),
+    ],
 )
 def test_list_ancestors(input_path, expected_ancestors):
     assert list_ancestors(input_path) == expected_ancestors

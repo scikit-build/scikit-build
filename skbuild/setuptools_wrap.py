@@ -86,7 +86,7 @@ def create_skbuild_argparser() -> argparse.ArgumentParser:
         "--install-target",
         default=None,
         metavar="",
-        help="specify the CMake target performing the install. " "If not provided, uses the target ``install``",
+        help="specify the CMake target performing the install. If not provided, uses the target ``install``",
     )
     parser.add_argument(
         "--skip-generator-test",
@@ -99,13 +99,7 @@ def create_skbuild_argparser() -> argparse.ArgumentParser:
 def _is_cmake_configure_argument(arg: str) -> bool:
     """Return True if ``arg`` is a relevant argument to pass to cmake when configuring a project."""
 
-    for cmake_arg in (
-        "-C",  # initial-cache
-        "-D",  # <var>[:<type>]=<value>
-    ):
-        if arg.startswith(cmake_arg):
-            return True
-    return False
+    return any(arg.startswith(cmake_arg) for cmake_arg in ("-C", "-D"))
 
 
 def parse_skbuild_args(
@@ -171,10 +165,9 @@ def parse_args() -> Tuple[List[str], Optional[str], bool, List[str], List[str]]:
 def _capture_output() -> Generator[List[Union[io.StringIO, str]], None, None]:
     out: List[Union[io.StringIO, str]]
 
-    with contextlib.redirect_stdout(io.StringIO()) as stdout:
-        with contextlib.redirect_stderr(io.StringIO()) as stderr:
-            out = [stdout, stderr]
-            yield out
+    with contextlib.redirect_stdout(io.StringIO()) as stdout, contextlib.redirect_stderr(io.StringIO()) as stderr:
+        out = [stdout, stderr]
+        yield out
 
     assert isinstance(out[0], io.StringIO)
     assert isinstance(out[1], io.StringIO)
@@ -383,7 +376,7 @@ def _load_cmake_spec() -> Any:
 
 
 # pylint:disable=too-many-locals, too-many-branches
-def setup(  # noqa: C901
+def setup(
     *,
     cmake_args: Sequence[str] = (),
     cmake_install_dir: str = "",
@@ -501,8 +494,8 @@ def setup(  # noqa: C901
             print("scikit-build options:")
             print("\n".join(arg_descriptions))
             print()
-            print('Arguments following a "--" are passed directly to CMake ' "(e.g. -DMY_VAR:BOOL=TRUE).")
-            print('Arguments following a second "--" are passed directly to ' " the build tool.")
+            print('Arguments following a "--" are passed directly to CMake (e.g. -DMY_VAR:BOOL=TRUE).')
+            print('Arguments following a second "--" are passed directly to the build tool.')
             print(flush=True)
         return setuptools.setup(**kw)
 
@@ -619,14 +612,15 @@ def setup(  # noqa: C901
             cmake_executable = CMAKE_DEFAULT_EXECUTABLE
         cmkr = cmaker.CMaker(cmake_executable)
         if not skip_cmake:
-            if cmake_minimum_required_version is not None:
-                if parse_version(cmkr.cmake_version) < parse_version(cmake_minimum_required_version):
-                    msg = f"CMake version {cmake_minimum_required_version} or higher is required. CMake version {cmkr.cmake_version} is being used"
-                    raise SKBuildError(msg)
+            if cmake_minimum_required_version is not None and parse_version(cmkr.cmake_version) < parse_version(
+                cmake_minimum_required_version
+            ):
+                msg = f"CMake version {cmake_minimum_required_version} or higher is required. CMake version {cmkr.cmake_version} is being used"
+                raise SKBuildError(msg)
             # Used to confirm that the cmake executable is the same, and that the environment
             # didn't change
             cmake_spec = {
-                "args": [shutil.which(CMAKE_DEFAULT_EXECUTABLE)] + cmake_args,
+                "args": [shutil.which(CMAKE_DEFAULT_EXECUTABLE), *cmake_args],
                 "version": cmkr.cmake_version,
                 "environment": {
                     "PYTHONNOUSERSITE": os.environ.get("PYTHONNOUSERSITE"),

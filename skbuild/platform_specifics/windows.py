@@ -59,7 +59,7 @@ class WindowsPlatform(abstract.CMakePlatform):
             Get it with "%s":
 
               %s
-            """  # noqa: E501
+            """
             )
             .strip()
             .format(pyver=".".join(str(v) for v in sys.version_info[:2]))

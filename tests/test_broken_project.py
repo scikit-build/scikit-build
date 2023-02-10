@@ -149,4 +149,4 @@ def test_invalid_generator(mocker, capfd):
     _, err = capfd.readouterr()
 
     assert "CMake Error: Could not create named generator Invalid" in err
-    assert "scikit-build could not get a working generator for your system." " Aborting build." in str(e)
+    assert "scikit-build could not get a working generator for your system. Aborting build." in str(e)

@@ -52,10 +52,7 @@ def pop_arg(arg: str, args: Sequence[str], default: Optional[str] = None) -> Tup
     parser.add_argument(arg)
     namespace_names, args = parser.parse_known_args(args)
     namespace = tuple(vars(namespace_names).items())
-    if namespace and namespace[0][1] is not None:
-        val = namespace[0][1]
-    else:
-        val = default
+    val = namespace[0][1] if namespace and namespace[0][1] is not None else default
     return args, val
 
 
@@ -69,9 +66,7 @@ def _remove_cwd_prefix(path: str) -> str:
     if platform.system() == "Windows":
         result = result.replace("\\\\", os.sep)
 
-    result = result.replace("\n", "")
-
-    return result
+    return result.replace("\n", "")
 
 
 def has_cmake_cache_arg(cmake_args: List[str], arg_name: str, arg_value: Optional[str] = None) -> bool:
@@ -377,7 +372,7 @@ class CMaker:
 
     # NOTE(opadron): The try-excepts raise the cyclomatic complexity, but we
     # need them for this function.
-    @staticmethod  # noqa: C901
+    @staticmethod
     def get_python_include_dir(python_version: str) -> Optional[str]:
         """Get include directory associated with the current python
         interpreter.
