@@ -173,7 +173,7 @@ def test_cmake_install_dir_keyword(cmake_install_dir, expected_failed, error_cod
 
     tmp_dir.join("setup.py").write(
         textwrap.dedent(
-            """
+            f"""
         from skbuild import setup
         setup(
             name="test_cmake_install_dir",
@@ -184,9 +184,7 @@ def test_cmake_install_dir_keyword(cmake_install_dir, expected_failed, error_cod
             packages=['apple', 'banana'],
             {setup_kwarg}
         )
-        """.format(
-                setup_kwarg=setup_kwarg
-            )
+        """
         )
     )
 
@@ -238,7 +236,7 @@ def test_cmake_with_sdist_keyword(cmake_with_sdist, capfd):
 
     tmp_dir.join("setup.py").write(
         textwrap.dedent(
-            """
+            f"""
         from skbuild import setup
         setup(
             name="cmake_with_sdist_keyword",
@@ -248,9 +246,7 @@ def test_cmake_with_sdist_keyword(cmake_with_sdist, capfd):
             license="MIT",
             cmake_with_sdist={cmake_with_sdist}
         )
-        """.format(
-                cmake_with_sdist=cmake_with_sdist
-            )
+        """
         )
     )
     tmp_dir.join("CMakeLists.txt").write(
@@ -988,7 +984,7 @@ def test_cmake_install_into_pure_package(with_cmake_source_dir, capsys, caplog):
 
     tmp_dir.join("setup.py").write(
         textwrap.dedent(
-            """
+            f"""
         from skbuild import setup
         setup(
             name="test_py_modules_keyword",
@@ -1000,9 +996,7 @@ def test_cmake_install_into_pure_package(with_cmake_source_dir, capsys, caplog):
             cmake_install_dir='fruits',
             cmake_source_dir='{cmake_source_dir}',
         )
-        """.format(
-                cmake_source_dir=cmake_source_dir
-            )
+        """
         )
     )
 
@@ -1066,7 +1060,7 @@ def test_zip_safe_default(zip_safe, mocker):
 
     tmp_dir.join("setup.py").write(
         textwrap.dedent(
-            """
+            f"""
         from skbuild import setup
         setup(
             name="zip_safe_default",
@@ -1076,9 +1070,7 @@ def test_zip_safe_default(zip_safe, mocker):
             license="MIT",
             {setup_kwarg}
         )
-        """.format(
-                setup_kwarg=setup_kwarg
-            )
+        """
         )
     )
     tmp_dir.join("CMakeLists.txt").write(

@@ -53,7 +53,7 @@ def test_hello_cython_sdist():
 @project_setup_py_test("hello-cython", ["bdist_wheel"])
 def test_hello_cython_wheel():
     expected_content = [
-        "hello_cython/_hello%s" % get_ext_suffix(),
+        f"hello_cython/_hello{get_ext_suffix()}",
         "hello_cython/__init__.py",
         "hello_cython/__main__.py",
     ]

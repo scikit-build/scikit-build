@@ -136,9 +136,9 @@ def test_platform_windows_find_visual_studio(vs_year, capsys):
     Setting the environment variable to 1 means that the corresponding Visual Studio version
     is expected to be installed. Setting it to 0, means otherwise.
     """
-    env_var = "SKBUILD_TEST_FIND_VS%s_INSTALLATION_EXPECTED" % vs_year
+    env_var = f"SKBUILD_TEST_FIND_VS{vs_year}_INSTALLATION_EXPECTED"
     if env_var not in os.environ:
-        pytest.skip("env. variable %s is not set" % env_var)
+        pytest.skip(f"env. variable {env_var} is not set")
 
     valid_path_expected = bool(int(os.environ[env_var]))
     vs_path = find_visual_studio(VS_YEAR_TO_VERSION[vs_year])
