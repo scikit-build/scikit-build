@@ -85,7 +85,7 @@ def test_make_without_configure_fails(capfd):
     assert "Error: could not load cache" in err
 
 
-@pytest.mark.parametrize("configure_with_cmake_source_dir", (True, False))
+@pytest.mark.parametrize("configure_with_cmake_source_dir", [True, False])
 def test_make(configure_with_cmake_source_dir, capfd):
     tmp_dir = _tmpdir("test_make")
     with push_dir(str(tmp_dir)):
@@ -133,7 +133,7 @@ def test_make(configure_with_cmake_source_dir, capfd):
             assert message in out
 
 
-@pytest.mark.parametrize("install_target", ("", "install", "install-runtime", "nonexistant-install-target"))
+@pytest.mark.parametrize("install_target", ["", "install", "install-runtime", "nonexistant-install-target"])
 def test_make_with_install_target(install_target, capfd):
     tmp_dir = _tmpdir("test_make_with_install_target")
     with push_dir(str(tmp_dir)):

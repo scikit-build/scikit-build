@@ -83,12 +83,9 @@ def _tmpdir(basename):
         temproot = py.path.local.get_temproot()
         user = _pytest.tmpdir.get_user()
 
-        if user:
-            # use a sub-directory in the temproot to speed-up
-            # make_numbered_dir() call
-            rootdir = temproot.join("pytest-of-%s" % user)
-        else:
-            rootdir = temproot
+        # use a sub-directory in the temproot to speed-up
+        # make_numbered_dir() call
+        rootdir = temproot.join(f"pytest-of-{user}") if user else temproot
 
         rootdir.ensure(dir=1)
         basetemp = py.path.local.make_numbered_dir(prefix="pytest-", rootdir=rootdir)
@@ -141,14 +138,7 @@ def _copy_dir(target_dir, src_dir, on_duplicate="exception", keep_top_dir=False)
         if not target_entry.exists() or on_duplicate == "overwrite":
             _copy(entry, target_dir)
         elif on_duplicate == "exception":
-            raise ValueError(
-                "'{}' already exists (src {})".format(
-                    target_entry,
-                    entry,
-                )
-            )
-        else:  # ignore
-            continue
+            raise ValueError(f"'{target_entry}' already exists (src {entry})")
 
 
 def initialize_git_repo_and_commit(project_dir, verbose=True):
@@ -218,7 +208,7 @@ def execute_setup_py(project_dir, setup_args, disable_languages_test=False):
     if "_PYTHON_HOST_PLATFORM" in os.environ:
         del os.environ["_PYTHON_HOST_PLATFORM"]
 
-    with push_dir(str(project_dir)), push_argv(["setup.py"] + setup_args), prepend_sys_path([str(project_dir)]):
+    with push_dir(str(project_dir)), push_argv(["setup.py", *setup_args]), prepend_sys_path([str(project_dir)]):
         # Restore master working set that is reset following call to "python setup.py test"
         # See function "project_on_sys_path()" in setuptools.command.test
         pkg_resources._initialize_master_working_set()

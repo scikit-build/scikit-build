@@ -179,7 +179,7 @@ class CMakePlatform:
                 """
                 )
                 .strip()
-                .format(line="*" * 80, installation_help=self.generator_installation_help)  # noqa: E501
+                .format(line="*" * 80, installation_help=self.generator_installation_help)
             )
 
         if cleanup:
@@ -279,10 +279,7 @@ class CMakeGenerator:
         self.env = dict(list(os.environ.items()) + list(env.items() if env else []))
         self._generator_toolset = toolset
         self._generator_architecture = arch
-        if arch is None:
-            description_arch = name
-        else:
-            description_arch = f"{name} {arch}"
+        description_arch = name if arch is None else f"{name} {arch}"
         if toolset is None:
             self._description = description_arch
         else:

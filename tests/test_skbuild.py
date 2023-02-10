@@ -63,7 +63,7 @@ def test_generator_selection():
 
         elif has_vs_2019 or has_vs_2022:
             # ninja is provided by the CMake extension bundled with Visual Studio 2017
-            # C:/Program Files (x86)/Microsoft Visual Studio/2017/Professional/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe  # noqa: E501
+            # C:/Program Files (x86)/Microsoft Visual Studio/2017/Professional/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe
             assert get_best_generator().name == "Ninja"
 
         elif has_vs_for_python_vcvars:
@@ -74,7 +74,9 @@ def test_generator_selection():
         assert get_best_generator().name == generator
 
 
-@pytest.mark.parametrize("generator, expected_make_program", [("NMake Makefiles", "nmake"), ("Unix Makefiles", "make")])
+@pytest.mark.parametrize(
+    ("generator", "expected_make_program"), [("NMake Makefiles", "nmake"), ("Unix Makefiles", "make")]
+)
 def test_generator(generator, expected_make_program):
     generator_platform = {"NMake Makefiles": ["windows"], "Unix Makefiles": ["darwin", "linux"]}
     assert generator in generator_platform
@@ -93,7 +95,7 @@ def test_generator(generator, expected_make_program):
         assert cmakecache.exists()
         variables = get_cmakecache_variables(str(cmakecache))
         make_program = variables["CMAKE_MAKE_PROGRAM"][1] if "CMAKE_MAKE_PROGRAM" in variables else ""
-        assert make_program.endswith(expected_make_program) or make_program.endswith("%s.exe" % expected_make_program)
+        assert make_program.endswith((expected_make_program, f"{expected_make_program}.exe"))
 
 
 @pytest.mark.parametrize(
@@ -121,7 +123,7 @@ def test_invalid_generator(generator_args):
             message = str(e)
 
         assert failed
-        assert "scikit-build could not get a working generator " "for your system. Aborting build." in message
+        assert "scikit-build could not get a working generator for your system. Aborting build." in message
 
 
 @pytest.mark.skipif(sys.platform != "win32", reason="Requires Windows")
