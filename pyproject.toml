@@ -83,6 +83,7 @@ filterwarnings = [
   'error',
   'default:setup.py install is deprecated:Warning',
   'default:easy_install command is deprecated:Warning',
+  'default:setuptools.installer and fetch_build_eggs are deprecated:Warning',
   'ignore:.*ends with a trailing slash, which is not supported by setuptools:FutureWarning',
   "ignore:Config variable 'Py_DEBUG' is unset:RuntimeWarning",
   "ignore:Config variable 'WITH_PYMALLOC' is unset, Python ABI tag may be incorrect:RuntimeWarning",

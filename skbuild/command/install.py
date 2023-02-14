@@ -22,4 +22,4 @@ class install(set_build_base_mixin, _install):
             # pylint:disable=attribute-defined-outside-init
             self.install_lib = self.install_platlib
 
-        super().finalize_options(*args, **kwargs)  # type: ignore[misc]
+        super().finalize_options(*args, **kwargs)
