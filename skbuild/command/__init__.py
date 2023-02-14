@@ -31,4 +31,4 @@ class set_build_base_mixin:
         if not build_base or build_base == "build":
             self.build_base = SETUPTOOLS_INSTALL_DIR()
 
-        super().finalize_options(*args, **kwargs)  # type: ignore[misc]
+        super().finalize_options(*args, **kwargs)
