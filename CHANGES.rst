@@ -13,12 +13,14 @@ We are hard at work on the next generation of scikit-build
 has had it's first non-development release. We are also continuing to fix bugs,
 make improvements, and backport changes here.
 
-Documentation
--------------
+Scikit-build 0.16.7
+===================
 
-* scikit-build mailing list transitioned to the `scikit-build GitHub Discussions board <https://github.com/orgs/scikit-build/discussions>`_. See :issue:`800`.
-  * Transitioning away from the mailing list and adopting the GitHub Discussions will provide a more integrated platform enabling us to more effectively engage with the community.
-  * After sending a `last message <https://groups.google.com/g/scikit-build/c/jU7-EvvMPb8>`_ describing the transition, the mailing list was updated to be read-only and the welcome message was updated to redirect visitor toward the Discussions board.
+This is expected to be the final release series supporting Python 3.6. 0.17 will require Python 3.7+ and start removing deprecated functionality.
+
+* Added ``SKBUILD_GNU_SKIP_LOCAL_SYMBOL_EXPORT_OVERRIDE`` to disable script in :pr:`848`, thanks to :user:`aaron-bray` and :user:`vyasr`.
+* Address a new warning from setuptools in our test suite in :pr:`859`.
+* Move to using Ruff, update to Black 23, and use Flynt to move more code to f-strings.
 
 
 Scikit-build 0.16.6
@@ -111,6 +113,14 @@ Bug fixes
 * FindPython mode uses a new path specification, should help make it usable. :pr:`774`
 
 * Better flushing and output streams for more consistent output ordering. :pr:`781`
+
+Documentation
+-------------
+
+* scikit-build mailing list transitioned to the `scikit-build GitHub Discussions board <https://github.com/orgs/scikit-build/discussions>`_. See :issue:`800`.
+  * Transitioning away from the mailing list and adopting the GitHub Discussions will provide a more integrated platform enabling us to more effectively engage with the community.
+  * After sending a `last message <https://groups.google.com/g/scikit-build/c/jU7-EvvMPb8>`_ describing the transition, the mailing list was updated to be read-only and the welcome message was updated to redirect visitor toward the Discussions board.
+
 
 Scikit-build 0.15.0
 ===================
