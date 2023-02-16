@@ -6,6 +6,8 @@
 Tries to build and test the `hello-cython` sample project.
 """
 
+from __future__ import annotations
+
 import glob
 
 import pytest

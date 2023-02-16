@@ -1,5 +1,7 @@
 """This module defines custom implementation of ``test`` setuptools command."""
 
+from __future__ import annotations
+
 from setuptools.command.test import test as _test
 
 from . import set_build_base_mixin

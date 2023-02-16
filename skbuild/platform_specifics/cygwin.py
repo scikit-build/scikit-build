@@ -1,5 +1,7 @@
 """This module defines object specific to Cygwin platform."""
 
+from __future__ import annotations
+
 import sys
 import textwrap
 

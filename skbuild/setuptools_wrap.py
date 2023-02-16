@@ -3,6 +3,8 @@ from distutils and setuptools.
 """
 
 
+from __future__ import annotations
+
 import argparse
 import contextlib
 import copy
@@ -16,19 +18,7 @@ import shutil
 import stat
 import sys
 import warnings
-from typing import (
-    Any,
-    Callable,
-    Dict,
-    Generator,
-    List,
-    Mapping,
-    Optional,
-    Sequence,
-    Set,
-    Tuple,
-    Union,
-)
+from typing import Any, Callable, Generator, Mapping, Sequence
 
 import setuptools
 from distutils.errors import DistutilsArgError, DistutilsError, DistutilsGetoptError
@@ -103,8 +93,8 @@ def _is_cmake_configure_argument(arg: str) -> bool:
 
 
 def parse_skbuild_args(
-    args: Sequence[str], cmake_args: List[str], build_tool_args: List[str]
-) -> Tuple[List[str], Optional[str], bool]:
+    args: Sequence[str], cmake_args: list[str], build_tool_args: list[str]
+) -> tuple[list[str], str | None, bool]:
     """
     Parse arguments in the scikit-build argument set. Convert specified
     arguments to proper format and append to cmake_args and build_tool_args.
@@ -137,13 +127,13 @@ def parse_skbuild_args(
     return remaining_args, namespace.cmake_executable, namespace.skip_generator_test
 
 
-def parse_args() -> Tuple[List[str], Optional[str], bool, List[str], List[str]]:
+def parse_args() -> tuple[list[str], str | None, bool, list[str], list[str]]:
     """This function parses the command-line arguments ``sys.argv`` and returns
     the tuple ``(setuptools_args, cmake_executable, skip_generator_test, cmake_args, build_tool_args)``
     where each ``*_args`` element corresponds to a set of arguments separated by ``--``."""
-    dutils: List[str] = []
-    cmake: List[str] = []
-    make: List[str] = []
+    dutils: list[str] = []
+    cmake: list[str] = []
+    make: list[str] = []
     argsets = [dutils, cmake, make]
     i = 0
     separator = "--"
@@ -162,8 +152,8 @@ def parse_args() -> Tuple[List[str], Optional[str], bool, List[str], List[str]]:
 
 
 @contextlib.contextmanager
-def _capture_output() -> Generator[List[Union[io.StringIO, str]], None, None]:
-    out: List[Union[io.StringIO, str]]
+def _capture_output() -> Generator[list[io.StringIO | str], None, None]:
+    out: list[io.StringIO | str]
 
     with contextlib.redirect_stdout(io.StringIO()) as stdout, contextlib.redirect_stderr(io.StringIO()) as stderr:
         out = [stdout, stderr]
@@ -177,7 +167,7 @@ def _capture_output() -> Generator[List[Union[io.StringIO, str]], None, None]:
 
 def _parse_setuptools_arguments(
     setup_attrs: Mapping[str, Any]
-) -> Tuple[bool, bool, List[str], bool, bool, bool, str, bool]:
+) -> tuple[bool, bool, list[str], bool, bool, bool, str, bool]:
     """This function instantiates a Distribution object and
     parses the command line arguments.
 
@@ -309,7 +299,7 @@ def strip_package(package_parts: Sequence[str], module_file: str) -> str:
     return module_file[len(package) + 1 :] if package != "" and module_dir.startswith(package) else module_file
 
 
-def _package_data_contain_module(module: Tuple[str, str, str], package_data: Mapping[str, List[str]]) -> bool:
+def _package_data_contain_module(module: tuple[str, str, str], package_data: Mapping[str, list[str]]) -> bool:
     """Return True if the ``module`` is contained
     in the ``package_data``.
 
@@ -383,8 +373,8 @@ def setup(
     cmake_source_dir: str = "",
     cmake_with_sdist: bool = False,
     cmake_languages: Sequence[str] = ("C", "CXX"),
-    cmake_minimum_required_version: Optional[str] = None,
-    cmake_process_manifest_hook: Optional[Callable[[List[str]], List[str]]] = None,
+    cmake_minimum_required_version: str | None = None,
+    cmake_process_manifest_hook: Callable[[list[str]], list[str]] | None = None,
     cmake_install_target: str = "install",
     **kw: Any,
 ) -> None:
@@ -461,7 +451,7 @@ def setup(
     # * no CMakeLists.txt if found
     display_only = has_invalid_arguments = help_commands = False
     force_cmake = skip_cmake = False
-    commands: List[str] = []
+    commands: list[str] = []
     try:
         (
             display_only,
@@ -747,9 +737,7 @@ def setup(
     return setuptools.setup(**kw)
 
 
-def _collect_package_prefixes(
-    package_dir: Dict[str, str], packages: List[Union[Any, str]]
-) -> List[Union[Any, Tuple[str, str]]]:
+def _collect_package_prefixes(package_dir: dict[str, str], packages: list[Any | str]) -> list[Any | tuple[str, str]]:
     """
     Collect the list of prefixes for all packages
 
@@ -792,13 +780,13 @@ def _collect_package_prefixes(
 
 def _classify_installed_files(
     install_paths: Sequence[str],
-    package_data: Dict[str, List[str]],
-    package_prefixes: Sequence[Tuple[str, str]],
+    package_data: dict[str, list[str]],
+    package_prefixes: Sequence[tuple[str, str]],
     py_modules: Sequence[str],
-    new_py_modules: Dict[str, bool],
+    new_py_modules: dict[str, bool],
     scripts: Sequence[str],
-    new_scripts: Dict[str, bool],
-    data_files: Dict[Any, Any],
+    new_scripts: dict[str, bool],
+    data_files: dict[Any, Any],
     cmake_source_dir: str,
     _cmake_install_dir: str,
 ) -> None:
@@ -827,13 +815,13 @@ def _classify_installed_files(
 
 def _classify_file(
     path: str,
-    package_data: Dict[str, List[str]],
-    package_prefixes: Sequence[Tuple[str, str]],
+    package_data: dict[str, list[str]],
+    package_prefixes: Sequence[tuple[str, str]],
     py_modules: Sequence[str],
-    new_py_modules: Dict[str, bool],
+    new_py_modules: dict[str, bool],
     scripts: Sequence[str],
-    new_scripts: Dict[str, bool],
-    data_files: Dict[str, Set[str]],
+    new_scripts: dict[str, bool],
+    data_files: dict[str, set[str]],
 ) -> None:
     found_package = False
     found_module = False
@@ -894,7 +882,7 @@ def _classify_file(
     file_set.add(os.path.join(CMAKE_INSTALL_DIR(), path))
 
 
-def _copy_file(src_file: str, dest_file: str, hide_listing: Union[bool, int] = True) -> None:
+def _copy_file(src_file: str, dest_file: str, hide_listing: bool | int = True) -> None:
     """Copy ``src_file`` to ``dest_file`` ensuring parent directory exists.
 
     By default, message like `creating directory /path/to/package` and
@@ -918,11 +906,11 @@ def _copy_file(src_file: str, dest_file: str, hide_listing: Union[bool, int] = T
 
 def _consolidate_package_modules(
     cmake_source_dir: str,
-    packages: List[Union[Any, str]],
-    package_dir: Dict[str, str],
-    py_modules: List[Union[Any, str]],
-    package_data: Dict[str, List[str]],
-    hide_listing: Union[bool, int],
+    packages: list[Any | str],
+    package_dir: dict[str, str],
+    py_modules: list[Any | str],
+    package_data: dict[str, list[str]],
+    hide_listing: bool | int,
 ) -> None:
     """This function consolidates packages having modules located in
     both the source tree and the CMake install tree into one location.
@@ -992,9 +980,9 @@ def _consolidate_package_modules(
 
 
 def _consolidate_package_data_files(
-    original_package_data: Dict[str, List[str]],
-    package_prefixes: List[Union[Any, Tuple[str, str]]],
-    hide_listing: Union[bool, int],
+    original_package_data: dict[str, list[str]],
+    package_prefixes: list[Any | tuple[str, str]],
+    hide_listing: bool | int,
 ) -> None:
     """This function copies package data files specified using the ``package_data`` keyword
     into :func:`.constants.CMAKE_INSTALL_DIR()`.

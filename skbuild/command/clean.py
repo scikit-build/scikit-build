@@ -1,5 +1,7 @@
 """This module defines custom implementation of ``clean`` setuptools command."""
 
+from __future__ import annotations
+
 import os
 from shutil import rmtree
 

@@ -6,6 +6,8 @@
 Tries to build and test the `hello-pure` sample project.
 """
 
+from __future__ import annotations
+
 import glob
 
 from skbuild.constants import SKBUILD_DIR

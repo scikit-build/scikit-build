@@ -1,6 +1,8 @@
 """This module defines custom ``generate_source_manifest`` setuptools
 command."""
 
+from __future__ import annotations
+
 import os
 import subprocess
 import sys

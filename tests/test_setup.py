@@ -6,6 +6,8 @@
 Tests for `skbuild.setup` function.
 """
 
+from __future__ import annotations
+
 import os
 import pprint
 import sys

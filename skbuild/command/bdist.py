@@ -1,5 +1,7 @@
 """This module defines custom implementation of ``bdist`` setuptools command."""
 
+from __future__ import annotations
+
 import setuptools  # noqa: F401
 from distutils.command.bdist import bdist as _bdist
 

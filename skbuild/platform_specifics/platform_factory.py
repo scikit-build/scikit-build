@@ -1,14 +1,15 @@
 """This modules implements the logic allowing to instantiate the expected
 :class:`.abstract.CMakePlatform`."""
 
-# pylint: disable=import-outside-toplevel
+from __future__ import annotations
 
+# pylint: disable=import-outside-toplevel
 import platform
 
 from . import abstract
 
 
-def get_platform() -> "abstract.CMakePlatform":
+def get_platform() -> abstract.CMakePlatform:
     """Return an instance of :class:`.abstract.CMakePlatform` corresponding
     to the current platform."""
     this_platform = platform.system().lower()

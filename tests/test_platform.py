@@ -6,6 +6,8 @@
 Tests for platforms, to verify that CMake correctly does a test compilation.
 """
 
+from __future__ import annotations
+
 import os
 import platform
 import sys
