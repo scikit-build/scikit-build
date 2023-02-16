@@ -123,7 +123,7 @@ Visual Studio IDE
     +-------------------+------------------------+-----------------------------+
     | CPython Version   | x86 (32-bit)           | x64 (64-bit)                |
     +===================+========================+=============================+
-    | **3.6 and above** | Visual Studio 17 2022  | Visual Studio 17 2022 Win64 |
+    | **3.7 and above** | Visual Studio 17 2022  | Visual Studio 17 2022 Win64 |
     |                   | Visual Studio 16 2019  | Visual Studio 16 2019 Win64 |
     |                   | Visual Studio 15 2017  | Visual Studio 15 2017 Win64 |
     +-------------------+------------------------+-----------------------------+
@@ -216,7 +216,7 @@ MacOSX wheels will allow them to work on ``System CPython``, the ``Official CPyt
     |                      +-------------------------+--------------+--------------------------------+
     |                      | 3.8                     | 11           | macosx-11.0-universal2         |
     |                      +-------------------------+--------------+--------------------------------+
-    |                      | 3.6, 3.7, 3.8, 3.9, 3.10| 10.9         | macosx-10.9-x86_64             |
+    |                      | 3.7, 3.8, 3.9, 3.10     | 10.9         | macosx-10.9-x86_64             |
     +----------------------+-------------------------+--------------+--------------------------------+
     | Macports CPython     | 3.x                     | Current      | Depends on current macOS       |
     +----------------------+-------------------------+--------------+ version.                       |
@@ -316,7 +316,7 @@ which Microsoft C run-time and compiler are used:
 .. table::
 
     +---------------------------+-----------------+
-    | Python version            | 3.6 and above   |
+    | Python version            | 3.7 and above   |
     +===========================+=================+
     | **Microsoft C run-time**  | `ucrtbase.dll`_ |
     +---------------------------+-----------------+
@@ -347,7 +347,7 @@ this next table references links for installing alternative environments:
     +-------------------+-------------------------------------------------+
     | CPython version   | Download links for Windows SDK or Visual Studio |
     +===================+=================================================+
-    | **3.6 and above** | - `Visual C++ Build Tools`_                     |
+    | **3.7 and above** | - `Visual C++ Build Tools`_                     |
     |                   |                                                 |
     |                   | or                                              |
     |                   |                                                 |

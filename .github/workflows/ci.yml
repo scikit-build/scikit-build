@@ -56,15 +56,12 @@ jobs:
     - name: Setup nox
       uses: wntrblm/nox@2022.11.21
       with:
-        python-versions: "3.6,3.7,3.8,3.9,3.10,3.11"
+        python-versions: "3.7,3.8,3.9,3.10,3.11"
 
     # We check all Python's on Linux, because it's fast.
     # We check minimum Python and maximum Python on all OS's.
 
-    - name: Test on 🐍 3.6
-      run: nox -s tests-3.6
     - name: Test on 🐍 3.7
-      if: runner.os == 'Linux'
       run: nox -s tests-3.7
     - name: Test on 🐍 3.8
       if: runner.os == 'Linux'

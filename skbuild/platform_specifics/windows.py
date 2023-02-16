@@ -65,7 +65,7 @@ class WindowsPlatform(abstract.CMakePlatform):
             .format(pyver=".".join(str(v) for v in sys.version_info[:2]))
         )
 
-        # For Python 3.6 and above: VS2022, VS2019, VS2017
+        # For Python 3.7 and above: VS2022, VS2019, VS2017
         supported_vs_years = [("2022", "v143"), ("2019", "v142"), ("2017", "v141")]
         self._vs_help = vs_help_template % (
             supported_vs_years[0][0],
