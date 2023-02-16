@@ -1,5 +1,7 @@
 """This module defines custom implementation of ``build_ext`` setuptools command."""
 
+from __future__ import annotations
+
 import os
 
 from distutils.file_util import copy_file

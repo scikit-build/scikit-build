@@ -8,6 +8,8 @@ attempt fails with a SystemExit exception that has an SKBuildError exception as
 its value.
 """
 
+from __future__ import annotations
+
 import pytest
 
 from skbuild.exceptions import SKBuildError

@@ -1,6 +1,8 @@
 """This module defines custom implementation of ``install`` setuptools
 command."""
 
+from __future__ import annotations
+
 from typing import Any
 
 from setuptools.command.install import install as _install

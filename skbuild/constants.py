@@ -2,6 +2,8 @@
 This module defines constants commonly used in scikit-build.
 """
 
+from __future__ import annotations
+
 import contextlib
 import os
 import platform

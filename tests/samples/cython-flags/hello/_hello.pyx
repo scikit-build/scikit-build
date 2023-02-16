@@ -1,4 +1,3 @@
-
 from libc.stdio cimport printf
 
 

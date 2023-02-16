@@ -1,9 +1,10 @@
 """This module defines object specific to Linux platform."""
 
+from __future__ import annotations
+
 import platform
 import sys
 import textwrap
-from typing import Tuple
 
 import distro
 
@@ -14,7 +15,7 @@ class LinuxPlatform(unix.UnixPlatform):
     """Linux implementation of :class:`.abstract.CMakePlatform`"""
 
     @staticmethod
-    def build_essential_install_cmd() -> Tuple[str, str]:
+    def build_essential_install_cmd() -> tuple[str, str]:
         """Return a tuple of the form ``(distribution_name, cmd)``.
 
         ``cmd`` is the command allowing to install the build tools

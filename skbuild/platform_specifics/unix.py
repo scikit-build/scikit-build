@@ -1,5 +1,7 @@
 """This module defines object specific to Unix platform."""
 
+from __future__ import annotations
+
 import os
 
 from . import abstract

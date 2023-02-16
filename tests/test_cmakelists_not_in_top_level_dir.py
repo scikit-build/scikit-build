@@ -8,6 +8,8 @@ project. It basically checks that using the `cmake_source_dir` setup
 keyword works.
 """
 
+from __future__ import annotations
+
 import glob
 import textwrap
 

@@ -1,5 +1,7 @@
 """This module defines custom implementation of ``build`` setuptools command."""
 
+from __future__ import annotations
+
 import setuptools  # noqa: F401
 from distutils.command.build import build as _build
 

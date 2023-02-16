@@ -1,5 +1,7 @@
 """This module defines object specific to BSD platform."""
 
+from __future__ import annotations
+
 from . import unix
 
 

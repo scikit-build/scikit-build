@@ -8,6 +8,8 @@ project. It basically checks that using the `cmake_target` keyword
 in setup.py works.
 """
 
+from __future__ import annotations
+
 from . import project_setup_py_test
 
 

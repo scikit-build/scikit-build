@@ -1,23 +1,13 @@
 """This module defines functions generally useful in scikit-build."""
 
+from __future__ import annotations
+
 import contextlib
 import logging
 import os
 import sys
 from contextlib import contextmanager
-from typing import (
-    Any,
-    Iterable,
-    Iterator,
-    List,
-    Mapping,
-    NamedTuple,
-    Optional,
-    Sequence,
-    Tuple,
-    TypeVar,
-    Union,
-)
+from typing import Any, Iterable, Iterator, Mapping, NamedTuple, Sequence, TypeVar
 
 from distutils.command.build_py import build_py as distutils_build_py
 from distutils.errors import DistutilsTemplateError
@@ -80,7 +70,7 @@ Self = TypeVar("Self", bound="push_dir")
 class push_dir(contextlib.ContextDecorator):
     """Context manager to change current directory."""
 
-    def __init__(self, directory: Optional[str] = None, make_directory: bool = False) -> None:
+    def __init__(self, directory: str | None = None, make_directory: bool = False) -> None:
         """
         :param directory:
           Path to set as current working directory. If ``None``
@@ -92,7 +82,7 @@ class push_dir(contextlib.ContextDecorator):
         super().__init__()
         self.directory = directory
         self.make_directory = make_directory
-        self.old_cwd: Optional[str] = None
+        self.old_cwd: str | None = None
 
     def __enter__(self: Self) -> Self:
         self.old_cwd = os.getcwd()
@@ -120,7 +110,7 @@ class PythonModuleFinder(distutils_build_py):
         packages: Sequence[str],
         package_dir: Mapping[str, str],
         py_modules: Sequence[str],
-        alternative_build_base: Optional[str] = None,
+        alternative_build_base: str | None = None,
     ) -> None:
         """
         :param packages: List of packages to search.
@@ -135,7 +125,7 @@ class PythonModuleFinder(distutils_build_py):
 
         self.distribution = Distribution("setup.py")
 
-    def find_all_modules(self, project_dir: Optional[str] = None) -> List[Union[Any, Tuple[str, str, str]]]:
+    def find_all_modules(self, project_dir: str | None = None) -> list[Any | tuple[str, str, str]]:
         """Compute the list of all modules that would be built by
         project located in current directory, whether they are
         specified one-module-at-a-time ``py_modules`` or by whole
@@ -151,7 +141,7 @@ class PythonModuleFinder(distutils_build_py):
             # TODO: typestubs for distutils
             return super().find_all_modules()  # type: ignore[no-any-return, no-untyped-call]
 
-    def find_package_modules(self, package: str, package_dir: str) -> Iterable[Tuple[str, str, str]]:
+    def find_package_modules(self, package: str, package_dir: str) -> Iterable[tuple[str, str, str]]:
         """Temporally prepend the ``alternative_build_base`` to ``module_file``.
         Doing so will ensure modules can also be found in other location
         (e.g ``skbuild.constants.CMAKE_INSTALL_DIR``).
@@ -159,10 +149,10 @@ class PythonModuleFinder(distutils_build_py):
         if package_dir != "" and not os.path.exists(package_dir) and self.alternative_build_base is not None:
             package_dir = os.path.join(self.alternative_build_base, package_dir)
 
-        modules: Iterable[Tuple[str, str, str]] = super().find_package_modules(package, package_dir)  # type: ignore[no-untyped-call]
+        modules: Iterable[tuple[str, str, str]] = super().find_package_modules(package, package_dir)  # type: ignore[no-untyped-call]
 
         # Strip the alternative base from module_file
-        def _strip_directory(entry: Tuple[str, str, str]) -> Tuple[str, str, str]:
+        def _strip_directory(entry: tuple[str, str, str]) -> tuple[str, str, str]:
             module_file = entry[2]
             if self.alternative_build_base is not None and module_file.startswith(self.alternative_build_base):
                 module_file = module_file[len(self.alternative_build_base) + 1 :]
@@ -200,7 +190,7 @@ def to_unix_path(path: OptStr) -> OptStr:
 
 
 @contextmanager
-def distribution_hide_listing(distribution: Distribution) -> Iterator[Union[bool, int]]:
+def distribution_hide_listing(distribution: Distribution) -> Iterator[bool | int]:
     """Given a ``distribution``, this context manager temporarily
     sets distutils threshold to WARN if ``--hide-listing`` argument
     was provided.
@@ -240,7 +230,7 @@ def distribution_hide_listing(distribution: Distribution) -> Iterator[Union[bool
             distutils_log.set_threshold(old_threshold)
 
 
-def parse_manifestin(template: str) -> List[str]:
+def parse_manifestin(template: str) -> list[str]:
     """This function parses template file (usually MANIFEST.in)"""
     if not os.path.exists(template):
         return []

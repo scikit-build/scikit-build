@@ -1,13 +1,15 @@
 """This module defines object specific to Windows platform."""
 
 
+from __future__ import annotations
+
 import os
 import platform
 import re
 import subprocess
 import sys
 import textwrap
-from typing import Dict, Iterable, Optional, Union
+from typing import Iterable
 
 from setuptools import monkey
 
@@ -130,7 +132,7 @@ class CMakeVisualStudioIDEGenerator(CMakeGenerator):
     .. automethod:: __init__
     """
 
-    def __init__(self, year: str, toolset: Optional[str] = None) -> None:
+    def __init__(self, year: str, toolset: str | None = None) -> None:
         """Instantiate a generator object with its name set to the `Visual
         Studio` generator associated with the given ``year``
         (see :data:`VS_YEAR_TO_VERSION`), the current platform (32-bit
@@ -209,10 +211,10 @@ def find_visual_studio(vs_version: int) -> str:
 
 # To avoid multiple slow calls to ``subprocess.run()`` (either directly or
 # indirectly through ``query_vcvarsall``), results of previous calls are cached.
-__get_msvc_compiler_env_cache: Dict[str, CachedEnv] = {}
+__get_msvc_compiler_env_cache: dict[str, CachedEnv] = {}
 
 
-def _get_msvc_compiler_env(vs_version: int, vs_toolset: Optional[str] = None) -> Union[CachedEnv, Dict[str, str]]:
+def _get_msvc_compiler_env(vs_version: int, vs_toolset: str | None = None) -> CachedEnv | dict[str, str]:
     """
     Return a dictionary of environment variables corresponding to ``vs_version``
     that can be used with  :class:`CMakeVisualStudioCommandLineGenerator`.
@@ -281,7 +283,7 @@ class CMakeVisualStudioCommandLineGenerator(CMakeGenerator):
     .. automethod:: __init__
     """
 
-    def __init__(self, name: str, year: str, toolset: Optional[str] = None, args: Optional[Iterable[str]] = None):
+    def __init__(self, name: str, year: str, toolset: str | None = None, args: Iterable[str] | None = None):
         """Instantiate CMake command-line generator.
 
         The generator ``name`` can be values like `Ninja`, `NMake Makefiles`

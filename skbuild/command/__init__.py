@@ -2,7 +2,7 @@
 distutils and setuptools commands.
 """
 
-from typing import List, Optional
+from __future__ import annotations
 
 from ..constants import SETUPTOOLS_INSTALL_DIR
 from ..typing import Protocol
@@ -14,8 +14,8 @@ class CommandMixinProtocol(Protocol):
 
     build_base: str
     distribution: Distribution
-    outfiles: List[str]
-    install_lib: Optional[str]
+    outfiles: list[str]
+    install_lib: str | None
     install_platlib: str
 
     def finalize_options(self, *args: object, **kwargs: object) -> None:

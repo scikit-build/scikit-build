@@ -1,6 +1,8 @@
 """This module defines custom implementation of ``sdist`` setuptools command."""
 
-from typing import Optional, Sequence
+from __future__ import annotations
+
+from typing import Sequence
 
 from setuptools.command.sdist import sdist as _sdist
 
@@ -21,10 +23,10 @@ class sdist(set_build_base_mixin, _sdist):
         self,
         base_name: str,
         _format: str,
-        root_dir: Optional[str] = None,
-        base_dir: Optional[str] = None,
-        owner: Optional[str] = None,
-        group: Optional[str] = None,
+        root_dir: str | None = None,
+        base_dir: str | None = None,
+        owner: str | None = None,
+        group: str | None = None,
     ) -> str:
         """Handle --hide-listing option."""
         logger.info("creating '%s' %s archive and adding '%s' to it", base_name, _format, base_dir)

@@ -1,6 +1,8 @@
 """This module defines custom implementation of ``bdist_wheel`` setuptools
 command."""
 
+from __future__ import annotations
+
 from wheel.bdist_wheel import bdist_wheel as _bdist_wheel
 from wheel.wheelfile import WheelFile
 
@@ -17,7 +19,7 @@ class bdist_wheel(set_build_base_mixin, _bdist_wheel):  # type: ignore[misc]
 
         old_write_files = WheelFile.write_files
 
-        def update_write_files(wheelfile_self: "bdist_wheel", base_dir: str) -> None:
+        def update_write_files(wheelfile_self: bdist_wheel, base_dir: str) -> None:
             with distribution_hide_listing(self.distribution) as hide_listing:
                 if hide_listing:
                     zip_filename = wheelfile_self.filename

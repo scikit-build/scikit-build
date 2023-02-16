@@ -1,6 +1,8 @@
 """This module defines custom implementation of ``egg_info`` setuptools
 command."""
 
+from __future__ import annotations
+
 import os
 import os.path
 
