@@ -212,7 +212,7 @@ def distribution_hide_listing(distribution: Distribution) -> Iterator[Union[bool
     wheel_log = logging.getLogger("wheel")
     root_log = logging.getLogger()  # setuptools 65.6+ needs this hidden too
     if logging_module:
-        # Setuptools 60.2+, will always be on Python 3.6+
+        # Setuptools 60.2+, will always be on Python 3.7+
         old_wheel_level = wheel_log.getEffectiveLevel()
         old_root_level = root_log.getEffectiveLevel()
         try:

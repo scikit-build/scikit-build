@@ -63,9 +63,6 @@ changes and deprecations:
 
 * All deprecated setuptools/distutils features are also deprecated in
   scikit-build, like the ``test`` command, ``easy_install``, etc.
-* Python 3.6
-  support is deprecated, as setuptools, pytest, and everything else we use has
-  dropped it already.
 * Older versions of CMake (<3.15) are not recommended; a future version will
   remove support for older CMake's (along with providing a better mechanism for
   ensuring a proper CMake is available).

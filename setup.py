@@ -57,7 +57,7 @@ setuptools.setup(
         "Examples": "https://github.com/scikit-build/scikit-build-sample-projects",
     },
     package_data={"skbuild": ["resources/cmake/*.cmake", "py.typed", "*.pyi"]},
-    python_requires=">=3.6",
+    python_requires=">=3.7",
     install_requires=[
         "distro",
         "packaging",
@@ -74,7 +74,6 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Natural Language :: English",
         "Programming Language :: Python :: 3 :: Only",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
