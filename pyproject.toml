@@ -21,12 +21,6 @@ ignore = [
 line-length = 120
 
 
-[tool.isort]
-profile = "black"
-known_third_party = ["distutils"]
-force_to_top = ["setuptools"]
-
-
 [tool.mypy]
 files = ["skbuild"]
 python_version = "3.6"
@@ -126,6 +120,8 @@ src = ["src"]
 unfixable = ["T20", "F841"]
 exclude = []
 flake8-unused-arguments.ignore-variadic-names = true
+isort.known-third-party = ["distutils"]
+isort.force-to-top = ["setuptools"]
 
 [tool.ruff.per-file-ignores]
 "tests/**" = ["T20"]
