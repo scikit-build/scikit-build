@@ -13,6 +13,8 @@ We are hard at work on the next generation of scikit-build
 has had it's first non-development release. We are also continuing to fix bugs,
 make improvements, and backport changes here.
 
+.. START-BRIEF-CHANGELOG
+
 Scikit-build 0.16.7
 ===================
 
@@ -121,6 +123,7 @@ Documentation
   * Transitioning away from the mailing list and adopting the GitHub Discussions will provide a more integrated platform enabling us to more effectively engage with the community.
   * After sending a `last message <https://groups.google.com/g/scikit-build/c/jU7-EvvMPb8>`_ describing the transition, the mailing list was updated to be read-only and the welcome message was updated to redirect visitor toward the Discussions board.
 
+.. END-BRIEF-CHANGELOG
 
 Scikit-build 0.15.0
 ===================

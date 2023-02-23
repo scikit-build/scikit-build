@@ -12,6 +12,7 @@ from .setuptools_wrap import setup
 __author__ = "The scikit-build team"
 __email__ = "scikit-build@googlegroups.com"
 
+
 __all__ = ["setup", "__version__"]
 
 

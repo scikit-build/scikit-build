@@ -43,6 +43,14 @@ Latest Release
   |     :target: https://anaconda.org/conda-forge/scikit-build                  |     :target: https://anaconda.org/conda-forge/scikit-build                    |
   +-----------------------------------------------------------------------------+-------------------------------------------------------------------------------+
 
+.. INJECT-CHANGELOG
+
+History
+-------
+
+PyCMake was created at SciPy 2014 in response to general difficulties building
+C++ and Fortran based Python extensions across platforms.  It was renamed to
+"scikit-build" in 2016.
 
 
 Known Issues
@@ -66,7 +74,6 @@ changes and deprecations:
 * Older versions of CMake (<3.15) are not recommended; a future version will
   remove support for older CMake's (along with providing a better mechanism for
   ensuring a proper CMake is available).
-* Our primary branch will change to ``main``
 
 If you need any of these features, please open or find an issue explaining what
 and why you need something.
