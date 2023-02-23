@@ -5,10 +5,10 @@ scikit-build
 .. image:: https://github.com/scikit-build/scikit-build/actions/workflows/ci.yml/badge.svg
     :target: https://github.com/scikit-build/scikit-build/actions/workflows/ci.yml
 
-.. image:: https://dev.azure.com/scikit-build/scikit-build/_apis/build/status/scikit-build.scikit-build?branchName=master
-   :target: https://dev.azure.com/scikit-build/scikit-build/_build/latest?definitionId=1&branchName=master
+.. image:: https://dev.azure.com/scikit-build/scikit-build/_apis/build/status/scikit-build.scikit-build?branchName=main
+   :target: https://dev.azure.com/scikit-build/scikit-build/_build/latest?definitionId=1&branchName=main
 
-.. image:: https://codecov.io/gh/scikit-build/scikit-build/branch/master/graph/badge.svg
+.. image:: https://codecov.io/gh/scikit-build/scikit-build/branch/main/graph/badge.svg
     :target: https://codecov.io/gh/scikit-build/scikit-build
     :alt: Code coverage status
 

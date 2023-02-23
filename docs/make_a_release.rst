@@ -105,7 +105,7 @@ Setting up environment
 
   .. code::
 
-    $ git tag --sign -m "Scikit-build $release" $release master
+    $ git tag --sign -m "Scikit-build $release" $release main
 
   .. warning::
 
@@ -113,12 +113,12 @@ Setting up environment
       to sign the tag.
 
 
-7. Publish both the release tag and the master branch
+7. Publish both the release tag and the main branch
 
   .. code::
 
     $ git push origin $release && \
-      git push origin master
+      git push origin main
 
 
 8. Make a `GitHub release <https://github.com/scikit-build/scikit-build/releases/new>`_. Paste the converted release notes as markdown; convert using
@@ -144,7 +144,7 @@ Setting up environment
 
     $ git add CHANGES.rst && \
       git commit -m "CHANGES.rst: Add \"Next Release\" section [ci skip]" && \
-      git push origin master
+      git push origin main
 
 
 
@@ -228,8 +228,8 @@ conda-forge, follow the steps below:
 
 6. Modify ``meta.yaml``
 
-   Update the `version string <https://github.com/conda-forge/scikit-build-feedstock/blob/master/recipe/meta.yaml#L2>`_ and
-   `sha256 <https://github.com/conda-forge/scikit-build-feedstock/blob/master/recipe/meta.yaml#L3>`_.
+   Update the `version string <https://github.com/conda-forge/scikit-build-feedstock/blob/main/recipe/meta.yaml#L2>`_ and
+   `sha256 <https://github.com/conda-forge/scikit-build-feedstock/blob/main/recipe/meta.yaml#L3>`_.
 
    We have to modify the sha and the version string in the ``meta.yaml`` file.
 
