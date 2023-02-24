@@ -6,7 +6,7 @@ from __future__ import annotations
 from wheel.bdist_wheel import bdist_wheel as _bdist_wheel
 from wheel.wheelfile import WheelFile
 
-from .. import __version__ as skbuild_version
+from .._version import version as skbuild_version
 from ..utils import distribution_hide_listing
 from . import set_build_base_mixin
 
