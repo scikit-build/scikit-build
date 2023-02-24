@@ -4,8 +4,8 @@ distutils and setuptools commands.
 
 from __future__ import annotations
 
+from .._compat.typing import Protocol
 from ..constants import SETUPTOOLS_INSTALL_DIR
-from ..typing import Protocol
 from ..utils import Distribution
 
 

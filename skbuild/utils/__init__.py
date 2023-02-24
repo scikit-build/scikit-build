@@ -5,7 +5,6 @@ from __future__ import annotations
 import contextlib
 import logging
 import os
-import sys
 from contextlib import contextmanager
 from typing import Any, Iterable, Iterator, Mapping, NamedTuple, Sequence, TypeVar
 
@@ -14,10 +13,7 @@ from distutils.errors import DistutilsTemplateError
 from distutils.filelist import FileList
 from distutils.text_file import TextFile
 
-if sys.version_info >= (3, 8):
-    from typing import Protocol
-else:
-    from typing_extensions import Protocol
+from .._compat.typing import Protocol
 
 
 class CommonLog(Protocol):

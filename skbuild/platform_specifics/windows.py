@@ -13,7 +13,7 @@ from typing import Iterable
 
 from setuptools import monkey
 
-from ..typing import TypedDict
+from .._compat.typing import TypedDict
 from . import abstract
 from .abstract import CMakeGenerator
 
