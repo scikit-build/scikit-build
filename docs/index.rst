@@ -37,7 +37,6 @@ For more examples, see `scikit-build-sample-projects <https://github.com/scikit-
    :caption: For maintainers
 
    make_a_release
-   notes
 
 Indices and tables
 ==================
