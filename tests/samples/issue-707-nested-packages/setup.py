@@ -6,6 +6,6 @@ setup(
     description="a minimal example package (cython version)",
     author="The scikit-build team",
     license="MIT",
-    packages=["hello"],
+    packages=["hello", "hello.goodbye"],
     python_requires=">=3.7",
 )
