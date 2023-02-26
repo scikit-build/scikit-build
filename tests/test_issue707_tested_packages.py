@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from skbuild.utils import push_dir
 
 from . import project_setup_py_test
