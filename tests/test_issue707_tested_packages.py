@@ -9,8 +9,8 @@ def test_install_command(capfd):
     def build():
         pass
 
-    with capfd.disabled():
-        build()
+    build()
+    capfd.readouterr()
 
     # Verify that both
     import hello
