@@ -419,6 +419,7 @@ def setup(
     )
     cmdclass["test"] = cmdclass.get("test", test.test)
     kw["cmdclass"] = cmdclass
+    breakpoint()
 
     # Extract setup keywords specific to scikit-build and remove them from kw.
     # Removing the keyword from kw need to be done here otherwise, the
