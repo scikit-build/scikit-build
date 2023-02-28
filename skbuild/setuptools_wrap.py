@@ -400,13 +400,9 @@ def setup(
 
     sys.argv, cmake_executable, skip_generator_test, cmake_args_from_args, make_args = parse_args()
     if any("CMAKE_INSTALL_PREFIX" in arg for arg in cmake_args_from_args):
-        raise ValueError(
-            "CMAKE_INSTALL_PREFIX may not be passed to the scikit-build CLI."
-        )
+        raise ValueError("CMAKE_INSTALL_PREFIX may not be passed to the scikit-build CLI.")
     if any("CMAKE_INSTALL_PREFIX" in arg for arg in cmake_args):
-        raise ValueError(
-            "CMAKE_INSTALL_PREFIX may not be passed via cmake_args to setup."
-        )
+        raise ValueError("CMAKE_INSTALL_PREFIX may not be passed via cmake_args to setup.")
 
     # work around https://bugs.python.org/issue1011113
     # (patches provided, but no updates since 2014)
