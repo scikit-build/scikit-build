@@ -273,8 +273,8 @@ def get_cmakecache_variables(cmakecache):
     results = {}
     cache_entry_pattern = re.compile(r"^([\w\d_-]+):([\w]+)=")
     with open(cmakecache) as content:
-        for line in content.readlines():
-            line = line.strip()
+        for full_line in content.readlines():
+            line = full_line.strip()
             result = cache_entry_pattern.match(line)
             if result:
                 variable_name = result.group(1)

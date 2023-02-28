@@ -46,10 +46,10 @@ def test_generator_selection():
         # As of Dec 2016, this is available only for VS 9.0
         has_vs_for_python_vcvars = any(
             os.path.exists(os.path.expanduser(path_pattern % vs_version))
-                for path_pattern in [
-                    "~/AppData/Local/Programs/Common/Microsoft/Visual C++ for Python/%.1f/vcvarsall.bat",
-                    "C:/Program Files (x86)/Common Files/Microsoft/Visual C++ for Python/%.1f/vcvarsall.bat",
-                ]
+            for path_pattern in [
+                "~/AppData/Local/Programs/Common/Microsoft/Visual C++ for Python/%.1f/vcvarsall.bat",
+                "C:/Program Files (x86)/Common Files/Microsoft/Visual C++ for Python/%.1f/vcvarsall.bat",
+            ]
         )
 
         # If environment exists, update the expected generator

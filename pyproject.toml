@@ -153,6 +153,7 @@ messages_control.disable = [
   "ungrouped-imports",
   "wrong-import-order",
   "wrong-import-position",
+  "global-statement", # Covered by Ruff
 ]
 
 
