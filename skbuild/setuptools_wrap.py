@@ -675,7 +675,7 @@ def setup(
 
     original_manifestin_data_files = []
 
-    def get_default_include_package_data():
+    def get_default_include_package_data() -> bool:
         # Include package data if pyproject.toml contains the project or tool.setuptools table.
         # https://setuptools.pypa.io/en/latest/history.html#id255
         # https://github.com/pypa/setuptools/pull/3067
