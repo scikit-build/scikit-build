@@ -399,6 +399,14 @@ def setup(
                 kw["package_dir"][package] = prefix[:-1]
 
     sys.argv, cmake_executable, skip_generator_test, cmake_args_from_args, make_args = parse_args()
+    if any("CMAKE_INSTALL_PREFIX" in arg for arg in cmake_args_from_args):
+        raise ValueError(
+            "CMAKE_INSTALL_PREFIX may not be passed to the scikit-build CLI."
+        )
+    if any("CMAKE_INSTALL_PREFIX" in arg for arg in cmake_args):
+        raise ValueError(
+            "CMAKE_INSTALL_PREFIX may not be passed via cmake_args to setup."
+        )
 
     # work around https://bugs.python.org/issue1011113
     # (patches provided, but no updates since 2014)
@@ -419,7 +427,6 @@ def setup(
     )
     cmdclass["test"] = cmdclass.get("test", test.test)
     kw["cmdclass"] = cmdclass
-    breakpoint()
 
     # Extract setup keywords specific to scikit-build and remove them from kw.
     # Removing the keyword from kw need to be done here otherwise, the
