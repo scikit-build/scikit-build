@@ -674,7 +674,20 @@ def setup(
     )
 
     original_manifestin_data_files = []
-    if kw.get("include_package_data", False):
+
+    def get_default_include_package_data():
+        # Include package data if pyproject.toml contains the project or tool.setuptools table.
+        # https://setuptools.pypa.io/en/latest/history.html#id255
+        # https://github.com/pypa/setuptools/pull/3067
+        pyproject_file = os.path.join(os.getcwd(), "pyproject.toml")
+        if os.path.isfile(pyproject_file):
+            with open(pyproject_file) as f:
+                text = f.read()
+                if "[project]" in text or "[tool.setuptools]" in text:
+                    return True
+        return False
+
+    if kw.get("include_package_data", get_default_include_package_data()):
         original_manifestin_data_files = parse_manifestin(os.path.join(os.getcwd(), "MANIFEST.in"))
         for path in original_manifestin_data_files:
             _classify_file(

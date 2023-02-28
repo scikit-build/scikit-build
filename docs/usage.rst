@@ -115,7 +115,9 @@ be placed in ``setup.cfg`` as normal.
 
 - ``include_package_data``: If set to ``True``, this tells setuptools to automatically include any data files it finds
   inside your package directories that are specified by your ``MANIFEST.in`` file. For more information, see the setuptools
-  documentation section on `Including Data Files`_.
+  documentation section on `Including Data Files`_. scikit-build matches
+  `the setuptools behavior <https://setuptools.pypa.io/en/latest/history.html#id255>`__ of defaulting this parameter to
+  ``True`` if a pyproject.toml file exists and contains either the ``project`` or ``tool.setuptools`` table.
 
 - ``package_data``: A dictionary mapping package names to lists of glob patterns. For a complete description and examples,
   see the setuptools documentation section on `Including Data Files`_.
