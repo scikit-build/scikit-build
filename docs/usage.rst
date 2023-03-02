@@ -139,7 +139,9 @@ be placed in ``setup.cfg`` as normal.
 - ``entry_points``: A dictionary mapping entry point group names to strings or lists of strings defining the entry points.
   Entry points are used to support dynamic discovery of services or plugins provided by a project.
   See `Dynamic Discovery of Services and Plugins`_ for details and examples of the format of this argument. In addition,
-  this keyword is used to support `Automatic Script Creation`_.
+  this keyword is used to support `Automatic Script Creation`_. Note that if using ``pyproject.toml`` for configuration,
+  the requirement to put ``entry_points`` in ``setup.py`` also requires that the ``project`` section include ``entry_points``
+  in the ``dynamic`` section.
 
 - ``scripts``: List of python script relative paths. If the first line of the script starts with ``#!`` and contains the
   word ``python``, the Distutils will adjust the first line to refer to the current interpreter location.
