@@ -67,4 +67,4 @@ repos:
   - id: mypy
     files: ^skbuild
     args: []
-    additional_dependencies: ["types-setuptools", "packaging", "cmake", "ninja"]
+    additional_dependencies: ["types-setuptools", "packaging", "cmake", "ninja", "tomli"]

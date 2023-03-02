@@ -27,6 +27,7 @@ from packaging.version import parse as parse_version
 from setuptools.dist import Distribution as upstream_Distribution
 
 from . import cmaker
+from ._compat import tomllib
 from .command import (
     bdist,
     bdist_wheel,
@@ -365,6 +366,19 @@ def _load_cmake_spec() -> Any:
     return None
 
 
+def get_default_include_package_data() -> bool:
+    # Include package data if pyproject.toml contains the project or tool.setuptools table.
+    # https://setuptools.pypa.io/en/latest/history.html#id255
+    # https://github.com/pypa/setuptools/pull/3067
+    pyproject_file = os.path.join(os.getcwd(), "pyproject.toml")
+    try:
+        with open(pyproject_file, "rb") as f:
+            pyproject = tomllib.load(f)
+        return "project" in pyproject or "setuptools" in pyproject.get("tool", {})
+    except FileNotFoundError:
+        return False
+
+
 # pylint:disable=too-many-locals, too-many-branches
 def setup(
     *,
@@ -674,18 +688,6 @@ def setup(
     )
 
     original_manifestin_data_files = []
-
-    def get_default_include_package_data() -> bool:
-        # Include package data if pyproject.toml contains the project or tool.setuptools table.
-        # https://setuptools.pypa.io/en/latest/history.html#id255
-        # https://github.com/pypa/setuptools/pull/3067
-        pyproject_file = os.path.join(os.getcwd(), "pyproject.toml")
-        if os.path.isfile(pyproject_file):
-            with open(pyproject_file) as f:
-                text = f.read()
-                if "[project]" in text or "[tool.setuptools]" in text:
-                    return True
-        return False
 
     if kw.get("include_package_data", get_default_include_package_data()):
         original_manifestin_data_files = parse_manifestin(os.path.join(os.getcwd(), "MANIFEST.in"))
