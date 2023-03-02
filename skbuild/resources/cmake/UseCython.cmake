@@ -204,15 +204,15 @@ function(add_cython_target _name)
   set(c_header_dependencies "")
 
   # Get the include directories.
-  get_source_file_property(pyx_location ${_source_file} LOCATION)
-  get_filename_component(pyx_path ${pyx_location} PATH)
   get_directory_property(cmake_include_directories
-                         DIRECTORY ${pyx_path}
+                         DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
                          INCLUDE_DIRECTORIES)
   list(APPEND cython_include_directories ${cmake_include_directories})
 
   # Determine dependencies.
   # Add the pxd file with the same basename as the given pyx file.
+  get_source_file_property(pyx_location ${_source_file} LOCATION)
+  get_filename_component(pyx_path ${pyx_location} PATH)
   get_filename_component(pyx_file_basename ${_source_file} NAME_WE)
   unset(corresponding_pxd_file CACHE)
   find_file(corresponding_pxd_file ${pyx_file_basename}.pxd
