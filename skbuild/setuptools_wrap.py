@@ -585,8 +585,8 @@ def setup(
                     CMAKE_BIN_DIR,  # pylint: disable=import-outside-toplevel
                 )
 
-                for executable in ("cmake", "cpack", "ctest"):
-                    executable = os.path.join(CMAKE_BIN_DIR, executable)
+                for executable_name in ("cmake", "cpack", "ctest"):
+                    executable = os.path.join(CMAKE_BIN_DIR, executable_name)
                     if platform.system().lower() == "windows":
                         executable += ".exe"
                     st = os.stat(executable)
@@ -685,10 +685,10 @@ def setup(
         # Copy packages
         for package, package_file_list in package_data.items():
             for package_file in package_file_list:
-                package_file = os.path.join(package_dir[package], package_file)
-                cmake_file = os.path.join(CMAKE_INSTALL_DIR(), package_file)
+                package_path = os.path.join(package_dir[package], package_file)
+                cmake_file = os.path.join(CMAKE_INSTALL_DIR(), package_path)
                 if os.path.exists(cmake_file):
-                    _copy_file(cmake_file, package_file, hide_listing)
+                    _copy_file(cmake_file, package_path, hide_listing)
 
         # Copy modules
         for py_module in py_modules:
@@ -806,10 +806,10 @@ def _classify_installed_files(
             raise SKBuildInvalidFileInstallationError(msg)
 
         # peel off the 'skbuild' prefix
-        path = to_unix_path(os.path.relpath(path, CMAKE_INSTALL_DIR()))
+        unix_path = to_unix_path(os.path.relpath(path, CMAKE_INSTALL_DIR()))
 
         _classify_file(
-            path, package_data, package_prefixes, py_modules, new_py_modules, scripts, new_scripts, data_files
+            unix_path, package_data, package_prefixes, py_modules, new_py_modules, scripts, new_scripts, data_files
         )
 
 
