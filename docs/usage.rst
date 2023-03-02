@@ -115,7 +115,9 @@ be placed in ``setup.cfg`` as normal.
 
 - ``include_package_data``: If set to ``True``, this tells setuptools to automatically include any data files it finds
   inside your package directories that are specified by your ``MANIFEST.in`` file. For more information, see the setuptools
-  documentation section on `Including Data Files`_.
+  documentation section on `Including Data Files`_. scikit-build matches
+  `the setuptools behavior <https://setuptools.pypa.io/en/latest/history.html#id255>`__ of defaulting this parameter to
+  ``True`` if a pyproject.toml file exists and contains either the ``project`` or ``tool.setuptools`` table.
 
 - ``package_data``: A dictionary mapping package names to lists of glob patterns. For a complete description and examples,
   see the setuptools documentation section on `Including Data Files`_.
@@ -137,7 +139,9 @@ be placed in ``setup.cfg`` as normal.
 - ``entry_points``: A dictionary mapping entry point group names to strings or lists of strings defining the entry points.
   Entry points are used to support dynamic discovery of services or plugins provided by a project.
   See `Dynamic Discovery of Services and Plugins`_ for details and examples of the format of this argument. In addition,
-  this keyword is used to support `Automatic Script Creation`_.
+  this keyword is used to support `Automatic Script Creation`_. Note that if using ``pyproject.toml`` for configuration,
+  the requirement to put ``entry_points`` in ``setup.py`` also requires that the ``project`` section include ``entry_points``
+  in the ``dynamic`` section.
 
 - ``scripts``: List of python script relative paths. If the first line of the script starts with ``#!`` and contains the
   word ``python``, the Distutils will adjust the first line to refer to the current interpreter location.
