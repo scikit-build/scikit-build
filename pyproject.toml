@@ -56,10 +56,8 @@ test = [
     'cython>=0.25.1',
     'importlib-metadata;python_version<"3.8"',
     'pytest-mock>=1.10.4',
-    'pytest-virtualenv>=1.2.5',
     'pytest>=6.0.0',
     'requests',
-    'virtualenv',
 ]
 
 [project.urls]
