@@ -112,12 +112,18 @@ line-length = 120
 
 
 [tool.mypy]
-files = ["skbuild"]
+files = ["skbuild", "tests"]
 python_version = "3.7"
 warn_unused_configs = true
 show_error_codes = true
 enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
 strict = true
+disallow_untyped_defs = false
+exclude = ["tests/samples"]
+
+[[tool.mypy.overrides]]
+module = ["skbuild.*"]
+disallow_untyped_defs = true
 
 [[tool.mypy.overrides]]
 module = [
@@ -175,6 +181,7 @@ filterwarnings = [
   'default:\s*Installing .* as data is deprecated:Warning',
   'default:shell/Perl-style subs.* are deprecated:DeprecationWarning',
   'default:subprocess .* is still running:ResourceWarning',
+  'ignore: pkg_resources is deprecated as an API:DeprecationWarning',
 ]
 log_cli_level = "info"
 markers = [
