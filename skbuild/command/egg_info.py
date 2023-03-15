@@ -30,7 +30,7 @@ class egg_info(set_build_base_mixin, _egg_info):
                     egg_base = egg_base[len(cmake_install_dir) + 1 :]
                 if package_name and egg_base.endswith(package_name):
                     egg_base = egg_base[: -len(package_name) - 1]
-                if egg_base == "":
+                if not egg_base:
                     egg_base = "."
                 # pylint:disable=attribute-defined-outside-init
                 self.egg_base = egg_base
