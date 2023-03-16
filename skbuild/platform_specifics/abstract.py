@@ -214,9 +214,9 @@ class CMakePlatform:
         def _generator_discovery_status_msg(_generator: CMakeGenerator, suffix: str = "") -> None:
             outer = "-" * 80
             inner = ["-" * ((idx * 5) - 3) for idx in range(1, 8)]
-            print(outer if suffix == "" else "\n".join(inner))
+            print("\n".join(inner) if suffix else outer)
             print(f"-- Trying {_generator.description!r} generator{suffix}")
-            print(outer if suffix != "" else "\n".join(inner[::-1]), flush=True)
+            print(outer if suffix else "\n".join(inner[::-1]), flush=True)
 
         for generator in candidate_generators:
             print("\n", flush=True)

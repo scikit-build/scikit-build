@@ -147,7 +147,7 @@ def test_platform_windows_find_visual_studio(vs_year, capsys):
             print(f"\nFound VS {vs_year} @ {vs_path}")
         assert os.path.exists(vs_path)
     else:
-        assert vs_path == ""
+        assert not vs_path
 
 
 @pytest.mark.skipif(sys.platform != "win32", reason="Requires Windows")

@@ -142,7 +142,7 @@ class PythonModuleFinder(distutils_build_py):
         Doing so will ensure modules can also be found in other location
         (e.g ``skbuild.constants.CMAKE_INSTALL_DIR``).
         """
-        if package_dir != "" and not os.path.exists(package_dir) and self.alternative_build_base is not None:
+        if package_dir and not os.path.exists(package_dir) and self.alternative_build_base is not None:
             package_dir = os.path.join(self.alternative_build_base, package_dir)
 
         modules: Iterable[tuple[str, str, str]] = super().find_package_modules(package, package_dir)  # type: ignore[no-untyped-call]
