@@ -205,7 +205,7 @@ def _parse_setuptools_arguments(
 
     # Update class attribute to also ensure the argument is processed
     # when ``setuptools.setup`` is called.
-    upstream_Distribution.global_options.extend(  # type: ignore[attr-defined]
+    upstream_Distribution.global_options.extend(
         [
             ("hide-listing", None, "do not display list of files being included in the distribution"),
             ("force-cmake", None, "always run CMake"),
@@ -222,7 +222,7 @@ def _parse_setuptools_arguments(
     # SystemExit to suppress tracebacks.
 
     with _capture_output():
-        result = dist.parse_command_line()  # type: ignore[attr-defined]
+        result = dist.parse_command_line()  # type: ignore[no-untyped-call]
         display_only = not result
         if not hasattr(dist, "hide_listing"):
             dist.hide_listing = False  # type: ignore[attr-defined]
@@ -232,7 +232,7 @@ def _parse_setuptools_arguments(
             dist.skip_cmake = False  # type: ignore[attr-defined]
 
     plat_names = set()
-    for cmd in [dist.get_command_obj(command) for command in dist.commands]:  # type: ignore[attr-defined]
+    for cmd in [dist.get_command_obj(command) for command in dist.commands]:
         plat_name = getattr(cmd, "plat_name", None)
         if plat_name is not None:
             plat_names.add(plat_name)
@@ -250,7 +250,7 @@ def _parse_setuptools_arguments(
     return (
         display_only,
         dist.help_commands,  # type: ignore[attr-defined]
-        dist.commands,  # type: ignore[attr-defined]
+        dist.commands,
         dist.hide_listing,  # type: ignore[attr-defined]
         dist.force_cmake,  # type: ignore[attr-defined]
         dist.skip_cmake,  # type: ignore[attr-defined]
@@ -590,7 +590,7 @@ def setup(
         if Requirement(package).name == "cmake":
             setup_requires = [package]
             dist = upstream_Distribution({"setup_requires": setup_requires})
-            dist.fetch_build_eggs(setup_requires)  # type: ignore[no-untyped-call]
+            dist.fetch_build_eggs(setup_requires)
 
             with contextlib.suppress(ImportError):
                 # Considering packages associated with "setup_requires" keyword are

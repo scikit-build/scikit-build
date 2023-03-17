@@ -30,7 +30,7 @@ class sdist(set_build_base_mixin, _sdist):
     ) -> str:
         """Handle --hide-listing option."""
         logger.info("creating '%s' %s archive and adding '%s' to it", base_name, _format, base_dir)
-        with distribution_hide_listing(self.distribution):  # type: ignore[attr-defined]
+        with distribution_hide_listing(self.distribution):
             return super().make_archive(base_name, _format, root_dir, base_dir, owner, group)
 
     def run(self, *args: object, **kwargs: object) -> None:
