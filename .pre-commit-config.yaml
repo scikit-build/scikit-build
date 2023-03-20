@@ -74,4 +74,4 @@ repos:
     - pytest
     - tomli
     - types-requests
-    - types-setuptools
+    - types-setuptools>=67.6.0.5
