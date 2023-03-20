@@ -5,6 +5,7 @@ from __future__ import annotations
 import contextlib
 import logging
 import os
+import typing
 from contextlib import contextmanager
 from typing import Any, Iterable, Iterator, Mapping, NamedTuple, Sequence, TypeVar
 
@@ -15,6 +16,9 @@ from distutils.text_file import TextFile
 
 from .._compat.typing import Protocol
 
+if typing.TYPE_CHECKING:
+    import setuptools._distutils.dist
+
 
 class CommonLog(Protocol):
     def info(self, __msg: str, *args: object) -> None:
@@ -24,7 +28,7 @@ class CommonLog(Protocol):
 logger: CommonLog
 
 try:
-    import setuptools.logging  # noqa: F401
+    import setuptools.logging
 
     skb_log = logging.getLogger("skbuild")
     skb_log.setLevel(logging.INFO)
@@ -186,7 +190,9 @@ def to_unix_path(path: OptStr) -> OptStr:
 
 
 @contextmanager
-def distribution_hide_listing(distribution: Distribution) -> Iterator[bool | int]:
+def distribution_hide_listing(
+    distribution: setuptools._distutils.dist.Distribution | Distribution,
+) -> Iterator[bool | int]:
     """Given a ``distribution``, this context manager temporarily
     sets distutils threshold to WARN if ``--hide-listing`` argument
     was provided.
@@ -194,7 +200,7 @@ def distribution_hide_listing(distribution: Distribution) -> Iterator[bool | int
     It yields True if ``--hide-listing`` argument was provided.
     """
 
-    hide_listing = hasattr(distribution, "hide_listing") and distribution.hide_listing  # type: ignore[attr-defined]
+    hide_listing = getattr(distribution, "hide_listing", False)
     wheel_log = logging.getLogger("wheel")
     root_log = logging.getLogger()  # setuptools 65.6+ needs this hidden too
     if logging_module:

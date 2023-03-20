@@ -22,7 +22,7 @@ class build_ext(set_build_base_mixin, _build_ext):
         """
         build_py = self.get_finalized_command("build_py")
         for ext in self.extensions:
-            fullname: str = self.get_ext_fullname(ext.name)  # type: ignore[no-untyped-call]
+            fullname: str = self.get_ext_fullname(ext.name)
             filename: str = self.get_ext_filename(fullname)  # type: ignore[no-untyped-call]
             modpath = fullname.split(".")
             package = ".".join(modpath[:-1])
