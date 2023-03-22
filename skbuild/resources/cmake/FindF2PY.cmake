@@ -93,7 +93,9 @@ add_library(_f2py_runtime_library STATIC ${_f2py_sources})
 target_include_directories(
   _f2py_runtime_library
   PRIVATE ${PYTHON_INCLUDE_DIRS} ${NumPy_INCLUDE_DIRS}
-)
+  )
+
+set_target_properties(_f2py_runtime_library PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 set(F2PY_LIBRARIES _f2py_runtime_library)
 set(F2PY_INCLUDE_DIRS "${F2PY_INCLUDE_DIR}" "${NumPy_INCLUDE_DIRS}")
