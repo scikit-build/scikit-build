@@ -1,11 +1,13 @@
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v4.1.0
+  rev: "v4.4.0"
   hooks:
   - id: check-added-large-files
   - id: check-case-conflict
   - id: check-merge-conflict
+#  - id: check-docstring-first
   - id: check-symlinks
+  - id: check-toml
   - id: check-yaml
   - id: debug-statements
   - id: end-of-file-fixer
@@ -13,20 +15,63 @@ repos:
   - id: requirements-txt-fixer
   - id: trailing-whitespace
 
-- repo: https://github.com/asottile/pyupgrade
-  rev: v2.29.1
+- repo: https://github.com/sirosen/texthooks
+  rev: "0.5.0"
   hooks:
-  - id: pyupgrade
+  - id: fix-ligatures
+  - id: fix-smartquotes
 
-- repo: https://github.com/PyCQA/flake8
-  rev: 4.0.1
+- repo: https://github.com/psf/black
+  rev: "23.1.0" # Keep in sync with blacken-docs
   hooks:
-  - id: flake8
-    additional_dependencies: [flake8-bugbear]
+  - id: black
+    exclude: ^docs/conf\.py$
+
+- repo: https://github.com/asottile/blacken-docs
+  rev: 1.13.0
+  hooks:
+  - id: "blacken-docs"
+    additional_dependencies:
+    - black==23.1.0 # keep in sync with black hook
+
+- repo: https://github.com/charliermarsh/ruff-pre-commit
+  rev: v0.0.256
+  hooks:
+  - id: ruff
+    args: ["--fix", "--show-fixes"]
 
 - repo: https://github.com/codespell-project/codespell
-  rev: v2.1.0
+  rev: "v2.2.4"
   hooks:
   - id: codespell
-    exclude: "(^.git|^.pylintrc|.png|.svg|^_version.py|^versioneer.py)$"
+    exclude: "(.png|.svg|^_version.py)$"
     args: ["-L", "ba,endwhile,unparseable"]
+
+- repo: https://github.com/pre-commit/pygrep-hooks
+  rev: "v1.10.0"
+  hooks:
+  - id: rst-backticks
+  - id: rst-directive-colons
+  - id: rst-inline-touching-normal
+
+- repo: https://github.com/mgedmin/check-manifest
+  rev: "0.49"
+  hooks:
+  - id: check-manifest
+    stages: [manual]
+    additional_dependencies: ["setuptools_scm[toml]"]
+
+- repo: https://github.com/pre-commit/mirrors-mypy
+  rev: "v1.1.1"
+  hooks:
+  - id: mypy
+    files: ^(skbuild)  # TODO: add |tests
+    exclude: ^tests/samples
+    additional_dependencies:
+    - cmake
+    - ninja
+    - packaging
+    - pytest
+    - tomli
+    - types-requests
+    - types-setuptools>=67.6.0.5

@@ -1,12 +1,14 @@
 """This module defines objects useful to discover which CMake generator is
 supported on the current platform."""
 
-from __future__ import print_function
+
+from __future__ import annotations
 
 import os
 import shutil
 import subprocess
 import textwrap
+from typing import Iterable, Mapping
 
 from ..constants import CMAKE_DEFAULT_EXECUTABLE
 from ..exceptions import SKBuildGeneratorNotFoundError
@@ -15,49 +17,62 @@ from ..utils import push_dir
 test_folder = "_cmake_test_compile"
 
 
-class CMakePlatform(object):
+class CMakePlatform:
     """This class encapsulates the logic allowing to get the identifier of a
     working CMake generator.
 
     Derived class should at least set :attr:`default_generators`.
     """
-    def __init__(self):
-        self._default_generators = []
-        self.architecture = None
+
+    def __init__(self) -> None:
+        # default_generators is a property for mocking in tests
+        self._default_generators: list[CMakeGenerator] = []
+        self.architecture: str | None = None
 
     @property
-    def default_generators(self):
+    def default_generators(self) -> list[CMakeGenerator]:
         """List of generators considered by :func:`get_best_generator()`."""
         return self._default_generators
 
     @default_generators.setter
-    def default_generators(self, generators):
+    def default_generators(self, generators: list[CMakeGenerator]) -> None:
         self._default_generators = generators
 
     @property
-    def generator_installation_help(self):
+    def generator_installation_help(self) -> str:
         """Return message guiding the user for installing a valid toolchain."""
         raise NotImplementedError  # pragma: no cover
 
     @staticmethod
-    def write_test_cmakelist(languages):
+    def write_test_cmakelist(languages: Iterable[str]) -> None:
         """Write a minimal ``CMakeLists.txt`` useful to check if the
         requested ``languages`` are supported."""
         if not os.path.exists(test_folder):
             os.makedirs(test_folder)
-        with open("{:s}/{:s}".format(test_folder, "CMakeLists.txt"), "w") as f:
+        with open(f"{test_folder}/CMakeLists.txt", "w", encoding="utf-8") as f:
             f.write("cmake_minimum_required(VERSION 2.8.12)\n")
             f.write("PROJECT(compiler_test NONE)\n")
             for language in languages:
-                f.write("ENABLE_LANGUAGE({:s})\n".format(language))
+                f.write(f"ENABLE_LANGUAGE({language:s})\n")
+            f.write(
+                'if("${_SKBUILD_FORCE_MSVC}")\n'
+                '  math(EXPR FORCE_MAX "${_SKBUILD_FORCE_MSVC}+9")\n'
+                '  math(EXPR FORCE_MIN "${_SKBUILD_FORCE_MSVC}")\n'
+                "  if(NOT MSVC)\n"
+                '    message(FATAL_ERROR "MSVC is required to pass this check.")\n'
+                "  elseif(MSVC_VERSION LESS FORCE_MIN OR MSVC_VERSION GREATER FORCE_MAX)\n"
+                '    message(FATAL_ERROR "MSVC ${MSVC_VERSION} does pass this check.")\n'
+                "  endif()\n"
+                "endif()\n"
+            )
 
     @staticmethod
-    def cleanup_test():
+    def cleanup_test() -> None:
         """Delete test project directory."""
         if os.path.exists(test_folder):
             shutil.rmtree(test_folder)
 
-    def get_generator(self, generator_name):
+    def get_generator(self, generator_name: str) -> CMakeGenerator:
         """Loop over generators and return the first that matches the given
         name.
         """
@@ -67,19 +82,26 @@ class CMakePlatform(object):
 
         return CMakeGenerator(generator_name)
 
-    def get_generators(self, generator_name):
-        """Loop over generators and return all that match the given name.
-        """
-        return [default_generator
-                for default_generator in self.default_generators
-                if default_generator.name == generator_name]
+    def get_generators(self, generator_name: str) -> list[CMakeGenerator]:
+        """Loop over generators and return all that match the given name."""
+        return [
+            default_generator
+            for default_generator in self.default_generators
+            if default_generator.name == generator_name
+        ]
 
     # TODO: this method name is not great.  Does anyone have a better idea for
     # renaming it?
     def get_best_generator(
-            self, generator_name=None, skip_generator_test=False,
-            languages=("CXX", "C"), cleanup=True,
-            cmake_executable=CMAKE_DEFAULT_EXECUTABLE, cmake_args=(), architecture=None):
+        self,
+        generator_name: str | None = None,
+        skip_generator_test: bool = False,
+        languages: Iterable[str] = ("CXX", "C"),
+        cleanup: bool = True,
+        cmake_executable: str = CMAKE_DEFAULT_EXECUTABLE,
+        cmake_args: Iterable[str] = (),
+        architecture: str | None = None,
+    ) -> CMakeGenerator:
         """Loop over generators to find one that works by configuring
         and compiling a test project.
 
@@ -115,7 +137,7 @@ class CMakePlatform(object):
         :raises skbuild.exceptions.SKBuildGeneratorNotFoundError:
         """
 
-        candidate_generators = []
+        candidate_generators: list[CMakeGenerator] = []
 
         if generator_name is None:
             candidate_generators = self.default_generators
@@ -140,24 +162,26 @@ class CMakePlatform(object):
 
         self.write_test_cmakelist(languages)
 
+        working_generator: CMakeGenerator | None
         if skip_generator_test:
             working_generator = candidate_generators[0]
         else:
-            working_generator = self.compile_test_cmakelist(
-                cmake_executable, candidate_generators, cmake_args)
+            working_generator = self.compile_test_cmakelist(cmake_executable, candidate_generators, cmake_args)
 
         if working_generator is None:
-            raise SKBuildGeneratorNotFoundError(textwrap.dedent(
-                """
+            raise SKBuildGeneratorNotFoundError(
+                textwrap.dedent(
+                    """
                 {line}
                 scikit-build could not get a working generator for your system. Aborting build.
 
                 {installation_help}
 
                 {line}
-                """).strip().format(  # noqa: E501
-                    line="*"*80,
-                    installation_help=self.generator_installation_help)
+                """
+                )
+                .strip()
+                .format(line="*" * 80, installation_help=self.generator_installation_help)
             )
 
         if cleanup:
@@ -168,7 +192,8 @@ class CMakePlatform(object):
     @staticmethod
     @push_dir(directory=test_folder)
     def compile_test_cmakelist(
-            cmake_exe_path, candidate_generators, cmake_args=()):
+        cmake_exe_path: str, candidate_generators: Iterable[CMakeGenerator], cmake_args: Iterable[str] = ()
+    ) -> CMakeGenerator | None:
         """Attempt to configure the test project with
         each :class:`CMakeGenerator` from ``candidate_generators``.
 
@@ -186,36 +211,37 @@ class CMakePlatform(object):
         # Do not complain about unused CMake arguments
         cmake_args.insert(0, "--no-warn-unused-cli")
 
-        def _generator_discovery_status_msg(_generator, suffix=""):
+        def _generator_discovery_status_msg(_generator: CMakeGenerator, suffix: str = "") -> None:
             outer = "-" * 80
             inner = ["-" * ((idx * 5) - 3) for idx in range(1, 8)]
-            print(outer if suffix == "" else "\n".join(inner))
-            print("-- Trying \"{}\" generator{}".format(_generator.description, suffix))
-            print(outer if suffix != "" else "\n".join(inner[::-1]))
+            print("\n".join(inner) if suffix else outer)
+            print(f"-- Trying {_generator.description!r} generator{suffix}")
+            print(outer if suffix else "\n".join(inner[::-1]), flush=True)
 
         for generator in candidate_generators:
-            print("\n")
+            print("\n", flush=True)
             _generator_discovery_status_msg(generator)
 
             # clear the cache for each attempted generator type
-            if os.path.isdir('build'):
-                shutil.rmtree('build')
+            if os.path.isdir("build"):
+                shutil.rmtree("build")
 
-            with push_dir('build', make_directory=True):
+            with push_dir("build", make_directory=True):
                 # call cmake to see if the compiler specified by this
                 # generator works for the specified languages
-                cmd = [cmake_exe_path, '../', '-G', generator.name]
+                cmd = [cmake_exe_path, "../", "-G", generator.name]
                 if generator.toolset:
-                    cmd.extend(['-T', generator.toolset])
-                if generator.architecture:
-                    cmd.extend(['-A', generator.architecture])
+                    cmd.extend(["-T", generator.toolset])
+                if generator.architecture and "Visual Studio" in generator.name:
+                    cmd.extend(["-A", generator.architecture])
                 cmd.extend(cmake_args)
+                cmd.extend(generator.args)
 
-                status = subprocess.call(cmd, env=generator.env)
+                status = subprocess.run(cmd, env=generator.env, check=False).returncode
 
-            _generator_discovery_status_msg(
-                generator, " - %s" % ("success" if status == 0 else "failure"))
-            print("")
+            msg = "success" if status == 0 else "failure"
+            _generator_discovery_status_msg(generator, f" - {msg}")
+            print(flush=True)
 
             # cmake succeeded, this generator should work
             if status == 0:
@@ -226,13 +252,20 @@ class CMakePlatform(object):
         return working_generator
 
 
-class CMakeGenerator(object):
+class CMakeGenerator:
     """Represents a CMake generator.
 
     .. automethod:: __init__
     """
 
-    def __init__(self, name, env=None, toolset=None, arch=None):
+    def __init__(
+        self,
+        name: str,
+        env: Mapping[str, str] | None = None,
+        toolset: str | None = None,
+        arch: str | None = None,
+        args: Iterable[str] | None = None,
+    ) -> None:
         """Instantiate a generator object with the given ``name``.
 
         By default, ``os.environ`` is associated with the generator. Dictionary
@@ -241,45 +274,41 @@ class CMakeGenerator(object):
         variable in ``env`` is used.
 
         Some CMake generators support a ``toolset`` specification to tell the native
-        build system how to choose a compiler.
+        build system how to choose a compiler. You can also include CMake arguments.
         """
         self._generator_name = name
-        self.env = dict(
-            list(os.environ.items()) + list(env.items() if env else []))
+        self.args = list(args or [])
+        self.env = dict(list(os.environ.items()) + list(env.items() if env else []))
         self._generator_toolset = toolset
         self._generator_architecture = arch
-        if arch is None:
-            description_arch = name
-        else:
-            description_arch = "{} {}".format(name, arch)
+        description_arch = name if arch is None else f"{name} {arch}"
         if toolset is None:
             self._description = description_arch
         else:
-            self._description = "{} {}".format(description_arch, toolset)
+            self._description = f"{description_arch} {toolset}"
 
     @property
-    def name(self):
+    def name(self) -> str:
         """Name of CMake generator."""
         return self._generator_name
 
     @property
-    def toolset(self):
+    def toolset(self) -> str | None:
         """Toolset specification associated with the CMake generator."""
         return self._generator_toolset
 
     @property
-    def architecture(self):
+    def architecture(self) -> str | None:
         """Architecture associated with the CMake generator."""
         return self._generator_architecture
 
     @property
-    def description(self):
+    def description(self) -> str:
         """Name of CMake generator with properties describing the environment (e.g toolset)"""
         return self._description
 
 
-def _parse_legacy_generator_name(generator_name, arch):
-    # type: (str, str | None) -> tuple[str, str | None]
+def _parse_legacy_generator_name(generator_name: str, arch: str | None) -> tuple[str, str | None]:
     """
     Support classic names for MSVC generators. Architecture is stripped from
     the name and "arch" is replaced with the arch string if a legacy name is

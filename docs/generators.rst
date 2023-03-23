@@ -37,8 +37,8 @@ their usual distribution mechanisms for each operating systems.
 Build system generator
 ----------------------
 
-Since scikit-build simply provides glue between `setuptools`
-and `CMake`, it needs to choose a `CMake generator`_ to configure the build
+Since scikit-build simply provides glue between ``setuptools``
+and ``CMake``, it needs to choose a `CMake generator`_ to configure the build
 system allowing to build of CPython C extensions.
 
 .. _CMake generator: https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html
@@ -123,15 +123,9 @@ Visual Studio IDE
     +-------------------+------------------------+-----------------------------+
     | CPython Version   | x86 (32-bit)           | x64 (64-bit)                |
     +===================+========================+=============================+
-    | **3.6 and above** | Visual Studio 16 2019  | Visual Studio 16 2019 Win64 |
+    | **3.7 and above** | Visual Studio 17 2022  | Visual Studio 17 2022 Win64 |
+    |                   | Visual Studio 16 2019  | Visual Studio 16 2019 Win64 |
     |                   | Visual Studio 15 2017  | Visual Studio 15 2017 Win64 |
-    +-------------------+------------------------+-----------------------------+
-    | **3.5**           | Visual Studio 15 2017  | Visual Studio 15 2017 Win64 |
-    |                   | Visual Studio 14 2015  | Visual Studio 14 2015 Win64 |
-    +-------------------+------------------------+-----------------------------+
-    | **3.3 to 3.4**    | Visual Studio 10 2010  | Visual Studio 10 2010 Win64 |
-    +-------------------+------------------------+-----------------------------+
-    | **2.7 to 3.2**    | Visual Studio 9 2008   | Visual Studio 9 2008 Win64  |
     +-------------------+------------------------+-----------------------------+
 
 
@@ -190,7 +184,7 @@ Default Deployment Target and Architecture
 The default deployment target and architecture selected by scikit-build are
 hard-coded for MacOSX and are respectively ``10.9`` and ``x86_64``.
 
-This means that the platform name associated with the `bdist_wheel`
+This means that the platform name associated with the ``bdist_wheel``
 command is::
 
     macosx-10.9-x86_64
@@ -210,33 +204,23 @@ the project are the following::
 .. _CMAKE_OSX_ARCHITECTURES: https://cmake.org/cmake/help/latest/variable/CMAKE_OSX_ARCHITECTURES.html
 
 As illustrated in the table below, choosing ``10.9`` as deployment target to build
-MacOSX wheels will allow them to work on `System CPython`, the `Official CPython`,
-`Macports` and also `Homebrew` installations of CPython.
+MacOSX wheels will allow them to work on ``System CPython``, the ``Official CPython``,
+``Macports`` and also ``Homebrew`` installations of CPython.
 
 .. table:: List of platform names for each CPython distributions, CPython and OSX versions.
 
     +----------------------+-------------------------+--------------+--------------------------------+
     | CPython Distribution | CPython Version         | OSX Version  | ``get_platform()`` [#getplat]_ |
     +======================+=========================+==============+================================+
-    | Official CPython     | 3.10                    | 10.13        | macosx-10.9-universal2         |
+    | Official CPython     | 3.9, 3.10               | 10.9         | macosx-10.9-universal2         |
     |                      +-------------------------+--------------+--------------------------------+
-    |                      | 3.8, 3.9                | 10.13        | macosx-10.9-x86_64             |
+    |                      | 3.8                     | 11           | macosx-11.0-universal2         |
     |                      +-------------------------+--------------+--------------------------------+
-    |                      | 3.7, 3.6, 3.5, 3.4, 2.7 | 10.12        | macosx-10.6-intel              |
-    |                      +-------------------------+--------------+                                |
-    |                      | 3.4, 2.7                | 10.9         |                                |
-    |                      +-------------------------+--------------+                                |
-    |                      | 2.7                     | 10.7         |                                |
+    |                      | 3.7, 3.8, 3.9, 3.10     | 10.9         | macosx-10.9-x86_64             |
     +----------------------+-------------------------+--------------+--------------------------------+
-    | System CPython       | 2.7                     | 10.12        | macosx-10.12-intel             |
-    |                      |                         +--------------+--------------------------------+
-    |                      |                         | 10.9         | macosx-10.9-intel              |
-    |                      |                         +--------------+--------------------------------+
-    |                      |                         | 10.7         | macosx-10.7-intel              |
-    +----------------------+-------------------------+--------------+--------------------------------+
-    | Macports CPython     | 2.7                     | 10.9         | macosx-10.9-x86_64             |
-    +----------------------+-------------------------+--------------+                                |
-    | Homebrew CPython     | 2.7                     | 10.9         |                                |
+    | Macports CPython     | 3.x                     | Current      | Depends on current macOS       |
+    +----------------------+-------------------------+--------------+ version.                       |
+    | Homebrew CPython     | 3.x                     | Current      |                                |
     +----------------------+-------------------------+--------------+--------------------------------+
 
 
@@ -275,13 +259,13 @@ Customizing Deployment Target and Architecture
 
 .. versionadded:: 0.11.0
 
-Deployment target can be customized by setting the `MACOSX_DEPLOYMENT_TARGET`
+Deployment target can be customized by setting the ``MACOSX_DEPLOYMENT_TARGET``
 environment variable.
 
 .. versionadded:: 0.7.0
 
 Deployment target and architecture can be customized by associating the
-``--plat-name macosx-<deployment_target>-<arch>`` option with the `bdist_wheel`
+``--plat-name macosx-<deployment_target>-<arch>`` option with the ``bdist_wheel``
 command.
 
 For example::
@@ -331,18 +315,16 @@ which Microsoft C run-time and compiler are used:
 
 .. table::
 
-    +---------------------------+----------------+-----------------+-----------------+
-    | Python version            | 2.7 to 3.2     | 3.3 to 3.4      | 3.5 and above   |
-    +===========================+================+=================+=================+
-    | **Microsoft C run-time**  | `msvcr90.dll`_ | `msvcr100.dll`_ | `ucrtbase.dll`_ |
-    +---------------------------+----------------+-----------------+-----------------+
-    | **Compiler version**      | MSVC++ 9.0     | MSVC++ 10.0     | MSVC++ 14.0     |
-    +---------------------------+----------------+-----------------+-----------------+
-    | **Visual Studio version** | 2008           | 2010            | 2015            |
-    +---------------------------+----------------+-----------------+-----------------+
+    +---------------------------+-----------------+
+    | Python version            | 3.7 and above   |
+    +===========================+=================+
+    | **Microsoft C run-time**  | `ucrtbase.dll`_ |
+    +---------------------------+-----------------+
+    | **Compiler version**      | MSVC++ 14.0     |
+    +---------------------------+-----------------+
+    | **Visual Studio version** | 2017            |
+    +---------------------------+-----------------+
 
-.. _msvcr90.dll: https://msdn.microsoft.com/en-us/library/abx4dbyh(v=vs.90).aspx
-.. _msvcr100.dll: https://msdn.microsoft.com/en-us/library/abx4dbyh(v=vs.100).aspx
 .. _ucrtbase.dll: https://msdn.microsoft.com/en-us/library/abx4dbyh(v=vs.140).aspx
 
 Installing compiler and Microsoft C run-time
@@ -365,33 +347,27 @@ this next table references links for installing alternative environments:
     +-------------------+-------------------------------------------------+
     | CPython version   | Download links for Windows SDK or Visual Studio |
     +===================+=================================================+
-    | **3.5 and above** | - `Visual C++ Build Tools 2015`_                |
+    | **3.7 and above** | - `Visual C++ Build Tools`_                     |
     |                   |                                                 |
     |                   | or                                              |
     |                   |                                                 |
-    |                   | - `Visual Studio 2015`_                         |
-    +-------------------+-------------------------------------------------+
-    | **3.3 to 3.4**    | `Windows SDK for Windows 7 and .NET 4.0`_       |
-    +-------------------+-------------------------------------------------+
-    | **2.7 to 3.2**    | `Microsoft Visual C++ Compiler for Python 2.7`_ |
+    |                   | - `Visual Studio`_  (2017 or newer)             |
     +-------------------+-------------------------------------------------+
 
 These links have been copied from the great article [#alternativevs]_ of
 Steve Dower, engineer at Microsoft.
 
-.. _Visual C++ Build Tools 2015: http://go.microsoft.com/fwlink/?LinkId=691126
-.. _Visual Studio 2015: https://visualstudio.com/
+.. _Visual C++ Build Tools: https://visualstudio.microsoft.com/downloads/
+.. _Visual Studio: https://visualstudio.microsoft.com/downloads/
 .. _Windows SDK for Windows 7 and .NET 4.0: https://www.microsoft.com/download/details.aspx?id=8279
-.. _Microsoft Visual C++ Compiler for Python 2.7: http://aka.ms/vcpython27
 
 
 .. rubric:: Footnotes
 
 .. [#getplat] ``from distutils.util import get_platform; print(get_platform())``
 
-.. [#alternativevs] `How to deal with the pain of “unable to find vcvarsall.bat” <https://blogs.msdn.microsoft.com/pythonengineering/2016/04/11/unable-to-find-vcvarsall-bat/>`_
+.. [#alternativevs] `How to deal with the pain of "unable to find vcvarsall.bat" <https://blogs.msdn.microsoft.com/pythonengineering/2016/04/11/unable-to-find-vcvarsall-bat/>`_
 
 .. [#automaticvsenv] Implementation details: This is made possible by internally using the function ``query_vcvarsall``
-                     from the ``distutils.msvc9compiler`` (or ``distutils._msvccompiler`` when visual studio ``>= 2015``
-                     is used). To ensure, the environment associated with the latest compiler is properly detected, the
+                     from ``distutils._msvccompiler``. To ensure, the environment associated with the latest compiler is properly detected, the
                      ``distutils`` modules are systematically patched using ``setuptools.monkey.patch_for_msvc_specialized_compiler()``.

@@ -5,3 +5,4 @@ include src/hello/data/subdata/*.txt
 include src/hello2/data2/subdata2/*.txt
 
 exclude src/*/data*/subdata*/*_exclude_from_manifest.txt
+exclude MANIFEST.in

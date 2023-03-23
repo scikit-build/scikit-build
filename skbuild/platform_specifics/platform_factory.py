@@ -1,30 +1,43 @@
 """This modules implements the logic allowing to instantiate the expected
 :class:`.abstract.CMakePlatform`."""
 
+from __future__ import annotations
+
+# pylint: disable=import-outside-toplevel
 import platform
 
+from . import abstract
 
-def get_platform():
+
+def get_platform() -> abstract.CMakePlatform:
     """Return an instance of :class:`.abstract.CMakePlatform` corresponding
     to the current platform."""
     this_platform = platform.system().lower()
 
     if this_platform == "windows":
         from . import windows
+
         return windows.WindowsPlatform()
 
-    elif this_platform == "linux":
+    if this_platform == "linux":
         from . import linux
+
         return linux.LinuxPlatform()
 
-    elif this_platform == "darwin":
+    if this_platform.startswith("cygwin"):
+        from . import cygwin
+
+        return cygwin.CygwinPlatform()
+
+    if this_platform == "darwin":
         from . import osx
+
         return osx.OSXPlatform()
 
-    elif this_platform in {"freebsd", "os400", "openbsd"}:
+    if this_platform in {"freebsd", "os400", "openbsd"}:
         from . import bsd
+
         return bsd.BSDPlatform()
 
-    else:
-        raise RuntimeError("Unsupported platform: {:s}. Please contact "
-                           "the scikit-build team.".format(this_platform))
+    msg = f"Unsupported platform: {this_platform:s}. Please contact the scikit-build team."
+    raise RuntimeError(msg)

@@ -4,17 +4,23 @@ on:
   pull_request:
   push:
     branches:
-    - master
     - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FORCE_COLOR: "3"
 
 jobs:
   lint:
     name: Lint
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-python@v2
-    - uses: pre-commit/action@v2.0.3
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+    - uses: pre-commit/action@v3.0.0
 
   tests:
     runs-on: ${{ matrix.runs-on }}
@@ -22,110 +28,131 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runs-on: [ubuntu-latest, macos-latest, windows-2016, windows-latest]
+        runs-on: [ubuntu-20.04, macos-latest, windows-2019, windows-2022]
 
     name: Tests on ${{ matrix.runs-on }}
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 0
 
     - name: Set environment for available GHA MSVCs
-      if: runner.os == 'Windows'
+      if: matrix.runs-on == 'windows-2019'
+      shell: bash
       run: |
-        echo "SKBUILD_TEST_FIND_VS2008_INSTALLATION_EXPECTED=0" >> $GITHUB_ENV
-        echo "SKBUILD_TEST_FIND_VS2010_INSTALLATION_EXPECTED=0" >> $GITHUB_ENV
-        echo "SKBUILD_TEST_FIND_VS2012_INSTALLATION_EXPECTED=0" >> $GITHUB_ENV
-        echo "SKBUILD_TEST_FIND_VS2015_INSTALLATION_EXPECTED=1" >> $GITHUB_ENV
-        echo "SKBUILD_TEST_FIND_VS2017_INSTALLATION_EXPECTED=1" >> $GITHUB_ENV
-
-    - name: Set environment for available GHA MSVCs
-      if: matrix.runs-on == 'windows-2016'
-      run: |
-        echo "SKBUILD_TEST_FIND_VS2019_INSTALLATION_EXPECTED=0" >> $GITHUB_ENV
-
-    - name: Set environment for available GHA MSVCs
-      if: matrix.runs-on == 'windows-latest'
-      run: |
+        echo "SKBUILD_TEST_FIND_VS2017_INSTALLATION_EXPECTED=0" >> $GITHUB_ENV
         echo "SKBUILD_TEST_FIND_VS2019_INSTALLATION_EXPECTED=1" >> $GITHUB_ENV
+        echo "SKBUILD_TEST_FIND_VS2022_INSTALLATION_EXPECTED=0" >> $GITHUB_ENV
+
+    - name: Set environment for available GHA MSVCs
+      if: matrix.runs-on == 'windows-2022'
+      shell: bash
+      run: |
+        echo "SKBUILD_TEST_FIND_VS2017_INSTALLATION_EXPECTED=0" >> $GITHUB_ENV
+        echo "SKBUILD_TEST_FIND_VS2019_INSTALLATION_EXPECTED=0" >> $GITHUB_ENV
+        echo "SKBUILD_TEST_FIND_VS2022_INSTALLATION_EXPECTED=1" >> $GITHUB_ENV
 
     - name: Set environment for Fortran compiler on MacOS
       if: runner.os == 'macOS'
       run: echo "FC=gfortran-11" >> $GITHUB_ENV
 
     - name: Setup nox
-      uses: excitedleigh/setup-nox@v2.0.0
-
-    - name: Setup Python 3.10 dev
-      uses: actions/setup-python@v2
+      uses: wntrblm/nox@2022.11.21
       with:
-        python-version: 3.10-dev
+        python-versions: "3.7,3.8,3.9,3.10,3.11"
 
     # We check all Python's on Linux, because it's fast.
-    # We check Python 2.7 on Linux and macOS, it's not supported on Windows.
-    # We check minimum Python 3, and maximum Python 3 on all OS's.
+    # We check minimum Python and maximum Python on all OS's.
 
-    - name: Test on 🐍 2.7
-      if: runner.os != 'Windows'
-      run: nox --forcecolor -s tests-2.7
-    - name: Test on 🐍 3.5
-      if: matrix.runs-on != 'windows-latest'
-      run: nox --forcecolor -s tests-3.5
-    - name: Test on 🐍 3.6
-      if: runner.os == 'Linux'
-      run: nox --forcecolor -s tests-3.6
     - name: Test on 🐍 3.7
-      if: runner.os == 'Linux'
-      run: nox --forcecolor -s tests-3.7
+      run: nox -s tests-3.7
     - name: Test on 🐍 3.8
       if: runner.os == 'Linux'
-      run: nox --forcecolor -s tests-3.8
+      run: nox -s tests-3.8
     - name: Test on 🐍 3.9
-      run: nox --forcecolor -s tests-3.9
+      if: runner.os == 'Linux'
+      run: nox -s tests-3.9
     - name: Test on 🐍 3.10
-      run: nox --forcecolor -s tests-3.10
+      run: nox -s tests-3.10
+    - name: Test on 🐍 3.11
+      run: nox -s tests-3.11
 
-  # Split out due to a bug in our test suite requiring a clean run for Windows Ninja
-  tests-win-extra:
-    name: Tests on 🐍 3.5 • windows-latest
+  cygwin:
+    name: Tests on 🐍 3.9 • cygwin
     runs-on: windows-latest
     needs: [lint]
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 0
 
-    - name: Set environment for available GHA MSVCs
-      run: |
-        echo "SKBUILD_TEST_FIND_VS2008_INSTALLATION_EXPECTED=0" >> $GITHUB_ENV
-        echo "SKBUILD_TEST_FIND_VS2010_INSTALLATION_EXPECTED=0" >> $GITHUB_ENV
-        echo "SKBUILD_TEST_FIND_VS2012_INSTALLATION_EXPECTED=0" >> $GITHUB_ENV
-        echo "SKBUILD_TEST_FIND_VS2015_INSTALLATION_EXPECTED=1" >> $GITHUB_ENV
-        echo "SKBUILD_TEST_FIND_VS2017_INSTALLATION_EXPECTED=1" >> $GITHUB_ENV
-        echo "SKBUILD_TEST_FIND_VS2019_INSTALLATION_EXPECTED=1" >> $GITHUB_ENV
+    - uses: cygwin/cygwin-install-action@v3
+      with:
+        platform: x86_64
+        packages: cmake ninja git make gcc-g++ gcc-fortran python39 python39-devel python39-pip
+
+    - name: Install nox
+      run: python3.9 -m pip install nox
+
+    - name: Run tests
+      env:
+        TMP: /tmp
+        TEMP: /tmp
+      run: python3.9 -m nox -s tests-3.9
+
+
+  tests-pypy:
+    runs-on: ${{ matrix.runs-on }}
+    needs: [lint]
+    strategy:
+      fail-fast: false
+      matrix:
+        runs-on: [ubuntu-latest]
+        pypy-version: ["3.7", "3.9"]
+    name: Tests on 🐍 PyPy ${{ matrix.pypy-version }} • ${{ matrix.runs-on }}
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
 
     - name: Setup nox
-      uses: excitedleigh/setup-nox@v2.0.0
+      uses: wntrblm/nox@2022.11.21
 
-    - name: Test on 🐍 3.5
-      run: nox --forcecolor -s tests-3.5
+    - uses: actions/setup-python@v4
+      with:
+        python-version: pypy-${{ matrix.pypy-version }}
+
+    - name: Test on 🐍 PyPy ${{ matrix.pypy-version }}
+      run: nox -s tests-pypy${{ matrix.pypy-version }}
 
 
   dist:
     name: Distribution
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 0
 
     - name: Build SDist and wheel
       run: pipx run build
 
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3
       with:
         path: dist/*
 
     - name: Check metadata
       run: pipx run twine check dist/*
+
+
+  pass:
+    if: always()
+    needs: [tests, tests-pypy, dist]
+    runs-on: ubuntu-latest
+    steps:
+     - name: Decide whether the needed jobs succeeded or failed
+       uses: re-actors/alls-green@release/v1
+       with:
+         jobs: ${{ toJSON(needs) }}

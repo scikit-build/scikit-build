@@ -1,11 +1,12 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """test_hello_pure
 ----------------------------------
 
 Tries to build and test the `hello-pure` sample project.
 """
+
+from __future__ import annotations
 
 import glob
 
@@ -29,31 +30,29 @@ def test_hello_pure_builds(capsys):
 
 @project_setup_py_test("hello-pure", ["sdist"], disable_languages_test=True)
 def test_hello_pure_sdist():
-    sdists_tar = glob.glob('dist/*.tar.gz')
-    sdists_zip = glob.glob('dist/*.zip')
+    sdists_tar = glob.glob("dist/*.tar.gz")
+    sdists_zip = glob.glob("dist/*.zip")
     assert sdists_tar or sdists_zip
 
     expected_content = [
-        'hello-pure-1.2.3/hello/__init__.py',
-        'hello-pure-1.2.3/setup.py',
+        "hello-pure-1.2.3/hello/__init__.py",
+        "hello-pure-1.2.3/setup.py",
     ]
 
-    sdist_archive = 'dist/hello-pure-1.2.3.zip'
+    sdist_archive = "dist/hello-pure-1.2.3.zip"
     if sdists_tar:
-        sdist_archive = 'dist/hello-pure-1.2.3.tar.gz'
+        sdist_archive = "dist/hello-pure-1.2.3.tar.gz"
 
-    check_sdist_content(sdist_archive, 'hello-pure-1.2.3', expected_content)
+    check_sdist_content(sdist_archive, "hello-pure-1.2.3", expected_content)
 
 
 @project_setup_py_test("hello-pure", ["bdist_wheel"], disable_languages_test=True)
 def test_hello_pure_wheel():
-    expected_content = [
-        'hello/__init__.py'
-    ]
+    expected_content = ["hello/__init__.py"]
 
-    expected_distribution_name = 'hello_pure-1.2.3'
+    expected_distribution_name = "hello_pure-1.2.3"
 
-    whls = glob.glob('dist/*.whl')
+    whls = glob.glob("dist/*.whl")
     assert len(whls) == 1
     check_wheel_content(whls[0], expected_distribution_name, expected_content, pure=True)
 
@@ -61,7 +60,7 @@ def test_hello_pure_wheel():
 def test_hello_clean(capfd):
     with push_dir():
 
-        @project_setup_py_test("hello-pure", ["build"], disable_languages_test=True)
+        @project_setup_py_test("hello-pure", ["build"], disable_languages_test=True, ret=True)
         def run_build():
             pass
 
@@ -78,4 +77,4 @@ def test_hello_clean(capfd):
         assert not tmp_dir.join(SKBUILD_DIR()).exists()
 
         out = capfd.readouterr()[0]
-        assert 'Build files have been written to' not in out
+        assert "Build files have been written to" not in out

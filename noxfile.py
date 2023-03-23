@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 import sys
 
@@ -5,8 +7,11 @@ import nox
 
 nox.options.sessions = ["lint", "tests"]
 
-PYTHON_ALL_VERSIONS = ["2.7", "3.5", "3.6", "3.7", "3.8", "3.9", "3.10"]
-MSVC_ALL_VERSIONS = {"2008", "2010", "2013", "2015", "2017", "2019"}
+PYTHON_ALL_VERSIONS = ["3.7", "3.8", "3.9", "3.10", "3.11", "pypy3.7", "pypy3.8", "pypy3.9"]
+MSVC_ALL_VERSIONS = {"2017", "2019", "2022"}
+
+if os.environ.get("CI", None):
+    nox.options.error_on_missing_interpreters = True
 
 
 @nox.session
@@ -23,11 +28,11 @@ def tests(session):
     """
     Run the tests.
     """
-    posargs = list(session.posargs)
+    posargs = list(session.posargs) or ["--cov", "--cov-report=xml"]
     env = os.environ.copy()
 
     # This should be handled via markers or some other pytest mechanism, but for now, this is usable.
-    # nox -s tests-3.9 -- 2015 2017 2019
+    # nox -s tests-3.9 -- 2017 2019
     if sys.platform.startswith("win") and MSVC_ALL_VERSIONS & set(posargs):
         known_MSVC = {arg for arg in posargs if arg in MSVC_ALL_VERSIONS}
         posargs = [arg for arg in posargs if arg not in MSVC_ALL_VERSIONS]
@@ -35,8 +40,20 @@ def tests(session):
             contained = "1" if version in known_MSVC else "0"
             env[f"SKBUILD_TEST_FIND_VS{version}_INSTALLATION_EXPECTED"] = contained
 
-    session.install(".[test]")
+    # Latest versions may break things, so grab them for testing!
+    session.install("-U", "setuptools", "wheel")
+    session.install("-e", ".[test,cov,doctest]")
     session.run("pytest", *posargs, env=env)
+
+
+@nox.session
+def pylint(session):
+    """
+    Run PyLint.
+    """
+
+    session.install(".", "pylint", "cmake", "distro")
+    session.run("pylint", "skbuild", *session.posargs)
 
 
 @nox.session
@@ -45,8 +62,7 @@ def docs(session):
     Build the docs.
     """
 
-    session.install("-r", "requirements-docs.txt")
-    session.install(".")
+    session.install(".[docs]")
 
     session.chdir("docs")
     session.run("sphinx-build", "-M", "html", ".", "_build")

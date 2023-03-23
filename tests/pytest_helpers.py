@@ -1,35 +1,44 @@
-import six
+from __future__ import annotations
+
 import sys
 import tarfile
-import wheel
-
-from pkg_resources import parse_version
 from zipfile import ZipFile
+
+import wheel
+from pkg_resources import parse_version
 
 from skbuild import __version__ as skbuild_version
 
 from . import list_ancestors
 
 
-def check_sdist_content(sdist_archive, expected_distribution_name, expected_content):
+def check_sdist_content(sdist_archive, expected_distribution_name, expected_content, package_dir=""):
     """This function raises an AssertionError if the given sdist_archive
     does not have the expected content.
     """
-    sdist_zip = sdist_archive.endswith('.zip')
-    sdist_tar = sdist_archive.endswith('.tar.gz')
+    sdist_zip = sdist_archive.endswith(".zip")
+    sdist_tar = sdist_archive.endswith(".tar.gz")
     assert sdist_zip or sdist_tar
 
     expected_content = list(expected_content)
 
+    expected_name = "_".join(expected_distribution_name.split("-")[:-1])
+
+    if not package_dir:
+        egg_info_dir = f"{expected_distribution_name}/{expected_name}.egg-info"
+    else:
+        egg_info_dir = f"{expected_distribution_name}/{package_dir}/{expected_name}.egg-info"
+
     expected_content += [
-       '%s/PKG-INFO' % expected_distribution_name,
+        f"{expected_distribution_name}/PKG-INFO",
+        f"{expected_distribution_name}/setup.cfg",
+        f"{egg_info_dir}/dependency_links.txt",
+        f"{egg_info_dir}/top_level.txt",
+        f"{egg_info_dir}/PKG-INFO",
+        f"{egg_info_dir}/SOURCES.txt",
     ]
 
-    if sdist_zip and (
-            (2, 7, 15) < sys.version_info[:3] < (3, 0, 0)
-            or (3, 6, 7) < sys.version_info[:3] < (3, 7, 0)
-            or (3, 7, 1) < sys.version_info[:3]
-    ):
+    if sdist_zip and sys.version_info > (3, 7, 1):
         # Add directory entries in ZIP files created by distutils.
         # See https://github.com/python/cpython/pull/9419
         directories = set()
@@ -58,21 +67,21 @@ def check_wheel_content(wheel_archive, expected_distribution_name, expected_cont
 
     expected_content = list(expected_content)
     expected_content += [
-        '%s.dist-info/top_level.txt' % expected_distribution_name,
-        '%s.dist-info/WHEEL' % expected_distribution_name,
-        '%s.dist-info/RECORD' % expected_distribution_name,
-        '%s.dist-info/METADATA' % expected_distribution_name
+        f"{expected_distribution_name}.dist-info/top_level.txt",
+        f"{expected_distribution_name}.dist-info/WHEEL",
+        f"{expected_distribution_name}.dist-info/RECORD",
+        f"{expected_distribution_name}.dist-info/METADATA",
     ]
 
-    if parse_version(wheel.__version__) < parse_version('0.31.0'):
+    if parse_version(wheel.__version__) < parse_version("0.31.0"):
         # These files were specified in the now-withdrawn PEP 426
         # See https://github.com/pypa/wheel/issues/195
         expected_content += [
-            '%s.dist-info/DESCRIPTION.rst' % expected_distribution_name,
-            '%s.dist-info/metadata.json' % expected_distribution_name
+            f"{expected_distribution_name}.dist-info/DESCRIPTION.rst",
+            f"{expected_distribution_name}.dist-info/metadata.json",
         ]
 
-    if parse_version('0.33.1') < parse_version(wheel.__version__) < parse_version('0.33.4'):
+    if parse_version("0.33.1") < parse_version(wheel.__version__) < parse_version("0.33.4"):
         # Include directory entries when building wheel
         # See https://github.com/pypa/wheel/issues/287 and https://github.com/pypa/wheel/issues/294
         directories = set()
@@ -81,9 +90,9 @@ def check_wheel_content(wheel_archive, expected_distribution_name, expected_cont
         expected_content += directories
 
     if pure:
-        assert wheel_archive.endswith('-none-any.whl')
+        assert wheel_archive.endswith("-none-any.whl")
     else:
-        assert not wheel_archive.endswith('-none-any.whl')
+        assert not wheel_archive.endswith("-none-any.whl")
 
     archive = ZipFile(wheel_archive)
     member_list = archive.namelist()
@@ -94,9 +103,9 @@ def check_wheel_content(wheel_archive, expected_distribution_name, expected_cont
     # software that produced the archive.
     # See https://www.python.org/dev/peps/pep-0427/#file-contents
     current_generator = None
-    with archive.open("%s.dist-info/WHEEL" % expected_distribution_name) as wheel_file:
+    with archive.open(f"{expected_distribution_name}.dist-info/WHEEL") as wheel_file:
         for line in wheel_file:
             if line.startswith(b"Generator"):
                 current_generator = line.split(b":")[1].strip()
                 break
-    assert current_generator == six.b("skbuild %s" % skbuild_version)
+    assert current_generator == f"skbuild {skbuild_version}".encode()
