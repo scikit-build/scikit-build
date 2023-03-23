@@ -20,16 +20,13 @@ class CygwinPlatform(abstract.CMakePlatform):
     @property
     def generator_installation_help(self) -> str:
         """Return message guiding the user for installing a valid toolchain."""
-        return (
-            textwrap.dedent(
-                """
+        
+        pyver = "{}.{}".format(*sys.version_info[:2])
+        return textwrap.dedent(
+            f"""\
             Building Cygwin wheels for Python {pyver} requires Cygwin packages
             ninja or make and compilers from e.g. gcc-core and gcc-g++.
             Get them here:
 
-              https://cygwin.com/packages/package_list.html
-            """
-            )
-            .format(pyver="{}.{}".format(*sys.version_info[:2]))
-            .strip()
+              https://cygwin.com/packages/package_list.html"""
         )
