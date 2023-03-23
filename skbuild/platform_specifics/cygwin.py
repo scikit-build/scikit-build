@@ -20,7 +20,7 @@ class CygwinPlatform(abstract.CMakePlatform):
     @property
     def generator_installation_help(self) -> str:
         """Return message guiding the user for installing a valid toolchain."""
-        
+
         pyver = "{}.{}".format(*sys.version_info[:2])
         return textwrap.dedent(
             f"""\
