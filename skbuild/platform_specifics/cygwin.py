@@ -30,6 +30,6 @@ class CygwinPlatform(abstract.CMakePlatform):
               https://cygwin.com/packages/package_list.html
             """
             )
-            .format(pyver="%s.%s" % sys.version_info[:2])
+            .format(pyver="{}.{}".format(*sys.version_info[:2]))
             .strip()
         )
