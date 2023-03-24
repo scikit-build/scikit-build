@@ -8,16 +8,25 @@ Tries to build and test the `hello-fortran` sample project.
 from __future__ import annotations
 
 import glob
+import os
+import shutil
+import sys
+
+import pytest
 
 from . import get_ext_suffix, project_setup_py_test
 from .pytest_helpers import check_sdist_content, check_wheel_content
 
 
+@pytest.mark.fortran()
+@pytest.mark.skipif(sys.platform.startswith("win"), reason="Fortran not supported on Windows")
+@pytest.mark.skipif(not ("FC" in os.environ or shutil.which("gfortran")), reason="GFortran required")
 @project_setup_py_test("hello-fortran", ["build"])
 def test_hello_fortran_build():
     pass
 
 
+@pytest.mark.fortran()
 @project_setup_py_test("hello-fortran", ["sdist"])
 def test_hello_fortran_sdist():
     sdists_tar = glob.glob("dist/*.tar.gz")
@@ -43,6 +52,9 @@ def test_hello_fortran_sdist():
     check_sdist_content(sdist_archive, "hello-fortran-1.2.3", expected_content)
 
 
+@pytest.mark.fortran()
+@pytest.mark.skipif(sys.platform.startswith("win"), reason="Fortran not supported on Windows")
+@pytest.mark.skipif(not ("FC" in os.environ or shutil.which("gfortran")), reason="GFortran required")
 @project_setup_py_test("hello-fortran", ["bdist_wheel"])
 def test_hello_fortran_wheel():
     expected_content = [
