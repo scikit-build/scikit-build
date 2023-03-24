@@ -523,11 +523,6 @@ def setup(
 
     data_files = {(parent_dir or "."): set(file_list) for parent_dir, file_list in kw.get("data_files", [])}
 
-    # Since CMake arguments provided through the command line have more
-    # weight and when CMake is given multiple times a argument, only the last
-    # one is considered, let's prepend the one provided in the setup call.
-    cmake_args = list(cmake_args) + cmake_args_from_args
-
     # Handle cmake_install_target
     # get the target (next item after '--install-target') or return '' if no --install-target
     cmake_install_target_from_command = next(
@@ -546,8 +541,16 @@ def setup(
     env_cmake_args = os.environ["CMAKE_ARGS"].split() if "CMAKE_ARGS" in os.environ else []
     env_cmake_args = [s for s in env_cmake_args if "CMAKE_INSTALL_PREFIX" not in s]
 
-    # Using the environment variable CMAKE_ARGS has lower precedence than manual options
-    cmake_args = env_cmake_args + cmake_args
+    # Since CMake arguments provided through the command line have more weight
+    # and when CMake is given multiple times a argument, only the last one is
+    # considered, let's prepend the one provided in the setup call.
+    #
+    # Using the environment variable CMAKE_ARGS has lower precedence than
+    # manual options.
+    #
+    # The command line arguments to setup.py are deprecated, so let's allow
+    # anything to override them.
+    cmake_args = [*cmake_args_from_args, *env_cmake_args, *cmake_args]
 
     if sys.platform == "darwin":
         # If no ``--plat-name`` argument was passed, set default value.
