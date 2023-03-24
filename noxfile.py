@@ -40,9 +40,11 @@ def tests(session):
             contained = "1" if version in known_MSVC else "0"
             env[f"SKBUILD_TEST_FIND_VS{version}_INSTALLATION_EXPECTED"] = contained
 
+    numpy = ["numpy"] if sys.implementation.name == "cpython" else []
+
     # Latest versions may break things, so grab them for testing!
     session.install("-U", "setuptools", "wheel")
-    session.install("-e", ".[test,cov,doctest]")
+    session.install("-e", ".[test,cov,doctest]", *numpy)
     session.run("pytest", *posargs, env=env)
 
 

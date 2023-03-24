@@ -17,6 +17,8 @@ import pytest
 from . import get_ext_suffix, project_setup_py_test
 from .pytest_helpers import check_sdist_content, check_wheel_content
 
+pytest.importorskip("numpy")
+
 
 @pytest.mark.fortran()
 @pytest.mark.skipif(sys.platform.startswith("win"), reason="Fortran not supported on Windows")
