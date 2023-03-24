@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 """test_cmakelists_not_in_top_level_dir
 ----------------------------------
 
