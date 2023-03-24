@@ -201,6 +201,7 @@ select = [
   "C4",          # flake8-comprehensions
   "ICN",         # flake8-import-conventions
   "ISC",         # flake8-implicit-str-concat
+  "G",           # flake8-logging-format
   "PGH",         # pygrep-hooks
   "PIE",         # flake8-pie
   "PL",          # pylint
@@ -210,6 +211,8 @@ select = [
   "SIM",         # flake8-simplify
   "UP",          # pyupgrade
   "YTT",         # flake8-2020
+  "EXE",         # flake8-executable
+  "NPY",         # NumPy specific rules
 ]
 extend-ignore = ["PLR", "E501", "SIM117"]
 target-version = "py37"
