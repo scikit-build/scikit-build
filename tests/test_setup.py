@@ -64,7 +64,8 @@ def test_distribution_is_pure(distribution_type, tmpdir):
             """
         )
     else:
-        raise Exception(f"Unknown distribution_type: {distribution_type}")
+        msg = f"Unknown distribution_type: {distribution_type}"
+        raise Exception(msg)
 
     platform = get_platform()
     original_write_test_cmakelist = platform.write_test_cmakelist
