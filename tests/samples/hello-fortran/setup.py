@@ -8,8 +8,8 @@ setup(
     description="a minimal example package (fortran version)",
     author="The scikit-build team",
     license="MIT",
-    packages=["hello_fortran"],
-    package_dir={"hello_fortran": ""},
+    packages=["hello"],
+    # package_dir={"hello_fortran": "hello"},
     cmake_languages=("C", "Fortran"),
     cmake_minimum_required_version="3.5",
 )

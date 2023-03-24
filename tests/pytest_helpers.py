@@ -20,7 +20,7 @@ def check_sdist_content(sdist_archive, expected_distribution_name, expected_cont
     sdist_tar = sdist_archive.endswith(".tar.gz")
     assert sdist_zip or sdist_tar
 
-    expected_content = list(expected_content)
+    expected_content = set(expected_content)
 
     expected_name = "_".join(expected_distribution_name.split("-")[:-1])
 
@@ -29,31 +29,28 @@ def check_sdist_content(sdist_archive, expected_distribution_name, expected_cont
     else:
         egg_info_dir = f"{expected_distribution_name}/{package_dir}/{expected_name}.egg-info"
 
-    expected_content += [
+    expected_content |= {
         f"{expected_distribution_name}/PKG-INFO",
         f"{expected_distribution_name}/setup.cfg",
         f"{egg_info_dir}/dependency_links.txt",
         f"{egg_info_dir}/top_level.txt",
         f"{egg_info_dir}/PKG-INFO",
         f"{egg_info_dir}/SOURCES.txt",
-    ]
+    }
 
     if sdist_zip and sys.version_info > (3, 7, 1):
         # Add directory entries in ZIP files created by distutils.
         # See https://github.com/python/cpython/pull/9419
-        directories = set()
         for entry in expected_content:
-            directories = directories.union([entry + "/" for entry in list_ancestors(entry)])
-        expected_content += directories
+            expected_content |= {ent + "/" for ent in list_ancestors(entry)}
 
-    member_list = []
     if sdist_zip:
-        member_list = ZipFile(sdist_archive).namelist()
-    elif sdist_tar:
+        member_list = set(ZipFile(sdist_archive).namelist())
+    else:
         with tarfile.open(sdist_archive) as tf:
-            member_list = [member.name for member in tf.getmembers() if not member.isdir()]
+            member_list = {member.name for member in tf.getmembers() if not member.isdir()}
 
-    assert sorted(expected_content) == sorted(member_list)
+    assert member_list == expected_content
 
 
 def check_wheel_content(wheel_archive, expected_distribution_name, expected_content, pure=False):
@@ -65,29 +62,27 @@ def check_wheel_content(wheel_archive, expected_distribution_name, expected_cont
     list.
     """
 
-    expected_content = list(expected_content)
-    expected_content += [
+    expected_content = set(expected_content)
+    expected_content |= {
         f"{expected_distribution_name}.dist-info/top_level.txt",
         f"{expected_distribution_name}.dist-info/WHEEL",
         f"{expected_distribution_name}.dist-info/RECORD",
         f"{expected_distribution_name}.dist-info/METADATA",
-    ]
+    }
 
     if parse_version(wheel.__version__) < parse_version("0.31.0"):
         # These files were specified in the now-withdrawn PEP 426
         # See https://github.com/pypa/wheel/issues/195
-        expected_content += [
+        expected_content |= {
             f"{expected_distribution_name}.dist-info/DESCRIPTION.rst",
             f"{expected_distribution_name}.dist-info/metadata.json",
-        ]
+        }
 
     if parse_version("0.33.1") < parse_version(wheel.__version__) < parse_version("0.33.4"):
         # Include directory entries when building wheel
         # See https://github.com/pypa/wheel/issues/287 and https://github.com/pypa/wheel/issues/294
-        directories = set()
         for entry in expected_content:
-            directories = directories.union([entry + "/" for entry in list_ancestors(entry)])
-        expected_content += directories
+            expected_content |= {entry + "/" for entry in list_ancestors(entry)}
 
     if pure:
         assert wheel_archive.endswith("-none-any.whl")
@@ -95,9 +90,9 @@ def check_wheel_content(wheel_archive, expected_distribution_name, expected_cont
         assert not wheel_archive.endswith("-none-any.whl")
 
     archive = ZipFile(wheel_archive)
-    member_list = archive.namelist()
+    member_list = set(archive.namelist())
 
-    assert sorted(expected_content) == sorted(member_list)
+    assert member_list == expected_content
 
     # PEP-0427: Generator is the name and optionally the version of the
     # software that produced the archive.
