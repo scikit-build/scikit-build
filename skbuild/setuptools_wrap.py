@@ -414,9 +414,11 @@ def setup(
 
     sys.argv, cmake_executable, skip_generator_test, cmake_args_from_args, make_args = parse_args()
     if any("CMAKE_INSTALL_PREFIX" in arg for arg in cmake_args_from_args):
-        raise ValueError("CMAKE_INSTALL_PREFIX may not be passed to the scikit-build CLI.")
+        msg = "CMAKE_INSTALL_PREFIX may not be passed to the scikit-build CLI."
+        raise ValueError(msg)
     if any("CMAKE_INSTALL_PREFIX" in arg for arg in cmake_args):
-        raise ValueError("CMAKE_INSTALL_PREFIX may not be passed via cmake_args to setup.")
+        msg = "CMAKE_INSTALL_PREFIX may not be passed via cmake_args to setup."
+        raise ValueError(msg)
 
     # work around https://bugs.python.org/issue1011113
     # (patches provided, but no updates since 2014)
@@ -676,7 +678,8 @@ def setup(
         if callable(process_manifest):
             cmake_manifest = process_manifest(cmake_manifest)
         else:
-            raise SKBuildError("The cmake_process_manifest_hook argument should be callable.")
+            msg = "The cmake_process_manifest_hook argument should be callable."
+            raise SKBuildError(msg)
 
     _classify_installed_files(
         cmake_manifest,
@@ -961,8 +964,9 @@ def _consolidate_package_modules(
         modules = PythonModuleFinder(
             packages, package_dir, py_modules, alternative_build_base=CMAKE_INSTALL_DIR()
         ).find_all_modules()
-    except DistutilsError as msg:
-        raise SystemExit(f"error: {msg}") from None
+    except DistutilsError as err:
+        msg = f"error: {err}"
+        raise SystemExit(msg) from None
 
     print(flush=True)
 
