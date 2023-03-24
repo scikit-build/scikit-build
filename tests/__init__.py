@@ -104,7 +104,8 @@ def _copy(src, target):
     Copied from pytest-datafiles/pytest_datafiles.py (MIT License)
     """
     if not src.exists():
-        raise ValueError(f"'{src}' does not exist!")
+        msg = f"'{src}' does not exist!"
+        raise ValueError(msg)
 
     if src.isdir():
         src.copy(target / src.basename)
@@ -140,7 +141,8 @@ def _copy_dir(target_dir, src_dir, on_duplicate="exception", keep_top_dir=False)
         if not target_entry.exists() or on_duplicate == "overwrite":
             _copy(entry, target_dir)
         elif on_duplicate == "exception":
-            raise ValueError(f"'{target_entry}' already exists (src {entry})")
+            msg = f"'{target_entry}' already exists (src {entry})"
+            raise ValueError(msg)
 
 
 def initialize_git_repo_and_commit(project_dir, verbose=True):

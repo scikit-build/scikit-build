@@ -18,6 +18,7 @@ import shlex
 import subprocess
 import sys
 import sysconfig
+import textwrap
 from pathlib import Path
 from shlex import quote
 from typing import Mapping, Sequence, overload
@@ -100,9 +101,8 @@ def get_cmake_version(cmake_executable: str = CMAKE_DEFAULT_EXECUTABLE) -> str:
             [cmake_executable, "--version"], check=True, stdout=subprocess.PIPE
         ).stdout
     except (OSError, subprocess.CalledProcessError) as err:
-        raise SKBuildError(
-            f"Problem with the CMake installation, aborting build. CMake executable is {cmake_executable}"
-        ) from err
+        msg = f"Problem with the CMake installation, aborting build. CMake executable is {cmake_executable}"
+        raise SKBuildError(msg) from err
 
     version_string = version_string_bytes.decode()
 
@@ -314,7 +314,8 @@ class CMaker:
         if "SKBUILD_CONFIGURE_OPTIONS" in os.environ:
             env_cmake_args = list(filter(None, shlex.split(os.environ["SKBUILD_CONFIGURE_OPTIONS"])))
             if any("CMAKE_INSTALL_PREFIX" in arg for arg in env_cmake_args):
-                raise ValueError("CMAKE_INSTALL_PREFIX may not be passed via SKBUILD_CONFIGURE_OPTIONS.")
+                msg = "CMAKE_INSTALL_PREFIX may not be passed via SKBUILD_CONFIGURE_OPTIONS."
+                raise ValueError(msg)
         else:
             env_cmake_args_filtered = filter(None, shlex.split(os.environ.get("CMAKE_ARGS", "")))
             env_cmake_args = [s for s in env_cmake_args_filtered if "CMAKE_INSTALL_PREFIX" not in s]
@@ -333,16 +334,20 @@ class CMaker:
         )
         rtn = subprocess.run(cmd, cwd=CMAKE_BUILD_DIR(), env=generator.env, check=False).returncode
         if rtn != 0:
-            raise SKBuildError(
-                "An error occurred while configuring with CMake.\n"
-                "  Command:\n"
-                f"    {self._formatArgsForDisplay(cmd)}\n"
-                "  Source directory:\n"
-                f"    {os.path.abspath(cmake_source_dir)}\n"
-                "  Working directory:\n"
-                f"    {os.path.abspath(CMAKE_BUILD_DIR())}\n"
-                "Please see CMake's output for more information."
+            msg = textwrap.dedent(
+                """\
+                An error occurred while configuring with CMake.
+                  Command:
+                    {self._formatArgsForDisplay(cmd)}
+                  Source directory:
+                    {os.path.abspath(cmake_source_dir)}
+                  Working directory:
+                    {os.path.abspath(CMAKE_BUILD_DIR())}
+                Please see CMake's output for more information.
+                """
             )
+
+            raise SKBuildError(msg)
 
         CMaker.check_for_bad_installs()
 
@@ -665,11 +670,11 @@ class CMaker:
         clargs, config = pop_arg("--config", clargs, config)
         clargs, install_target = pop_arg("--install-target", clargs, install_target)
         if not os.path.exists(CMAKE_BUILD_DIR()):
-            raise SKBuildError(
+            msg = (
                 f"CMake build folder ({CMAKE_BUILD_DIR()}) does not exist. "
-                "Did you forget to run configure before "
-                "make?"
+                "Did you forget to run configure before make?"
             )
+            raise SKBuildError(msg)
 
         # Workaround CMake issue #8438
         # See https://gitlab.kitware.com/cmake/cmake/-/issues/8438
@@ -711,19 +716,21 @@ class CMaker:
             install_target = "internal build step [valid]"
 
         if rtn != 0:
-            raise SKBuildError(
-                "An error occurred while building with CMake.\n"
-                "  Command:\n"
-                f"    {self._formatArgsForDisplay(cmd)}\n"
-                "  Install target:\n"
-                f"    {install_target}\n"
-                "  Source directory:\n"
-                f"    {os.path.abspath(source_dir)}\n"
-                "  Working directory:\n"
-                f"    {os.path.abspath(CMAKE_BUILD_DIR())}\n"
-                "Please check the install target is valid and see CMake's output for more "
-                "information."
+            msg = textwrap.dedent(
+                f"""\
+                An error occurred while building with CMake.
+                  Command:
+                    {self._formatArgsForDisplay(cmd)}
+                  Install target:
+                    {install_target}
+                  Source directory:
+                    {os.path.abspath(source_dir)}
+                  Working directory:
+                    {os.path.abspath(CMAKE_BUILD_DIR())}
+                Please check the install target is valid and see CMake's output for more information.
+                """
             )
+            raise SKBuildError(msg)
 
     def install(self) -> list[str]:
         """Returns a list of file paths to install via setuptools that is

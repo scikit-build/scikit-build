@@ -414,9 +414,11 @@ def setup(
 
     sys.argv, cmake_executable, skip_generator_test, cmake_args_from_args, make_args = parse_args()
     if any("CMAKE_INSTALL_PREFIX" in arg for arg in cmake_args_from_args):
-        raise ValueError("CMAKE_INSTALL_PREFIX may not be passed to the scikit-build CLI.")
+        msg = "CMAKE_INSTALL_PREFIX may not be passed to the scikit-build CLI."
+        raise ValueError(msg)
     if any("CMAKE_INSTALL_PREFIX" in arg for arg in cmake_args):
-        raise ValueError("CMAKE_INSTALL_PREFIX may not be passed via cmake_args to setup.")
+        msg = "CMAKE_INSTALL_PREFIX may not be passed via cmake_args to setup."
+        raise ValueError(msg)
 
     # work around https://bugs.python.org/issue1011113
     # (patches provided, but no updates since 2014)
@@ -521,11 +523,6 @@ def setup(
 
     data_files = {(parent_dir or "."): set(file_list) for parent_dir, file_list in kw.get("data_files", [])}
 
-    # Since CMake arguments provided through the command line have more
-    # weight and when CMake is given multiple times a argument, only the last
-    # one is considered, let's prepend the one provided in the setup call.
-    cmake_args = list(cmake_args) + cmake_args_from_args
-
     # Handle cmake_install_target
     # get the target (next item after '--install-target') or return '' if no --install-target
     cmake_install_target_from_command = next(
@@ -544,8 +541,16 @@ def setup(
     env_cmake_args = os.environ["CMAKE_ARGS"].split() if "CMAKE_ARGS" in os.environ else []
     env_cmake_args = [s for s in env_cmake_args if "CMAKE_INSTALL_PREFIX" not in s]
 
-    # Using the environment variable CMAKE_ARGS has lower precedence than manual options
-    cmake_args = env_cmake_args + cmake_args
+    # Since CMake arguments provided through the command line have more weight
+    # and when CMake is given multiple times a argument, only the last one is
+    # considered, let's prepend the one provided in the setup call.
+    #
+    # Using the environment variable CMAKE_ARGS has lower precedence than
+    # manual options.
+    #
+    # The command line arguments to setup.py are deprecated, so let's allow
+    # anything to override them.
+    cmake_args = [*cmake_args_from_args, *env_cmake_args, *cmake_args]
 
     if sys.platform == "darwin":
         # If no ``--plat-name`` argument was passed, set default value.
@@ -676,7 +681,8 @@ def setup(
         if callable(process_manifest):
             cmake_manifest = process_manifest(cmake_manifest)
         else:
-            raise SKBuildError("The cmake_process_manifest_hook argument should be callable.")
+            msg = "The cmake_process_manifest_hook argument should be callable."
+            raise SKBuildError(msg)
 
     _classify_installed_files(
         cmake_manifest,
@@ -961,8 +967,9 @@ def _consolidate_package_modules(
         modules = PythonModuleFinder(
             packages, package_dir, py_modules, alternative_build_base=CMAKE_INSTALL_DIR()
         ).find_all_modules()
-    except DistutilsError as msg:
-        raise SystemExit(f"error: {msg}") from None
+    except DistutilsError as err:
+        msg = f"error: {err}"
+        raise SystemExit(msg) from None
 
     print(flush=True)
 

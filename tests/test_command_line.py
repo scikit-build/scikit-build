@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 """test_command_line
 ----------------------------------
 
