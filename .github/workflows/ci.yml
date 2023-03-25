@@ -52,6 +52,10 @@ jobs:
         echo "SKBUILD_TEST_FIND_VS2019_INSTALLATION_EXPECTED=0" >> $GITHUB_ENV
         echo "SKBUILD_TEST_FIND_VS2022_INSTALLATION_EXPECTED=1" >> $GITHUB_ENV
 
+    - name: Set environment for Fortran compiler on MacOS
+      if: runner.os == 'macOS'
+      run: echo "FC=gfortran-11" >> $GITHUB_ENV
+
     - name: Setup nox
       uses: wntrblm/nox@2022.11.21
       with:
