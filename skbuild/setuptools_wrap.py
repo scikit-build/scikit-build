@@ -548,9 +548,9 @@ def setup(
     # Using the environment variable CMAKE_ARGS has lower precedence than
     # manual options.
     #
-    # The command line arguments to setup.py are deprecated, so let's allow
-    # anything to override them.
-    cmake_args = [*cmake_args_from_args, *env_cmake_args, *cmake_args]
+    # The command line arguments to setup.py are deprecated, but they have highest precedence.
+
+    cmake_args = [*env_cmake_args, *cmake_args, *cmake_args_from_args]
 
     if sys.platform == "darwin":
         # If no ``--plat-name`` argument was passed, set default value.
