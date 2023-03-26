@@ -198,6 +198,28 @@ function(_test_weak_link_project
   set(osx_dynamic_lookup           "-undefined dynamic_lookup")
   set(no_flag                                               "")
 
+  if(CMAKE_CROSSCOMPILING)
+    set(link_flag_spec "no_flag")
+    set(link_flag "${${link_flag_spec}}")
+    set(test_skipping_reason "")
+    set(test_pass FALSE)
+
+    if(APPLE AND NOT CMAKE_CROSSCOMPILING_EMULATOR)
+      set(link_flag_spec "osx_dynamic_lookup")
+      set(link_flag "${${link_flag_spec}}")
+      set(test_skipping_reason " (Cross compiling without emulator on macOS)")
+      set(test_pass TRUE)
+    endif()
+
+    if(test_pass)
+      set(test_description "Weak Link ${target_type} -> ${lib_type} (${link_flag_spec})")
+      message(STATUS "Performing Test ${test_description} - Assuming Success${test_skipping_reason}")
+      set(${can_weak_link_var} ${test_pass} PARENT_SCOPE)
+      set(${project_name} ${link_flag} PARENT_SCOPE)
+      return()
+    endif()
+  endif()
+
   foreach(link_flag_spec gnu_ld_ignore osx_dynamic_lookup no_flag)
     set(link_flag "${${link_flag_spec}}")
 
@@ -408,9 +430,6 @@ function(_test_weak_link_project
     if(project_works EQUAL 0)
       set(project_works TRUE)
       message(STATUS "Performing Test ${test_description} - Success")
-    elseif (CMAKE_CROSSCOMPILING AND APPLE AND "${link_flag_spec}" STREQUAL "osx_dynamic_lookup")
-      set(project_works TRUE)
-      message(STATUS "Performing Test ${test_description} - Cross compiling: assume success")
     else()
       set(project_works FALSE)
       message(STATUS "Performing Test ${test_description} - Failed")
@@ -495,21 +514,15 @@ function(_check_dynamic_lookup
   endif()
 
   if(NOT DEFINED ${cache_var})
-    set(skip_test FALSE)
 
-   if(CMAKE_CROSSCOMPILING AND NOT CMAKE_CROSSCOMPILING_EMULATOR)
+    if(CMAKE_CROSSCOMPILING AND NOT CMAKE_CROSSCOMPILING_EMULATOR)
       set(skip_test TRUE)
     endif()
 
-    if(skip_test)
-      set(has_dynamic_lookup FALSE)
-      set(link_flags)
-    else()
-      _test_weak_link_project(${target_type}
-                              ${lib_type}
-                              has_dynamic_lookup
-                              link_flags)
-    endif()
+    _test_weak_link_project(${target_type}
+                            ${lib_type}
+                            has_dynamic_lookup
+                            link_flags)
 
     set(caveat " (when linking ${target_type} against ${lib_type})")
 
