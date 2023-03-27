@@ -109,7 +109,7 @@ def parse_skbuild_args(
     _args = [arg for arg in args if not _is_cmake_configure_argument(arg)]
     _build_tool_args = list(build_tool_args)
 
-    namespace, remaining_args = parser.parse_known_args(args)
+    namespace, remaining_args = parser.parse_known_args(_args)
 
     # Construct CMake argument list
     _cmake_args.append("-DCMAKE_BUILD_TYPE:STRING=" + namespace.build_type)
