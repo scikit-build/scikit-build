@@ -94,8 +94,8 @@ def _is_cmake_configure_argument(arg: str) -> bool:
 
 
 def parse_skbuild_args(
-    args: Sequence[str], cmake_args: list[str], build_tool_args: list[str]
-) -> tuple[list[str], str | None, bool]:
+    args: Sequence[str], cmake_args: Sequence[str], build_tool_args: Sequence[str]
+) -> tuple[list[str], str | None, bool, list[str], list[str]]:
     """
     Parse arguments in the scikit-build argument set. Convert specified
     arguments to proper format and append to cmake_args and build_tool_args.
@@ -104,37 +104,40 @@ def parse_skbuild_args(
     parser = create_skbuild_argparser()
 
     # Consider CMake arguments passed as global setuptools options
-    cmake_args.extend([arg for arg in args if _is_cmake_configure_argument(arg)])
+    _cmake_args = [*cmake_args, *(arg for arg in args if _is_cmake_configure_argument(arg))]
     # ... and remove them from the list
-    args = [arg for arg in args if not _is_cmake_configure_argument(arg)]
+    _args = [arg for arg in args if not _is_cmake_configure_argument(arg)]
+    _build_tool_args = list(build_tool_args)
 
-    namespace, remaining_args = parser.parse_known_args(args)
+    namespace, remaining_args = parser.parse_known_args(_args)
 
     # Construct CMake argument list
-    cmake_args.append("-DCMAKE_BUILD_TYPE:STRING=" + namespace.build_type)
+    _cmake_args.append("-DCMAKE_BUILD_TYPE:STRING=" + namespace.build_type)
     if namespace.generator is not None:
-        cmake_args.extend(["-G", namespace.generator])
+        _cmake_args.extend(["-G", namespace.generator])
 
     # Construct build tool argument list
-    build_tool_args.extend(["--config", namespace.build_type])
+    _build_tool_args.extend(["--config", namespace.build_type])
     if namespace.jobs is not None:
-        build_tool_args.extend(["-j", str(namespace.jobs)])
+        _build_tool_args.extend(["-j", str(namespace.jobs)])
     if namespace.install_target is not None:
-        build_tool_args.extend(["--install-target", namespace.install_target])
+        _build_tool_args.extend(["--install-target", namespace.install_target])
 
     if namespace.generator is None and namespace.skip_generator_test is True:
         sys.exit("ERROR: Specifying --skip-generator-test requires --generator to also be specified.")
 
-    return remaining_args, namespace.cmake_executable, namespace.skip_generator_test
+    return remaining_args, namespace.cmake_executable, namespace.skip_generator_test, _cmake_args, _build_tool_args
 
 
 def parse_args() -> tuple[list[str], str | None, bool, list[str], list[str]]:
     """This function parses the command-line arguments ``sys.argv`` and returns
     the tuple ``(setuptools_args, cmake_executable, skip_generator_test, cmake_args, build_tool_args)``
     where each ``*_args`` element corresponds to a set of arguments separated by ``--``."""
+
     dutils: list[str] = []
     cmake: list[str] = []
     make: list[str] = []
+
     argsets = [dutils, cmake, make]
     i = 0
     separator = "--"
@@ -147,7 +150,7 @@ def parse_args() -> tuple[list[str], str | None, bool, list[str], list[str]]:
         else:
             argsets[i].append(arg)
 
-    dutils, cmake_executable, skip_generator_test = parse_skbuild_args(dutils, cmake, make)
+    dutils, cmake_executable, skip_generator_test, cmake, make = parse_skbuild_args(dutils, cmake, make)
 
     return dutils, cmake_executable, skip_generator_test, cmake, make
 
@@ -523,11 +526,6 @@ def setup(
 
     data_files = {(parent_dir or "."): set(file_list) for parent_dir, file_list in kw.get("data_files", [])}
 
-    # Since CMake arguments provided through the command line have more
-    # weight and when CMake is given multiple times a argument, only the last
-    # one is considered, let's prepend the one provided in the setup call.
-    cmake_args = list(cmake_args) + cmake_args_from_args
-
     # Handle cmake_install_target
     # get the target (next item after '--install-target') or return '' if no --install-target
     cmake_install_target_from_command = next(
@@ -546,8 +544,16 @@ def setup(
     env_cmake_args = os.environ["CMAKE_ARGS"].split() if "CMAKE_ARGS" in os.environ else []
     env_cmake_args = [s for s in env_cmake_args if "CMAKE_INSTALL_PREFIX" not in s]
 
-    # Using the environment variable CMAKE_ARGS has lower precedence than manual options
-    cmake_args = env_cmake_args + cmake_args
+    # Since CMake arguments provided through the command line have more weight
+    # and when CMake is given multiple times a argument, only the last one is
+    # considered, let's prepend the one provided in the setup call.
+    #
+    # Using the environment variable CMAKE_ARGS has lower precedence than
+    # manual options.
+    #
+    # The command line arguments to setup.py are deprecated, but they have highest precedence.
+
+    cmake_args = [*env_cmake_args, *cmake_args, *cmake_args_from_args]
 
     if sys.platform == "darwin":
         # If no ``--plat-name`` argument was passed, set default value.
