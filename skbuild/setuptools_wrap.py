@@ -68,7 +68,7 @@ def create_skbuild_argparser() -> argparse.ArgumentParser:
     """Create and return a scikit-build argument parser."""
     parser = argparse.ArgumentParser(add_help=False)
     parser.add_argument(
-        "--build-type", default="Release", metavar="", help="specify the CMake build type (e.g. Debug or Release)"
+        "--build-type", default=None, metavar="", help="specify the CMake build type (e.g. Debug or Release)"
     )
     parser.add_argument("-G", "--generator", metavar="", help="specify the CMake build system generator")
     parser.add_argument("-j", metavar="N", type=int, dest="jobs", help="allow N build jobs at once")
@@ -112,12 +112,12 @@ def parse_skbuild_args(
     namespace, remaining_args = parser.parse_known_args(_args)
 
     # Construct CMake argument list
-    _cmake_args.append("-DCMAKE_BUILD_TYPE:STRING=" + namespace.build_type)
+    if namespace.build_type is not None:
+        _cmake_args.append("-DCMAKE_BUILD_TYPE:STRING=" + namespace.build_type)
     if namespace.generator is not None:
         _cmake_args.extend(["-G", namespace.generator])
 
     # Construct build tool argument list
-    _build_tool_args.extend(["--config", namespace.build_type])
     if namespace.jobs is not None:
         _build_tool_args.extend(["-j", str(namespace.jobs)])
     if namespace.install_target is not None:
@@ -592,6 +592,17 @@ def setup(
         if not cmaker.has_cmake_cache_arg(cmake_args, "CMAKE_OSX_ARCHITECTURES"):
             machine_archs = "x86_64;arm64" if machine == "universal2" else machine
             cmake_args.append(f"-DCMAKE_OSX_ARCHITECTURES:STRING={machine_archs}")
+
+    # Select correct --config using final CMAKE_BUILD_TYPE
+    for item in cmake_args[::-1]:
+        if item.startswith("-DCMAKE_BUILD_TYPE"):
+            _, config_type = item.split("=")
+            break
+    else:
+        config_type = "Release"
+        cmake_args.append("-DCMAKE_BUILD_TYPE:STRING=Release")
+
+    make_args.extend(["--config", config_type])
 
     # Install cmake if listed in `setup_requires`
     for package in kw.get("setup_requires", []):
