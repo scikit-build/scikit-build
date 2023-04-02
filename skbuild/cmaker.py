@@ -529,7 +529,7 @@ class CMaker:
             candidate_suffixes = [""]
             candidate_implementations = ["python"]
             if hasattr(sys, "pypy_version_info"):
-                candidate_implementations = ["pypy-c", "pypy3-c", "pypy"]
+                candidate_implementations += ["pypy-c", "pypy3-c", "pypy"]
                 candidate_suffixes.append("-c")
 
             candidate_extensions = [".lib", ".so", ".a"]
