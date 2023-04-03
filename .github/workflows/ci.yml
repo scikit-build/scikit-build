@@ -108,8 +108,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runs-on: [ubuntu-latest]
-        pypy-version: ["3.7", "3.9"]
+        runs-on: [ubuntu-latest, macos-latest, windows-latest]
+        pypy-version: ["3.9"]
+        include:
+        - runs-on: ubuntu-latest
+          pypy-version: "3.7"
     name: Tests on 🐍 PyPy ${{ matrix.pypy-version }} • ${{ matrix.runs-on }}
 
     steps:
