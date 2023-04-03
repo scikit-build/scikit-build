@@ -230,3 +230,8 @@ isort.required-imports = ["from __future__ import annotations"]
 "tests/**" = ["T20"]
 "noxfile.py" = ["T20"]
 "*.pyx" = ["I"]
+
+
+[tool.check-sdist]
+sdist-only = ["skbuild/_version.py"]
+git-only = [".coveragerc"]

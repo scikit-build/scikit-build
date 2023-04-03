@@ -54,12 +54,15 @@ repos:
   - id: rst-directive-colons
   - id: rst-inline-touching-normal
 
-- repo: https://github.com/mgedmin/check-manifest
-  rev: "0.49"
+- repo: https://github.com/henryiii/check-sdist
+  rev: "v0.1.0"
   hooks:
-  - id: check-manifest
-    stages: [manual]
-    additional_dependencies: ["setuptools_scm[toml]"]
+   - id: check-sdist
+     args: [--inject-junk]
+     additional_dependencies:
+     - hatch-fancy-pypi-readme
+     - hatch-vcs
+     - hatchling
 
 - repo: https://github.com/pre-commit/mirrors-mypy
   rev: "v1.1.1"
