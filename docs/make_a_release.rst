@@ -105,7 +105,7 @@ Setting up environment
 
   .. code::
 
-    $ git tag --sign -m "Scikit-build $release" $release master
+    $ git tag --sign -m "Scikit-build $release" $release main
 
   .. warning::
 
@@ -113,12 +113,12 @@ Setting up environment
       to sign the tag.
 
 
-7. Publish both the release tag and the master branch
+7. Publish both the release tag and the main branch
 
   .. code::
 
     $ git push origin $release && \
-      git push origin master
+      git push origin main
 
 
 8. Make a `GitHub release <https://github.com/scikit-build/scikit-build/releases/new>`_. Paste the converted release notes as markdown; convert using
@@ -144,25 +144,15 @@ Setting up environment
 
     $ git add CHANGES.rst && \
       git commit -m "CHANGES.rst: Add \"Next Release\" section [ci skip]" && \
-      git push origin master
+      git push origin main
 
 
 
-10. Send an email to the `scikit-build mailing list`_ based on the following template:
-
-  ::
-
-    On behalf of the scikit-build team, I am pleased to announce that the version X.Y.Z is available for download:
-
-      pip install --upgrade scikit-build   <--- This line should be formatted using fixed size font
-
-    Thank you to everyone who contributed their time to test, write issue reports and contribute patches!
-
-    <copy here content of the changelog for release X.Y.X including the release name>
+10. Add an entry to the ``Announcements`` category of the `scikit-build discussions board`_.
 
   .. note::
 
-    For examples of announcements, see https://groups.google.com/g/scikit-build/search?q=announce%20subject%3Ascikit-build
+    For examples of announcements, see https://github.com/orgs/scikit-build/discussions/categories/announcements
 
 
 .. _virtualenvwrapper: https://virtualenvwrapper.readthedocs.io/
@@ -175,7 +165,7 @@ Setting up environment
 .. _PyPI: https://pypi.org/project/scikit-build
 .. _TestPyPI: https://test.pypi.org/project/scikit-build
 
-.. _scikit-build mailing list: https://groups.google.com/g/scikit-build
+.. _scikit-build discussions board: https://github.com/orgs/scikit-build/discussions/categories/announcements
 
 -----------------------
 `Conda`_: Step-by-step
@@ -238,8 +228,8 @@ conda-forge, follow the steps below:
 
 6. Modify ``meta.yaml``
 
-   Update the `version string <https://github.com/conda-forge/scikit-build-feedstock/blob/master/recipe/meta.yaml#L2>`_ and
-   `sha256 <https://github.com/conda-forge/scikit-build-feedstock/blob/master/recipe/meta.yaml#L3>`_.
+   Update the `version string <https://github.com/conda-forge/scikit-build-feedstock/blob/main/recipe/meta.yaml#L2>`_ and
+   `sha256 <https://github.com/conda-forge/scikit-build-feedstock/blob/main/recipe/meta.yaml#L3>`_.
 
    We have to modify the sha and the version string in the ``meta.yaml`` file.
 

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 import sys
 
@@ -5,7 +7,7 @@ import nox
 
 nox.options.sessions = ["lint", "tests"]
 
-PYTHON_ALL_VERSIONS = ["3.6", "3.7", "3.8", "3.9", "3.10", "pypy3.7", "pypy3.8", "pypy3.9"]
+PYTHON_ALL_VERSIONS = ["3.7", "3.8", "3.9", "3.10", "3.11", "pypy3.7", "pypy3.8", "pypy3.9"]
 MSVC_ALL_VERSIONS = {"2017", "2019", "2022"}
 
 if os.environ.get("CI", None):
@@ -22,11 +24,11 @@ def lint(session):
 
 
 @nox.session(python=PYTHON_ALL_VERSIONS)
-def tests(session):
+def tests(session: nox.Session) -> None:
     """
     Run the tests.
     """
-    posargs = list(session.posargs)
+    posargs = list(session.posargs) or ["--cov", "--cov-report=xml"]
     env = os.environ.copy()
 
     # This should be handled via markers or some other pytest mechanism, but for now, this is usable.
@@ -38,7 +40,11 @@ def tests(session):
             contained = "1" if version in known_MSVC else "0"
             env[f"SKBUILD_TEST_FIND_VS{version}_INSTALLATION_EXPECTED"] = contained
 
-    session.install("-e", ".[test]")
+    numpy = [] if "pypy" in session.python else ["numpy"]
+
+    # Latest versions may break things, so grab them for testing!
+    session.install("-U", "setuptools", "wheel")
+    session.install("-e", ".[test,cov,doctest]", *numpy)
     session.run("pytest", *posargs, env=env)
 
 
@@ -58,8 +64,7 @@ def docs(session):
     Build the docs.
     """
 
-    session.install("-r", "requirements-docs.txt")
-    session.install(".")
+    session.install(".[docs]")
 
     session.chdir("docs")
     session.run("sphinx-build", "-M", "html", ".", "_build")

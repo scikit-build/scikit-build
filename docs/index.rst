@@ -37,7 +37,6 @@ For more examples, see `scikit-build-sample-projects <https://github.com/scikit-
    :caption: For maintainers
 
    make_a_release
-   notes
 
 Indices and tables
 ==================
@@ -52,4 +51,4 @@ Resources
 * Free software: MIT license
 * Documentation: http://scikit-build.readthedocs.io/en/latest/
 * Source code: https://github.com/scikit-build/scikit-build
-* Mailing list: https://groups.google.com/forum/#!forum/scikit-build
+* Discussions: https://github.com/orgs/scikit-build/discussions

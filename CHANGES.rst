@@ -3,7 +3,127 @@ Release Notes
 =============
 
 This is the list of changes to scikit-build between each release. For full
-details, see the commit logs at http://github.com/scikit-build/scikit-build
+details, see the commit logs at https://github.com/scikit-build/scikit-build
+
+Next Release
+============
+
+We are hard at work on the next generation of scikit-build
+`scikit-build-core <https://github.com/scikit-build/scikit-build-core>`_, which
+has had it's first non-development release. We are also continuing to fix bugs,
+make improvements, and backport changes here.
+
+.. START-BRIEF-CHANGELOG
+
+Scikit-build 0.16.7
+===================
+
+This is expected to be the final release series supporting Python 3.6. 0.17 will require Python 3.7+ and start removing deprecated functionality.
+
+* Added ``SKBUILD_GNU_SKIP_LOCAL_SYMBOL_EXPORT_OVERRIDE`` to disable script in :pr:`848`, thanks to :user:`aaron-bray` and :user:`vyasr`.
+* Address a new warning from setuptools in our test suite in :pr:`859`.
+* Move to using Ruff, update to Black 23, and use Flynt to move more code to f-strings.
+
+
+Scikit-build 0.16.6
+===================
+
+* Fix a discovery regression in 0.16.5 when a ``cmake`` folder or ``cmake.py`` was present in :pr:`848`.
+* Correct an issue in the tests where a generator wasn't expanded into a list in :pr:`850`.
+
+
+Scikit-build 0.16.5
+===================
+
+* Use cmake module if installed over system installs in :pr:`839`.
+* Support setting of ``-DCMAKE_SYSTEM_PROCESSOR`` if passed for selecting an arch, useful for cross compiling on conda-forge in :pr:`843`.
+* Fixed a rare encoded error output string on Windows in :pr:`842`.
+* Better granularity in extras in :pr:`838`.
+* Add test markers for nosetuptoolsscm and isolated (helpful for package distributions building scikit-build itself like conda) in :pr:`837`.
+
+
+Scikit-build 0.16.4
+===================
+
+This releases backports additions for Windows ARM cross-compiling via
+cibuildwheel from scikit-build-core 0.1.4.
+
+* Initial experimental support for Windows ARM cross-compile in :pr:`824` and :pr:`818`
+* Replace mailing list with GitHub Discussions board in :pr:`823`
+* Some CI updates in :pr:`811` and :pr:`812`
+
+
+Scikit-build 0.16.3
+===================
+
+This release fixes logging issues using setuptools 65.6+ affecting our tests.
+Pytest 7.2+ is now supported. ``setup.py <command>`` and ``setup_requires``
+are deprecated, and tests are marked as such.
+
+
+* Fix typo in usage.rst in :pr:`795`, thanks to :user:`chohner`.
+* Support pytest 7.2+ in :pr:`801`.
+* Change warning filtering in :pr:`802`.
+* Handle logging changes in setuptools 65.6+ in :pr:`807`.
+* Add deprecated markers to some tests in :pr:`807`.
+* Allow known warnings to show up in the tests :pr:`807`.
+
+
+Scikit-build 0.16.2
+===================
+
+This addresses one more small regression with the FindPython change from
+0.16.0 that was affecting conda. :pr:`793`.
+
+Scikit-build 0.16.1
+===================
+
+This was a quick patch release that fixed a missing Python requires setting and
+some missing files :pr:`790`, and addressed a warning from setuptools in the
+tests.
+
+* Ignored distutils warning :pr:`785`. thanks to :user:`bnavigator`.
+
+
+Scikit-build 0.16.0
+===================
+
+This release adds support for Python 3.11 and removes support for Python 2.7
+and 3.5 (:pr:`688`). Testing and static checking improved, including being
+fully statically typed internally (though setuptools is not fully typed, so
+it is of limited use).
+
+All deprecated setuptools/distutils features are also deprecated in
+scikit-build, like the ``test`` command, ``easy_install``, etc. Editable mode
+is still unsupported.  Python 3.6 support is deprecated. Older versions of
+CMake (<3.15) are not recommended; a future version will remove support for older
+CMake's (along with providing a better mechanism for ensuring a proper CMake is
+available). If you need any of these features, please open or find an issue
+explaining what and why you need something.
+
+
+New Features
+------------
+
+* Cython module now supports FindPython mode. :pr:`743`
+
+* PyPy is discovered without extra settings in FindPython mode :pr:`744`
+
+Bug fixes
+---------
+
+* FindPython mode uses a new path specification, should help make it usable. :pr:`774`
+
+* Better flushing and output streams for more consistent output ordering. :pr:`781`
+
+Documentation
+-------------
+
+* scikit-build mailing list transitioned to the `scikit-build GitHub Discussions board <https://github.com/orgs/scikit-build/discussions>`_. See :issue:`800`.
+  * Transitioning away from the mailing list and adopting the GitHub Discussions will provide a more integrated platform enabling us to more effectively engage with the community.
+  * After sending a `last message <https://groups.google.com/g/scikit-build/c/jU7-EvvMPb8>`_ describing the transition, the mailing list was updated to be read-only and the welcome message was updated to redirect visitor toward the Discussions board.
+
+.. END-BRIEF-CHANGELOG
 
 Scikit-build 0.15.0
 ===================

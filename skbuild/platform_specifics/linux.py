@@ -1,5 +1,7 @@
 """This module defines object specific to Linux platform."""
 
+from __future__ import annotations
+
 import platform
 import sys
 import textwrap
@@ -13,7 +15,7 @@ class LinuxPlatform(unix.UnixPlatform):
     """Linux implementation of :class:`.abstract.CMakePlatform`"""
 
     @staticmethod
-    def build_essential_install_cmd():
+    def build_essential_install_cmd() -> tuple[str, str]:
         """Return a tuple of the form ``(distribution_name, cmd)``.
 
         ``cmd`` is the command allowing to install the build tools
@@ -28,21 +30,21 @@ class LinuxPlatform(unix.UnixPlatform):
 
         distribution_name = distro.id()
         cmd = ""
-        if distribution_name in ["debian", "Ubuntu", "mandrake", "mandriva"]:
+        if distribution_name in {"debian", "Ubuntu", "mandrake", "mandriva"}:
             cmd = "sudo apt-get install build-essential"
 
-        elif distribution_name in ["centos", "fedora", "redhat", "turbolinux", "yellowdog", "rocks"]:
+        elif distribution_name in {"centos", "fedora", "redhat", "turbolinux", "yellowdog", "rocks"}:
             # http://unix.stackexchange.com/questions/16422/cant-install-build-essential-on-centos#32439
             cmd = "sudo yum groupinstall 'Development Tools'"
 
-        elif distribution_name in ["SuSE"]:
+        elif distribution_name in {"SuSE"}:
             # http://serverfault.com/questions/437680/equivalent-development-build-tools-for-suse-professional-11#437681
             cmd = "zypper install -t pattern devel_C_C++"
 
         return distribution_name, cmd
 
     @property
-    def generator_installation_help(self):
+    def generator_installation_help(self) -> str:
         """Return message guiding the user for installing a valid toolchain."""
         distribution_name, cmd = self.build_essential_install_cmd()
         install_help = ""
@@ -65,5 +67,5 @@ class LinuxPlatform(unix.UnixPlatform):
             For more details, please refer to scikit-build documentation:
 
               http://scikit-build.readthedocs.io/en/latest/generators.html#linux
-            """  # noqa: E501
+            """
         ).strip()

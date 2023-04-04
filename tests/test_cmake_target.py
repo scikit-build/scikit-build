@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 """test_cmake_target
 ----------------------------------
 
@@ -8,6 +6,8 @@ project. It basically checks that using the `cmake_target` keyword
 in setup.py works.
 """
 
+from __future__ import annotations
+
 from . import project_setup_py_test
 
 
@@ -15,4 +15,5 @@ from . import project_setup_py_test
 def test_cmake_target_build(capsys):
     out, err = capsys.readouterr()
     dist_warning = "Unknown distribution option: 'cmake_target'"
-    assert dist_warning not in err and dist_warning not in out
+    assert dist_warning not in err
+    assert dist_warning not in out

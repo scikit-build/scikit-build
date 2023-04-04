@@ -1,10 +1,10 @@
-#!/usr/bin/env python
-
 """test_setup
 ----------------------------------
 
 Tests for `skbuild.setup` function.
 """
+
+from __future__ import annotations
 
 import os
 import pprint
@@ -34,7 +34,6 @@ from . import (
 
 @pytest.mark.parametrize("distribution_type", ["unknown", "py_modules", "packages", "skbuild"])
 def test_distribution_is_pure(distribution_type, tmpdir):
-
     skbuild_setup_kwargs = {}
 
     if distribution_type == "unknown":
@@ -64,7 +63,8 @@ def test_distribution_is_pure(distribution_type, tmpdir):
             """
         )
     else:
-        raise Exception(f"Unknown distribution_type: {distribution_type}")
+        msg = f"Unknown distribution_type: {distribution_type}"
+        raise Exception(msg)
 
     platform = get_platform()
     original_write_test_cmakelist = platform.write_test_cmakelist
@@ -73,7 +73,6 @@ def test_distribution_is_pure(distribution_type, tmpdir):
         original_write_test_cmakelist([])
 
     with patch.object(type(platform), "write_test_cmakelist", new=write_test_cmakelist_no_languages):
-
         with push_dir(str(tmpdir)), push_argv(["setup.py", "build"]):
             distribution = skbuild_setup(
                 name="test",
@@ -123,7 +122,7 @@ def test_cmake_args_keyword(cmake_args, capfd):
         )
     )
 
-    with execute_setup_py(tmp_dir, ["build"] + cmake_args, disable_languages_test=True):
+    with execute_setup_py(tmp_dir, ["build", *cmake_args], disable_languages_test=True):
         pass
 
     out, _ = capfd.readouterr()
@@ -137,16 +136,15 @@ def test_cmake_args_keyword(cmake_args, capfd):
 
 
 @pytest.mark.parametrize(
-    "cmake_install_dir, expected_failed, error_code_type",
-    (
+    ("cmake_install_dir", "expected_failed", "error_code_type"),
+    [
         (None, True, str),
         ("", True, str),
         (str(py.path.local.get_temproot().join("scikit-build")), True, SKBuildError),
         ("banana", False, str),
-    ),
+    ],
 )
-def test_cmake_install_dir_keyword(cmake_install_dir, expected_failed, error_code_type, capsys):
-
+def test_cmake_install_dir_keyword(cmake_install_dir, expected_failed, error_code_type, capsys, caplog):
     # -------------------------------------------------------------------------
     # "SOURCE" tree layout:
     #
@@ -171,11 +169,11 @@ def test_cmake_install_dir_keyword(cmake_install_dir, expected_failed, error_cod
 
     setup_kwarg = ""
     if cmake_install_dir is not None:
-        setup_kwarg = f"cmake_install_dir=r'{cmake_install_dir}'"
+        setup_kwarg = f"cmake_install_dir={str(cmake_install_dir)!r}"
 
     tmp_dir.join("setup.py").write(
         textwrap.dedent(
-            """
+            f"""
         from skbuild import setup
         setup(
             name="test_cmake_install_dir",
@@ -186,9 +184,7 @@ def test_cmake_install_dir_keyword(cmake_install_dir, expected_failed, error_cod
             packages=['apple', 'banana'],
             {setup_kwarg}
         )
-        """.format(
-                setup_kwarg=setup_kwarg
-            )
+        """
         )
     )
 
@@ -219,15 +215,16 @@ def test_cmake_install_dir_keyword(cmake_install_dir, expected_failed, error_cod
         message = str(e)
 
     out, _ = capsys.readouterr()
+    out += caplog.text
 
     assert failed == expected_failed
     if failed:
         if error_code_type == str:
-            assert message == "error: package directory " "'{}' does not exist".format(
+            assert message == "error: package directory '{}' does not exist".format(
                 os.path.join(CMAKE_INSTALL_DIR(), "banana")
             )
         else:
-            assert message.strip().startswith("setup parameter 'cmake_install_dir' " "is set to an absolute path.")
+            assert message.strip().startswith("setup parameter 'cmake_install_dir' is set to an absolute path.")
     else:
         init_py = to_platform_path(f"{CMAKE_INSTALL_DIR()}/banana/__init__.py")
         assert f"copying {init_py}" in out
@@ -239,7 +236,7 @@ def test_cmake_with_sdist_keyword(cmake_with_sdist, capfd):
 
     tmp_dir.join("setup.py").write(
         textwrap.dedent(
-            """
+            f"""
         from skbuild import setup
         setup(
             name="cmake_with_sdist_keyword",
@@ -249,9 +246,7 @@ def test_cmake_with_sdist_keyword(cmake_with_sdist, capfd):
             license="MIT",
             cmake_with_sdist={cmake_with_sdist}
         )
-        """.format(
-                cmake_with_sdist=cmake_with_sdist
-            )
+        """
         )
     )
     tmp_dir.join("CMakeLists.txt").write(
@@ -319,6 +314,8 @@ def test_cmake_minimum_required_version_keyword():
         assert "CMake version 99.98.97 or higher is required." in message
 
 
+@pytest.mark.deprecated()
+@pytest.mark.filterwarnings("ignore:setuptools.installer is deprecated:Warning")
 @pytest.mark.skipif(
     os.environ.get("CONDA_BUILD", "0") == "1",
     reason="running tests expecting network connection in Conda is not possible. "
@@ -326,7 +323,6 @@ def test_cmake_minimum_required_version_keyword():
 )
 @pytest.mark.skipif(not is_site_reachable("https://pypi.org/simple/cmake/"), reason="pypi.org website not reachable")
 def test_setup_requires_keyword_include_cmake(mocker, capsys):
-
     mock_setup = mocker.patch("skbuild.setuptools_wrap.setuptools.setup")
 
     tmp_dir = _tmpdir("setup_requires_keyword_include_cmake")
@@ -373,9 +369,8 @@ def test_setup_requires_keyword_include_cmake(mocker, capsys):
             assert cmake.__file__.lower().startswith(str(tmp_dir).lower())
 
 
-@pytest.mark.parametrize("distribution_type", ("pure", "skbuild"))
-def test_script_keyword(distribution_type, capsys):
-
+@pytest.mark.parametrize("distribution_type", ["pure", "skbuild"])
+def test_script_keyword(distribution_type, capsys, caplog):
     # -------------------------------------------------------------------------
     #
     # "SOURCE" tree layout for "pure" distribution:
@@ -437,7 +432,7 @@ def test_script_keyword(distribution_type, capsys):
         )
 
         messages = [
-            "copying {}/{}.py -> " "{}/setuptools/scripts-".format(CMAKE_INSTALL_DIR(), module, SKBUILD_DIR())
+            f"copying {CMAKE_INSTALL_DIR()}/{module}.py -> {SKBUILD_DIR()}/setuptools/scripts-"
             for module in ["foo", "bar"]
         ]
 
@@ -445,21 +440,19 @@ def test_script_keyword(distribution_type, capsys):
         tmp_dir.join("foo.py").write("# foo.py")
         tmp_dir.join("bar.py").write("# bar.py")
 
-        messages = [
-            "copying {}.py -> " "{}/setuptools/scripts-".format(module, SKBUILD_DIR()) for module in ["foo", "bar"]
-        ]
+        messages = [f"copying {module}.py -> {SKBUILD_DIR()}/setuptools/scripts-" for module in ["foo", "bar"]]
 
     with execute_setup_py(tmp_dir, ["build"], disable_languages_test=True):
         pass
 
     out, _ = capsys.readouterr()
+    out += caplog.text
     for message in messages:
         assert to_platform_path(message) in out
 
 
-@pytest.mark.parametrize("distribution_type", ("pure", "skbuild"))
-def test_py_modules_keyword(distribution_type, capsys):
-
+@pytest.mark.parametrize("distribution_type", ["pure", "skbuild"])
+def test_py_modules_keyword(distribution_type, capsys, caplog):
     # -------------------------------------------------------------------------
     #
     # "SOURCE" tree layout for "pure" distribution:
@@ -520,26 +513,26 @@ def test_py_modules_keyword(distribution_type, capsys):
         )
 
         messages = [
-            "copying {}/{}.py -> " "{}/setuptools/lib".format(CMAKE_INSTALL_DIR(), module, SKBUILD_DIR())
-            for module in ["foo", "bar"]
+            f"copying {CMAKE_INSTALL_DIR()}/{module}.py -> {SKBUILD_DIR()}/setuptools/lib" for module in ["foo", "bar"]
         ]
 
     elif distribution_type == "pure":
         tmp_dir.join("foo.py").write("# foo.py")
         tmp_dir.join("bar.py").write("# bar.py")
 
-        messages = ["copying {}.py -> " "{}/setuptools/lib".format(module, SKBUILD_DIR()) for module in ["foo", "bar"]]
+        messages = [f"copying {module}.py -> {SKBUILD_DIR()}/setuptools/lib" for module in ["foo", "bar"]]
 
     with execute_setup_py(tmp_dir, ["build"], disable_languages_test=True):
         pass
 
     out, _ = capsys.readouterr()
+    out += caplog.text
     for message in messages:
         assert to_platform_path(message) in out
 
 
 @pytest.mark.parametrize(
-    "package_parts, module_file, expected",
+    ("package_parts", "module_file", "expected"),
     [
         ([], "", ""),
         ([""], "file.py", "file.py"),
@@ -558,7 +551,7 @@ def test_strip_package(package_parts, module_file, expected):
     assert strip_package(package_parts, module_file) == expected
 
 
-@pytest.mark.parametrize("has_cmake_package", [0, 1])  # noqa: C901
+@pytest.mark.parametrize("has_cmake_package", [0, 1])
 @pytest.mark.parametrize("has_cmake_module", [0, 1])
 @pytest.mark.parametrize("has_hybrid_package", [0, 1])
 @pytest.mark.parametrize("has_pure_package", [0, 1])
@@ -807,7 +800,7 @@ def test_setup_inputs(
     # Commented paths are the one expected to be installed by CMake. For
     # this reason, corresponding files should NOT be created in the source
     # tree.
-    for (_type, path) in select_paths(
+    for _type, path in select_paths(
         [
             # ('c', 'cmake/__init__.py'),
             # ('c', 'cmake/cmake.py'),
@@ -849,7 +842,6 @@ def test_setup_inputs(
         )
 
     with execute_setup_py(tmp_dir, ["build"], disable_languages_test=True):
-
         assert mock_setup.call_count == 1
         setup_kw = mock_setup.call_args[1]
 
@@ -938,8 +930,7 @@ def test_setup_inputs(
 
 
 @pytest.mark.parametrize("with_cmake_source_dir", [0, 1])
-def test_cmake_install_into_pure_package(with_cmake_source_dir, capsys):
-
+def test_cmake_install_into_pure_package(with_cmake_source_dir, capsys, caplog):
     # -------------------------------------------------------------------------
     # "SOURCE" tree layout:
     #
@@ -990,7 +981,7 @@ def test_cmake_install_into_pure_package(with_cmake_source_dir, capsys):
 
     tmp_dir.join("setup.py").write(
         textwrap.dedent(
-            """
+            f"""
         from skbuild import setup
         setup(
             name="test_py_modules_keyword",
@@ -1002,9 +993,7 @@ def test_cmake_install_into_pure_package(with_cmake_source_dir, capsys):
             cmake_install_dir='fruits',
             cmake_source_dir='{cmake_source_dir}',
         )
-        """.format(
-                cmake_source_dir=cmake_source_dir
-            )
+        """
         )
     )
 
@@ -1040,7 +1029,7 @@ def test_cmake_install_into_pure_package(with_cmake_source_dir, capsys):
         pass
 
     messages = [
-        "copying {}/{} -> " "{}/setuptools/lib".format(CMAKE_INSTALL_DIR(), module, SKBUILD_DIR())
+        f"copying {CMAKE_INSTALL_DIR()}/{module} -> {SKBUILD_DIR()}/setuptools/lib"
         for module in [
             "fruits/__init__.py",
             "fruits/apple.py",
@@ -1051,13 +1040,13 @@ def test_cmake_install_into_pure_package(with_cmake_source_dir, capsys):
     ]
 
     out, _ = capsys.readouterr()
+    out += caplog.text
     for message in messages:
         assert to_platform_path(message) in out
 
 
 @pytest.mark.parametrize("zip_safe", [None, False, True])
 def test_zip_safe_default(zip_safe, mocker):
-
     mock_setup = mocker.patch("skbuild.setuptools_wrap.setuptools.setup")
 
     tmp_dir = _tmpdir("zip_safe_default")
@@ -1068,7 +1057,7 @@ def test_zip_safe_default(zip_safe, mocker):
 
     tmp_dir.join("setup.py").write(
         textwrap.dedent(
-            """
+            f"""
         from skbuild import setup
         setup(
             name="zip_safe_default",
@@ -1078,9 +1067,7 @@ def test_zip_safe_default(zip_safe, mocker):
             license="MIT",
             {setup_kwarg}
         )
-        """.format(
-                setup_kwarg=setup_kwarg
-            )
+        """
         )
     )
     tmp_dir.join("CMakeLists.txt").write(

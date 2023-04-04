@@ -1,10 +1,10 @@
-#!/usr/bin/env python
-
 """test_skbuild
 ----------------------------------
 
 Tests for `skbuild` module.
 """
+
+from __future__ import annotations
 
 import os
 import platform
@@ -43,12 +43,10 @@ def test_generator_selection():
 
         # As of Dec 2016, this is available only for VS 9.0
         has_vs_for_python_vcvars = any(
-            [
-                os.path.exists(os.path.expanduser(path_pattern % vs_version))
-                for path_pattern in [
-                    "~/AppData/Local/Programs/Common/Microsoft/Visual C++ for Python/%.1f/vcvarsall.bat",
-                    "C:/Program Files (x86)/Common Files/Microsoft/Visual C++ for Python/%.1f/vcvarsall.bat",
-                ]
+            os.path.exists(os.path.expanduser(path_pattern % vs_version))
+            for path_pattern in [
+                "~/AppData/Local/Programs/Common/Microsoft/Visual C++ for Python/%.1f/vcvarsall.bat",
+                "C:/Program Files (x86)/Common Files/Microsoft/Visual C++ for Python/%.1f/vcvarsall.bat",
             ]
         )
 
@@ -63,7 +61,7 @@ def test_generator_selection():
 
         elif has_vs_2019 or has_vs_2022:
             # ninja is provided by the CMake extension bundled with Visual Studio 2017
-            # C:/Program Files (x86)/Microsoft Visual Studio/2017/Professional/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe  # noqa: E501
+            # C:/Program Files (x86)/Microsoft Visual Studio/2017/Professional/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe
             assert get_best_generator().name == "Ninja"
 
         elif has_vs_for_python_vcvars:
@@ -74,17 +72,18 @@ def test_generator_selection():
         assert get_best_generator().name == generator
 
 
-@pytest.mark.parametrize("generator, expected_make_program", [("NMake Makefiles", "nmake"), ("Unix Makefiles", "make")])
+@pytest.mark.parametrize(
+    ("generator", "expected_make_program"), [("NMake Makefiles", "nmake"), ("Unix Makefiles", "make")]
+)
 def test_generator(generator, expected_make_program):
-
     generator_platform = {"NMake Makefiles": ["windows"], "Unix Makefiles": ["darwin", "linux"]}
     assert generator in generator_platform
 
     this_platform = platform.system().lower()
     if this_platform not in generator_platform[generator]:
-        pytest.skip(f"{generator} generator is available only on {this_platform.title()}")
+        pytest.skip(f"{generator} generator is not available on {this_platform.title()}")
 
-    @project_setup_py_test("hello-cpp", ["build"])
+    @project_setup_py_test("hello-cpp", ["build"], ret=True)
     def run_build():
         pass
 
@@ -94,7 +93,7 @@ def test_generator(generator, expected_make_program):
         assert cmakecache.exists()
         variables = get_cmakecache_variables(str(cmakecache))
         make_program = variables["CMAKE_MAKE_PROGRAM"][1] if "CMAKE_MAKE_PROGRAM" in variables else ""
-        assert make_program.endswith(expected_make_program) or make_program.endswith("%s.exe" % expected_make_program)
+        assert make_program.endswith((expected_make_program, f"{expected_make_program}.exe"))
 
 
 @pytest.mark.parametrize(
@@ -106,7 +105,6 @@ def test_generator(generator, expected_make_program):
 )
 def test_invalid_generator(generator_args):
     with push_dir():
-
         build_args = ["build"]
         build_args.extend(generator_args)
 
@@ -123,12 +121,12 @@ def test_invalid_generator(generator_args):
             message = str(e)
 
         assert failed
-        assert "scikit-build could not get a working generator " "for your system. Aborting build." in message
+        assert "scikit-build could not get a working generator for your system. Aborting build." in message
 
 
 @pytest.mark.skipif(sys.platform != "win32", reason="Requires Windows")
-@pytest.mark.parametrize("vs_year", ["2015", "2017", "2019", "2022"])
-def test_platform_windows_find_visual_studio(vs_year):
+@pytest.mark.parametrize("vs_year", ["2017", "2019", "2022"])
+def test_platform_windows_find_visual_studio(vs_year, capsys):
     """If the environment variable ``SKBUILD_TEST_FIND_VS<vs_year>_INSTALLATION_EXPECTED`` is set,
     this test asserts the value returned by :func:`skbuild.platforms.windows.find_visual_studio()`.
     It skips the test otherwise.
@@ -136,16 +134,18 @@ def test_platform_windows_find_visual_studio(vs_year):
     Setting the environment variable to 1 means that the corresponding Visual Studio version
     is expected to be installed. Setting it to 0, means otherwise.
     """
-    env_var = "SKBUILD_TEST_FIND_VS%s_INSTALLATION_EXPECTED" % vs_year
+    env_var = f"SKBUILD_TEST_FIND_VS{vs_year}_INSTALLATION_EXPECTED"
     if env_var not in os.environ:
-        pytest.skip("env. variable %s is not set" % env_var)
+        pytest.skip(f"env. variable {env_var} is not set")
 
     valid_path_expected = bool(int(os.environ[env_var]))
     vs_path = find_visual_studio(VS_YEAR_TO_VERSION[vs_year])
     if valid_path_expected:
+        with capsys.disabled():
+            print(f"\nFound VS {vs_year} @ {vs_path}")
         assert os.path.exists(vs_path)
     else:
-        assert vs_path == ""
+        assert not vs_path
 
 
 @pytest.mark.skipif(sys.platform != "win32", reason="Requires Windows")
@@ -160,7 +160,7 @@ def test_toolset():
     if arch == "64bit":
         vs_generator += " Win64"
 
-    @project_setup_py_test("hello-cpp", ["build", "-G", vs_generator])
+    @project_setup_py_test("hello-cpp", ["build", "-G", vs_generator], ret=True)
     def run_build():
         pass
 

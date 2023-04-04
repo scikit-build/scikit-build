@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+import pytest
+
 from . import (
     _tmpdir,
     execute_setup_py,
@@ -8,14 +12,15 @@ from . import (
 )
 
 
+@pytest.mark.deprecated()
 @project_setup_py_test("issue-274-support-one-package-without-package-dir", ["install"], disable_languages_test=True)
 def test_install_command():
     pass
 
 
+@pytest.mark.deprecated()
 def test_test_command():
     with push_dir():
-
         tmp_dir = _tmpdir("test_test_command")
         project = "issue-274-support-one-package-without-package-dir"
         prepare_project(project, tmp_dir)
@@ -25,6 +30,6 @@ def test_test_command():
             with execute_setup_py(tmp_dir, ["test"], disable_languages_test=True):
                 pass
         except SystemExit as exc:
-            assert exc.code == 0
+            assert exc.code == 0  # noqa: PT017
 
         assert tmp_dir.join("test_hello.completed.txt").exists()

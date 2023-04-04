@@ -1,6 +1,8 @@
 """This module defines custom ``generate_source_manifest`` setuptools
 command."""
 
+from __future__ import annotations
+
 import os
 import subprocess
 import sys
@@ -17,10 +19,10 @@ class generate_source_manifest(set_build_base_mixin, Command):
 
     description = "generate source MANIFEST"
 
-    def initialize_options(self):
+    def initialize_options(self) -> None:
         """Set default values for all the options that this command supports."""
 
-    def run(self):
+    def run(self) -> None:
         """
         If neither a `MANIFEST`, nor a `MANIFEST.in` file is provided, and
         we are in a git repo, try to create a `MANIFEST.in` file from the output of
@@ -42,15 +44,16 @@ class generate_source_manifest(set_build_base_mixin, Command):
         )
 
         if do_generate:
-
             try:
                 with open("MANIFEST.in", "wb") as manifest_in_file:
                     # Since Git < 2.11 does not support --recurse-submodules option, fallback to
                     # regular listing.
                     try:
-                        cmd_out = subprocess.check_output(["git", "ls-files", "--recurse-submodules"])
+                        cmd_out = subprocess.run(
+                            ["git", "ls-files", "--recurse-submodules"], stdout=subprocess.PIPE, check=True
+                        ).stdout
                     except subprocess.CalledProcessError:
-                        cmd_out = subprocess.check_output(["git", "ls-files"])
+                        cmd_out = subprocess.run(["git", "ls-files"], stdout=subprocess.PIPE, check=True).stdout
                     git_files = [git_file.strip() for git_file in cmd_out.split(b"\n")]
                     manifest_text = b"\n".join([b"include %s" % git_file.strip() for git_file in git_files if git_file])
                     manifest_text += b"\nexclude MANIFEST.in"
@@ -73,5 +76,5 @@ class generate_source_manifest(set_build_base_mixin, Command):
             with open(SKBUILD_MARKER_FILE(), "w", encoding="utf-8"):  # touch
                 pass
 
-    def finalize_options(self, *args, **kwargs):
+    def finalize_options(self, *args: object, **kwargs: object) -> None:
         """Set final values for all the options that this command supports."""

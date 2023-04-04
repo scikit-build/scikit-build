@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import platform
 import sys
 import textwrap
@@ -135,8 +137,8 @@ def test_cmake_args_keyword_osx_default(
     cli_cmake_args,
     expected_cmake_osx_deployment_target,
     mocker,
+    monkeypatch,
 ):
-
     tmp_dir = _tmpdir("cmake_args_keyword_osx_default")
 
     tmp_dir.join("setup.py").write(
@@ -166,28 +168,15 @@ def test_cmake_args_keyword_osx_default(
 
     mock_configure = mocker.patch("skbuild.cmaker.CMaker.configure", side_effect=RuntimeError("exit skbuild"))
 
-    try:
-        # allow to run the test on any platform
-        saved_platform = sys.platform
-        sys.platform = "darwin"
+    monkeypatch.setattr(platform, "mac_ver", lambda: ("10.9", None, "x84_64"))
+    monkeypatch.setattr(platform, "machine", lambda: "x86_64")
+    monkeypatch.setattr(sys, "platform", "darwin")
 
-        def mock_mac_ver():
-            return "10.9", None, "x84_64"
-
-        saved_mac_ver = platform.mac_ver
-        platform.mac_ver = mock_mac_ver
-
-        saved_SKBUILD_PLAT_NAME = skbuild.constants._SKBUILD_PLAT_NAME
-
-        with push_env(MACOSX_DEPLOYMENT_TARGET=osx_deployment_target_env_var):
-            skbuild.constants._SKBUILD_PLAT_NAME = skbuild.constants._default_skbuild_plat_name()
-            with pytest.raises(RuntimeError, match="exit skbuild"):
-                with execute_setup_py(tmp_dir, ["build"] + cli_setup_args + ["--"] + cli_cmake_args):
-                    pass
-    finally:
-        sys.platform = saved_platform
-        platform.mac_ver = saved_mac_ver
-        skbuild.constants._SKBUILD_PLAT_NAME = saved_SKBUILD_PLAT_NAME
+    with push_env(MACOSX_DEPLOYMENT_TARGET=osx_deployment_target_env_var):
+        monkeypatch.setattr(skbuild.constants, "_SKBUILD_PLAT_NAME", skbuild.constants._default_skbuild_plat_name())
+        with pytest.raises(RuntimeError, match="exit skbuild"):
+            with execute_setup_py(tmp_dir, ["build", *cli_setup_args] + ["--"] + cli_cmake_args):
+                pass
 
     assert mock_configure.call_count == 1
 

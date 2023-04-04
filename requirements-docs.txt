@@ -1,5 +1,0 @@
-pygments
-sphinx>=4
-sphinx-issues
-sphinx-rtd-theme>=1.0
-sphinxcontrib-moderncmakedomain>=3.19

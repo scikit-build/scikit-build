@@ -1,0 +1,16 @@
+!    -*- f90 -*-
+! Note: the context of this file is case sensitive.
+
+python module _bonjour ! in
+    interface  ! in :_bonjour
+        subroutine bonjour ! in :_bonjour:_bonjour.f90
+        end subroutine bonjour
+        function change_integer(n) ! in :bonjour/_bonjour.f90
+            integer intent(in) :: n
+            integer :: change_integer
+        end function change_integer
+    end interface
+end python module _bonjour
+
+! This file was auto-generated with f2py (version:2).
+! See http://cens.ioc.ee/projects/f2py2e/

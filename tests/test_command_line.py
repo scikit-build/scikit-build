@@ -1,10 +1,10 @@
-#!/usr/bin/env python
-
 """test_command_line
 ----------------------------------
 
 Tests for various command line functionality.
 """
+
+from __future__ import annotations
 
 import os
 
@@ -46,8 +46,8 @@ def test_metadata_display(capsys):
     assert "scikit-build options" not in out
     assert "Global options:" not in out
     assert "usage:" not in out
-    assert "The scikit-build team" == out.splitlines()[0]
-    assert "hello_no_language" == out.splitlines()[1]
+    assert out.splitlines()[0] == "The scikit-build team"
+    assert out.splitlines()[1] == "hello_no_language"
 
 
 def test_no_command():
@@ -68,7 +68,6 @@ def test_no_command():
 
 
 def test_invalid_command():
-
     with push_dir():
 
         @project_setup_py_test("hello-no-language", ["unknown"], disable_languages_test=True)
@@ -124,10 +123,10 @@ def test_cmake_initial_cache_as_global_option(tmpdir):
     initial_cache.write("""set(MY_CMAKE_VARIABLE "1" CACHE BOOL "My cache variable")""")
 
     try:
-        with execute_setup_py(tmpdir, ["-C%s" % str(initial_cache), "build"], disable_languages_test=True):
+        with execute_setup_py(tmpdir, [f"-C{str(initial_cache)}", "build"], disable_languages_test=True):
             pass
     except SystemExit as exc:
-        assert exc.code == 0
+        assert exc.code == 0  # noqa: PT017
 
     cmakecache_txt = tmpdir.join(CMAKE_BUILD_DIR(), "CMakeCache.txt")
     assert cmakecache_txt.exists()
@@ -135,7 +134,6 @@ def test_cmake_initial_cache_as_global_option(tmpdir):
 
 
 def test_cmake_executable_arg():
-
     cmake_executable = "/path/to/invalid/cmake"
 
     @project_setup_py_test(
@@ -153,13 +151,12 @@ def test_cmake_executable_arg():
         message = str(e)
 
     assert failed
-    assert "Problem with the CMake installation, aborting build. CMake executable is %s" % cmake_executable in message
+    assert f"Problem with the CMake installation, aborting build. CMake executable is {cmake_executable}" in message
 
 
 @pytest.mark.parametrize("action", ["sdist", "bdist_wheel"])
 @pytest.mark.parametrize("hide_listing", [True, False])
 def test_hide_listing(action, hide_listing, capfd, caplog):
-
     cmd = [action]
     if hide_listing:
         cmd.insert(0, "--hide-listing")

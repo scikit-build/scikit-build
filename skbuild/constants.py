@@ -2,17 +2,41 @@
 This module defines constants commonly used in scikit-build.
 """
 
+from __future__ import annotations
+
+import contextlib
 import os
 import platform
+import shutil
 import sys
+from pathlib import Path
 
 from distutils.util import get_platform
 
-CMAKE_DEFAULT_EXECUTABLE = "cmake"
+
+def _get_cmake_executable() -> str:
+    with contextlib.suppress(ImportError):
+        from cmake import CMAKE_BIN_DIR  # pylint: disable=import-outside-toplevel
+
+        path = f"{CMAKE_BIN_DIR}/cmake"
+        if Path(f"{path}.exe").is_file():
+            return f"{path}.exe"
+        return path
+
+    for name in ("cmake3", "cmake"):
+        prog = shutil.which(name)
+        if prog:
+            return prog
+
+    # Just guess otherwise
+    return "cmake"
+
+
+CMAKE_DEFAULT_EXECUTABLE = _get_cmake_executable()
 """Default path to CMake executable."""
 
 
-def _default_skbuild_plat_name():
+def _default_skbuild_plat_name() -> str:
     """Get default platform name.
 
     On linux and windows, it corresponds to :func:`distutils.util.get_platform()`.
@@ -47,7 +71,8 @@ def _default_skbuild_plat_name():
 
     # Use CMAKE_OSX_ARCHITECTURES if that is set, otherwise use ARCHFLAGS,
     # which is the variable used by Setuptools. Fall back to the machine arch
-    # if neither of those is given.
+    # if neither of those is given. Not that -D flags like CMAKE_SYSTEM_PROCESSOR
+    # will override this by setting it later.
 
     archflags = os.environ.get("ARCHFLAGS")
     if archflags is not None:
@@ -65,7 +90,7 @@ def _default_skbuild_plat_name():
 _SKBUILD_PLAT_NAME = _default_skbuild_plat_name()
 
 
-def set_skbuild_plat_name(plat_name):
+def set_skbuild_plat_name(plat_name: str) -> None:
     """Set platform name associated with scikit-build functions returning a path:
 
     * :func:`SKBUILD_DIR()`
@@ -75,11 +100,11 @@ def set_skbuild_plat_name(plat_name):
     * :func:`CMAKE_SPEC_FILE()`
     * :func:`SETUPTOOLS_INSTALL_DIR()`
     """
-    global _SKBUILD_PLAT_NAME  # pylint: disable=global-statement
+    global _SKBUILD_PLAT_NAME  # noqa: PLW0603
     _SKBUILD_PLAT_NAME = plat_name
 
 
-def skbuild_plat_name():
+def skbuild_plat_name() -> str:
     """Get platform name formatted as `<operating_system>[-<operating_system_version>]-<machine_architecture>`.
 
     Default value corresponds to :func:`_default_skbuild_plat_name()` and can be overridden
@@ -90,34 +115,34 @@ def skbuild_plat_name():
     return _SKBUILD_PLAT_NAME
 
 
-def SKBUILD_DIR():
+def SKBUILD_DIR() -> str:
     """Top-level directory where setuptools and CMake directories are generated."""
     version_str = ".".join(map(str, sys.version_info[:2]))
     return os.path.join("_skbuild", f"{_SKBUILD_PLAT_NAME}-{version_str}")
 
 
-def SKBUILD_MARKER_FILE():
+def SKBUILD_MARKER_FILE() -> str:
     """Marker file used by :func:`skbuild.command.generate_source_manifest.generate_source_manifest.run()`."""
     return os.path.join(SKBUILD_DIR(), "_skbuild_MANIFEST")
 
 
-def CMAKE_BUILD_DIR():
+def CMAKE_BUILD_DIR() -> str:
     """CMake build directory."""
     return os.path.join(SKBUILD_DIR(), "cmake-build")
 
 
-def CMAKE_INSTALL_DIR():
+def CMAKE_INSTALL_DIR() -> str:
     """CMake install directory."""
     return os.path.join(SKBUILD_DIR(), "cmake-install")
 
 
-def CMAKE_SPEC_FILE():
+def CMAKE_SPEC_FILE() -> str:
     """CMake specification file storing CMake version, CMake configuration arguments and
     environment variables ``PYTHONNOUSERSITE`` and ``PYTHONPATH``.
     """
     return os.path.join(CMAKE_BUILD_DIR(), "CMakeSpec.json")
 
 
-def SETUPTOOLS_INSTALL_DIR():
+def SETUPTOOLS_INSTALL_DIR() -> str:
     """Setuptools install directory."""
     return os.path.join(SKBUILD_DIR(), "setuptools")

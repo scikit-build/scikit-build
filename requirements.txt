@@ -1,4 +1,0 @@
-distro
-packaging
-setuptools>=42.0.0
-wheel>=0.32.0

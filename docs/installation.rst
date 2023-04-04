@@ -34,16 +34,8 @@ Dependencies
 Python Packages
 ^^^^^^^^^^^^^^^
 
-The project has a few common Python package dependencies. The runtime
-dependencies are:
-
-.. include:: ../requirements.txt
-   :literal:
-
-The build time dependencies (also required for development) are:
-
-.. include:: ../requirements-dev.txt
-   :literal:
+The project has a few common Python package dependencies. These can be seen in
+``setup.py`` and ``pyproject.toml``.
 
 Compiler Toolchain
 ^^^^^^^^^^^^^^^^^^

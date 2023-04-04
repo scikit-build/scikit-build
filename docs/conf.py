@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # complexity documentation build configuration file, created by
 # sphinx-quickstart on Tue Jul  9 22:26:36 2013.
 #
@@ -11,6 +9,8 @@
 #
 # All configuration values have a default; values that are commented out
 # serve to show the default.
+
+from __future__ import annotations
 
 import os
 import sys
@@ -30,7 +30,7 @@ project_root = os.path.dirname(cwd)
 # version is used.
 sys.path.insert(0, project_root)
 
-import skbuild
+import skbuild  # noqa: E402
 
 # -- General configuration ---------------------------------------------
 

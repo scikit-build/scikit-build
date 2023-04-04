@@ -1,5 +1,9 @@
+from __future__ import annotations
+
 import glob
 import os
+
+import pytest
 
 from skbuild.utils import to_unix_path
 
@@ -60,9 +64,9 @@ def check_sdist(proj, base=""):
         to_unix_path(os.path.join(proj, base, "hello2/hello2_include_from_manifest.txt")),
     ]
 
-    sdist_archive = "dist/%s.zip" % proj
+    sdist_archive = f"dist/{proj}.zip"
     if sdists_tar:
-        sdist_archive = "dist/%s.tar.gz" % proj
+        sdist_archive = f"dist/{proj}.tar.gz"
 
     check_sdist_content(sdist_archive, proj, expected_content, package_dir=base)
 
@@ -72,6 +76,7 @@ def test_include_exclude_data():
     check_whls("test_include_exclude_data-0.1.0")
 
 
+@pytest.mark.nosetuptoolsscm()
 @project_setup_py_test("test-include-exclude-data", ["sdist"])
 def test_hello_sdist():
     check_sdist("test_include_exclude_data-0.1.0")
@@ -82,6 +87,7 @@ def test_include_exclude_data_with_base():
     check_whls("test_include_exclude_data_with_base-0.1.0")
 
 
+@pytest.mark.nosetuptoolsscm()
 @project_setup_py_test("test-include-exclude-data-with-base", ["sdist"])
 def test_hello_sdist_with_base():
     check_sdist("test_include_exclude_data_with_base-0.1.0", base="src")

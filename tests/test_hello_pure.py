@@ -1,10 +1,10 @@
-#!/usr/bin/env python
-
 """test_hello_pure
 ----------------------------------
 
 Tries to build and test the `hello-pure` sample project.
 """
+
+from __future__ import annotations
 
 import glob
 
@@ -58,7 +58,7 @@ def test_hello_pure_wheel():
 def test_hello_clean(capfd):
     with push_dir():
 
-        @project_setup_py_test("hello-pure", ["build"], disable_languages_test=True)
+        @project_setup_py_test("hello-pure", ["build"], disable_languages_test=True, ret=True)
         def run_build():
             pass
 

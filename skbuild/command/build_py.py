@@ -1,19 +1,21 @@
 """This module defines custom implementation of ``build_py`` setuptools
 command."""
 
+from __future__ import annotations
+
 import os
 
 from setuptools.command.build_py import build_py as _build_py
 
 from ..constants import CMAKE_INSTALL_DIR
-from ..utils import distribution_hide_listing, distutils_log
+from ..utils import distribution_hide_listing, logger
 from . import set_build_base_mixin
 
 
 class build_py(set_build_base_mixin, _build_py):
     """Custom implementation of ``build_py`` setuptools command."""
 
-    def initialize_options(self):
+    def initialize_options(self) -> None:
         """Handle --hide-listing option.
 
         Initializes ``outfiles_count``.
@@ -21,15 +23,15 @@ class build_py(set_build_base_mixin, _build_py):
         super().initialize_options()
         self.outfiles_count = 0
 
-    def build_module(self, module, module_file, package):
+    def build_module(self, module: str | list[str] | tuple[str, ...], module_file: str, package: str) -> None:
         """Handle --hide-listing option.
 
         Increments ``outfiles_count``.
         """
-        super().build_module(module, module_file, package)
+        super().build_module(module, module_file, package)  # type: ignore[no-untyped-call]
         self.outfiles_count += 1
 
-    def run(self, *args, **kwargs):
+    def run(self, *args: object, **kwargs: object) -> None:
         """Handle --hide-listing option.
 
         Display number of copied files. It corresponds to the value
@@ -37,9 +39,9 @@ class build_py(set_build_base_mixin, _build_py):
         """
         with distribution_hide_listing(self.distribution):
             super().run(*args, **kwargs)
-        distutils_log.info("copied %d files", self.outfiles_count)
+        logger.info("copied %d files", self.outfiles_count)
 
-    def find_modules(self):
+    def find_modules(self) -> list[tuple[str, str, str]]:
         """Finds individually-specified Python modules, ie. those listed by
         module name in 'self.py_modules'.  Returns a list of tuples (package,
         module_base, filename): 'package' is a tuple of the path through
@@ -54,10 +56,10 @@ class build_py(set_build_base_mixin, _build_py):
         #   this package
         # checked - true if we have checked that the package directory
         #   is valid (exists, contains __init__.py, ... ?)
-        packages = {}
+        packages: dict[str, tuple[str, bool]] = {}
 
         # List of (package, module, filename) tuples to return
-        modules = []
+        modules: list[tuple[str, str, str]] = []
 
         # We treat modules-in-packages almost the same as toplevel modules,
         # just the "package" for a toplevel is empty (either an empty
@@ -71,12 +73,12 @@ class build_py(set_build_base_mixin, _build_py):
             try:
                 (package_dir, checked) = packages[package]
             except KeyError:
-                package_dir = self.get_package_dir(package)
-                checked = 0
+                package_dir = self.get_package_dir(package)  # type: ignore[no-untyped-call]
+                checked = False
 
             if not checked:
-                init_py = self.check_package(package, package_dir)
-                packages[package] = (package_dir, 1)
+                init_py = self.check_package(package, package_dir)  # type: ignore[no-untyped-call]
+                packages[package] = (package_dir, True)
                 if init_py:
                     modules.append((package, "__init__", init_py))
 
@@ -90,7 +92,7 @@ class build_py(set_build_base_mixin, _build_py):
             if os.path.exists(os.path.join(CMAKE_INSTALL_DIR(), module_file)):
                 module_file = os.path.join(CMAKE_INSTALL_DIR(), module_file)
 
-            if not self.check_module(module, module_file):
+            if not self.check_module(module, module_file):  # type: ignore[no-untyped-call]
                 continue
 
             modules.append((package, module_base, module_file))

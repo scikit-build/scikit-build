@@ -1,15 +1,21 @@
-#!/usr/bin/env python
-
 """test_hello_cython
 ----------------------------------
 
 Tries to build and test the `hello-cython` sample project.
 """
 
+from __future__ import annotations
+
 import glob
+
+import pytest
 
 from . import get_ext_suffix, project_setup_py_test
 from .pytest_helpers import check_sdist_content, check_wheel_content
+
+pytestmark = pytest.mark.filterwarnings(
+    "ignore:.*ends with a trailing slash, which is not supported by setuptools:FutureWarning"
+)
 
 
 @project_setup_py_test("hello-cython", ["build"])
@@ -47,7 +53,7 @@ def test_hello_cython_sdist():
 @project_setup_py_test("hello-cython", ["bdist_wheel"])
 def test_hello_cython_wheel():
     expected_content = [
-        "hello_cython/_hello%s" % get_ext_suffix(),
+        f"hello_cython/_hello{get_ext_suffix()}",
         "hello_cython/__init__.py",
         "hello_cython/__main__.py",
     ]

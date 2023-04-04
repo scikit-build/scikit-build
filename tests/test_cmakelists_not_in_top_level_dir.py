@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 """test_cmakelists_not_in_top_level_dir
 ----------------------------------
 
@@ -7,6 +5,8 @@ Tries to build and test the `cmakelists_not_in_top_level_dir` sample
 project. It basically checks that using the `cmake_source_dir` setup
 keyword works.
 """
+
+from __future__ import annotations
 
 import glob
 import textwrap
@@ -23,23 +23,24 @@ from .pytest_helpers import check_sdist_content
 def test_build(capsys):
     out, err = capsys.readouterr()
     dist_warning = "Unknown distribution option: 'cmake_source_dir'"
-    assert dist_warning not in err and dist_warning not in out
+    assert dist_warning not in err
+    assert dist_warning not in out
 
 
 @pytest.mark.parametrize(
-    "cmake_source_dir, expected_failed",
-    (
+    ("cmake_source_dir", "expected_failed"),
+    [
         ("invalid", True),
         ("", False),
         (".", False),
-    ),
+    ],
 )
 def test_cmake_source_dir(cmake_source_dir, expected_failed):
     tmp_dir = _tmpdir("test_cmake_source_dir")
 
     tmp_dir.join("setup.py").write(
         textwrap.dedent(
-            """
+            f"""
         from skbuild import setup
         setup(
             name="test_cmake_source_dir",
@@ -49,9 +50,7 @@ def test_cmake_source_dir(cmake_source_dir, expected_failed):
             license="MIT",
             cmake_source_dir="{cmake_source_dir}"
         )
-        """.format(
-                cmake_source_dir=cmake_source_dir
-            )
+        """
         )
     )
 

@@ -1,10 +1,10 @@
-#!/usr/bin/env python
-
 """test_cython_flags
 ----------------------------------
 
 Tries to build the `cython-flags` sample project.
 """
+
+from __future__ import annotations
 
 from . import project_setup_py_test
 

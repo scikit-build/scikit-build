@@ -2,6 +2,20 @@
 scikit-build
 ===============================
 
+.. image:: https://github.com/scikit-build/scikit-build/actions/workflows/ci.yml/badge.svg
+    :target: https://github.com/scikit-build/scikit-build/actions/workflows/ci.yml
+
+.. image:: https://dev.azure.com/scikit-build/scikit-build/_apis/build/status/scikit-build.scikit-build?branchName=main
+   :target: https://dev.azure.com/scikit-build/scikit-build/_build/latest?definitionId=1&branchName=main
+
+.. image:: https://codecov.io/gh/scikit-build/scikit-build/branch/main/graph/badge.svg
+    :target: https://codecov.io/gh/scikit-build/scikit-build
+    :alt: Code coverage status
+
+.. image:: https://img.shields.io/static/v1?label=Discussions&message=Ask&color=blue&logo=github
+    :target: https://github.com/orgs/scikit-build/discussions
+    :alt: GitHub Discussion
+
 Improved build system generator for CPython C/C++/Fortran/Cython extensions.
 
 Better support is available for additional compilers, build systems, cross
@@ -29,28 +43,40 @@ Latest Release
   |     :target: https://anaconda.org/conda-forge/scikit-build                  |     :target: https://anaconda.org/conda-forge/scikit-build                    |
   +-----------------------------------------------------------------------------+-------------------------------------------------------------------------------+
 
+.. INJECT-CHANGELOG
 
-Build Status
+History
+-------
+
+PyCMake was created at SciPy 2014 in response to general difficulties building
+C++ and Fortran based Python extensions across platforms.  It was renamed to
+"scikit-build" in 2016.
+
+
+Known Issues
 ------------
 
-.. table::
+These issues are likely to be addressed in upcoming releases.
 
-  +--------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------+
-  | GitHub Actions                                                                             | Azure                                                                                                                     |
-  +============================================================================================+===========================================================================================================================+
-  | .. image:: https://github.com/scikit-build/scikit-build/actions/workflows/ci.yml/badge.svg | .. image:: https://dev.azure.com/scikit-build/scikit-build/_apis/build/status/scikit-build.scikit-build?branchName=master |
-  |     :target: https://github.com/scikit-build/scikit-build/actions/workflows/ci.yml         |     :target: https://dev.azure.com/scikit-build/scikit-build/_build/latest?definitionId=1&branchName=master               |
-  +--------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------+
+* Editable installs do not work with the latest versions of Setuptools (and had
+  issues with older versions, too).
+* Configuration scikit-build cares about _must_ be specified in ``setup()``
+  currently.
+* The cache directory (``_skbuild``) may need to be deleted between builds in
+  some cases (like rebuilding with a different Python interpreter).
 
-Overall Health
---------------
+We are also working on improving scikit-build, so there are some upcoming
+changes and deprecations:
 
-.. image:: https://requires.io/github/scikit-build/scikit-build/requirements.svg?branch=master
-    :target: https://requires.io/github/scikit-build/scikit-build/requirements/?branch=master
-    :alt: Requirements Status
 
-.. image:: https://codecov.io/gh/scikit-build/scikit-build/branch/master/graph/badge.svg
-    :target: https://codecov.io/gh/scikit-build/scikit-build
+* All deprecated setuptools/distutils features are also deprecated in
+  scikit-build, like the ``test`` command, ``easy_install``, etc.
+* Older versions of CMake (<3.15) are not recommended; a future version will
+  remove support for older CMake's (along with providing a better mechanism for
+  ensuring a proper CMake is available).
+
+If you need any of these features, please open or find an issue explaining what
+and why you need something.
 
 Miscellaneous
 -------------
@@ -58,4 +84,7 @@ Miscellaneous
 * Free software: MIT license
 * Documentation: http://scikit-build.readthedocs.org
 * Source code: https://github.com/scikit-build/scikit-build
-* Mailing list: https://groups.google.com/forum/#!forum/scikit-build
+* Discussions: https://github.com/orgs/scikit-build/discussions
+
+
+Support for this work was provided by NSF cooperative agreement `OAC-2209877 <https://www.nsf.gov/awardsearch/showAward?AWD_ID=2209877>`_.

@@ -1,17 +1,17 @@
-#!/usr/bin/env python
-
 """test_hello_cpp
 ----------------------------------
 
 Tries to build and test the `hello-cpp` sample project.
 """
 
+from __future__ import annotations
+
 import glob
 import os
 
 import pytest
 
-from skbuild.constants import CMAKE_BUILD_DIR, CMAKE_INSTALL_DIR, SKBUILD_DIR
+from skbuild.constants import CMAKE_BUILD_DIR, SKBUILD_DIR
 from skbuild.utils import push_dir
 
 from . import SAMPLES_DIR, _copy_dir, _tmpdir, get_ext_suffix, project_setup_py_test
@@ -21,7 +21,7 @@ from .pytest_helpers import check_sdist_content, check_wheel_content
 def test_hello_builds():
     with push_dir():
 
-        @project_setup_py_test("hello-cpp", ["build"])
+        @project_setup_py_test("hello-cpp", ["build"], ret=True)
         def run():
             pass
 
@@ -70,7 +70,7 @@ def test_hello_sdist():
 
 def test_hello_wheel():
     expected_content = [
-        "hello/_hello%s" % get_ext_suffix(),
+        f"hello/_hello{get_ext_suffix()}",
         "hello/__init__.py",
         "hello/__main__.py",
         "hello/world.py",
@@ -84,7 +84,7 @@ def test_hello_wheel():
 
     expected_distribution_name = "hello-1.2.3"
 
-    @project_setup_py_test("hello-cpp", ["bdist_wheel"])
+    @project_setup_py_test("hello-cpp", ["bdist_wheel"], ret=True)
     def build_wheel():
         whls = glob.glob("dist/*.whl")
         assert len(whls) == 1
@@ -110,10 +110,9 @@ def test_hello_wheel():
 @pytest.mark.parametrize("dry_run", ["with-dry-run", "without-dry-run"])
 def test_hello_clean(dry_run, capfd):
     with push_dir():
-
         dry_run = dry_run == "with-dry-run"
 
-        @project_setup_py_test("hello-cpp", ["build"])
+        @project_setup_py_test("hello-cpp", ["build"], ret=True)
         def run_build():
             pass
 
@@ -148,7 +147,6 @@ def test_hello_clean(dry_run, capfd):
 
 def test_hello_cleans(capfd, caplog):
     with push_dir():
-
         tmp_dir = _tmpdir("test_hello_cleans")
 
         _copy_dir(tmp_dir, os.path.join(SAMPLES_DIR, "hello-cpp"))
@@ -163,25 +161,22 @@ def test_hello_cleans(capfd, caplog):
 
         # Check that a project can be cleaned twice in a row
         run_build()
-        print("<<-->>")
+        capfd.readouterr()
+        caplog.clear()
+
         run_clean()
-        print("<<-->>")
+        txt1 = caplog.text
+        msg = capfd.readouterr().out + txt1
+        assert "running clean" in msg
+        caplog.clear()
+
         run_clean()
-
-    _, clean1_out, clean2_out = capfd.readouterr()[0].split("<<-->>")
-
-    clean1_out = clean1_out.strip()
-    clean2_out = clean2_out.strip()
-
-    assert "running clean" == clean1_out.splitlines()[0]
-    if caplog.text.count("removing") != 3:
-        assert f"removing '{CMAKE_INSTALL_DIR()}'" == clean1_out.splitlines()[1]
-        assert f"removing '{CMAKE_BUILD_DIR()}'" == clean1_out.splitlines()[2]
-        assert f"removing '{SKBUILD_DIR()}'" == clean1_out.splitlines()[3]
-
-    assert "running clean" == clean2_out
+        txt2 = caplog.text
+        msg = capfd.readouterr().out + txt2
+        assert "running clean" in msg
 
 
+@pytest.mark.deprecated()
 @project_setup_py_test("hello-cpp", ["develop"])
 def test_hello_develop():
     for expected_file in [
@@ -196,7 +191,7 @@ def test_hello_develop():
         "hello/CMakeLists.txt",
         # These files are "generated" by CMake and
         # are copied from CMAKE_INSTALL_DIR
-        "hello/_hello%s" % get_ext_suffix(),
+        f"hello/_hello{get_ext_suffix()}",
         "hello/world.py",
         "helloModule.py",
     ]:

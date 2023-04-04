@@ -1,45 +1,144 @@
 [build-system]
-requires = ["setuptools>=42", "setuptools_scm[toml]"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling", "hatch-fancy-pypi-readme", "hatch-vcs"]
+build-backend = "hatchling.build"
 
-
-[tool.setuptools_scm]
-write_to = "skbuild/_version.py"
-
-
-[tool.check-manifest]
-ignore = [
-  "skbuild/_version.py",
-  "docs/**",
-  ".*",
-  "noxfile.py",
-  "azure-pipelines.yml",
+[project]
+name = "scikit-build"
+dynamic = ["version", "readme"]
+description = "Improved build system generator for Python C/C++/Fortran/Cython extensions"
+license = "MIT"
+requires-python = ">=3.7"
+authors = [
+    { name = "The scikit-build team" },
 ]
+keywords = [
+    "scikit-build",
+]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Typing :: Typed",
+]
+dependencies = [
+    'distro',
+    'packaging',
+    'setuptools>=42.0.0',
+    'tomli; python_version<"3.11"',
+    'typing-extensions>=3.7; python_version<"3.8"',
+    'wheel>=0.32.0',
+]
+
+[project.optional-dependencies]
+cov = [
+    "codecov>=2.0.5",
+    "coverage>=4.2",
+    "pytest-cov>=2.7.1",
+]
+docs = [
+    "pygments",
+    "sphinx-issues",
+    "sphinx-rtd-theme>=1.0",
+    "sphinx>=4",
+    "sphinxcontrib-moderncmakedomain>=3.19",
+]
+doctest = [
+    "ubelt>=0.8.2",
+    "xdoctest>=0.10.0",
+]
+test = [
+    'build>=0.7',
+    'cython>=0.25.1',
+    'importlib-metadata;python_version<"3.8"',
+    'pytest-mock>=1.10.4',
+    'pytest-virtualenv>=1.2.5',
+    'pytest>=6.0.0',
+    'requests',
+    'virtualenv',
+]
+
+[project.urls]
+"Bug Tracker" = "https://github.com/scikit-build/scikit-build/issues"
+Changelog = "https://scikit-build.readthedocs.io/en/latest/changes.html"
+Discussions = "https://github.com/orgs/scikit-build/discussions"
+Documentation = "https://scikit-build.readthedocs.io/"
+Examples = "https://github.com/scikit-build/scikit-build-sample-projects"
+Homepage = "https://github.com/scikit-build/scikit-build"
+
+[tool.hatch]
+build.targets.wheel.packages = ["skbuild"]
+version.source = "vcs"
+build.hooks.vcs.version-file = "skbuild/_version.py"
+
+
+[tool.hatch.metadata.hooks.fancy-pypi-readme]
+content-type = "text/x-rst"
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
+path = "README.rst"
+end-before = ".. INJECT-CHANGELOG"
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
+path = "CHANGES.rst"
+start-after = ".. START-BRIEF-CHANGELOG"
+end-before = ".. END-BRIEF-CHANGELOG"
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
+path = "README.rst"
+start-after = ".. INJECT-CHANGELOG"
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.substitutions]]
+pattern = ':pr:`(\d+)`'
+replacement = '`#\1 <https://github.com/scikit-build/scikit-build/pull/\1>`_'
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.substitutions]]
+pattern = ':issue:`(\d+)`'
+replacement = '`#\1 <https://github.com/scikit-build/scikit-build/issues/\1>`_'
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.substitutions]]
+pattern = ':user:`(\S+)`'
+replacement = '`@\1 <https://github.com/\1>`_'
 
 
 [tool.black]
 line-length = 120
 
 
-[tool.isort]
-profile = "black"
-known_third_party = ["distutils"]
-force_to_top = ["setuptools"]
-
 [tool.mypy]
-files = ["skbuild"]
-python_version = "3.6"
+files = ["skbuild", "tests"]
+python_version = "3.7"
 warn_unused_configs = true
-check_untyped_defs = true
 show_error_codes = true
 enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
-warn_unreachable = true
+strict = true
+disallow_untyped_defs = false
+exclude = ["tests/samples"]
 
+[[tool.mypy.overrides]]
+module = ["skbuild.*"]
+disallow_untyped_defs = true
+
+[[tool.mypy.overrides]]
+module = [
+  "wheel.*",
+  "setuptools.logging",
+  "setuptools.command.*",
+  "numpy",
+  "distro",
+]
+ignore_missing_imports = true
 
 
 [tool.pylint]
-master.py-version = "3.6"
-master.jobs = "0"
+py-version = "3.7"
+jobs = "0"
 reports.output-format = "colorized"
 similarities.ignore-imports = "yes"
 messages_control.enable = [
@@ -61,4 +160,78 @@ messages_control.disable = [
   "ungrouped-imports",
   "wrong-import-order",
   "wrong-import-position",
+  "global-statement", # Covered by Ruff
 ]
+
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+testpaths = ["tests"]
+addopts = ["-ra", "--strict-markers", "--strict-config", "--showlocals"]
+norecursedirs = ["_skbuild"]
+xfail_strict = true
+filterwarnings = [
+  'error',
+  'default:setup.py install is deprecated:Warning',
+  'default:easy_install command is deprecated:Warning',
+  'default:setuptools.installer and fetch_build_eggs are deprecated:Warning',
+  'ignore:.*ends with a trailing slash, which is not supported by setuptools:FutureWarning',
+  "ignore:Config variable 'Py_DEBUG' is unset:RuntimeWarning",
+  "ignore:Config variable 'WITH_PYMALLOC' is unset, Python ABI tag may be incorrect:RuntimeWarning",
+  'default:\s*Installing .* as data is deprecated:Warning',
+  'default:shell/Perl-style subs.* are deprecated:DeprecationWarning',
+  'default:subprocess .* is still running:ResourceWarning',
+  'ignore: pkg_resources is deprecated as an API:DeprecationWarning',
+]
+log_cli_level = "info"
+markers = [
+  "fortran: Fortran testing",
+  "deprecated: These tests deprecated setuptools features",
+  "nosetuptoolsscm: Requires setuptools_scm to not be installed",
+  "isolated: Downloads dependencies and sets up isolated environments",
+]
+
+
+[tool.ruff]
+select = [
+  "E", "F", "W", # flake8
+  "B",           # flake8-bugbear
+  "I",           # isort
+  "ARG",         # flake8-unused-arguments
+  "C4",          # flake8-comprehensions
+  "ICN",         # flake8-import-conventions
+  "ISC",         # flake8-implicit-str-concat
+  "G",           # flake8-logging-format
+  "EM",          # flake8-errmsg
+  "PGH",         # pygrep-hooks
+  "PIE",         # flake8-pie
+  "PL",          # pylint
+  "PT",          # flake8-pytest-style
+  "RET",         # flake8-return
+  "RUF",         # Ruff-specific
+  "SIM",         # flake8-simplify
+  "UP",          # pyupgrade
+  "YTT",         # flake8-2020
+  "EXE",         # flake8-executable
+  "NPY",         # NumPy specific rules
+]
+extend-ignore = ["PLR", "E501", "SIM117"]
+target-version = "py37"
+typing-modules = ["skbuild._compat.typing"]
+line-length = 120
+unfixable = ["T20", "F841"]
+exclude = []
+flake8-unused-arguments.ignore-variadic-names = true
+isort.known-third-party = ["distutils"]
+isort.force-to-top = ["setuptools"]
+isort.required-imports = ["from __future__ import annotations"]
+
+[tool.ruff.per-file-ignores]
+"tests/**" = ["T20"]
+"noxfile.py" = ["T20"]
+"*.pyx" = ["I"]
+
+
+[tool.check-sdist]
+sdist-only = ["skbuild/_version.py"]
+git-only = [".coveragerc"]

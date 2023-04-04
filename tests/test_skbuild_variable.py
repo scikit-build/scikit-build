@@ -1,11 +1,11 @@
-#!/usr/bin/env python
-
 """test_skbuild_variable
 ------------------------
 
 Tries to build the `fail-unless-skbuild-set` sample project.  The CMake variable
 "SKBUILD" must be set in order for the build to succeed.
 """
+
+from __future__ import annotations
 
 from . import project_setup_py_test
 

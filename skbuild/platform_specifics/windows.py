@@ -1,13 +1,19 @@
 """This module defines object specific to Windows platform."""
 
 
+from __future__ import annotations
+
 import os
 import platform
 import re
 import subprocess
 import sys
 import textwrap
+from typing import Iterable
 
+from setuptools import monkey
+
+from .._compat.typing import TypedDict
 from . import abstract
 from .abstract import CMakeGenerator
 
@@ -29,11 +35,23 @@ VS_YEAR_TO_MSC_VER = {
     "2022": "1930",  # VS 2022 - can be +9
 }
 
+ARCH_TO_MSVC_ARCH = {
+    "Win32": "x86",
+    "ARM64": "x86_arm64",
+    "x64": "x86_amd64",
+}
+
+
+class CachedEnv(TypedDict):
+    PATH: str
+    INCLUDE: str
+    LIB: str
+
 
 class WindowsPlatform(abstract.CMakePlatform):
     """Windows implementation of :class:`.abstract.CMakePlatform`."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self._vs_help = ""
         vs_help_template = (
@@ -43,13 +61,13 @@ class WindowsPlatform(abstract.CMakePlatform):
             Get it with "%s":
 
               %s
-            """  # noqa: E501
+            """
             )
             .strip()
             .format(pyver=".".join(str(v) for v in sys.version_info[:2]))
         )
 
-        # For Python 3.6 and above: VS2022, VS2019, VS2017
+        # For Python 3.7 and above: VS2022, VS2019, VS2017
         supported_vs_years = [("2022", "v143"), ("2019", "v142"), ("2017", "v141")]
         self._vs_help = vs_help_template % (
             supported_vs_years[0][0],
@@ -93,9 +111,18 @@ class WindowsPlatform(abstract.CMakePlatform):
         self.default_generators.extend(extra)
 
     @property
-    def generator_installation_help(self):
+    def generator_installation_help(self) -> str:
         """Return message guiding the user for installing a valid toolchain."""
         return self._vs_help
+
+
+def _compute_arch() -> str:
+    """Currently only supports Intel -> ARM cross-compilation."""
+    if platform.machine() == "ARM64" or "arm64" in os.environ.get("SETUPTOOLS_EXT_SUFFIX", "").lower():
+        return "ARM64"
+    if platform.architecture()[0] == "64bit":
+        return "x64"
+    return "Win32"
 
 
 class CMakeVisualStudioIDEGenerator(CMakeGenerator):
@@ -105,7 +132,7 @@ class CMakeVisualStudioIDEGenerator(CMakeGenerator):
     .. automethod:: __init__
     """
 
-    def __init__(self, year, toolset=None):
+    def __init__(self, year: str, toolset: str | None = None) -> None:
         """Instantiate a generator object with its name set to the `Visual
         Studio` generator associated with the given ``year``
         (see :data:`VS_YEAR_TO_VERSION`), the current platform (32-bit
@@ -122,7 +149,7 @@ class CMakeVisualStudioIDEGenerator(CMakeGenerator):
         super().__init__(vs_base, toolset=toolset, arch=vs_arch)
 
 
-def _find_visual_studio_2017_or_newer(vs_version):
+def _find_visual_studio_2017_or_newer(vs_version: int) -> str:
     """Adapted from https://github.com/python/cpython/blob/3.7/Lib/distutils/_msvccompiler.py
 
     The ``vs_version`` corresponds to the `Visual Studio` version to lookup.
@@ -140,7 +167,7 @@ def _find_visual_studio_2017_or_newer(vs_version):
         return ""
 
     try:
-        path = subprocess.check_output(
+        path = subprocess.run(
             [
                 os.path.join(root, "Microsoft Visual Studio", "Installer", "vswhere.exe"),
                 "-version",
@@ -154,8 +181,10 @@ def _find_visual_studio_2017_or_newer(vs_version):
                 "*",
             ],
             encoding="utf-8" if sys.platform.startswith("cygwin") else "mbcs",
+            check=True,
+            stdout=subprocess.PIPE,
             errors="strict",
-        ).strip()
+        ).stdout.strip()
     except (subprocess.CalledProcessError, OSError, UnicodeDecodeError):
         return ""
 
@@ -166,7 +195,7 @@ def _find_visual_studio_2017_or_newer(vs_version):
     return ""
 
 
-def find_visual_studio(vs_version):
+def find_visual_studio(vs_version: int) -> str:
     """Return Visual Studio installation path associated with ``vs_version`` or an empty string if any.
 
     The ``vs_version`` corresponds to the `Visual Studio` version to lookup.
@@ -174,46 +203,37 @@ def find_visual_studio(vs_version):
 
     .. note::
 
-        - For VS 2017 and newer, returns `path` based on the result of invoking ``vswhere.exe``.
+        - Returns `path` based on the result of invoking ``vswhere.exe``.
 
     """
     return _find_visual_studio_2017_or_newer(vs_version)
 
 
-# To avoid multiple slow calls to ``subprocess.check_output()`` (either directly or
+# To avoid multiple slow calls to ``subprocess.run()`` (either directly or
 # indirectly through ``query_vcvarsall``), results of previous calls are cached.
-__get_msvc_compiler_env_cache = {}
+__get_msvc_compiler_env_cache: dict[str, CachedEnv] = {}
 
 
-def _get_msvc_compiler_env(vs_version, vs_toolset=None):
+def _get_msvc_compiler_env(vs_version: int, vs_toolset: str | None = None) -> CachedEnv | dict[str, str]:
     """
     Return a dictionary of environment variables corresponding to ``vs_version``
     that can be used with  :class:`CMakeVisualStudioCommandLineGenerator`.
 
-    The ``vs_toolset`` is used only for Visual Studio 2017 or newer (``vs_version >= 14``).
+    The ``vs_toolset`` is used only for Visual Studio 2017 or newer (``vs_version >= 15``).
 
     If specified, ``vs_toolset`` is used to set the `-vcvars_ver=XX.Y` argument passed to
     ``vcvarsall.bat`` script.
     """
 
     # Set architecture
-    arch = "x86"
-    if platform.machine() == "ARM64":
-        arch = "x86_arm64"
-    elif platform.architecture()[0] == "64bit":
-        if vs_version < 14:
-            arch = "amd64"
-        else:
-            arch = "x86_amd64"
+    vc_arch = ARCH_TO_MSVC_ARCH[_compute_arch()]
 
     # If any, return cached version
-    cache_key = ",".join([str(vs_version), arch, str(vs_toolset)])
+    cache_key = ",".join([str(vs_version), vc_arch, str(vs_toolset)])
     if cache_key in __get_msvc_compiler_env_cache:
         return __get_msvc_compiler_env_cache[cache_key]
 
-    from setuptools import monkey  # pylint: disable=import-outside-toplevel
-
-    monkey.patch_for_msvc_specialized_compiler()
+    monkey.patch_for_msvc_specialized_compiler()  # type: ignore[no-untyped-call]
 
     vc_dir = find_visual_studio(vs_version)
     vcvarsall = os.path.join(vc_dir, "vcvarsall.bat")
@@ -222,25 +242,27 @@ def _get_msvc_compiler_env(vs_version, vs_toolset=None):
 
     # Set vcvars_ver argument based on toolset
     vcvars_ver = ""
-    if vs_toolset is not None and vs_version >= 15:
+    if vs_toolset is not None:
         match = re.findall(r"^v(\d\d)(\d+)$", vs_toolset)[0]
         if match:
             match_str = ".".join(match)
             vcvars_ver = f"-vcvars_ver={match_str}"
 
     try:
-        out = subprocess.check_output(
-            f'cmd /u /c "{vcvarsall}" {arch} {vcvars_ver} && set',
+        out_bytes = subprocess.run(
+            f'cmd /u /c "{vcvarsall}" {vc_arch} {vcvars_ver} && set',
+            stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             shell=sys.platform.startswith("cygwin"),
-        )
-        out = out.decode("utf-16le", errors="replace")
+            check=True,
+        ).stdout
+        out = out_bytes.decode("utf-16le", errors="replace")
 
         vc_env = {
             key.lower(): value for key, _, value in (line.partition("=") for line in out.splitlines()) if key and value
         }
 
-        cached_env = {
+        cached_env: CachedEnv = {
             "PATH": vc_env.get("path", ""),
             "INCLUDE": vc_env.get("include", ""),
             "LIB": vc_env.get("lib", ""),
@@ -248,7 +270,7 @@ def _get_msvc_compiler_env(vs_version, vs_toolset=None):
         __get_msvc_compiler_env_cache[cache_key] = cached_env
         return cached_env
     except subprocess.CalledProcessError as exc:
-        print(exc.output)
+        print(exc.output.decode("utf-16le", errors="replace"), file=sys.stderr, flush=True)
 
     return {}
 
@@ -261,7 +283,7 @@ class CMakeVisualStudioCommandLineGenerator(CMakeGenerator):
     .. automethod:: __init__
     """
 
-    def __init__(self, name, year, toolset=None, args=None):
+    def __init__(self, name: str, year: str, toolset: str | None = None, args: Iterable[str] | None = None):
         """Instantiate CMake command-line generator.
 
         The generator ``name`` can be values like `Ninja`, `NMake Makefiles`
@@ -272,10 +294,10 @@ class CMakeVisualStudioCommandLineGenerator(CMakeGenerator):
 
         If set, the ``toolset`` defines the `Visual Studio Toolset` to select.
 
-        The platform (32-bit or 64-bit) is automatically selected based
-        on the value of ``platform.architecture()[0]``.
+        The platform (32-bit or 64-bit or ARM) is automatically selected.
         """
+        arch = _compute_arch()
         vc_env = _get_msvc_compiler_env(VS_YEAR_TO_VERSION[year], toolset)
         env = {str(key.upper()): str(value) for key, value in vc_env.items()}
-        super().__init__(name, env, args=args)
+        super().__init__(name, env, arch=arch, args=args)
         self._description = f"{self.name} ({CMakeVisualStudioIDEGenerator(year, toolset).description})"

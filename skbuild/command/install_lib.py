@@ -1,19 +1,21 @@
 """This module defines custom implementation of ``install_lib`` setuptools
 command."""
 
+from __future__ import annotations
+
 from setuptools.command.install_lib import install_lib as _install_lib
 
-from ..utils import distribution_hide_listing, distutils_log
-from . import set_build_base_mixin
+from ..utils import distribution_hide_listing, logger
+from . import CommandMixinProtocol, set_build_base_mixin
 
 
 class install_lib(set_build_base_mixin, _install_lib):
     """Custom implementation of ``install_lib`` setuptools command."""
 
-    def install(self):
+    def install(self: CommandMixinProtocol) -> list[str]:
         """Handle --hide-listing option."""
         with distribution_hide_listing(self.distribution):
-            outfiles = super().install()
+            outfiles: list[str] = super().install()  # type: ignore[misc]
         if outfiles is not None:
-            distutils_log.info("copied %d files", len(outfiles))
+            logger.info("copied %d files", len(outfiles))
         return outfiles

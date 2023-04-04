@@ -1,8 +1,11 @@
 """This module defines custom implementation of ``egg_info`` setuptools
 command."""
 
+from __future__ import annotations
+
 import os
 import os.path
+from typing import Any
 
 from setuptools.command.egg_info import egg_info as _egg_info
 
@@ -14,7 +17,7 @@ from . import set_build_base_mixin
 class egg_info(set_build_base_mixin, _egg_info):
     """Custom implementation of ``egg_info`` setuptools command."""
 
-    def finalize_options(self, *args, **kwargs):
+    def finalize_options(self, *args: Any, **kwargs: Any) -> None:
         if self.egg_base is None:
             if self.distribution.package_dir is not None and len(self.distribution.package_dir) == 1:
                 # Recover directory specified in setup() function
@@ -28,14 +31,14 @@ class egg_info(set_build_base_mixin, _egg_info):
                     egg_base = egg_base[len(cmake_install_dir) + 1 :]
                 if package_name and egg_base.endswith(package_name):
                     egg_base = egg_base[: -len(package_name) - 1]
-                if egg_base == "":
+                if not egg_base:
                     egg_base = "."
                 # pylint:disable=attribute-defined-outside-init
                 self.egg_base = egg_base
         else:
-            script_path = os.path.abspath(self.distribution.script_name)
+            script_path = os.path.abspath(self.distribution.script_name or "")
             script_dir = os.path.dirname(script_path)
             # pylint:disable=attribute-defined-outside-init
             self.egg_base = os.path.join(script_dir, self.egg_base)
 
-        super().finalize_options(*args, **kwargs)
+        super().finalize_options(*args, **kwargs)  # type: ignore[misc]

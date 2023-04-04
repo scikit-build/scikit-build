@@ -20,4 +20,4 @@
 *.PDF	 diff=astextplain
 *.rtf	 diff=astextplain
 *.RTF	 diff=astextplain
-skbuild/_version.py export-subst
+.git_archival.txt export-subst

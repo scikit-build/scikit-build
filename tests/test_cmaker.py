@@ -1,14 +1,13 @@
-#!/usr/bin/env python
-
 """test_cmaker
 ----------------------------------
 
 Tests for CMaker functionality.
 """
 
+from __future__ import annotations
+
 import os
 import re
-import sys
 import textwrap
 
 import pytest
@@ -86,11 +85,10 @@ def test_make_without_configure_fails(capfd):
     assert "Error: could not load cache" in err
 
 
-@pytest.mark.parametrize("configure_with_cmake_source_dir", (True, False))
+@pytest.mark.parametrize("configure_with_cmake_source_dir", [True, False])
 def test_make(configure_with_cmake_source_dir, capfd):
     tmp_dir = _tmpdir("test_make")
     with push_dir(str(tmp_dir)):
-
         src_dir = tmp_dir.ensure("SRC", dir=1)
         src_dir.join("CMakeLists.txt").write(
             textwrap.dedent(
@@ -135,11 +133,10 @@ def test_make(configure_with_cmake_source_dir, capfd):
             assert message in out
 
 
-@pytest.mark.parametrize("install_target", ("", "install", "install-runtime", "nonexistant-install-target"))
+@pytest.mark.parametrize("install_target", ["", "install", "install-runtime", "nonexistant-install-target"])
 def test_make_with_install_target(install_target, capfd):
     tmp_dir = _tmpdir("test_make_with_install_target")
     with push_dir(str(tmp_dir)):
-
         tmp_dir.join("CMakeLists.txt").write(
             textwrap.dedent(
                 """
@@ -195,20 +192,19 @@ def test_configure_with_cmake_args(capfd):
             "CMAKE_EXPECTED_FOO",
             "PYTHON_VERSION_STRING",
             "SKBUILD",
+            "PYTHON_EXECUTABLE",
+            "PYTHON_INCLUDE_DIR",
+            "PYTHON_LIBRARY",
         ]
 
-        find_python_prefixes = [
-            f"Python{sys.version_info[0]}",
-            "Python",
-            "PYTHON",
-        ]
-
-        for prefix in find_python_prefixes:
+        for prefix in ["Python3", "Python"]:
             unused_vars.extend(
                 [
-                    (prefix + "_EXECUTABLE"),
-                    (prefix + "_INCLUDE_DIR"),
-                    (prefix + "_LIBRARY"),
+                    f"{prefix}_EXECUTABLE",
+                    f"{prefix}_ROOT_DIR",
+                    f"{prefix}_INCLUDE_DIR",
+                    f"{prefix}_FIND_IMPLEMENTATIONS",
+                    f"{prefix}_FIND_REGISTRY",
                 ]
             )
 
