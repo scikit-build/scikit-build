@@ -45,7 +45,8 @@ def check_sdist_content(sdist_archive, expected_distribution_name, expected_cont
             expected_content |= {ent + "/" for ent in list_ancestors(entry)}
 
     if sdist_zip:
-        member_list = set(ZipFile(sdist_archive).namelist())
+        with ZipFile(sdist_archive) as zp:
+            member_list = set(zp.namelist())
     else:
         with tarfile.open(sdist_archive) as tf:
             member_list = {member.name for member in tf.getmembers() if not member.isdir()}
@@ -89,18 +90,18 @@ def check_wheel_content(wheel_archive, expected_distribution_name, expected_cont
     else:
         assert not wheel_archive.endswith("-none-any.whl")
 
-    archive = ZipFile(wheel_archive)
-    member_list = set(archive.namelist())
+    with ZipFile(wheel_archive) as archive:
+        member_list = set(archive.namelist())
 
-    assert member_list == expected_content
+        assert member_list == expected_content
 
-    # PEP-0427: Generator is the name and optionally the version of the
-    # software that produced the archive.
-    # See https://www.python.org/dev/peps/pep-0427/#file-contents
-    current_generator = None
-    with archive.open(f"{expected_distribution_name}.dist-info/WHEEL") as wheel_file:
-        for line in wheel_file:
-            if line.startswith(b"Generator"):
-                current_generator = line.split(b":")[1].strip()
-                break
-    assert current_generator == f"skbuild {skbuild_version}".encode()
+        # PEP-0427: Generator is the name and optionally the version of the
+        # software that produced the archive.
+        # See https://www.python.org/dev/peps/pep-0427/#file-contents
+        current_generator = None
+        with archive.open(f"{expected_distribution_name}.dist-info/WHEEL") as wheel_file:
+            for line in wheel_file:
+                if line.startswith(b"Generator"):
+                    current_generator = line.split(b":")[1].strip()
+                    break
+        assert current_generator == f"skbuild {skbuild_version}".encode()
