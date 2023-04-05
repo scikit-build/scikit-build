@@ -162,7 +162,7 @@ def _find_visual_studio_2017_or_newer(vs_version: int) -> str:
 
         If ``vswhere.exe`` is not available, by definition, VS 2017 or newer is not installed.
     """
-    root = os.environ.get("ProgramFiles(x86)") or os.environ.get("ProgramFiles")
+    root = os.environ.get("PROGRAMFILES(X86)") or os.environ.get("PROGRAMFILES")
     if not root:
         return ""
 
