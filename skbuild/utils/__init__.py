@@ -52,7 +52,7 @@ def _log_warning(msg: str, *args: object) -> None:
             skb_log.warning(msg, *args)
         else:
             # pylint: disable-next=deprecated-method
-            distutils_log.warn(msg, *args)  # noqa: G010
+            distutils_log.warn(msg, *args)
     except ValueError:
         # Setuptools might disconnect the logger. That shouldn't be an error for a warning.
         print(msg % args, flush=True)
