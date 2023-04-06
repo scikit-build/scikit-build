@@ -280,19 +280,24 @@ class CMaker:
             "-DSKBUILD:INTERNAL=TRUE",
             f"-DCMAKE_MODULE_PATH:PATH={cmake_resource_dir}",
             f"-DPYTHON_EXECUTABLE:PATH={sys.executable}",
-            f"-DPYTHON_INCLUDE_DIR:PATH={python_include_dir}",
-            f"-DPYTHON_LIBRARY:PATH={python_library}",
         ]
+        if python_include_dir:
+            cmd.append(f"-DPYTHON_INCLUDE_DIR:PATH={python_include_dir}")
+        if python_library:
+            cmd.append(f"-DPYTHON_LIBRARY:PATH={python_library}")
 
         for prefix in ["-DPython", "-DPython3"]:
             cmd.extend(
                 [
                     f"{prefix}_EXECUTABLE:PATH={sys.executable}",
                     f"{prefix}_ROOT_DIR:PATH={sys.prefix}",
-                    f"{prefix}_INCLUDE_DIR:PATH={python_include_dir}",
                     f"{prefix}_FIND_REGISTRY:STRING=NEVER",
                 ]
             )
+            if python_include_dir:
+                cmd.append(f"{prefix}_INCLUDE_DIR:PATH={python_include_dir}")
+            if python_library:
+                cmd.append(f"{prefix}_LIBRARY:PATH={python_library}")
             if sys.implementation.name == "pypy":
                 cmd.append(f"{prefix}_FIND_IMPLEMENTATIONS:STRING=PyPy")
 
