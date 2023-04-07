@@ -8,12 +8,53 @@ details, see the commit logs at https://github.com/scikit-build/scikit-build
 Next Release
 ============
 
-We are hard at work on the next generation of scikit-build
-`scikit-build-core <https://github.com/scikit-build/scikit-build-core>`_, which
-has had it's first non-development release. We are also continuing to fix bugs,
-make improvements, and backport changes here.
+We are hard at work on the next generation of scikit-build `scikit-build-core
+<https://github.com/scikit-build/scikit-build-core>`_, which will eventually
+replace the backend here. We are also continuing to fix bugs, make improvements,
+and backport changes here.
 
 .. START-BRIEF-CHANGELOG
+
+Scikit-build 0.17.0
+===================
+
+A lot of bug fixes are present in this release, focusing on Windows, PyPy, and
+cross compiling. We've also improved the compatibility with default setuptools
+behaviors a little, and enabled some things that were previously unavailable,
+like overriding the build type via the cmake argument environment variables.
+We've expanded our CI matrix to include Windows and macOS PyPy and some Fortran
+tests on Linux. This release requires Python 3.7+.
+
+Bug fixes
+---------
+
+* Match setuptools behavior for ``include_package_data`` default. by :user:`vyasr` in :pr:`873`
+* Misc. fixes for F2PY and PythonExtensions modules by :user:`benbovy` in :pr:`495`
+* Provide more useful error if user provides ``CMAKE_INSTALL_PREFIX`` by :user:`vyasr` in :pr:`872`
+* Stop assuming that ``.pyx`` files are in the same directory as ``CMakeLists.txt`` by :user:`vyasr` in :pr:`871`
+* Allow build type overriding in :pr:`902`
+* Detect PyPy library correctly on Windows by user:`gershnik` in :pr:`904`
+* Include library for FindPython for better Windows cross-compiles in :pr:`913`. Thanks to user:`maxbachmann` for testing.
+* Use f2py's ``get_include`` if present in :pr:`877`
+* Fix support for cross-compilation exception using ``targetLinkLibrariesWithDynamicLookup`` by :user:`erykoff` in :pr:`901`
+
+Testing
+-------
+
+* Add hello fortran sample package + tests by :user:`benbovy` in :pr:`493`
+* Add sdist check & fix in :pr:`906`
+* Fix some setuptools types in :pr:`888`
+* Add PyPy Win & macOS to the CI in :pr:`907`
+
+Miscellaneous
+-------------
+
+* Drop Python 3.6 in :pr:`862`
+* Move building backend to hatchling in :pr:`870`
+* Avoid mutating function input parameters in :pr:`899`
+* Use _compat/typing name in :pr:`869`
+
+.. END-BRIEF-CHANGELOG
 
 Scikit-build 0.16.7
 ===================
@@ -122,8 +163,6 @@ Documentation
 * scikit-build mailing list transitioned to the `scikit-build GitHub Discussions board <https://github.com/orgs/scikit-build/discussions>`_. See :issue:`800`.
   * Transitioning away from the mailing list and adopting the GitHub Discussions will provide a more integrated platform enabling us to more effectively engage with the community.
   * After sending a `last message <https://groups.google.com/g/scikit-build/c/jU7-EvvMPb8>`_ describing the transition, the mailing list was updated to be read-only and the welcome message was updated to redirect visitor toward the Discussions board.
-
-.. END-BRIEF-CHANGELOG
 
 Scikit-build 0.15.0
 ===================
