@@ -205,6 +205,7 @@ def test_configure_with_cmake_args(capfd):
                     f"{prefix}_INCLUDE_DIR",
                     f"{prefix}_FIND_IMPLEMENTATIONS",
                     f"{prefix}_FIND_REGISTRY",
+                    f"{prefix}_LIBRARY",
                 ]
             )
 
