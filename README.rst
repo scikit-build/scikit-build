@@ -45,6 +45,16 @@ Latest Release
 
 .. INJECT-CHANGELOG
 
+Publications
+------------
+
+Please use the first citation when referencing scikit-build in scientific publications.
+
+* Jean-Christophe Fillion-Robin, Matt McCormick, Omar Padron, Max Smolens, Michael Grauer, & Michael Sarahan. (2018, July 13). jcfr/scipy_2018_scikit-build_talk: SciPy 2018 Talk | scikit-build: A Build System Generator for CPython C/C++/Fortran/Cython Extensions. Zenodo. https://doi.org/10.5281/zenodo.2565368
+
+* Schreiner, Henry, Rickerby, Joe, Grosse-Kunstleve, Ralf, Jakob, Wenzel, Darbois, Matthieu, Gokaslan, Aaron, Fillion-Robin, Jean-Christophe, & McCormick, Matt. (2022, August 1). Building Binary Extensions with pybind11, scikit-build, and cibuildwheel. https://doi.org/10.25080/majora-212e5952-033
+
+
 History
 -------
 
