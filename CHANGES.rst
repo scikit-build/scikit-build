@@ -35,6 +35,7 @@ Bug fixes
 * Allow build type overriding in :pr:`902`
 * Detect PyPy library correctly on Windows by user:`gershnik` in :pr:`904`
 * Include library for FindPython for better Windows cross-compiles in :pr:`913`. Thanks to user:`maxbachmann` for testing.
+* Fix logic for default generator when cross-compiling for ARM on Windows in :pr:`917` by :user:`dlech`.
 * Use f2py's ``get_include`` if present in :pr:`877`
 * Fix support for cross-compilation exception using ``targetLinkLibrariesWithDynamicLookup`` by :user:`erykoff` in :pr:`901`
 
