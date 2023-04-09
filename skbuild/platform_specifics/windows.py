@@ -140,12 +140,7 @@ class CMakeVisualStudioIDEGenerator(CMakeGenerator):
         """
         vs_version = VS_YEAR_TO_VERSION[year]
         vs_base = f"Visual Studio {vs_version} {year}"
-        if platform.machine() == "ARM64":
-            vs_arch = "ARM64"
-        elif platform.architecture()[0] == "64bit":
-            vs_arch = "x64"
-        else:
-            vs_arch = "Win32"
+        vs_arch = _compute_arch()
         super().__init__(vs_base, toolset=toolset, arch=vs_arch)
 
 
