@@ -17,6 +17,7 @@ jobs:
   lint:
     name: Lint
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
     - uses: actions/checkout@v3
     - uses: actions/setup-python@v4
@@ -25,6 +26,7 @@ jobs:
   tests:
     runs-on: ${{ matrix.runs-on }}
     needs: [lint]
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
@@ -80,6 +82,7 @@ jobs:
   cygwin:
     name: Tests on 🐍 3.9 • cygwin
     runs-on: windows-latest
+    timeout-minutes: 120
     needs: [lint]
 
     steps:
@@ -103,7 +106,9 @@ jobs:
 
 
   tests-pypy:
+    name: Tests on 🐍 PyPy ${{ matrix.pypy-version }} • ${{ matrix.runs-on }}
     runs-on: ${{ matrix.runs-on }}
+    timeout-minutes: 40
     needs: [lint]
     strategy:
       fail-fast: false
@@ -113,7 +118,6 @@ jobs:
         include:
         - runs-on: ubuntu-latest
           pypy-version: "3.7"
-    name: Tests on 🐍 PyPy ${{ matrix.pypy-version }} • ${{ matrix.runs-on }}
 
     steps:
     - uses: actions/checkout@v3
@@ -133,6 +137,7 @@ jobs:
 
   dist:
     name: Distribution
+    timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -152,6 +157,7 @@ jobs:
 
   pass:
     if: always()
+    timeout-minutes: 1
     needs: [tests, tests-pypy, dist]
     runs-on: ubuntu-latest
     steps:
