@@ -38,6 +38,7 @@ Bug fixes
 * Fix logic for default generator when cross-compiling for ARM on Windows in :pr:`917` by :user:`dlech`.
 * Use f2py's ``get_include`` if present in :pr:`877`
 * Fix support for cross-compilation exception using ``targetLinkLibrariesWithDynamicLookup`` by :user:`erykoff` in :pr:`901`
+* Treat empty ``MACOSX_DEPLOYMENT_TARGET`` as if it was unset in :pr:`918`.
 
 Testing
 -------
