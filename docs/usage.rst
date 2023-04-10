@@ -41,7 +41,7 @@ Your project now uses scikit-build instead of setuptools.
 Next, add a ``CMakeLists.txt`` to describe how to build your extension. In the following example,
 a C++ extension named ``_hello`` is built::
 
-    cmake_minimum_required(VERSION 3.4...3.22)
+    cmake_minimum_required(VERSION 3.18...3.22)
 
     project(hello)
 
@@ -250,6 +250,9 @@ Scikit-build changes the following options:
 Command line options
 --------------------
 
+Warning: Passing options to ``setup.py`` is deprecated and may be removed in a
+future release. Environment variables can be used instead for most options.
+
 ::
 
     usage: setup.py [global_opts] cmd1 [cmd1_opts] [cmd2 [cmd2_opts] ...] [skbuild_opts] [cmake_configure_opts] [-- [cmake_opts] [-- [build_tool_opts]]]
@@ -326,7 +329,6 @@ scikit-build options
       -G , --generator   specify the CMake build system generator
       -j N               allow N build jobs at once
       [...]
-
 
 .. versionadded:: 0.7.0
 
@@ -444,6 +446,8 @@ then you can implement a thin wrapper around ``build_meta`` in the ``_custom_bui
 
         return _orig.get_requires_for_build_wheel(config_settings) + packages
 
+Also see `scikit-build-core <https://scikit-build-core.readthedocs.io>`_ where
+this is a built-in feature.
 
 .. _usage_enabling_parallel_build:
 

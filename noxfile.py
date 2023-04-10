@@ -85,3 +85,22 @@ def build(session):
 
     session.install("build")
     session.run("python", "-m", "build")
+
+
+@nox.session(reuse_venv=True)
+def build_api_docs(session: nox.Session) -> None:
+    """
+    Build (regenerate) API docs.
+    """
+
+    session.install("sphinx")
+    session.chdir("docs")
+    session.run(
+        "sphinx-apidoc",
+        "-o",
+        ".",
+        "--no-toc",
+        "--force",
+        "--module-first",
+        "../skbuild",
+    )
