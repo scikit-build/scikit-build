@@ -18,6 +18,10 @@ BASE = os.path.dirname(DIR)
     platform.python_implementation() == "PyPy" and sys.version_info >= (3, 9),
     reason="NumPy not released for PyPy 3.9 yet",
 )
+@pytest.mark.skipif(
+    sys.version_info >= (3, 12),
+    reason="NumPy not released for Python 3.12 yet",
+)
 @pytest.mark.usefixtures("pep518")
 def test_pep518_findpython():
     subprocess.run([sys.executable, "-m", "build", "--wheel"], cwd=HELLO_NUMPY, check=True)

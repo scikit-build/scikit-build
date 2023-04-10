@@ -24,6 +24,7 @@ pytest.register_assert_rewrite("tests.pytest_helpers")
 
 @pytest.fixture(scope="session")
 def pep518_wheelhouse(tmpdir_factory):
+    numpy = ["numpy"] if sys.version_info < (3, 12) else []
     wheelhouse = tmpdir_factory.mktemp("wheelhouse")
     dist = tmpdir_factory.mktemp("dist")
     subprocess.run([sys.executable, "-m", "build", "--wheel", "--outdir", str(dist)], cwd=BASE, check=True)
@@ -43,7 +44,7 @@ def pep518_wheelhouse(tmpdir_factory):
             "wheel",
             "ninja",
             "cmake",
-            "numpy",
+            *numpy,
         ],
         check=True,
     )

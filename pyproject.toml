@@ -182,6 +182,7 @@ filterwarnings = [
   'default:shell/Perl-style subs.* are deprecated:DeprecationWarning',
   'default:subprocess .* is still running:ResourceWarning',
   'ignore: pkg_resources is deprecated as an API:DeprecationWarning',
+  'ignore:onerror argument is deprecated, use onexc instead:DeprecationWarning',  # Caused by wheel and Python 3.12
 ]
 log_cli_level = "info"
 markers = [
