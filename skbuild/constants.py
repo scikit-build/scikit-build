@@ -62,7 +62,7 @@ def _default_skbuild_plat_name() -> str:
     # Note that on macOS, distutils.util.get_platform() is not used because
     # it returns the macOS version on which Python was built which may be
     # significantly older than the user's current machine.
-    release = os.environ.get("MACOSX_DEPLOYMENT_TARGET", release)
+    release = os.environ.get("MACOSX_DEPLOYMENT_TARGET", "") or release
     major_macos, minor_macos = release.split(".")[:2]
 
     # On macOS 11+, only the major version matters.
