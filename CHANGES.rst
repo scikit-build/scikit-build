@@ -28,33 +28,34 @@ tests on Linux. This release requires Python 3.7+.
 Bug fixes
 ---------
 
-* Match setuptools behavior for ``include_package_data`` default. by :user:`vyasr` in :pr:`873`
-* Misc. fixes for F2PY and PythonExtensions modules by :user:`benbovy` in :pr:`495`
-* Provide more useful error if user provides ``CMAKE_INSTALL_PREFIX`` by :user:`vyasr` in :pr:`872`
-* Stop assuming that ``.pyx`` files are in the same directory as ``CMakeLists.txt`` by :user:`vyasr` in :pr:`871`
-* Allow build type overriding in :pr:`902`
-* Detect PyPy library correctly on Windows by user:`gershnik` in :pr:`904`
+* Match setuptools behavior for ``include_package_data`` default. by :user:`vyasr` in :pr:`873`.
+* Misc. fixes for F2PY and PythonExtensions modules by :user:`benbovy` in :pr:`495`.
+* Provide more useful error if user provides ``CMAKE_INSTALL_PREFIX`` by :user:`vyasr` in :pr:`872`.
+* Stop assuming that ``.pyx`` files are in the same directory as ``CMakeLists.txt`` by :user:`vyasr` in :pr:`871`.
+* Allow build type overriding in :pr:`902`.
+* Detect PyPy library correctly on Windows by user:`gershnik` in :pr:`904`.
 * Include library for FindPython for better Windows cross-compiles in :pr:`913`. Thanks to user:`maxbachmann` for testing.
 * Fix logic for default generator when cross-compiling for ARM on Windows in :pr:`917` by :user:`dlech`.
-* Use f2py's ``get_include`` if present in :pr:`877`
-* Fix support for cross-compilation exception using ``targetLinkLibrariesWithDynamicLookup`` by :user:`erykoff` in :pr:`901`
+* Use f2py's ``get_include`` if present in :pr:`877`.
+* Fix support for cross-compilation exception using ``targetLinkLibrariesWithDynamicLookup`` by :user:`erykoff` in :pr:`901`.
 * Treat empty ``MACOSX_DEPLOYMENT_TARGET`` as if it was unset in :pr:`918`.
 
 Testing
 -------
 
-* Add hello fortran sample package + tests by :user:`benbovy` in :pr:`493`
-* Add sdist check & fix in :pr:`906`
-* Fix some setuptools types in :pr:`888`
-* Add PyPy Win & macOS to the CI in :pr:`907`
+* Add hello fortran sample package + tests by :user:`benbovy` in :pr:`493`.
+* Add sdist check & fix in :pr:`906`.
+* Fix some setuptools types in :pr:`888`.
+* Add PyPy Win & macOS to the CI in :pr:`907`.
+* Add tests for Python 3.12 Linux alphas in :pr:`922`.
 
 Miscellaneous
 -------------
 
-* Drop Python 3.6 in :pr:`862`
-* Move building backend to hatchling in :pr:`870`
-* Avoid mutating function input parameters in :pr:`899`
-* Use _compat/typing name in :pr:`869`
+* Drop Python 3.6 in :pr:`862`.
+* Move building backend to hatchling in :pr:`870`.
+* Avoid mutating function input parameters in :pr:`899`.
+* Use _compat/typing name in :pr:`869`.
 
 .. END-BRIEF-CHANGELOG
 
