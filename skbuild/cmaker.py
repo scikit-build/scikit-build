@@ -275,6 +275,7 @@ class CMaker:
             cmake_source_dir,
             "-G",
             generator.name,
+            "--no-warn-unused-cli",
             f"-DCMAKE_INSTALL_PREFIX:PATH={cmake_install_prefix}",
             f"-DPYTHON_VERSION_STRING:STRING={python_version_string}",
             "-DSKBUILD:INTERNAL=TRUE",

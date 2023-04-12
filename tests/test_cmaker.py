@@ -187,35 +187,6 @@ def test_make_with_install_target(install_target, capfd):
 def test_configure_with_cmake_args(capfd):
     tmp_dir = _tmpdir("test_configure_with_cmake_args")
     with push_dir(str(tmp_dir)):
-        unused_vars = [
-            "CMAKE_EXPECTED_BAR",
-            "CMAKE_EXPECTED_FOO",
-            "PYTHON_VERSION_STRING",
-            "SKBUILD",
-            "PYTHON_EXECUTABLE",
-            "PYTHON_INCLUDE_DIR",
-            "PYTHON_LIBRARY",
-        ]
-
-        for prefix in ["Python3", "Python"]:
-            unused_vars.extend(
-                [
-                    f"{prefix}_EXECUTABLE",
-                    f"{prefix}_ROOT_DIR",
-                    f"{prefix}_INCLUDE_DIR",
-                    f"{prefix}_FIND_IMPLEMENTATIONS",
-                    f"{prefix}_FIND_REGISTRY",
-                    f"{prefix}_LIBRARY",
-                ]
-            )
-
-            try:
-                import numpy as np  # noqa: F401
-
-                unused_vars.append(prefix + "_NumPy_INCLUDE_DIRS")
-            except ImportError:
-                pass
-
         tmp_dir.join("CMakeLists.txt").write(
             textwrap.dedent(
                 """
@@ -223,12 +194,8 @@ def test_configure_with_cmake_args(capfd):
             project(foobar NONE)
             # Do not complain about missing arguments passed to the main
             # project
-            foreach(unused_var IN ITEMS
-            {}
-              )
-            endforeach()
             """
-            ).format("\n".join(f"  ${{{unused}}}" for unused in unused_vars))
+            )
         )
 
         with push_dir(str(tmp_dir)):
