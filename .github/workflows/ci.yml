@@ -67,21 +67,28 @@ jobs:
     # We check minimum Python and maximum Python on all OS's.
 
     - name: Test on 🐍 3.7
-      run: nox -s tests-3.7
+      run: nox -s tests-3.7 -- --cov --cov-report=xml --cov-report=term
     - name: Test on 🐍 3.8
       if: runner.os == 'Linux'
-      run: nox -s tests-3.8
+      run: nox -s tests-3.8 -- --cov --cov-report=xml --cov-report=term --cov-append
     - name: Test on 🐍 3.9
       if: runner.os == 'Linux'
-      run: nox -s tests-3.9
+      run: nox -s tests-3.9 -- --cov --cov-report=xml --cov-report=term --cov-append
     - name: Test on 🐍 3.10
-      run: nox -s tests-3.10
       if: runner.os == 'Linux'
+      run: nox -s tests-3.10 -- --cov --cov-report=xml --cov-report=term --cov-append
     - name: Test on 🐍 3.11
-      run: nox -s tests-3.11
+      run: nox -s tests-3.11 -- --cov --cov-report=xml --cov-report=term --cov-append
     - name: Test on 🐍 3.12
-      run: nox -s tests-3.12
+      run: nox -s tests-3.12 -- --cov --cov-report=xml --cov-report=term --cov-append
       if: runner.os == 'Linux'
+
+    - name: Upload coverage report
+      uses: codecov/codecov-action@v3
+      with:
+        name: ${{ matrix.runs-on }}-any
+        verbose: true
+
 
   cygwin:
     name: Tests on 🐍 3.9 • cygwin
@@ -136,7 +143,7 @@ jobs:
         python-version: pypy-${{ matrix.pypy-version }}
 
     - name: Test on 🐍 PyPy ${{ matrix.pypy-version }}
-      run: nox -s tests-pypy${{ matrix.pypy-version }}
+      run: nox -s tests-pypy${{ matrix.pypy-version }} -- --cov --cov-report=xml --cov-report=term
 
     - name: Upload coverage report
       uses: codecov/codecov-action@v3
