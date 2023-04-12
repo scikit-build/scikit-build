@@ -38,7 +38,7 @@ dependencies = [
 
 [project.optional-dependencies]
 cov = [
-    "coverage>=4.2",
+    "coverage[toml]>=4.2",
     "pytest-cov>=2.7.1",
 ]
 docs = [
@@ -233,4 +233,9 @@ isort.required-imports = ["from __future__ import annotations"]
 
 [tool.check-sdist]
 sdist-only = ["skbuild/_version.py"]
-git-only = [".coveragerc"]
+
+
+[tool.coverage.run]
+branch = true
+source = ["skbuild"]
+omit = ["skbuild/_version.py"]

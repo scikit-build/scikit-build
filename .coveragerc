@@ -1,7 +1,0 @@
-[run]
-branch = True
-source = skbuild
-omit = skbuild/_version.py
-
-[xml]
-output = tests/coverage.xml

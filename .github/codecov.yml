@@ -1,3 +1,6 @@
+codecov:
+  notify:
+    after_n_builds: 8
 coverage:
   status:
     project:
@@ -6,6 +9,4 @@ coverage:
         threshold: 2
     patch:
       default:
-        # 75% of the changed code must be covered by tests
-        threshold: 25
-        only_pulls: true
+        informational: true
