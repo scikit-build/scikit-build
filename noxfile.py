@@ -28,7 +28,7 @@ def tests(session: nox.Session) -> None:
     """
     Run the tests.
     """
-    posargs = list(session.posargs) or ["--cov", "--cov-report=xml"]
+    posargs = list(session.posargs)
     env = os.environ.copy()
 
     # This should be handled via markers or some other pytest mechanism, but for now, this is usable.
@@ -41,10 +41,11 @@ def tests(session: nox.Session) -> None:
             env[f"SKBUILD_TEST_FIND_VS{version}_INSTALLATION_EXPECTED"] = contained
 
     numpy = [] if "pypy" in session.python or "3.12" in session.python else ["numpy"]
+    install_spec = ".[test,cov,doctest]" if "--cov" in posargs else ".[test,doctest]"
 
     # Latest versions may break things, so grab them for testing!
     session.install("-U", "setuptools", "wheel")
-    session.install("-e", ".[test,cov,doctest]", *numpy)
+    session.install("-e", install_spec, *numpy)
     session.run("pytest", *posargs, env=env)
 
 
