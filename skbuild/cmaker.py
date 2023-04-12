@@ -340,7 +340,7 @@ class CMaker:
         rtn = subprocess.run(cmd, cwd=CMAKE_BUILD_DIR(), env=generator.env, check=False).returncode
         if rtn != 0:
             msg = textwrap.dedent(
-                """\
+                f"""\
                 An error occurred while configuring with CMake.
                   Command:
                     {self._formatArgsForDisplay(cmd)}
