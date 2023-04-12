@@ -41,11 +41,11 @@ def tests(session: nox.Session) -> None:
             env[f"SKBUILD_TEST_FIND_VS{version}_INSTALLATION_EXPECTED"] = contained
 
     numpy = [] if "pypy" in session.python or "3.12" in session.python else ["numpy"]
-    install_spec = ".[test,cov,doctest]" if "--cov" in posargs else ".[test,doctest]"
+    install_spec = "-e.[test,cov,doctest]" if "--cov" in posargs else ".[test,doctest]"
 
     # Latest versions may break things, so grab them for testing!
     session.install("-U", "setuptools", "wheel")
-    session.install("-e", install_spec, *numpy)
+    session.install(install_spec, *numpy)
     session.run("pytest", *posargs, env=env)
 
 
