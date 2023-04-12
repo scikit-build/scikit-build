@@ -138,6 +138,12 @@ jobs:
     - name: Test on 🐍 PyPy ${{ matrix.pypy-version }}
       run: nox -s tests-pypy${{ matrix.pypy-version }}
 
+    - name: Upload coverage report
+      uses: codecov/codecov-action@v3
+      with:
+        name: ${{ runner.os }}-${{ matrix.pypy-version }}
+        verbose: true
+
 
   dist:
     name: Distribution

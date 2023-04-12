@@ -38,7 +38,6 @@ dependencies = [
 
 [project.optional-dependencies]
 cov = [
-    "codecov>=2.0.5",
     "coverage>=4.2",
     "pytest-cov>=2.7.1",
 ]
