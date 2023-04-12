@@ -296,7 +296,9 @@ class CMaker:
             )
             if python_include_dir:
                 cmd.append(f"{prefix}_INCLUDE_DIR:PATH={python_include_dir}")
-            if python_library:
+            if python_library and (
+                sys.platform.startswith("win") or tuple(int(x) for x in self.cmake_version.split(".")[:2]) >= (3, 24)
+            ):
                 cmd.append(f"{prefix}_LIBRARY:PATH={python_library}")
             if sys.implementation.name == "pypy":
                 cmd.append(f"{prefix}_FIND_IMPLEMENTATIONS:STRING=PyPy")
