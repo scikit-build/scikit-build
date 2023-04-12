@@ -567,8 +567,12 @@ def setup(
         # or the ``cmake_args`` setup option.
         for cmake_arg in cmake_args:
             if "CMAKE_OSX_DEPLOYMENT_TARGET" in cmake_arg:
-                version = cmake_arg.split("=")[1]
-                assert version, "CMAKE_OSX_DEPLOYMENT_TARGET must not be empty if specified"
+                version_arg = cmake_arg.split("=")[1]
+                if version_arg:
+                    version = version_arg
+                else:
+                    msg = "CMAKE_OSX_DEPLOYMENT_TARGET should not be empty if specified, ignoring"
+                    warnings.warn(msg, stacklevel=1)
             if "CMAKE_OSX_ARCHITECTURES" in cmake_arg:
                 machine = cmake_arg.split("=")[1]
                 if set(machine.split(";")) == {"x86_64", "arm64"}:
