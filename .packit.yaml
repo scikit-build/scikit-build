@@ -44,8 +44,11 @@ jobs:
   - job: propose_downstream
     trigger: release
     dist_git_branches:
-      - fedora-development
-      - fedora-latest
+      # TODO: Switch to fedora-development and fedora-latest
+      # There is an issue that the commits diverge on different PRs. In the meantime will create PRs on branched fedora
+      # manually
+      # https://github.com/packit/packit/issues/1724
+      - fedora-rawhide
   - job: koji_build
     trigger: commit
     dist_git_branches:
