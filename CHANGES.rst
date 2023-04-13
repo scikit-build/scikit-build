@@ -15,6 +15,31 @@ and backport changes here.
 
 .. START-BRIEF-CHANGELOG
 
+Scikit-build 0.17.1
+===================
+
+This is a small release fixing a few bugs; the primary one being a change that
+was triggering a bug in older FindPython. The unused variable messages have
+been deactivated to simplify output, as well.
+
+Bug fixes
+---------
+
+* Older (<3.24) CMake breaks when lib specified in :pr:`932`
+* An error output was missing formatting in :pr:`931`
+* Make empty ``CMAKE_OSX_DEPLOYMENT_TARGET`` a warning (bug in conda-forge's
+  clang activation fixed upstream) in :pr:`934`
+* Remove unused variable warnings by in :pr:`930`
+
+Testing
+-------
+
+* Add Fedora packaging with packit automation by :user:`LecrisUT` in :pr:`928`
+* Fix codecov ci by :user:`LecrisUT` in :pr:`929`
+* Update some coverage settings in:pr:`933`
+
+
+
 Scikit-build 0.17.0
 ===================
 
