@@ -1,8 +1,6 @@
-%global pypi_name scikit_build
-
 Name:           python-scikit-build
 Version:        0.0.0
-Release:        %{autorelease}
+Release:        %autorelease
 Summary:        Improved build system generator for Python C/C++/Fortran/Cython extensions
 
 # This project is mainly MIT but LICENSE also mentions some code
@@ -10,8 +8,7 @@ Summary:        Improved build system generator for Python C/C++/Fortran/Cython 
 # All bundled(cmake()) files listed are Apache-2.0 licensed.
 License:        MIT AND BSD-2-Clause-Views AND Apache-2.0
 URL:            https://github.com/scikit-build/scikit-build
-Source0:        %{pypi_source %{pypi_name}}
-Source1:        %{name}.rpmlintrc
+Source:         %{pypi_source scikit_build}
 
 BuildArch:      noarch
 BuildRequires:  python3-devel
@@ -55,7 +52,7 @@ Provides:       bundled(cmake(UsePythonExtensions))
 
 
 %prep
-%autosetup -n %{pypi_name}-%{version}
+%autosetup -n scikit_build-%{version}
 
 
 %generate_buildrequires
