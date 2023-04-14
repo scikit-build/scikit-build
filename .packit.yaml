@@ -9,6 +9,15 @@ files_to_sync:
   - .packit.yaml
   - src: .distro/python-scikit-build.rpmlintrc
     dest: python-scikit-build.rpmlintrc
+  # tmt setup
+  - src: .distro/.fmf/
+    dest: .fmf
+  - src: .distro/plans/
+    dest: plans/
+    filters:
+      - "- .distro/plans/main.fmf.dist-git"
+  - src: .distro/plans/main.fmf.dist-git
+    dest: plans/main.fmf
 upstream_package_name: scikit-build
 downstream_package_name: python-scikit-build
 update_release: false
