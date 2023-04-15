@@ -504,6 +504,12 @@ class CMaker:
                 minor = sys.version_info[1]
                 return str(Path(result) / f"python3{minor}.lib")
 
+        # If we are in a virtualenv, then the library path won't be available.
+        # The virtualenv overrides config vars like LIBDIR so this check needs
+        # to be before the checks below.
+        if os.environ.get("VIRTUAL_ENV"):
+            return None
+
         # This seems to be the simplest way to detect the library path with
         # modern python versions that avoids the complicated construct below.
         # It avoids guessing the library name. Tested with cpython 3.8 and
