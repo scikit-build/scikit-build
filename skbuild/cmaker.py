@@ -602,9 +602,7 @@ class CMaker:
                     python_library = candidate
                     break
 
-        # TODO(opadron): what happens if we don't find a libpython?
-
-        return python_library
+        return python_library if python_library and os.path.exists(python_library) else None
 
     @staticmethod
     def check_for_bad_installs() -> None:
