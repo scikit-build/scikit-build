@@ -602,7 +602,7 @@ class CMaker:
                     python_library = candidate
                     break
 
-        return python_library if os.path.exists(python_library) else None
+        return python_library if python_library and os.path.exists(python_library) else None
 
     @staticmethod
     def check_for_bad_installs() -> None:
