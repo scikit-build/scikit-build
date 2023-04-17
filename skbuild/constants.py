@@ -43,7 +43,7 @@ def _default_skbuild_plat_name() -> str:
 
     On macOS, it corresponds to the version and machine associated with :func:`platform.mac_ver()`.
     """
-    if sys.platform != "darwin":
+    if not sys.platform.startswith("darwin"):
         return get_platform()
 
     supported_macos_architectures = {"x86_64", "arm64"}
