@@ -637,17 +637,16 @@ class CMaker:
                         bad_installs.append(os.path.join(destination, os.path.basename(match.group(2))))
 
         if bad_installs:
-            raise SKBuildError(
-                "\n".join(
-                    (
-                        "  CMake-installed files must be within the project root.",
-                        "    Project Root:",
-                        "      " + install_dir,
-                        "    Violating Files:",
-                        "\n".join(("      " + _install) for _install in bad_installs),
-                    )
+            msg = "\n".join(
+                (
+                    "  CMake-installed files must be within the project root.",
+                    "    Project Root:",
+                    f"      {install_dir}",
+                    "    Violating Files:",
+                    "\n".join(f"      {_install}" for _install in bad_installs),
                 )
             )
+            raise SKBuildError(msg)
 
     def make(
         self,

@@ -41,7 +41,7 @@ class CMakePlatform:
     @property
     def generator_installation_help(self) -> str:
         """Return message guiding the user for installing a valid toolchain."""
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError()  # pragma: no cover
 
     @staticmethod
     def write_test_cmakelist(languages: Iterable[str]) -> None:
@@ -169,20 +169,18 @@ class CMakePlatform:
             working_generator = self.compile_test_cmakelist(cmake_executable, candidate_generators, cmake_args)
 
         if working_generator is None:
-            raise SKBuildGeneratorNotFoundError(
-                textwrap.dedent(
-                    """
+            line = "*" * 80
+            installation_help = self.generator_installation_help
+            msg = textwrap.dedent(
+                f"""\
                 {line}
                 scikit-build could not get a working generator for your system. Aborting build.
 
                 {installation_help}
 
-                {line}
-                """
-                )
-                .strip()
-                .format(line="*" * 80, installation_help=self.generator_installation_help)
+                {line}"""
             )
+            raise SKBuildGeneratorNotFoundError(msg)
 
         if cleanup:
             CMakePlatform.cleanup_test()
