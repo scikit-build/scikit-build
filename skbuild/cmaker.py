@@ -297,7 +297,7 @@ class CMaker:
             )
             if python_include_dir:
                 cmd.append(f"{prefix}_INCLUDE_DIR:PATH={python_include_dir}")
-            if python_library and sys.platform.startswith("win"):
+            if python_library and sysconfig.get_platform().startswith("win"):
                 cmd.append(f"{prefix}_LIBRARY:PATH={python_library}")
             if sys.implementation.name == "pypy":
                 cmd.append(f"{prefix}_FIND_IMPLEMENTATIONS:STRING=PyPy")
