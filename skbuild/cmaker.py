@@ -600,7 +600,12 @@ class CMaker:
                     python_library = candidate
                     break
 
-        return python_library if python_library and os.path.exists(python_library) else None
+        # Temporary workaround for some libraries (opencv) processing the
+        # string output.  Will return None instead of empty string in future
+        # versions if the library does not exist.
+        if python_library is None:
+            return None
+        return python_library if python_library and os.path.exists(python_library) else ""
 
     @staticmethod
     def check_for_bad_installs() -> None:
