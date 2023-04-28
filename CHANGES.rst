@@ -15,6 +15,25 @@ and backport changes here.
 
 .. START-BRIEF-CHANGELOG
 
+Scikit-build 0.17.3
+===================
+
+A small release related to ``PYTHON_LIBRARY`` handling changes in 0.17.2;
+scikit-build 0.17.3 returns an empty string from ``get_python_library`` if no
+Python library is present (like on manylinux), where 0.17.2 returned None, and
+previous versions returned a non-existent path. Note that adding ``REQUIRED``
+to ``find_package(PythonLibs`` will fail, but it is incorrect (you must not
+link to ``libPython.so``) and was really just injecting a non-existent path
+before.
+
+Bug fixes
+---------
+
+* Keep ``get_python_library``  return type string if python lib non-existing
+  for now in :pr:`959`.
+* Avoid 'not found' warning if libs are not found by FindPythonExtensions in :pr:`960`.
+* FindNumPy should not call FindPythonLibs in :pr:`958`.
+
 Scikit-build 0.17.2
 ===================
 
