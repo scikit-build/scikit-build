@@ -245,10 +245,7 @@
 #=============================================================================
 
 find_package(PythonInterp REQUIRED)
-# Only fill out libs if the Python libs were found by scikit-build
-if(PYTHON_LIBRARY)
-    find_package(PythonLibs)
-endif()
+find_package(PythonLibs)
 include(targetLinkLibrariesWithDynamicLookup)
 
 set(_command "
