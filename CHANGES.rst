@@ -15,6 +15,19 @@ and backport changes here.
 
 .. START-BRIEF-CHANGELOG
 
+Scikit-build 0.17.4
+===================
+
+Minor release reverting a warning hide change in 0.17.3 (:pr:`960`), since it
+could cause issues when using FindPythonExtensions outside of scikit-build and
+could cause the include directories variable to be unset. The warning is just
+going to be present in cases like manylinux builds.
+
+Bug fixes
+---------
+
+* Revert warning suppression :pr:`960` in :pr:`964`.
+
 Scikit-build 0.17.3
 ===================
 
