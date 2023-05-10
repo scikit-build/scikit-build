@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 import sys
+from pathlib import Path
 
 import nox
 
@@ -105,3 +106,44 @@ def build_api_docs(session: nox.Session) -> None:
         "--module-first",
         "../skbuild",
     )
+
+
+@nox.session(reuse_venv=True)
+def downstream(session: nox.Session) -> None:
+    """
+    Build a downstream project.
+    """
+
+    # If running in manylinux:
+    #   docker run --rm -v $PWD:/sk -w /sk -t quay.io/pypa/manylinux2014_x86_64:latest \
+    #       pipx run --system-site-packages nox -s downstream -- https://github.com/...
+    # (requires tomli, so allowing access to system-site-packages)
+
+    if sys.version_info < (3, 11):
+        import tomli as tomllib
+    else:
+        import tomllib
+
+    assert session.posargs, "Must pass the downstream project to build"
+
+    tmp_dir = Path(session.create_tmp())
+    proj_dir = tmp_dir / "git"
+
+    session.install("build", "hatch-fancy-pypi-readme", "hatch-vcs", "hatchling")
+    session.install(".", "--no-build-isolation")
+
+    if proj_dir.is_dir():
+        session.chdir(proj_dir)
+        session.run("git", "pull", external=True)
+    else:
+        session.run("git", "clone", *session.posargs, proj_dir, "--recurse-submodules", external=True)
+        session.chdir(proj_dir)
+
+    # Read and strip requirements
+    pyproject_toml = Path("pyproject.toml")
+    with pyproject_toml.open("rb") as f:
+        pyproject = tomllib.load(f)
+    requires = (x for x in pyproject["build-system"]["requires"] if "scikit-build" not in x.replace("_", "-"))
+    session.install(*requires)
+
+    session.run("python", "-m", "build", "--no-isolation", "--skip-dependency-check", "--wheel", ".")
