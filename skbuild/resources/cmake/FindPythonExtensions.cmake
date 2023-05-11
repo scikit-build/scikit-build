@@ -168,8 +168,6 @@
 #
 # .. code-block:: cmake
 #
-#    find_package(PythonInterp)
-#    find_package(PythonLibs)
 #    find_package(PythonExtensions)
 #    find_package(Cython)
 #    find_package(Boost COMPONENTS python)
@@ -245,7 +243,14 @@
 #=============================================================================
 
 find_package(PythonInterp REQUIRED)
-find_package(PythonLibs)
+if(SKBUILD AND NOT PYTHON_LIBRARY)
+  set(PYTHON_LIBRARY "no-library-required")
+  find_package(PythonLibs)
+  unset(PYTHON_LIBRARY)
+  unset(PYTHON_LIBRARIES)
+else()
+  find_package(PythonLibs)
+endif()
 include(targetLinkLibrariesWithDynamicLookup)
 
 set(_command "
