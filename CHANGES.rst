@@ -15,6 +15,22 @@ and backport changes here.
 
 .. START-BRIEF-CHANGELOG
 
+
+Scikit-build 0.17.5
+===================
+
+A small fix release fixing the passing on of generator specific arguments. This
+fixes some cases where the Ninja generator was found but then was unable to
+build. NetBSD was reported to work, so was added to the BSD's supported.
+
+Bug fixes
+---------
+
+* Generator args were missing for actual compile in #975
+* Add support for netbsd & pyodide (future) in #977
+
+
+
 Scikit-build 0.17.4
 ===================
 
