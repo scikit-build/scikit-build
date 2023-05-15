@@ -74,7 +74,7 @@ C++ and Fortran based Python extensions across platforms.  It was renamed to
 Known Issues
 ------------
 
-These issues are likely to be addressed in upcoming releases, and are not
+These issues are likely to be addressed in upcoming releases, and are
 already addressed in `scikit-build-core`_.
 
 * Editable installs do not work with the latest versions of Setuptools (and had
