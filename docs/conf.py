@@ -43,7 +43,7 @@ extensions = [
     'sphinxcontrib.moderncmakedomain',
     'sphinx.ext.autodoc',
     'sphinx.ext.viewcode',
-    'sphinx_issues'
+    'sphinx_issues',
 ]
 
 issues_github_path = 'scikit-build/scikit-build'
