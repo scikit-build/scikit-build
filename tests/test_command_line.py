@@ -109,7 +109,7 @@ def test_cmake_initial_cache_as_global_option(tmpdir):
     initial_cache.write("""set(MY_CMAKE_VARIABLE "1" CACHE BOOL "My cache variable")""")
 
     try:
-        with execute_setup_py(tmpdir, [f"-C{str(initial_cache)}", "build"], disable_languages_test=True):
+        with execute_setup_py(tmpdir, [f"-C{initial_cache}", "build"], disable_languages_test=True):
             pass
     except SystemExit as exc:
         assert exc.code == 0  # noqa: PT017
