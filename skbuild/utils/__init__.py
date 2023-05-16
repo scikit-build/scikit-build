@@ -104,7 +104,7 @@ class PythonModuleFinder(distutils_build_py):
     This class is based on ``distutils.command.build_py.build_by`` and
     provides a specialized version of ``find_all_modules()``.
     """
-    
+
     distribution: Distribution
 
     # pylint: disable-next=super-init-not-called
