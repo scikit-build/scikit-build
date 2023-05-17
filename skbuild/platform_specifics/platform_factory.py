@@ -40,5 +40,10 @@ def get_platform() -> abstract.CMakePlatform:
 
         return bsd.BSDPlatform()
 
+    if this_platform == "sunos":
+        from . import sunos
+
+        return sunos.SunOSPlatform()
+
     msg = f"Unsupported platform: {this_platform:s}. Please contact the scikit-build team."
     raise RuntimeError(msg)
