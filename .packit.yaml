@@ -1,14 +1,24 @@
 # See the documentation for more information:
 # https://packit.dev/docs/configuration/
 
-specfile_path: .distro/scikit-build.spec
+specfile_path: .distro/python-scikit-build.spec
 
 files_to_sync:
-  - src: .distro/scikit-build.spec
+  - src: .distro/python-scikit-build.spec
     dest: python-scikit-build.spec
   - .packit.yaml
   - src: .distro/python-scikit-build.rpmlintrc
     dest: python-scikit-build.rpmlintrc
+  # tmt setup
+  - src: .distro/.fmf/
+    dest: .fmf/
+  - src: .distro/plans/
+    dest: plans/
+    filters:
+      - "- .distro/plans/main.fmf.dist-git"
+      - "- .distro/plans/rpmlint.fmf"
+  - src: .distro/plans/main.fmf.dist-git
+    dest: plans/main.fmf
 upstream_package_name: scikit-build
 downstream_package_name: python-scikit-build
 update_release: false
@@ -22,6 +32,11 @@ jobs:
     release_suffix: "{PACKIT_RPMSPEC_RELEASE}"
     targets:
       - fedora-development
+  - job: tests
+    trigger: pull_request
+    targets:
+      - fedora-development
+    fmf_path: .distro
   - job: copr_build
     trigger: commit
     branch: main
@@ -32,6 +47,13 @@ jobs:
       - fedora-latest-x86_64
       - fedora-development-aarch64
       - fedora-latest-aarch64
+  - job: tests
+    trigger: commit
+    branch: main
+    targets:
+      - fedora-development
+      - fedora-latest
+    fmf_path: .distro
   - job: copr_build
     trigger: release
     owner: "@scikit-build"

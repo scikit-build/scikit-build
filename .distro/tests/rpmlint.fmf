@@ -1,0 +1,16 @@
+# Common test variables
+tag:
+  - rpmlint
+tier: 0
+path: /
+
+# Define tests
+/rpmlint-spec:
+  summary: Rpmlint the spec files
+  test: rpmlint ./python-scikit-build.spec
+/rpmlint-rpms:
+  summary: Rpmlint the rpms
+  test: rpmlint -c packit.toml /tmp/*.rpm
+/rpminspect-rpms:
+  summary: Rpminspect the rpms
+  test: ls /tmp/*.rpm | xargs -L1 rpminspect-fedora -E metadata,disttag
