@@ -82,7 +82,7 @@ def test_generator_cleanup():
     assert not os.path.exists(test_folder)
 
 
-@pytest.mark.parametrize("supported_platform", ["darwin", "freebsd", "openbsd", "linux", "windows", "os400", "cygwin"])
+@pytest.mark.parametrize("supported_platform", ["darwin", "freebsd", "openbsd", "linux", "windows", "os400", "cygwin", "sunos"])
 def test_known_platform(supported_platform, mocker):
     mocker.patch("platform.system", return_value=supported_platform)
     platforms = {
@@ -93,6 +93,7 @@ def test_known_platform(supported_platform, mocker):
         "windows": "Windows",
         "os400": "BSD",
         "cygwin": "Cygwin",
+        "sunos": "SunOS",
     }
     expected_platform_classname = f"{platforms[supported_platform]}Platform"
     assert get_platform().__class__.__name__ == expected_platform_classname

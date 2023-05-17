@@ -355,9 +355,15 @@ function(_set_python_extension_symbol_visibility _target)
                  "{global: ${_modinit_prefix}${_target}; local: *;};"
       )
     endif()
-    set_property(TARGET ${_target} APPEND_STRING PROPERTY LINK_FLAGS
-      " -Wl,--version-script=\"${_script_path}\""
-    )
+    if(NOT ${CMAKE_SYSTEM_NAME} MATCHES "SunOS")
+      set_property(TARGET ${_target} APPEND_STRING PROPERTY LINK_FLAGS
+        " -Wl,--version-script=\"${_script_path}\""
+      )
+    else()
+      set_property(TARGET ${_target} APPEND_STRING PROPERTY LINK_FLAGS
+        " -Wl,-M \"${_script_path}\""
+      )
+    endif()
   endif()
 endfunction()
 
