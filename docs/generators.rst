@@ -106,7 +106,7 @@ Unix Makefiles
   build system.
 
 
-.. _Visual Studio:
+.. _Visual Studio IDE:
 
 Visual Studio IDE
 ^^^^^^^^^^^^^^^^^

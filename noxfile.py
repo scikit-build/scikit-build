@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import argparse
 import os
+import shutil
 import sys
 from pathlib import Path
 
@@ -63,20 +65,22 @@ def pylint(session):
 @nox.session
 def docs(session):
     """
-    Build the docs.
+    Build the docs. Use "-R" to rebuild faster. Check options with "-- -h".
     """
 
-    session.install(".[docs]")
+    parser = argparse.ArgumentParser(prog=f"{os.path.basename(sys.argv[0])} -s docs")
+    parser.add_argument("--serve", action="store_true", help="Serve the docs")
+    args = parser.parse_args(session.posargs)
+
+    session.install("-e.[docs]")
 
     session.chdir("docs")
-    session.run("sphinx-build", "-M", "html", ".", "_build")
+    shutil.rmtree("_build")
+    session.run("sphinx-build", "-M", "html", ".", "_build", "-W")
 
-    if session.posargs:
-        if "serve" in session.posargs:
-            print("Launching docs at http://localhost:8000/ - use Ctrl-C to quit")
-            session.run("python", "-m", "http.server", "8000", "-d", "_build/html")
-        else:
-            print("Unsupported argument to docs")
+    if args.serve:
+        print("Launching docs at http://localhost:8000/ - use Ctrl-C to quit")
+        session.run("python", "-m", "http.server", "8000", "-d", "_build/html")
 
 
 @nox.session

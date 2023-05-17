@@ -499,7 +499,7 @@ For example, to limit the number of parallel jobs to ``3``, the following could 
 Visual Studio IDE
 ^^^^^^^^^^^^^^^^^
 
-If :ref:`Visual Studio` generator is used, there are two types of parallelism:
+If :ref:`Visual Studio IDE` generator is used, there are two types of parallelism:
 
 * target level parallelism
 * object level parallelism

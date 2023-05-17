@@ -16,17 +16,25 @@ scikit-build
     :target: https://github.com/orgs/scikit-build/discussions
     :alt: GitHub Discussion
 
-Improved build system generator for CPython C/C++/Fortran/Cython extensions.
+.. START-INTRO
 
-Better support is available for additional compilers, build systems, cross
-compilation, and locating dependencies and determining their build
-requirements.
+**scikit-build** is a Python build system for CPython C/C++/Fortran/Cython
+extensions using CMake.
 
-The **scikit-build** package is fundamentally just glue between
-the ``setuptools`` Python module and `CMake <https://cmake.org/>`_.
+The scikit-build package is fundamentally just glue between the ``setuptools``
+Python module and `CMake`_.
 
-To get started, see `this example <https://scikit-build.readthedocs.io/en/latest/usage.html#example-of-setup-py-cmakelists-txt-and-pyproject-toml>`_ and `scikit-build-sample-projects <https://github.com/scikit-build/scikit-build-sample-projects>`_.
+The next generation of scikit-build, `scikit-build-core`_, is currently under development.
+This provides a simple, reliable build backend for CMake that does not use
+setuptools and provides a lot of new features. Scikit-build-core can also power
+a setuptools-based extension system, which will eventually become the backend
+for scikit-build (classic). If you do not require extensive customization of
+the build process, you should consider trying scikit-build-core instead of
+scikit-build.
 
+To get started, see `this example <https://scikit-build.readthedocs.io/en/latest/usage.html#example-of-setup-py-cmakelists-txt-and-pyproject-toml>`_. For more examples, see `scikit-build-sample-projects <https://github.com/scikit-build/scikit-build-sample-projects>`_.
+
+.. END-INTRO
 
 Latest Release
 --------------
@@ -60,13 +68,14 @@ History
 
 PyCMake was created at SciPy 2014 in response to general difficulties building
 C++ and Fortran based Python extensions across platforms.  It was renamed to
-"scikit-build" in 2016.
+"scikit-build" in 2016. Scikit-build-core was started in 2022.
 
 
 Known Issues
 ------------
 
-These issues are likely to be addressed in upcoming releases.
+These issues are likely to be addressed in upcoming releases, and are
+already addressed in `scikit-build-core`_.
 
 * Editable installs do not work with the latest versions of Setuptools (and had
   issues with older versions, too).
@@ -77,7 +86,6 @@ These issues are likely to be addressed in upcoming releases.
 
 We are also working on improving scikit-build, so there are some upcoming
 changes and deprecations:
-
 
 * All deprecated setuptools/distutils features are also deprecated in
   scikit-build, like the ``test`` command, ``easy_install``, etc.
@@ -95,6 +103,10 @@ Miscellaneous
 * Documentation: http://scikit-build.readthedocs.org
 * Source code: https://github.com/scikit-build/scikit-build
 * Discussions: https://github.com/orgs/scikit-build/discussions
+* Scikit-build-core: https://github.com/scikit-build/scikit-build-core
 
 
 Support for this work was provided by NSF cooperative agreement `OAC-2209877 <https://www.nsf.gov/awardsearch/showAward?AWD_ID=2209877>`_.
+
+.. _scikit-build-core: https://scikit-build-core.readthedocs.io
+.. _cmake: https://cmake.org

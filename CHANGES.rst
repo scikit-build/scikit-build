@@ -26,8 +26,8 @@ build. NetBSD was reported to work, so was added to the BSD's supported.
 Bug fixes
 ---------
 
-* Generator args were missing for actual compile in #975
-* Add support for netbsd & pyodide (future) in #977
+* Generator args were missing for actual compile in :pr:`975`.
+* Add support for netbsd & pyodide (future) in :pr:`977`.
 
 
 
@@ -552,7 +552,7 @@ Bug fixes
 Documentation
 -------------
 
-* Add :doc:`/notes` section to the ``For maintainers`` top-level category that includes a comparison between
+* Add notes section to the ``For maintainers`` top-level category that includes a comparison between
   ``sysconfig`` and ``distutils.sysconfig`` modules.
 
 * Remove obsolete comment in ``cmaker.py``. See :issue:`439`. Thanks :user:`isuruf`
@@ -560,7 +560,7 @@ Documentation
 Tests
 -----
 
-* Update :func:`initialize_git_repo_and_commit` to prevent signing message on system with commit signing
+* Update ``initialize_git_repo_and_commit`` to prevent signing message on system with commit signing
   enabled globally.
 
 Scikit-build 0.10.0
@@ -592,7 +592,7 @@ Bug fixes
 Internal API
 ------------
 
-* Add :meth:`skbuild.platforms.windows.find_visual_studio`.
+* Add :func:`skbuild.platform_specifics.windows.find_visual_studio`.
 
 Documentation
 -------------
@@ -964,7 +964,7 @@ Documentation
 
 * Add a command line :ref:`CMake Options <usage_cmake_options>` section to :doc:`Usage <\usage>`.
 
-* Fix :ref:`table <Visual Studio>` listing *Visual Studio IDE* version and
+* Fix :ref:`table <Visual Studio IDE>` listing *Visual Studio IDE* version and
   corresponding with *CPython version* in :doc:`/generators`.
 
 * Improve :doc:`/make_a_release` section.
@@ -988,7 +988,7 @@ Internal API
 * Teach :class:`skbuild.utils.PythonModuleFinder` to search for ``python module``
   in the CMake install tree.
 
-* Update :meth:`skbuild.setuptools_wrap._consolidate` to copy file into the CMake
+* Update :func:`skbuild.setuptools_wrap._consolidate` to copy file into the CMake
   tree only if it exists.
 
 * Update :meth:`skbuild.setuptools_wrap._copy_file` to create directory only if
@@ -1054,7 +1054,7 @@ Documentation
 
 * add :doc:`/generators` section
 
-* add :doc:`/changes` section
+* add :doc:`/history` section
 
 * allow github issues and users to easily be referenced using ``:issue:`XY```
   and ``:user:`username``` markups.
@@ -1173,8 +1173,7 @@ Tests
 
 * Simplify continuous integration
 
- * use `scikit-ci <http://scikit-ci.readthedocs.io/en/latest/>`_ and
-   `scikit-ci-addons`_
+ * use `scikit-ci`_ and `scikit-ci-addons`_
  * speed up build setting up caching
 
 * Makefile:

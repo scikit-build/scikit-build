@@ -6,7 +6,6 @@ build-backend = "hatchling.build"
 name = "scikit-build"
 dynamic = ["version", "readme"]
 description = "Improved build system generator for Python C/C++/Fortran/Cython extensions"
-license = "MIT"
 requires-python = ">=3.7"
 authors = [
     { name = "The scikit-build team" },
@@ -82,7 +81,8 @@ content-type = "text/x-rst"
 
 [[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
 path = "README.rst"
-end-before = ".. INJECT-CHANGELOG"
+start-after = ".. START-INTRO"
+end-before = ".. END-INTRO"
 
 [[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
 path = "CHANGES.rst"

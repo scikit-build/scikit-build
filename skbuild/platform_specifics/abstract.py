@@ -107,7 +107,7 @@ class CMakePlatform:
 
         :param generator_name: If provided, uses only provided generator, \
         instead of trying :attr:`default_generators`.
-        :type generator_name: string or None
+        :type generator_name: str | None
 
         :param skip_generator_test: If set to True and if a generator name is \
         specified, the generator test is skipped. If no generator_name is specified \
@@ -124,7 +124,7 @@ class CMakePlatform:
 
         :param cmake_executable: Path to CMake executable used to configure \
         and build the test project used to evaluate if a generator is working.
-        :type cmake_executable: string
+        :type cmake_executable: str
 
         :param cmake_args: List of CMake arguments to use when configuring \
         the test project. Only arguments starting with ``-DCMAKE_`` are \
