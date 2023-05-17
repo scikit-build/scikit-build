@@ -1,17 +1,17 @@
 # See the documentation for more information:
 # https://packit.dev/docs/configuration/
 
-specfile_path: .distro/scikit-build.spec
+specfile_path: .distro/python-scikit-build.spec
 
 files_to_sync:
-  - src: .distro/scikit-build.spec
+  - src: .distro/python-scikit-build.spec
     dest: python-scikit-build.spec
   - .packit.yaml
   - src: .distro/python-scikit-build.rpmlintrc
     dest: python-scikit-build.rpmlintrc
   # tmt setup
   - src: .distro/.fmf/
-    dest: .fmf
+    dest: .fmf/
   - src: .distro/plans/
     dest: plans/
     filters:

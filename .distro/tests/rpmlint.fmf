@@ -7,7 +7,7 @@ path: /
 # Define tests
 /rpmlint-spec:
   summary: Rpmlint the spec files
-  test: rpmlint ./scikit-build.spec
+  test: rpmlint ./python-scikit-build.spec
 /rpmlint-rpms:
   summary: Rpmlint the rpms
   test: rpmlint -c packit.toml /tmp/*.rpm
