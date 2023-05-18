@@ -64,7 +64,7 @@ test = [
 
 [project.urls]
 "Bug Tracker" = "https://github.com/scikit-build/scikit-build/issues"
-Changelog = "https://scikit-build.readthedocs.io/en/latest/changes.html"
+Changelog = "https://scikit-build.readthedocs.io/en/latest/history.html"
 Discussions = "https://github.com/orgs/scikit-build/discussions"
 Documentation = "https://scikit-build.readthedocs.io/"
 Examples = "https://github.com/scikit-build/scikit-build-sample-projects"
