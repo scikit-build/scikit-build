@@ -7,9 +7,9 @@ prepare:
     - rpmlint
     - rpminspect
     - rpminspect-data-fedora
-  - name: Download the source rpm
-    how: shell
-    script: cd /tmp && curl -O ${PACKIT_SRPM_URL}
+  #- name: Download the source rpm
+  #  how: shell
+  #  script: cd /tmp && curl -O ${PACKIT_SRPM_URL}
   - name: Download rpm packages
     how: shell
     script: cd /tmp && dnf download ${PACKIT_COPR_RPMS}
