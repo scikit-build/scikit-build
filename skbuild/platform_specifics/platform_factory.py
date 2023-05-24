@@ -45,5 +45,10 @@ def get_platform() -> abstract.CMakePlatform:
 
         return sunos.SunOSPlatform()
 
+    if this_platform == "aix":
+        from . import aix
+
+        return aix.AIXPlatform()
+
     msg = f"Unsupported platform: {this_platform:s}. Please contact the scikit-build team."
     raise RuntimeError(msg)

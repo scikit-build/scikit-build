@@ -83,7 +83,7 @@ def test_generator_cleanup():
 
 
 @pytest.mark.parametrize(
-    "supported_platform", ["darwin", "freebsd", "openbsd", "linux", "windows", "os400", "cygwin", "sunos"]
+    "supported_platform", ["darwin", "freebsd", "openbsd", "linux", "windows", "os400", "cygwin", "sunos", "aix"]
 )
 def test_known_platform(supported_platform, mocker):
     mocker.patch("platform.system", return_value=supported_platform)
@@ -96,6 +96,7 @@ def test_known_platform(supported_platform, mocker):
         "os400": "BSD",
         "cygwin": "Cygwin",
         "sunos": "SunOS",
+        "aix": "AIX",
     }
     expected_platform_classname = f"{platforms[supported_platform]}Platform"
     assert get_platform().__class__.__name__ == expected_platform_classname
