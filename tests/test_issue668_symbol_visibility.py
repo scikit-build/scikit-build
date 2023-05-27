@@ -57,7 +57,7 @@ def test_symbol_visibility(skip_override):
             # Looking for entries associated with get_map
             # ex.     62: 0000000000001260   164 FUNC    GLOBAL DEFAULT   14 get_map\n
             # NOTE: We want to ignore get_map::id_to_resourse entries
-            if "get_map" in line and "get_map::" not in line:
+            if "get_map" in line.split():
                 print(line)
                 if skip_override == "ON":
                     assert "GLOBAL" in line
