@@ -110,7 +110,7 @@ def test_make(configure_with_cmake_source_dir, capfd):
             config_kwargs = {}
             if configure_with_cmake_source_dir:
                 config_kwargs["cmake_source_dir"] = str(src_dir)
-            env = cmkr.configure(**config_kwargs)
+            env = cmkr.configure(**config_kwargs)  # type: ignore[arg-type]
             cmkr.make(env=env)
 
         messages = ["Project has been installed"]

@@ -31,6 +31,18 @@ SAMPLES_DIR = os.path.join(
     "samples",
 )
 
+__all__ = [
+    "SAMPLES_DIR",
+    "execute_setup_py",
+    "get_cmakecache_variables",
+    "initialize_git_repo_and_commit",
+    "list_ancestors",
+    "prepare_project",
+    "project_setup_py_test",
+    "push_dir",
+    "push_env",
+]
+
 
 @contextmanager
 def push_argv(argv):
@@ -66,7 +78,7 @@ def prepend_sys_path(paths):
     sys.path = saved_paths
 
 
-def _tmpdir(basename):
+def _tmpdir(basename: str) -> py.path.local:
     """This function returns a temporary directory similar to the one
     returned by the ``tmpdir`` pytest fixture.
     The difference is that the `basetemp` is not configurable using
@@ -80,7 +92,7 @@ def _tmpdir(basename):
 
     # Adapted from _pytest.tmpdir.TempdirFactory.getbasetemp()
     try:
-        basetemp = _tmpdir._basetemp
+        basetemp = _tmpdir._basetemp  # type: ignore[attr-defined]
     except AttributeError:
         temproot = py.path.local.get_temproot()
         user = _pytest.tmpdir.get_user()
@@ -205,7 +217,7 @@ def execute_setup_py(project_dir, setup_args, disable_languages_test=False):
     """
 
     # See https://stackoverflow.com/questions/9160227/dir-util-copy-tree-fails-after-shutil-rmtree
-    distutils.dir_util._path_created = {}
+    distutils.dir_util._path_created = {}  # type: ignore[attr-defined]
 
     # Clear _PYTHON_HOST_PLATFORM to ensure value sets in skbuild.setuptools_wrap.setup() does not
     # influence other tests.
@@ -215,7 +227,7 @@ def execute_setup_py(project_dir, setup_args, disable_languages_test=False):
     with push_dir(str(project_dir)), push_argv(["setup.py", *setup_args]), prepend_sys_path([str(project_dir)]):
         # Restore master working set that is reset following call to "python setup.py test"
         # See function "project_on_sys_path()" in setuptools.command.test
-        pkg_resources._initialize_master_working_set()
+        pkg_resources._initialize_master_working_set()  # type: ignore[attr-defined]
 
         with open("setup.py") as fp:
             setup_code = compile(fp.read(), "setup.py", mode="exec")
@@ -241,22 +253,22 @@ def project_setup_py_test(project, setup_args, tmp_dir=None, verbose_git=True, d
     def dec(fun):
         @functools.wraps(fun)
         def wrapped(*iargs, **ikwargs):
-            if wrapped.tmp_dir is None:
-                wrapped.tmp_dir = _tmpdir(fun.__name__)
-                prepare_project(wrapped.project, wrapped.tmp_dir)
-                initialize_git_repo_and_commit(wrapped.tmp_dir, verbose=wrapped.verbose_git)
+            if wrapped.tmp_dir is None:  # type: ignore[attr-defined]
+                wrapped.tmp_dir = _tmpdir(fun.__name__)  # type: ignore[attr-defined]
+                prepare_project(wrapped.project, wrapped.tmp_dir)  # type: ignore[attr-defined]
+                initialize_git_repo_and_commit(wrapped.tmp_dir, verbose=wrapped.verbose_git)  # type: ignore[attr-defined]
 
-            with execute_setup_py(wrapped.tmp_dir, wrapped.setup_args, disable_languages_test=disable_languages_test):
+            with execute_setup_py(wrapped.tmp_dir, wrapped.setup_args, disable_languages_test=disable_languages_test):  # type: ignore[attr-defined]
                 result2 = fun(*iargs, **ikwargs)
 
             if ret:
-                return wrapped.tmp_dir, result2
+                return wrapped.tmp_dir, result2  # type: ignore[attr-defined]
             return None
 
-        wrapped.project = project
-        wrapped.setup_args = setup_args
-        wrapped.tmp_dir = tmp_dir
-        wrapped.verbose_git = verbose_git
+        wrapped.project = project  # type: ignore[attr-defined]
+        wrapped.setup_args = setup_args  # type: ignore[attr-defined]
+        wrapped.tmp_dir = tmp_dir  # type: ignore[attr-defined]
+        wrapped.verbose_git = verbose_git  # type: ignore[attr-defined]
 
         return wrapped
 

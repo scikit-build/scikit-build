@@ -111,17 +111,19 @@ line-length = 120
 
 [tool.mypy]
 files = ["skbuild", "tests"]
+exclude = ["tests/samples"]
 python_version = "3.7"
 warn_unused_configs = true
 show_error_codes = true
 enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
 strict = true
 disallow_untyped_defs = false
-exclude = ["tests/samples"]
+disallow_untyped_calls = false
 
 [[tool.mypy.overrides]]
 module = ["skbuild.*"]
 disallow_untyped_defs = true
+disallow_untyped_calls = true
 
 [[tool.mypy.overrides]]
 module = [

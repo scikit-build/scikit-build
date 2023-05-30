@@ -73,9 +73,8 @@ Provides:       bundled(cmake(UsePythonExtensions))
 # so we clean them.
 export CFLAGS=' '
 export CXXFLAGS=' '
-# pep518 tests are disabled because they require internet
-%pytest -k "not pep518" \
-        -m "not deprecated and not nosetuptoolsscm"
+# isolated tests are disabled because they require internet
+%pytest -m "not isolated and not deprecated and not nosetuptoolsscm"
 
 
 %files -n python3-scikit-build -f %{pyproject_files}

@@ -159,17 +159,17 @@ def test_push_env():
 
     assert "SKBUILD_NEW_VAR" not in os.environ
     assert "SKBUILD_ANOTHER_VAR" in os.environ
-    assert saved_env == os.environ
+    assert saved_env == dict(os.environ)
 
     # Trying to unset an unknown variable should be a no-op
     with push_env(SKBUILD_NOT_SET=None):
-        assert saved_env == os.environ
-    assert saved_env == os.environ
+        assert saved_env == dict(os.environ)
+    assert saved_env == dict(os.environ)
 
     # Calling without argument should be a no-op
     with push_env():
-        assert saved_env == os.environ
-    assert saved_env == os.environ
+        assert saved_env == dict(os.environ)
+    assert saved_env == dict(os.environ)
 
 
 def test_python_module_finder():

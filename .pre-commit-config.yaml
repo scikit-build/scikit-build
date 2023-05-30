@@ -68,7 +68,7 @@ repos:
   rev: "v1.3.0"
   hooks:
   - id: mypy
-    files: ^(skbuild)  # TODO: add |tests
+    files: ^(skbuild|tests) # TODO: add |tests
     exclude: ^tests/samples
     additional_dependencies:
     - cmake

@@ -78,7 +78,7 @@ def test_hello_with_compileerror_fails(capfd):
 def test_invalid_cmake(exception, mocker):
     exceptions = {
         OSError: OSError("Unknown error"),
-        CalledProcessError: CalledProcessError([CMAKE_DEFAULT_EXECUTABLE, "--version"], 1),
+        CalledProcessError: CalledProcessError(1, [CMAKE_DEFAULT_EXECUTABLE, "--version"]),
     }
 
     run_original = run

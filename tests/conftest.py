@@ -29,7 +29,7 @@ pytest.register_assert_rewrite("tests.pytest_helpers")
 
 
 @pytest.fixture(scope="session")
-def pep518_wheelhouse(tmp_path_factory) -> Path:
+def pep518_wheelhouse(tmp_path_factory: pytest.TempPathFactory) -> Path:
     numpy = ["numpy"] if sys.version_info < (3, 12) else []
     wheelhouse = tmp_path_factory.mktemp("wheelhouse")
     subprocess.run(
@@ -45,6 +45,7 @@ def pep518_wheelhouse(tmp_path_factory) -> Path:
         check=True,
     )
 
+    # Hatch-* packages only required for test_distribution
     packages = [
         "build",
         "setuptools",
@@ -52,6 +53,9 @@ def pep518_wheelhouse(tmp_path_factory) -> Path:
         "wheel",
         "ninja",
         "cmake",
+        "hatch-fancy-pypi-readme",
+        "hatch-vcs",
+        "hatchling",
     ]
 
     subprocess.run(
@@ -72,29 +76,26 @@ def pep518_wheelhouse(tmp_path_factory) -> Path:
 
 
 class VEnv:
-    executable: Path
-    env_dir: Path
-
     def __init__(self, env_dir: Path, *, wheelhouse: Path | None = None) -> None:
         cmd = [str(env_dir), "--no-setuptools", "--no-wheel", "--activators", ""]
         result = _virtualenv.cli_run(cmd, setup_logging=False)
         self.wheelhouse = wheelhouse
         self.executable = Path(result.creator.exe)
-        self.env_dir = Path(result.creator.script_dir)
+        self.dest = env_dir.resolve()
 
     @overload
-    def run(self, *args: str | os.PathLike, capture: Literal[True], cwd: Path | None = ...) -> str:
+    def run(self, *args: str | os.PathLike[str], capture: Literal[True], cwd: Path | None = ...) -> str:
         ...
 
     @overload
-    def run(self, *args: str | os.PathLike, capture: Literal[False] = ..., cwd: Path | None = ...) -> None:
+    def run(self, *args: str | os.PathLike[str], capture: Literal[False] = ..., cwd: Path | None = ...) -> None:
         ...
 
-    def run(self, *args: str | os.PathLike, capture: bool = False, cwd: Path | None = None) -> str | None:
+    def run(self, *args: str | os.PathLike[str], capture: bool = False, cwd: Path | None = None) -> str | None:
         __tracebackhide__ = True
         env = os.environ.copy()
         env["PATH"] = f"{self.executable.parent}{os.pathsep}{env['PATH']}"
-        env["VIRTUAL_ENV"] = str(self.env_dir)
+        env["VIRTUAL_ENV"] = str(self.dest)
         env["PIP_DISABLE_PIP_VERSION_CHECK"] = "ON"
         if self.wheelhouse is not None:
             env["PIP_NO_INDEX"] = "ON"
@@ -104,7 +105,7 @@ class VEnv:
 
         # Windows does not make a python shortcut in venv
         if str_args[0] in {"python", "python3"}:
-            str_args[0] = sys.executable
+            str_args[0] = str(self.executable)
 
         if capture:
             result = subprocess.run(
@@ -133,13 +134,21 @@ class VEnv:
             raise SystemExit(result_bytes.returncode)
         return None
 
-    def execute(self, command: str, **kwargs: object) -> str:
-        return self.run(str(self.executable), "-c", command, capture=True, **kwargs)
+    def execute(self, command: str, cwd: Path | None = None) -> str:
+        return self.run(str(self.executable), "-c", command, capture=True, cwd=cwd)
 
-    def module(self, *args: str | os.PathLike, **kwargs: object) -> None:
-        return self.run(str(self.executable), "-m", *args, **kwargs)
+    @overload
+    def module(self, *args: str | os.PathLike[str], capture: Literal[False] = ..., cwd: Path | None = ...) -> None:
+        ...
 
-    def install(self, *args: str | os.PathLike) -> None:
+    @overload
+    def module(self, *args: str | os.PathLike[str], capture: Literal[True], cwd: Path | None = ...) -> str:
+        ...
+
+    def module(self, *args: str | os.PathLike[str], capture: bool = False, cwd: Path | None = None) -> None | str:
+        return self.run(str(self.executable), "-m", *args, capture=capture, cwd=cwd)  # type: ignore[no-any-return,call-overload]
+
+    def install(self, *args: str | os.PathLike[str]) -> None:
         self.module("pip", "install", *args)
 
 
@@ -155,15 +164,6 @@ def isolated(tmp_path: Path, pep518_wheelhouse: Path) -> Generator[VEnv, None, N
     path = tmp_path / "venv"
     try:
         yield VEnv(path, wheelhouse=pep518_wheelhouse)
-    finally:
-        shutil.rmtree(path, ignore_errors=True)
-
-
-@pytest.fixture()
-def virtualenv(tmp_path: Path) -> Generator[VEnv, None, None]:
-    path = tmp_path / "venv"
-    try:
-        yield VEnv(path)
     finally:
         shutil.rmtree(path, ignore_errors=True)
 
