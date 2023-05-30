@@ -45,6 +45,8 @@ def tests(session: nox.Session) -> None:
 
     numpy = [] if "pypy" in session.python or "3.12" in session.python else ["numpy"]
     install_spec = "-e.[test,cov,doctest]" if "--cov" in posargs else ".[test,doctest]"
+    if "--cov" in posargs:
+        posargs.append("--cov-config=pyproject.toml")
 
     # Latest versions may break things, so grab them for testing!
     session.install("-U", "setuptools", "wheel")

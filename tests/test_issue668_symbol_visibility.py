@@ -50,6 +50,7 @@ def test_symbol_visibility(skip_override):
         result = subprocess.Popen([readelf, "-s", "--wide", libs[0]], stdout=subprocess.PIPE)
         output = str(subprocess.check_output((cppfilt), stdin=result.stdout), "UTF-8")
         result.wait()
+        assert result.stdout is not None
         result.stdout.close()
 
         for line in output.splitlines():

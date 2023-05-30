@@ -81,7 +81,7 @@ def test_distribution_is_pure(distribution_type, tmpdir):
                 description="test object returned by setup function",
                 author="The scikit-build team",
                 license="MIT",
-                **skbuild_setup_kwargs,
+                **skbuild_setup_kwargs,  # type: ignore[arg-type]
             )
             assert issubclass(distribution.__class__, (distutils_Distribution, setuptool_Distribution))
             assert is_pure == distribution.is_pure()
@@ -916,13 +916,11 @@ def test_setup_inputs(
         _pprint("py_modules")
 
         # scripts
-        expected_scripts = []
-        _pprint("expected_scripts", expected_scripts)
+        _pprint("expected_scripts", [])
         _pprint("scripts")
 
         # data_files
-        expected_data_files = []
-        _pprint("expected_data_files", expected_data_files)
+        _pprint("expected_data_files", [])
         _pprint("data_files")
 
         assert sorted(setup_kw["packages"]) == sorted(expected_packages)

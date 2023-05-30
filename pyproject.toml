@@ -24,6 +24,7 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Typing :: Typed",
 ]
 dependencies = [
@@ -56,7 +57,6 @@ test = [
     'cython>=0.25.1',
     'importlib-metadata;python_version<"3.8"',
     'pytest-mock>=1.10.4',
-    'pytest-virtualenv>=1.2.5',
     'pytest>=6.0.0',
     'requests',
     'virtualenv',
@@ -112,17 +112,19 @@ line-length = 120
 
 [tool.mypy]
 files = ["skbuild", "tests"]
+exclude = ["tests/samples"]
 python_version = "3.7"
 warn_unused_configs = true
 show_error_codes = true
 enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
 strict = true
 disallow_untyped_defs = false
-exclude = ["tests/samples"]
+disallow_untyped_calls = false
 
 [[tool.mypy.overrides]]
 module = ["skbuild.*"]
 disallow_untyped_defs = true
+disallow_untyped_calls = true
 
 [[tool.mypy.overrides]]
 module = [
@@ -181,6 +183,7 @@ filterwarnings = [
   'default:subprocess .* is still running:ResourceWarning',
   'ignore: pkg_resources is deprecated as an API:DeprecationWarning',
   'ignore:onerror argument is deprecated, use onexc instead:DeprecationWarning',  # Caused by wheel and Python 3.12
+  'ignore:(ast.Str|Attribute s|ast.NameConstant|ast.Num) is deprecated:DeprecationWarning:_pytest',
 ]
 log_cli_level = "info"
 markers = [
