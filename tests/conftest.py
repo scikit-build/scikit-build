@@ -48,6 +48,7 @@ def pep518_wheelhouse(tmp_path_factory) -> Path:
     packages = [
         "build",
         "setuptools",
+        "virtualenv",
         "wheel",
         "ninja",
         "cmake",
@@ -173,8 +174,10 @@ def pytest_report_header() -> str:
         "distro",
         "packaging",
         "pip",
+        "scikit-build",
         "setuptools",
         "setuptools_scm",
+        "virtualenv",
         "wheel",
     }
     valid = []
