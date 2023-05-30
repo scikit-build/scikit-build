@@ -83,6 +83,9 @@ already addressed in `scikit-build-core`_.
   currently.
 * The cache directory (``_skbuild``) may need to be deleted between builds in
   some cases (like rebuilding with a different Python interpreter).
+* AIX requires a newer version of CMake than the IBM-supplied CMake 3.22.0
+  from the AIX Toolbox for Open Source Software.  We currently recommend
+  building CMake from source on AIX.
 
 We are also working on improving scikit-build, so there are some upcoming
 changes and deprecations:
