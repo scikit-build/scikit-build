@@ -1,12 +1,6 @@
 from __future__ import annotations
 
-import os
-import sys
-
-print(os.environ)
-print(sys.executable)
-
-from skbuild import setup  # noqa: E402
+from skbuild import setup
 
 setup(
     name="hello_no_language",

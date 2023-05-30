@@ -101,6 +101,10 @@ class VEnv:
 
         str_args = [os.fspath(a) for a in args]
 
+        # Windows does not make a python shortcut in venv
+        if str_args[0] in {"python", "python3"}:
+            str_args[0] = sys.executable
+
         if capture:
             result = subprocess.run(
                 str_args,
