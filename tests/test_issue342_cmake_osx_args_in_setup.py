@@ -175,7 +175,7 @@ def test_cmake_args_keyword_osx_default(
     with push_env(MACOSX_DEPLOYMENT_TARGET=osx_deployment_target_env_var):
         monkeypatch.setattr(skbuild.constants, "_SKBUILD_PLAT_NAME", skbuild.constants._default_skbuild_plat_name())
         with pytest.raises(RuntimeError, match="exit skbuild"):
-            with execute_setup_py(tmp_dir, ["build", *cli_setup_args] + ["--"] + cli_cmake_args):
+            with execute_setup_py(tmp_dir, ["build", *cli_setup_args, "--", *cli_cmake_args]):
                 pass
 
     assert mock_configure.call_count == 1
