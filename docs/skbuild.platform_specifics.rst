@@ -49,6 +49,14 @@ skbuild.platform\_specifics.osx module
    :undoc-members:
    :show-inheritance:
 
+skbuild.platform\_specifics.aix module
+----------------------------------------
+
+.. automodule:: skbuild.platform_specifics.aix
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 skbuild.platform\_specifics.platform\_factory module
 ----------------------------------------------------
 
