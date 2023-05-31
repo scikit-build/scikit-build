@@ -70,7 +70,7 @@ def docs(session):
     Build the docs. Use "-R" to rebuild faster. Check options with "-- -h".
     """
 
-    parser = argparse.ArgumentParser(prog=f"{os.path.basename(sys.argv[0])} -s docs")
+    parser = argparse.ArgumentParser(prog=f"{Path(sys.argv[0]).name} -s docs")
     parser.add_argument("--serve", action="store_true", help="Serve the docs")
     args = parser.parse_args(session.posargs)
 
@@ -125,12 +125,14 @@ def downstream(session: nox.Session) -> None:
     #       pipx run --system-site-packages nox -s downstream -- https://github.com/...
     # (requires tomli, so allowing access to system-site-packages)
 
+    parser = argparse.ArgumentParser(prog=f"{Path(sys.argv[0]).name} -s downstream")
+    parser.add_argument("path", help="Location to git clone from")
+    args, remaining = parser.parse_known_args(session.posargs)
+
     if sys.version_info < (3, 11):
         import tomli as tomllib
     else:
         import tomllib
-
-    assert session.posargs, "Must pass the downstream project to build"
 
     tmp_dir = Path(session.create_tmp())
     proj_dir = tmp_dir / "git"
@@ -142,7 +144,7 @@ def downstream(session: nox.Session) -> None:
         session.chdir(proj_dir)
         session.run("git", "pull", external=True)
     else:
-        session.run("git", "clone", *session.posargs, proj_dir, "--recurse-submodules", external=True)
+        session.run("git", "clone", args.path, *remaining, proj_dir, "--recurse-submodules", external=True)
         session.chdir(proj_dir)
 
     # Read and strip requirements
