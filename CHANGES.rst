@@ -16,6 +16,31 @@ and backport changes here.
 .. START-BRIEF-CHANGELOG
 
 
+Scikit-build 0.17.6
+===================
+
+A small fix release with some new platforms and better testing, including CPython 3.12.0b1.
+
+Bug fixes
+---------
+
+* Support added for SunOS by :user:`mtelka` in :pr:`983`.
+* Support added for AIX (with recent CMake) by :user:`bhuntsman` in :pr:`988`.
+
+Testing
+-------
+
+* Tests now pass on CPython 3.12.0b1 in :pr:`879`.
+* Tests no longer use ``pytest-virtualenv`` in :pr:`879`.
+* ``isolated`` marker now includes ``test_distribution`` tests in :pr:`879`.
+* Tests avoid incorrect ``get_map`` match by :user:`keszybz` in :pr:`990`.
+* Fedora testing fix by :user:`LecrisUT` in :pr:`986` and :pr:`938`.
+
+Miscellaneous
+-------------
+
+* Docs improvements in :pr:`979`.
+
 Scikit-build 0.17.5
 ===================
 
