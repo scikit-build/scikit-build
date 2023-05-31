@@ -64,3 +64,6 @@ skbuild/_version.py
 /.distro/main.fmf
 /.distro/plans/main.fmf
 /.distro/tests/main.fmf
+
+# pyenv
+.python-version
