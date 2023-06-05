@@ -23,12 +23,10 @@ BuildRequires:  ninja-build
 
 %global _description %{expand:
 Improved build system generator for CPython C/C++/Fortran/Cython extensions.
-Better support is available for additional compilers, build systems,
-cross compilation, and locating dependencies
-and determining their build requirements.
-The scikit-build package is fundamentally just glue between
-the setuptools Python module and CMake.
-}
+Better support is available for additional compilers, build systems, cross
+compilation, and locating dependencies and determining their build requirements.
+The scikit-build package is fundamentally just glue between the setuptools
+Python module and CMake.}
 
 %description %_description
 
@@ -52,7 +50,7 @@ Provides:       bundled(cmake(UsePythonExtensions))
 
 
 %prep
-%autosetup -n scikit_build-%{version}
+%autosetup -p1 -n scikit_build-%{version}
 
 
 %generate_buildrequires
@@ -74,7 +72,7 @@ Provides:       bundled(cmake(UsePythonExtensions))
 export CFLAGS=' '
 export CXXFLAGS=' '
 # isolated tests are disabled because they require internet
-%pytest -m "not isolated and not deprecated and not nosetuptoolsscm"
+%pytest -v -m "not isolated and not deprecated and not nosetuptoolsscm"
 
 
 %files -n python3-scikit-build -f %{pyproject_files}
