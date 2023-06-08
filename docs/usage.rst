@@ -578,7 +578,7 @@ Controlling exported symbol visibility
 --------------------------------------
 
 When using a GNU based compiler on Linux, scikit-build will reduce the binary size by removing all the native exported methods.
-By default, only the ``PyInit_<moduleName>`` (or ``init<moduleName>``) entry point is exported from the native module. 
+By default, only the ``PyInit_<moduleName>`` (or ``init<moduleName>``) entry point is exported from the native module.
 If you need to preserve native exports in your module, you may set ``SKBUILD_GNU_SKIP_LOCAL_SYMBOL_EXPORT_OVERRIDE`` as a
 `CMake option <https://scikit-build.readthedocs.io/en/latest/usage.html#cmake-configure-options>`_
 or
@@ -586,7 +586,7 @@ or
 
 Modules built with a GNU based compiler on Linux, can control exports through a `version script <https://ftp.gnu.org/old-gnu/Manuals/ld-2.9.1/html_node/ld_25.html>`_.
 For this platform/compiler combination, regardless of the target Python version, scikit-build always creates a version script.
-When this option is set to ``OFF``, a version script is created that specifies all local methods to be excluded from export. 
+When this option is set to ``OFF``, a version script is created that specifies all local methods to be excluded from export.
 When this option is set to ``ON``, a version script is created allowing all local methods to be exported and available in the built module.
 
 Environment variable configuration
