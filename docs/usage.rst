@@ -407,8 +407,8 @@ and a python wheel, it is possible to test for the variable ``SKBUILD``:
     if(SKBUILD)
       message(STATUS "The project is built using scikit-build")
     endif()
-    
-    
+
+
 How does scikit-build know where to find compiled modules?
 ----------------------------------------------------------
 
