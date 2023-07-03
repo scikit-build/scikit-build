@@ -218,7 +218,6 @@ select = [
   "NPY",         # NumPy specific rules
 ]
 extend-ignore = ["PLR", "E501", "SIM117"]
-target-version = "py37"
 typing-modules = ["skbuild._compat.typing"]
 line-length = 120
 unfixable = ["T20", "F841"]
