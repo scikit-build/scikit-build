@@ -245,7 +245,7 @@ def _parse_setuptools_arguments(
         names = ", ".join(plat_names)
         msg = f"--plat-name is ambiguous: {names}"
         raise SKBuildError(msg)
-    plat_name = list(plat_names)[0]
+    plat_name = next(iter(plat_names))
 
     build_ext_cmd = dist.get_command_obj("build_ext")
     build_ext_inplace: bool = getattr(build_ext_cmd, "inplace", False)
