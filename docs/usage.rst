@@ -413,7 +413,7 @@ How does scikit-build know where to find compiled modules?
 ----------------------------------------------------------
 
 Compiled targets and other install files are identified by parsing the CMake-generated
-``install_manifest.txt`` file from :func:`skbuild.constants.CMAKE_BUILD_DIR()`. Note:
+``install_manifest*.txt`` files from :func:`skbuild.constants.CMAKE_BUILD_DIR()`. Note:
 if scikit-build is driving nested CMake projects (externalproject / "superbuild"), the
 manifest file may not be present in the ``CMAKE_BUILD_DIR``.
 
