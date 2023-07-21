@@ -4,12 +4,16 @@ import sys
 import tarfile
 from zipfile import ZipFile
 
-import wheel
-from pkg_resources import parse_version
+from packaging.version import Version
 
 from skbuild import __version__ as skbuild_version
 
 from . import list_ancestors
+
+if sys.version_info < (3, 8):
+    import importlib_metadata as metadata
+else:
+    from importlib import metadata
 
 
 def check_sdist_content(sdist_archive, expected_distribution_name, expected_content, package_dir=""):
@@ -71,7 +75,9 @@ def check_wheel_content(wheel_archive, expected_distribution_name, expected_cont
         f"{expected_distribution_name}.dist-info/METADATA",
     }
 
-    if parse_version(wheel.__version__) < parse_version("0.31.0"):
+    wheel_version = Version(metadata.version("wheel"))
+
+    if wheel_version < Version("0.31.0"):
         # These files were specified in the now-withdrawn PEP 426
         # See https://github.com/pypa/wheel/issues/195
         expected_content |= {
@@ -79,7 +85,7 @@ def check_wheel_content(wheel_archive, expected_distribution_name, expected_cont
             f"{expected_distribution_name}.dist-info/metadata.json",
         }
 
-    if parse_version("0.33.1") < parse_version(wheel.__version__) < parse_version("0.33.4"):
+    if Version("0.33.1") < wheel_version < Version("0.33.4"):
         # Include directory entries when building wheel
         # See https://github.com/pypa/wheel/issues/287 and https://github.com/pypa/wheel/issues/294
         for entry in expected_content:
