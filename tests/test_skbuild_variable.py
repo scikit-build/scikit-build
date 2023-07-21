@@ -15,11 +15,6 @@ def test_skbuild_variable_builds():
     pass
 
 
-# @project_setup_py_test("fail-unless-skbuild-set", ["test"], disable_languages_test=True)
-# def test_skbuild_variable_works():
-#     pass
-
-
 @project_setup_py_test("fail-unless-skbuild-set", ["sdist"], disable_languages_test=True)
 def test_skbuild_variable_sdist():
     pass

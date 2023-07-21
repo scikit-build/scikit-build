@@ -36,11 +36,6 @@ def test_hello_builds():
         another_run()
 
 
-# @project_setup_py_test("hello-cpp", ["test"])
-# def test_hello_works():
-#     pass
-
-
 @project_setup_py_test("hello-cpp", ["sdist"])
 def test_hello_sdist():
     sdists_tar = glob.glob("dist/*.tar.gz")

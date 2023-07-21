@@ -21,11 +21,6 @@ def test_hello_pure_builds(capsys):
     assert "skipping skbuild (no CMakeLists.txt found)" in out
 
 
-# @project_setup_py_test("hello-pure", ["test"])
-# def test_hello_cython_works():
-#     pass
-
-
 @project_setup_py_test("hello-pure", ["sdist"], disable_languages_test=True)
 def test_hello_pure_sdist():
     sdists_tar = glob.glob("dist/*.tar.gz")

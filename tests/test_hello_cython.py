@@ -23,11 +23,6 @@ def test_hello_cython_builds():
     pass
 
 
-# @project_setup_py_test("hello-cython", ["test"])
-# def test_hello_cython_works():
-#     pass
-
-
 @project_setup_py_test("hello-cython", ["sdist"])
 def test_hello_cython_sdist():
     sdists_tar = glob.glob("dist/*.tar.gz")
