@@ -41,7 +41,6 @@ from .command import (
     install_lib,
     install_scripts,
     sdist,
-    test,
 )
 from .constants import (
     CMAKE_DEFAULT_EXECUTABLE,
@@ -342,7 +341,6 @@ def _should_run_cmake(commands: Sequence[str], cmake_with_sdist: bool) -> bool:
         "bdist_rpm",
         "bdist_wininst",
         "bdist_wheel",
-        "test",
     }
 
     if expected_commands & given_commands:
@@ -440,7 +438,6 @@ def setup(
     cmdclass["generate_source_manifest"] = cmdclass.get(
         "generate_source_manifest", generate_source_manifest.generate_source_manifest
     )
-    cmdclass["test"] = cmdclass.get("test", test.test)
     kw["cmdclass"] = cmdclass
 
     # Extract setup keywords specific to scikit-build and remove them from kw.
@@ -512,7 +509,7 @@ def setup(
             print(flush=True)
         return setuptools.setup(**kw)  # type: ignore[no-any-return, func-returns-value]
 
-    developer_mode = "develop" in commands or "test" in commands or build_ext_inplace
+    developer_mode = "develop" in commands or build_ext_inplace
 
     packages = kw.get("packages", [])
     package_dir = kw.get("package_dir", {})

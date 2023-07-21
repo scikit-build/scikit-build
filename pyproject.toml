@@ -181,7 +181,7 @@ filterwarnings = [
   "ignore:Config variable 'WITH_PYMALLOC' is unset, Python ABI tag may be incorrect:RuntimeWarning",
   'default:shell/Perl-style subs.* are deprecated:DeprecationWarning',
   'default:subprocess .* is still running:ResourceWarning',
-  'ignore: pkg_resources is deprecated as an API:DeprecationWarning',
+  'ignore: pkg_resources is deprecated as an API:DeprecationWarning:setuptools',
   'ignore:onerror argument is deprecated, use onexc instead:DeprecationWarning',  # Caused by wheel and Python 3.12
   'ignore:(ast.Str|Attribute s|ast.NameConstant|ast.Num) is deprecated:DeprecationWarning:_pytest',
 ]
