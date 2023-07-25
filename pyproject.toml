@@ -158,10 +158,14 @@ messages_control.disable = [
   "too-many-branches",
   "too-many-locals",
   "too-many-statements",
+  "too-many-lines",
+  "too-many-return-statements",
+  "too-many-locals",
   "ungrouped-imports",
   "wrong-import-order",
   "wrong-import-position",
   "global-statement", # Covered by Ruff
+  "unused-import", # Covered by Ruff
 ]
 
 

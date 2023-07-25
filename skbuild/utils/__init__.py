@@ -21,6 +21,9 @@ if typing.TYPE_CHECKING:
 
 
 class CommonLog(Protocol):
+    """Protocol for loggers with an info method."""
+
+    # pylint: disable-next=missing-function-docstring
     def info(self, __msg: str, *args: object) -> None:
         ...
 
@@ -43,6 +46,8 @@ except ImportError:
 
 
 class Distribution(NamedTuple):
+    """Distribution stand-in."""
+
     script_name: str
 
 
@@ -51,7 +56,6 @@ def _log_warning(msg: str, *args: object) -> None:
         if logging_module:
             skb_log.warning(msg, *args)
         else:
-            # pylint: disable-next=deprecated-method
             distutils_log.warn(msg, *args)
     except ValueError:
         # Setuptools might disconnect the logger. That shouldn't be an error for a warning.

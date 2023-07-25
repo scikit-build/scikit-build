@@ -304,7 +304,7 @@ class CMaker:
                 cmd.append(f"{prefix}_FIND_IMPLEMENTATIONS:STRING=PyPy")
 
             with contextlib.suppress(ImportError):
-                import numpy as np
+                import numpy as np  # pylint: disable=import-outside-toplevel
 
                 cmd.append(f"{prefix}_NumPy_INCLUDE_DIRS:PATH=" + np.get_include())
 
