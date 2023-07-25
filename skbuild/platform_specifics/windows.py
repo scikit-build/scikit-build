@@ -43,6 +43,8 @@ ARCH_TO_MSVC_ARCH = {
 
 
 class CachedEnv(TypedDict):
+    """Stored environment."""
+
     PATH: str
     INCLUDE: str
     LIB: str

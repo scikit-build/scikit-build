@@ -368,7 +368,10 @@ def _load_cmake_spec() -> Any:
 
 
 def get_default_include_package_data() -> bool:
-    # Include package data if pyproject.toml contains the project or tool.setuptools table.
+    """
+    Include package data if pyproject.toml contains the project or
+    tool.setuptools table.
+    """
     # https://setuptools.pypa.io/en/latest/history.html#id255
     # https://github.com/pypa/setuptools/pull/3067
     pyproject_file = os.path.join(os.getcwd(), "pyproject.toml")
@@ -380,7 +383,6 @@ def get_default_include_package_data() -> bool:
         return False
 
 
-# pylint:disable=too-many-locals, too-many-branches
 def setup(
     *,
     cmake_args: Sequence[str] = (),
@@ -620,9 +622,8 @@ def setup(
                 # taking care of it below.
 
                 # A local "cmake" folder can be imported by mistake, keep going if it is
-                from cmake import (
-                    CMAKE_BIN_DIR,  # pylint: disable=import-outside-toplevel
-                )
+                # pylint: disable-next=import-outside-toplevel
+                from cmake import CMAKE_BIN_DIR
 
                 for executable_name in ("cmake", "cpack", "ctest"):
                     executable = os.path.join(CMAKE_BIN_DIR, executable_name)
@@ -768,7 +769,7 @@ def setup(
 
     # Adapted from espdev/ITKPythonInstaller/setup.py.in
     class BinaryDistribution(upstream_Distribution):  # pylint: disable=missing-class-docstring
-        def has_ext_modules(self) -> bool:  # pylint: disable=no-self-use,missing-function-docstring
+        def has_ext_modules(self) -> bool:  # pylint: disable=missing-function-docstring
             return has_cmakelists
 
     kw["distclass"] = BinaryDistribution

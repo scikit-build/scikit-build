@@ -9,7 +9,6 @@ from . import abstract
 from .abstract import CMakeGenerator
 
 
-# pylint:disable=abstract-method
 class CygwinPlatform(abstract.CMakePlatform):
     """Cygwin implementation of :class:`.abstract.CMakePlatform`."""
 
@@ -21,7 +20,7 @@ class CygwinPlatform(abstract.CMakePlatform):
     def generator_installation_help(self) -> str:
         """Return message guiding the user for installing a valid toolchain."""
 
-        pyver = "{}.{}".format(*sys.version_info[:2])
+        pyver = ".".join(str(v) for v in sys.version_info[:2])
         return textwrap.dedent(
             f"""\
             Building Cygwin wheels for Python {pyver} requires Cygwin packages
