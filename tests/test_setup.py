@@ -775,8 +775,7 @@ def test_setup_inputs(
 
     # List path types: 'c', 'cm', 'h', 'p' or 'pm'
     try:
-        path_types = list(
-            zip(
+        path_types = next(iter(zip(
                 *filter(
                     lambda i: i[1],
                     [
@@ -787,8 +786,7 @@ def test_setup_inputs(
                         ("pm", has_pure_module),
                     ],
                 )
-            )
-        )[0]
+            )))
     except IndexError:
         path_types = []
 

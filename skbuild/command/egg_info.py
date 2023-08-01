@@ -24,8 +24,8 @@ class egg_info(set_build_base_mixin, _egg_info):
                 # using `package_dir={'':<egg_base>}`
                 # This is required to successfully update the python path when
                 # running the test command.
-                package_name = list(self.distribution.package_dir.keys())[0]
-                egg_base = to_unix_path(list(self.distribution.package_dir.values())[0])
+                package_name = next(iter(self.distribution.package_dir.keys()))
+                egg_base = to_unix_path(next(iter(self.distribution.package_dir.values())))
                 cmake_install_dir = to_unix_path(CMAKE_INSTALL_DIR())
                 if egg_base.startswith(cmake_install_dir):
                     egg_base = egg_base[len(cmake_install_dir) + 1 :]
