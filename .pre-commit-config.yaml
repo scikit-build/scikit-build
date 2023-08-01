@@ -35,7 +35,7 @@ repos:
     - black==23.7.0 # keep in sync with black hook
 
 - repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.0.278
+  rev: v0.0.281
   hooks:
   - id: ruff
     args: ["--fix", "--show-fixes"]
