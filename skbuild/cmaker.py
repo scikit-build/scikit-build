@@ -751,7 +751,7 @@ class CMaker:
         paths = glob.glob(os.path.join(CMAKE_BUILD_DIR(), "install_manifest*.txt"))
         try:
             return next(self._parse_manifest(path) for path in paths)
-        except IndexError:
+        except StopIteration:
             return []
 
     @staticmethod

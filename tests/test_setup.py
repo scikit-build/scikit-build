@@ -791,7 +791,7 @@ def test_setup_inputs(
                 )
             )
         )
-    except IndexError:
+    except StopIteration:
         path_types = []
 
     def select_paths(annotated_paths):
