@@ -775,18 +775,22 @@ def test_setup_inputs(
 
     # List path types: 'c', 'cm', 'h', 'p' or 'pm'
     try:
-        path_types = next(iter(zip(
-                *filter(
-                    lambda i: i[1],
-                    [
-                        ("c", has_cmake_package),
-                        ("cm", has_cmake_module),
-                        ("h", has_hybrid_package),
-                        ("p", has_pure_package),
-                        ("pm", has_pure_module),
-                    ],
+        path_types = next(
+            iter(
+                zip(
+                    *filter(
+                        lambda i: i[1],
+                        [
+                            ("c", has_cmake_package),
+                            ("cm", has_cmake_module),
+                            ("h", has_hybrid_package),
+                            ("p", has_pure_package),
+                            ("pm", has_pure_module),
+                        ],
+                    )
                 )
-            )))
+            )
+        )
     except IndexError:
         path_types = []
 
