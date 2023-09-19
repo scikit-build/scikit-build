@@ -139,24 +139,33 @@ def _find_visual_studio_2017_or_newer(vs_version: int) -> str:
         return ""
 
     try:
-        path = subprocess.run(
-            [
-                os.path.join(root, "Microsoft Visual Studio", "Installer", "vswhere.exe"),
-                "-version",
-                f"[{vs_version:.1f}, {vs_version + 1:.1f})",
-                "-prerelease",
-                "-requires",
-                "Microsoft.VisualStudio.Component.VC.Tools.x86.x64",
-                "-property",
-                "installationPath",
-                "-products",
-                "*",
-            ],
-            encoding="utf-8" if sys.platform.startswith("cygwin") else "mbcs",
-            check=True,
-            stdout=subprocess.PIPE,
-            errors="strict",
-        ).stdout.strip()
+        # vswhere.exe may return multiple locations separated by new line. For
+        # example for 2022 Build Tools and for 2022 Community Edition. Idealy
+        # we want user to have the option to choose, but as a quick fix we just
+        # return first available option.
+        path = (
+            subprocess.run(
+                [
+                    os.path.join(root, "Microsoft Visual Studio", "Installer", "vswhere.exe"),
+                    "-version",
+                    f"[{vs_version:.1f}, {vs_version + 1:.1f})",
+                    "-prerelease",
+                    "-requires",
+                    "Microsoft.VisualStudio.Component.VC.Tools.x86.x64",
+                    "-property",
+                    "installationPath",
+                    "-products",
+                    "*",
+                ],
+                encoding="utf-8" if sys.platform.startswith("cygwin") else "mbcs",
+                check=True,
+                stdout=subprocess.PIPE,
+                errors="strict",
+            )
+            .stdout.strip()
+            .split("\n")[0]
+            .strip()
+        )
     except (subprocess.CalledProcessError, OSError, UnicodeDecodeError):
         return ""
 
