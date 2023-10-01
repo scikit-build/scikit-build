@@ -254,19 +254,27 @@ endif()
 include(targetLinkLibrariesWithDynamicLookup)
 
 set(_command "
-import distutils.sysconfig
+import sys
+at_least_python_3_10 = sys.version_info[:2] >= (3, 10)
+if at_least_python_3_10:
+    import sysconfig
+else:
+    import distutils.sysconfig
+
 import itertools
 import os
 import os.path
 import site
-import sys
 
 result = None
 rel_result = None
 candidate_lists = []
 
 try:
-    candidate_lists.append((distutils.sysconfig.get_python_lib(),))
+    if at_least_python_3_10:
+        candidate_lists.append((sysconfig.get_paths()['purelib'],))
+    else:
+        candidate_lists.append((distutils.sysconfig.get_python_lib(),))
 except AttributeError: pass
 
 try:
@@ -287,13 +295,17 @@ for candidate in candidates:
         rel_result = rel_candidate
         break
 
+if at_least_python_3_10:
+    ext_suffix = sysconfig.get_config_var('EXT_SUFFIX')
+else:
+    ext_suffix = distutils.sysconfig.get_config_var('EXT_SUFFIX')
 sys.stdout.write(\";\".join((
     os.sep,
     os.pathsep,
     sys.prefix,
     result,
     rel_result,
-    distutils.sysconfig.get_config_var('EXT_SUFFIX')
+    ext_suffix,
 )))
 ")
 
