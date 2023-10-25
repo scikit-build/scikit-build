@@ -182,7 +182,7 @@ def initialize_git_repo_and_commit(project_dir, verbose=True):
             ["git", "reset", ".gitignore"],
             ["git", "commit", "-m", "Initial commit"],
         ]:
-            subprocess.run(cmd, stdout=None if verbose else subprocess.PIPE)
+            subprocess.run(cmd, stdout=None if verbose else subprocess.PIPE, check=True)
 
 
 def prepare_project(project, tmp_project_dir, force=False):

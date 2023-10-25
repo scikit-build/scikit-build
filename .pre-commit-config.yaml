@@ -22,7 +22,7 @@ repos:
   - id: fix-smartquotes
 
 - repo: https://github.com/psf/black-pre-commit-mirror
-  rev: "23.10.0" # Keep in sync with blacken-docs
+  rev: "23.10.1" # Keep in sync with blacken-docs
   hooks:
   - id: black
     exclude: ^docs/conf\.py$
@@ -35,7 +35,7 @@ repos:
     - black==23.7.0 # keep in sync with black hook
 
 - repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.1.1
+  rev: v0.1.2
   hooks:
   - id: ruff
     args: ["--fix", "--show-fixes"]

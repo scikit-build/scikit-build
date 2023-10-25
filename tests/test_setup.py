@@ -542,7 +542,6 @@ def test_py_modules_keyword(distribution_type, capsys, caplog):
         ([""], "file.py", "file.py"),
         ([], "foo/file.py", "foo/file.py"),
         (["foo"], "", ""),
-        (["foo"], "", ""),
         (["foo"], "foo/file.py", "file.py"),
         (["foo"], "foo\\file.py", "file.py"),
         (["foo", "bar"], "foo/file.py", "foo/file.py"),
