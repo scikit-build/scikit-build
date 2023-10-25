@@ -84,7 +84,7 @@ jobs:
       if: runner.os == 'Linux'
 
     - name: Upload coverage report
-      uses: codecov/codecov-action@v3
+      uses: codecov/codecov-action@v4
       with:
         name: ${{ matrix.runs-on }}-any
         verbose: true
@@ -146,7 +146,7 @@ jobs:
       run: nox -s tests-pypy${{ matrix.pypy-version }} -- --cov --cov-report=xml --cov-report=term --durations=20
 
     - name: Upload coverage report
-      uses: codecov/codecov-action@v3
+      uses: codecov/codecov-action@v4
       with:
         name: ${{ runner.os }}-${{ matrix.pypy-version }}
         verbose: true
