@@ -542,7 +542,6 @@ def test_py_modules_keyword(distribution_type, capsys, caplog):
         ([""], "file.py", "file.py"),
         ([], "foo/file.py", "foo/file.py"),
         (["foo"], "", ""),
-        (["foo"], "", ""),
         (["foo"], "foo/file.py", "file.py"),
         (["foo"], "foo\\file.py", "file.py"),
         (["foo", "bar"], "foo/file.py", "foo/file.py"),
@@ -842,9 +841,9 @@ def test_setup_inputs(
     def _pprint(desc, value=None):
         print(
             "-----------------\n"
-            "{}:\n"
+            f"{desc}:\n"
             "\n"
-            "{}\n".format(desc, pprint.pformat(setup_kw.get(desc, {}) if value is None else value, indent=2))
+            f"{pprint.pformat(setup_kw.get(desc, {}) if value is None else value, indent=2)}\n"
         )
 
     with execute_setup_py(tmp_dir, ["build"], disable_languages_test=True):
