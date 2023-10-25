@@ -106,10 +106,6 @@ pattern = ':user:`(\S+)`'
 replacement = '`@\1 <https://github.com/\1>`_'
 
 
-[tool.black]
-line-length = 120
-
-
 [tool.mypy]
 files = ["skbuild", "tests"]
 exclude = ["tests/samples"]
@@ -199,14 +195,20 @@ markers = [
 
 
 [tool.ruff]
-select = [
-  "E", "F", "W", # flake8
+typing-modules = ["skbuild._compat.typing"]
+line-length = 120
+exclude = []
+
+[tool.ruff.format]
+exclude = ["docs/conf.py"]
+
+[tool.ruff.lint]
+extend-select = [
   "B",           # flake8-bugbear
   "I",           # isort
   "ARG",         # flake8-unused-arguments
   "C4",          # flake8-comprehensions
   "ICN",         # flake8-import-conventions
-  "ISC",         # flake8-implicit-str-concat
   "G",           # flake8-logging-format
   "EM",          # flake8-errmsg
   "PGH",         # pygrep-hooks
@@ -222,10 +224,7 @@ select = [
   "NPY",         # NumPy specific rules
 ]
 extend-ignore = ["PLR", "E501", "SIM117"]
-typing-modules = ["skbuild._compat.typing"]
-line-length = 120
 unfixable = ["T20", "F841"]
-exclude = []
 flake8-unused-arguments.ignore-variadic-names = true
 isort.known-third-party = ["distutils"]
 isort.force-to-top = ["setuptools"]
