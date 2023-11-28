@@ -10,6 +10,7 @@ import os
 import pprint
 import sys
 import textwrap
+from collections.abc import Sequence
 from unittest.mock import patch
 
 import py.path
@@ -771,6 +772,7 @@ def test_setup_inputs(
     )
 
     # List path types: 'c', 'cm', 'h', 'p' or 'pm'
+    path_types: Sequence[str]
     try:
         path_types = next(
             iter(
