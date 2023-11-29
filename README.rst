@@ -109,7 +109,7 @@ Miscellaneous
 * Scikit-build-core: https://github.com/scikit-build/scikit-build-core
 
 
-Support for this work was provided by NSF cooperative agreement `OAC-2209877 <https://www.nsf.gov/awardsearch/showAward?AWD_ID=2209877>`_.
+Support for this work was provided by NSF grant `OAC-2209877 <https://www.nsf.gov/awardsearch/showAward?AWD_ID=2209877>`_.
 
 .. _scikit-build-core: https://scikit-build-core.readthedocs.io
 .. _cmake: https://cmake.org
