@@ -16,7 +16,7 @@ repos:
   - id: trailing-whitespace
 
 - repo: https://github.com/sirosen/texthooks
-  rev: "0.6.2"
+  rev: "0.6.3"
   hooks:
   - id: fix-ligatures
   - id: fix-smartquotes
@@ -29,7 +29,7 @@ repos:
     - black==23.*
 
 - repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.1.4
+  rev: v0.1.6
   hooks:
   - id: ruff
     args: ["--fix", "--show-fixes"]
@@ -61,7 +61,7 @@ repos:
      - hatchling
 
 - repo: https://github.com/pre-commit/mirrors-mypy
-  rev: "v1.6.1"
+  rev: "v1.7.1"
   hooks:
   - id: mypy
     files: ^(skbuild|tests)
