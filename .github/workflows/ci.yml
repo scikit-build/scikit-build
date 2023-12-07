@@ -20,7 +20,7 @@ jobs:
     timeout-minutes: 5
     steps:
     - uses: actions/checkout@v4
-    - uses: actions/setup-python@v4
+    - uses: actions/setup-python@v5
     - uses: pre-commit/action@v3.0.0
 
   tests:
@@ -138,7 +138,7 @@ jobs:
     - name: Setup nox
       uses: wntrblm/nox@2023.04.22
 
-    - uses: actions/setup-python@v4
+    - uses: actions/setup-python@v5
       with:
         python-version: pypy-${{ matrix.pypy-version }}
 
