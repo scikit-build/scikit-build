@@ -169,7 +169,7 @@ def _capture_output() -> Generator[list[io.StringIO | str], None, None]:
 
 
 def _parse_setuptools_arguments(
-    setup_attrs: Mapping[str, Any]
+    setup_attrs: Mapping[str, Any],
 ) -> tuple[bool, bool, list[str], bool, bool, bool, str, bool]:
     """This function instantiates a Distribution object and
     parses the command line arguments.
