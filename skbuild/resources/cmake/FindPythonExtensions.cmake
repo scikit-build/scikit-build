@@ -255,8 +255,7 @@ include(targetLinkLibrariesWithDynamicLookup)
 
 set(_command "
 import sys
-at_least_python_3_10 = sys.version_info[:2] >= (3, 10)
-if at_least_python_3_10:
+if sys.version_info >= (3, 10):
     import sysconfig
 else:
     import distutils.sysconfig
@@ -271,7 +270,7 @@ rel_result = None
 candidate_lists = []
 
 try:
-    if at_least_python_3_10:
+    if sys.version_info >= (3, 10):
         candidate_lists.append((sysconfig.get_paths()['purelib'],))
     else:
         candidate_lists.append((distutils.sysconfig.get_python_lib(),))
@@ -295,7 +294,7 @@ for candidate in candidates:
         rel_result = rel_candidate
         break
 
-if at_least_python_3_10:
+if sys.version_info >= (3, 10):
     ext_suffix = sysconfig.get_config_var('EXT_SUFFIX')
 else:
     ext_suffix = distutils.sysconfig.get_config_var('EXT_SUFFIX')
