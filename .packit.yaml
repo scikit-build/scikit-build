@@ -17,6 +17,7 @@ files_to_sync:
     filters:
       - "- main.fmf.dist-git"
       - "- rpmlint.fmf"
+      - "- rpminspect.fmf"
   - src: .distro/plans/main.fmf.dist-git
     dest: plans/main.fmf
 upstream_package_name: scikit-build
