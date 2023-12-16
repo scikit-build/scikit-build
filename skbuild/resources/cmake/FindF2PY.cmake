@@ -68,12 +68,6 @@
 
 find_program(F2PY_EXECUTABLE NAMES f2py${PYTHON_VERSION_MAJOR} f2py)
 
-# XXX This is required to support NumPy < v0.15.0. See note in module documentation above.
-if(NOT F2PY_EXECUTABLE)
-  find_package(NumPy)
-  set(F2PY_EXECUTABLE "${PYTHON_EXECUTABLE}" "-m" "numpy.f2py")
-endif()
-
 if(NOT F2PY_INCLUDE_DIR)
   execute_process(
       COMMAND "${PYTHON_EXECUTABLE}"
