@@ -4,20 +4,13 @@
 specfile_path: .distro/python-scikit-build.spec
 
 files_to_sync:
-  - src: .distro/python-scikit-build.spec
-    dest: python-scikit-build.spec
-  - .packit.yaml
-  - src: .distro/python-scikit-build.rpmlintrc
-    dest: python-scikit-build.rpmlintrc
-  # tmt setup
-  - src: .distro/.fmf/
-    dest: .fmf/
-  - src: .distro/plans/
-    dest: plans/
+  - src: .distro/
+    dest: ./
     filters:
-      - "- main.fmf.dist-git"
-      - "- rpmlint.fmf"
-      - "- rpminspect.fmf"
+      - "- plans/main.fmf.dist-git"
+      - "- plans/rpminspect.fmf"
+      - "- plans/rpmlint.fmf"
+  - .packit.yaml
   - src: .distro/plans/main.fmf.dist-git
     dest: plans/main.fmf
 upstream_package_name: scikit-build
