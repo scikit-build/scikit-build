@@ -25,7 +25,7 @@ BuildRequires:  ninja-build
 Improved build system generator for CPython C/C++/Fortran/Cython extensions.
 Better support is available for additional compilers, build systems, cross
 compilation, and locating dependencies and determining their build requirements.
-The scikit-build package is fundamentally just glue between the setuptools
+The scikit-build package is fundamentally just glue between the setup-tools
 Python module and CMake.}
 
 %description %_description

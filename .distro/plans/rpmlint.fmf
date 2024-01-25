@@ -1,20 +1,10 @@
-summary:
-  Perform rpmlint and rpminspect tests
 prepare:
-  - name: Install rpmlint packages
-    how: install
-    package:
-    - rpmlint
-    - rpminspect
-    - rpminspect-data-fedora
-  #- name: Download the source rpm
-  #  how: shell
-  #  script: cd /tmp && curl -O ${PACKIT_SRPM_URL}
-  - name: Download rpm packages
-    how: shell
-    script: cd /tmp && dnf download ${PACKIT_COPR_RPMS}
-discover+:
+  - how: shell
+    script: cp ./*.rpmlintrc $TMT_PLAN_DATA/
+discover:
   how: fmf
   filter: "tag: rpmlint"
+  url: https://github.com/packit/tmt-plans
+  ref: main
 execute:
-    how: tmt
+  how: tmt

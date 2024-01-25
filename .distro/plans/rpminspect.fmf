@@ -1,0 +1,10 @@
+plan:
+  import:
+    url: https://github.com/packit/tmt-plans
+    ref: main
+    name: /plans/rpminspect
+environment:
+  # upstream is excluded here because it triggers "Unexpected changed source archive content"
+  # This happens when the released version already contains the package version:
+  # https://github.com/packit/tmt-plans/issues/13
+  RPMINSPECT_EXCLUDE: metadata,upstream
