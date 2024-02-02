@@ -141,11 +141,10 @@ def _copy_dir(target_dir, src_dir, on_duplicate="exception", keep_top_dir=False)
 
     if keep_top_dir:
         src_files = src_dir
+    elif src_dir.isdir():
+        src_files.extend(src_dir.listdir())
     else:
-        if src_dir.isdir():
-            src_files.extend(src_dir.listdir())
-        else:
-            src_files.append(src_dir)
+        src_files.append(src_dir)
 
     for entry in src_files:
         target_entry = target_dir / entry.basename

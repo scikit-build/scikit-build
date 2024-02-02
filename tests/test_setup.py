@@ -829,8 +829,8 @@ def test_setup_inputs(
             ("p", "pure/data/pure.dat"),
         ]
     ):
-        assert _type in ["p", "pm", "h"]
-        root = package_base if (_type == "p" or _type == "pm") else cmake_source_dir
+        assert _type in {"p", "pm", "h"}
+        root = package_base if _type in {"p", "pm"} else cmake_source_dir
         tmp_dir.ensure(os.path.join(root, path))
 
     # Do not call the real setup function. Instead, replace it with
