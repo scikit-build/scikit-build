@@ -19,8 +19,7 @@ class CommandMixinProtocol(Protocol):
     install_platlib: str
 
     # pylint: disable-next=missing-function-docstring
-    def finalize_options(self, *args: object, **kwargs: object) -> None:
-        ...
+    def finalize_options(self, *args: object, **kwargs: object) -> None: ...
 
 
 class set_build_base_mixin:

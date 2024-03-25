@@ -3,6 +3,7 @@
 
 Tries to build and test the `hello-fortran` sample project.
 """
+
 from __future__ import annotations
 
 import glob

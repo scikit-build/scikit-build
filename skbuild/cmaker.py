@@ -2,7 +2,6 @@
 This module provides an interface for invoking CMake executable.
 """
 
-
 from __future__ import annotations
 
 import argparse
@@ -38,13 +37,11 @@ RE_FILE_INSTALL = re.compile(r"""[ \t]*file\(INSTALL DESTINATION "([^"]+)".*"([^
 
 
 @overload
-def pop_arg(arg: str, args: Sequence[str], default: None = None) -> tuple[list[str], str | None]:
-    ...
+def pop_arg(arg: str, args: Sequence[str], default: None = None) -> tuple[list[str], str | None]: ...
 
 
 @overload
-def pop_arg(arg: str, args: Sequence[str], default: str) -> tuple[list[str], str]:
-    ...
+def pop_arg(arg: str, args: Sequence[str], default: str) -> tuple[list[str], str]: ...
 
 
 def pop_arg(arg: str, args: Sequence[str], default: str | None = None) -> tuple[list[str], str | None]:
