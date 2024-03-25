@@ -1,6 +1,5 @@
 """This module defines object specific to Windows platform."""
 
-
 from __future__ import annotations
 
 import os
