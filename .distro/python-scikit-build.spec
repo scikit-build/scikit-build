@@ -1,3 +1,5 @@
+%global debug_package %{nil}
+
 Name:           python-scikit-build
 Version:        0.0.0
 Release:        %autorelease
@@ -10,9 +12,7 @@ License:        MIT AND BSD-2-Clause-Views AND Apache-2.0
 URL:            https://github.com/scikit-build/scikit-build
 Source:         %{pypi_source scikit_build}
 
-BuildArch:      noarch
 BuildRequires:  python3-devel
-
 # For tests:
 BuildRequires:  cmake
 BuildRequires:  gcc
@@ -34,6 +34,7 @@ Python module and CMake.}
 Summary:        %{summary}
 Requires:       cmake
 Requires:       ninja-build
+BuildArch:      noarch
 
 # Files listed below are located in skbuild/resources/cmake.
 # Since they contain "Copyright 2011 Kitware, Inc." in them we list them as bundled,
