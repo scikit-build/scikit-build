@@ -30,7 +30,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runs-on: [ubuntu-20.04, macos-latest, windows-2019, windows-2022]
+        runs-on: [ubuntu-20.04, macos-13, windows-2019, windows-2022]
 
     name: Tests on ${{ matrix.runs-on }}
     steps:
@@ -124,7 +124,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runs-on: [ubuntu-latest, macos-latest, windows-latest]
+        runs-on: [ubuntu-latest, macos-13, windows-latest]
         pypy-version: ["3.9"]
         include:
         - runs-on: ubuntu-latest
