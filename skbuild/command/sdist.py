@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from typing import Sequence
 from os import PathLike
+from typing import Sequence
 
 from setuptools.command.sdist import sdist as _sdist
 
