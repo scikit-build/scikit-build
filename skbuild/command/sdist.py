@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from typing import Sequence
+from os import PathLike
 
 from setuptools.command.sdist import sdist as _sdist
 
@@ -21,9 +22,9 @@ class sdist(set_build_base_mixin, _sdist):
 
     def make_archive(
         self,
-        base_name: str,
+        base_name: str | PathLike[str],
         format: str,
-        root_dir: str | None = None,
+        root_dir: str | bytes | PathLike[str] | PathLike[bytes] | None = None,
         base_dir: str | None = None,
         owner: str | None = None,
         group: str | None = None,
