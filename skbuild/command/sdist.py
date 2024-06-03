@@ -19,19 +19,19 @@ class sdist(set_build_base_mixin, _sdist):
             super().make_release_tree(base_dir, files)  # type: ignore[misc]
         logger.info("copied %d files", len(files))
 
-    def make_archive(
+    def make_archive(  # type: ignore[override]
         self,
         base_name: str,
-        _format: str,
+        format: str,
         root_dir: str | None = None,
         base_dir: str | None = None,
         owner: str | None = None,
         group: str | None = None,
     ) -> str:
         """Handle --hide-listing option."""
-        logger.info("creating '%s' %s archive and adding '%s' to it", base_name, _format, base_dir)
+        logger.info("creating '%s' %s archive and adding '%s' to it", base_name, format, base_dir)
         with distribution_hide_listing(self.distribution):
-            return super().make_archive(base_name, _format, root_dir, base_dir, owner, group)
+            return super().make_archive(base_name, format, root_dir, base_dir, owner, group)
 
     def run(self, *args: object, **kwargs: object) -> None:
         """Force :class:`.egg_info.egg_info` command to run."""

@@ -509,7 +509,7 @@ def setup(
             print('Arguments following a "--" are passed directly to CMake (e.g. -DMY_VAR:BOOL=TRUE).')
             print('Arguments following a second "--" are passed directly to the build tool.')
             print(flush=True)
-        return setuptools.setup(**kw)  # type: ignore[no-any-return, func-returns-value]
+        return setuptools.setup(**kw)
 
     developer_mode = "develop" in commands or build_ext_inplace
 
@@ -776,7 +776,7 @@ def setup(
 
     print(flush=True)
 
-    return setuptools.setup(**kw)  # type: ignore[no-any-return, func-returns-value]
+    return setuptools.setup(**kw)
 
 
 def _collect_package_prefixes(package_dir: dict[str, str], packages: list[Any | str]) -> list[Any | tuple[str, str]]:
