@@ -22,13 +22,13 @@ class sdist(set_build_base_mixin, _sdist):
 
     def make_archive(
         self,
-        base_name: str | PathLike[str],
+        base_name: str,
         format: str,
-        root_dir: str | bytes | PathLike[str] | PathLike[bytes] | None = None,
+        root_dir: str | None = None,
         base_dir: str | None = None,
         owner: str | None = None,
         group: str | None = None,
-    ) -> str:
+    ) -> str:  # type: ignore[override]
         """Handle --hide-listing option."""
         logger.info("creating '%s' %s archive and adding '%s' to it", base_name, format, base_dir)
         with distribution_hide_listing(self.distribution):
