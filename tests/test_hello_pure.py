@@ -27,16 +27,21 @@ def test_hello_pure_sdist():
     sdists_zip = glob.glob("dist/*.zip")
     assert sdists_tar or sdists_zip
 
+    dirname = "hello-pure-1.2.3"
+    # setuptools 69.3.0 and above now canonicalize the filename as well.
+    if any("hello_pure" in x for x in sdists_zip + sdists_tar):
+        dirname = "hello_pure-1.2.3"
+
     expected_content = [
-        "hello-pure-1.2.3/hello/__init__.py",
-        "hello-pure-1.2.3/setup.py",
+        f"{dirname}/hello/__init__.py",
+        f"{dirname}/setup.py",
     ]
 
-    sdist_archive = "dist/hello-pure-1.2.3.zip"
+    sdist_archive = f"dist/{dirname}.zip"
     if sdists_tar:
-        sdist_archive = "dist/hello-pure-1.2.3.tar.gz"
+        sdist_archive = f"dist/{dirname}.tar.gz"
 
-    check_sdist_content(sdist_archive, "hello-pure-1.2.3", expected_content)
+    check_sdist_content(sdist_archive, dirname, expected_content)
 
 
 @project_setup_py_test("hello-pure", ["bdist_wheel"], disable_languages_test=True)

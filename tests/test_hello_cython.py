@@ -29,20 +29,25 @@ def test_hello_cython_sdist():
     sdists_zip = glob.glob("dist/*.zip")
     assert sdists_tar or sdists_zip
 
+    dirname = "hello-cython-1.2.3"
+    # setuptools 69.3.0 and above now canonicalize the filename as well.
+    if any("hello_cython" in x for x in sdists_zip + sdists_tar):
+        dirname = "hello_cython-1.2.3"
+
     expected_content = [
-        "hello-cython-1.2.3/CMakeLists.txt",
-        "hello-cython-1.2.3/hello/_hello.pyx",
-        "hello-cython-1.2.3/hello/CMakeLists.txt",
-        "hello-cython-1.2.3/hello/__init__.py",
-        "hello-cython-1.2.3/hello/__main__.py",
-        "hello-cython-1.2.3/setup.py",
+        f"{dirname}/CMakeLists.txt",
+        f"{dirname}/hello/_hello.pyx",
+        f"{dirname}/hello/CMakeLists.txt",
+        f"{dirname}/hello/__init__.py",
+        f"{dirname}/hello/__main__.py",
+        f"{dirname}/setup.py",
     ]
 
-    sdist_archive = "dist/hello-cython-1.2.3.zip"
+    sdist_archive = f"dist/{dirname}.zip"
     if sdists_tar:
-        sdist_archive = "dist/hello-cython-1.2.3.tar.gz"
+        sdist_archive = f"dist/{dirname}.tar.gz"
 
-    check_sdist_content(sdist_archive, "hello-cython-1.2.3", expected_content, package_dir="hello")
+    check_sdist_content(sdist_archive, dirname, expected_content, package_dir="hello")
 
 
 @project_setup_py_test("hello-cython", ["bdist_wheel"])

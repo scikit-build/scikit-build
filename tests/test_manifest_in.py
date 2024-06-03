@@ -21,17 +21,22 @@ def test_manifest_in_sdist():
     sdists_zip = glob.glob("dist/*.zip")
     assert sdists_tar or sdists_zip
 
+    dirname = "manifest-in-1.2.3"
+    # setuptools 69.3.0 and above now canonicalize the filename as well.
+    if any("manifest_in" in x for x in sdists_zip + sdists_tar):
+        dirname = "manifest_in-1.2.3"
+
     expected_content = [
-        "manifest-in-1.2.3/hello/__init__.py",
-        "manifest-in-1.2.3/setup.py",
-        "manifest-in-1.2.3/MANIFEST.in",
+        f"{dirname}/hello/__init__.py",
+        f"{dirname}/setup.py",
+        f"{dirname}/MANIFEST.in",
     ]
 
-    sdist_archive = "dist/manifest-in-1.2.3.zip"
+    sdist_archive = f"dist/{dirname}.zip"
     if sdists_tar:
-        sdist_archive = "dist/manifest-in-1.2.3.tar.gz"
+        sdist_archive = f"dist/{dirname}.tar.gz"
 
-    check_sdist_content(sdist_archive, "manifest-in-1.2.3", expected_content)
+    check_sdist_content(sdist_archive, dirname, expected_content)
 
 
 @project_setup_py_test("manifest-in", ["bdist_wheel"], disable_languages_test=True)

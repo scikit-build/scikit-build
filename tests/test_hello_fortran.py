@@ -33,23 +33,28 @@ def test_hello_fortran_sdist():
     sdists_zip = glob.glob("dist/*.zip")
     assert sdists_tar or sdists_zip
 
+    dirname = "hello-fortran-1.2.3"
+    # setuptools 69.3.0 and above now canonicalize the filename as well.
+    if any("hello_fortran" in x for x in sdists_zip + sdists_tar):
+        dirname = "hello_fortran-1.2.3"
+
     expected_content = [
-        "hello-fortran-1.2.3/bonjour/_bonjour.f90",
-        "hello-fortran-1.2.3/bonjour/_bonjour.pyf",
-        "hello-fortran-1.2.3/bonjour/CMakeLists.txt",
-        "hello-fortran-1.2.3/CMakeLists.txt",
-        "hello-fortran-1.2.3/hello/_hello.f90",
-        "hello-fortran-1.2.3/hello/CMakeLists.txt",
-        "hello-fortran-1.2.3/hello/__init__.py",
-        "hello-fortran-1.2.3/hello/__main__.py",
-        "hello-fortran-1.2.3/setup.py",
+        f"{dirname}/bonjour/_bonjour.f90",
+        f"{dirname}/bonjour/_bonjour.pyf",
+        f"{dirname}/bonjour/CMakeLists.txt",
+        f"{dirname}/CMakeLists.txt",
+        f"{dirname}/hello/_hello.f90",
+        f"{dirname}/hello/CMakeLists.txt",
+        f"{dirname}/hello/__init__.py",
+        f"{dirname}/hello/__main__.py",
+        f"{dirname}/setup.py",
     ]
 
-    sdist_archive = "dist/hello-fortran-1.2.3.zip"
+    sdist_archive = f"dist/{dirname}.zip"
     if sdists_tar:
-        sdist_archive = "dist/hello-fortran-1.2.3.tar.gz"
+        sdist_archive = f"dist/{dirname}.tar.gz"
 
-    check_sdist_content(sdist_archive, "hello-fortran-1.2.3", expected_content)
+    check_sdist_content(sdist_archive, dirname, expected_content)
 
 
 @pytest.mark.fortran()
