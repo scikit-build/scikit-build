@@ -2,7 +2,6 @@
 from distutils and setuptools.
 """
 
-
 from __future__ import annotations
 
 import argparse

@@ -24,8 +24,7 @@ class CommonLog(Protocol):
     """Protocol for loggers with an info method."""
 
     # pylint: disable-next=missing-function-docstring
-    def info(self, __msg: str, *args: object) -> None:
-        ...
+    def info(self, __msg: str, *args: object) -> None: ...
 
 
 logger: CommonLog

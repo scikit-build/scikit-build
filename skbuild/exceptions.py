@@ -2,7 +2,6 @@
 This module defines exceptions commonly used in scikit-build.
 """
 
-
 from __future__ import annotations
 
 
