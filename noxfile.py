@@ -8,6 +8,8 @@ from pathlib import Path
 
 import nox
 
+nox.needs_version = ">=2024.3.2"
+nox.options.default_venv_backend = "uv|virtualenv"
 nox.options.sessions = ["lint", "tests"]
 
 PYTHON_ALL_VERSIONS = ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12", "pypy3.7", "pypy3.8", "pypy3.9"]

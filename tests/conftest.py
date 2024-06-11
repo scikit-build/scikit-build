@@ -18,7 +18,6 @@ else:
     from importlib import metadata
     from typing import Literal, overload
 
-
 HAS_SETUPTOOLS_SCM = importlib.util.find_spec("setuptools_scm") is not None
 
 DIR = Path(__file__).parent.resolve()
@@ -168,10 +167,21 @@ def isolated(tmp_path: Path, pep518_wheelhouse: Path) -> Generator[VEnv, None, N
         shutil.rmtree(path, ignore_errors=True)
 
 
+def _get_program(name: str) -> str:
+    res = shutil.which(name)
+    if res is None:
+        return f"No {name} executable found on PATH"
+    result = subprocess.run([res, "--version"], check=True, text=True, capture_output=True)
+    version = result.stdout.splitlines()[0]
+    return f"{res}: {version}"
+
+
 def pytest_report_header() -> str:
     interesting_packages = {
         "build",
+        "cmake",
         "distro",
+        "ninja",
         "packaging",
         "pip",
         "scikit-build",
@@ -189,8 +199,9 @@ def pytest_report_header() -> str:
         valid.append(f"{package}=={version}")
     reqs = " ".join(sorted(valid))
     pkg_line = f"installed packages of interest: {reqs}"
+    prog_lines = [_get_program(n) for n in ("cmake3", "cmake", "ninja")]
 
-    return "\n".join([pkg_line])
+    return "\n".join([pkg_line, *prog_lines])
 
 
 def pytest_runtest_setup(item: pytest.Item) -> None:
