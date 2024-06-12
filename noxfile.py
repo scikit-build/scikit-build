@@ -8,6 +8,8 @@ from pathlib import Path
 
 import nox
 
+nox.needs_version = ">=2024.3.2"
+nox.options.default_venv_backend = "uv|virtualenv"
 nox.options.sessions = ["lint", "tests"]
 
 PYTHON_ALL_VERSIONS = ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12", "pypy3.7", "pypy3.8", "pypy3.9"]
@@ -49,7 +51,7 @@ def tests(session: nox.Session) -> None:
         posargs.append("--cov-config=pyproject.toml")
 
     # Latest versions may break things, so grab them for testing!
-    session.install("-U", "setuptools", "wheel")
+    session.install("-U", "setuptools", "wheel", "virtualenv")
     session.install(install_spec, *numpy)
     session.run("pytest", *posargs, env=env)
 

@@ -50,13 +50,17 @@ class CMakePlatform:
         if not os.path.exists(test_folder):
             os.makedirs(test_folder)
         with open(f"{test_folder}/CMakeLists.txt", "w", encoding="utf-8") as f:
-            f.write("cmake_minimum_required(VERSION 2.8.12)\n")
+            f.write("cmake_minimum_required(VERSION 3.5)\n")
             f.write("PROJECT(compiler_test NONE)\n")
             for language in languages:
                 f.write(f"ENABLE_LANGUAGE({language:s})\n")
             f.write(
                 'if("${_SKBUILD_FORCE_MSVC}")\n'
-                '  math(EXPR FORCE_MAX "${_SKBUILD_FORCE_MSVC}+9")\n'
+                '  if("${_SKBUILD_FORCE_MSVC}" STREQUAL "1930")\n'
+                '    math(EXPR FORCE_MAX "${_SKBUILD_FORCE_MSVC}+19")\n'
+                "  else()\n"
+                '    math(EXPR FORCE_MAX "${_SKBUILD_FORCE_MSVC}+9")\n'
+                "  endif()\n"
                 '  math(EXPR FORCE_MIN "${_SKBUILD_FORCE_MSVC}")\n'
                 "  if(NOT MSVC)\n"
                 '    message(FATAL_ERROR "MSVC is required to pass this check.")\n'

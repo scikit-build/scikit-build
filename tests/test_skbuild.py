@@ -8,8 +8,8 @@ from __future__ import annotations
 
 import os
 import platform
+import shutil
 import sys
-from shutil import which
 
 import pytest
 
@@ -51,7 +51,7 @@ def test_generator_selection():
         )
 
         # If environment exists, update the expected generator
-        if has_vs_for_python_vcvars and which("ninja.exe"):
+        if has_vs_for_python_vcvars and shutil.which("ninja.exe"):
             assert get_best_generator().name == "Ninja"
 
         elif has_vs_2017:
@@ -68,7 +68,7 @@ def test_generator_selection():
             assert get_best_generator().name == "NMake Makefiles"
 
     elif this_platform in ["darwin", "linux"]:
-        generator = "Ninja" if which("ninja") else "Unix Makefiles"
+        generator = "Ninja" if shutil.which("ninja") else "Unix Makefiles"
         assert get_best_generator().name == generator
 
 
@@ -82,6 +82,9 @@ def test_generator(generator, expected_make_program):
     this_platform = platform.system().lower()
     if this_platform not in generator_platform[generator]:
         pytest.skip(f"{generator} generator is not available on {this_platform.title()}")
+
+    if shutil.which(expected_make_program) is None:
+        pytest.skip(f"{expected_make_program} not available")
 
     @project_setup_py_test("hello-cpp", ["build"], ret=True)
     def run_build():
