@@ -65,7 +65,7 @@ n
         ).strip()
 
         # For Python 3.7 and above: VS2022, VS2019, VS2017
-        supported_vs_years = [("2022", "v143"), ("2019", "v142"), ("2017", "v141")]
+        supported_vs_years = [("2022", "v144"), ("2022", "v143"), ("2019", "v142"), ("2017", "v141")]
 
         try:
             import ninja  # pylint: disable=import-outside-toplevel
