@@ -239,7 +239,6 @@ class CMakePlatform:
                 cmd.extend(cmake_args)
                 cmd.extend(generator.args)
 
-                print("Running:", *cmd)
                 status = subprocess.run(cmd, env=generator.env, check=False).returncode
 
             msg = "success" if status == 0 else "failure"

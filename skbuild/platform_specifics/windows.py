@@ -203,16 +203,14 @@ def _get_msvc_compiler_env(vs_version: int, vs_toolset: str | None = None) -> Ca
 
     # If any, return cached version
     cache_key = ",".join([str(vs_version), vc_arch, str(vs_toolset)])
-    # if cache_key in __get_msvc_compiler_env_cache:
-    #     return __get_msvc_compiler_env_cache[cache_key]
+    if cache_key in __get_msvc_compiler_env_cache:
+        return __get_msvc_compiler_env_cache[cache_key]
 
     monkey.patch_for_msvc_specialized_compiler()  # type: ignore[no-untyped-call]
 
-    print("Finding", vs_version)
     vc_dir = find_visual_studio(vs_version)
     vcvarsall = os.path.join(vc_dir, "vcvarsall.bat")
     if not os.path.exists(vcvarsall):
-        print("Couldn't find vccarsall")
         return {}
 
     # Set vcvars_ver argument based on toolset
@@ -223,8 +221,6 @@ def _get_msvc_compiler_env(vs_version: int, vs_toolset: str | None = None) -> Ca
             match_str = ".".join(match)
             vcvars_ver = f"-vcvars_ver={match_str}"
 
-    print("VST, VER", vs_toolset, vcvars_ver)
-
     try:
         out_bytes = subprocess.run(
             f'cmd /u /c "{vcvarsall}" {vc_arch} {vcvars_ver} && set',
@@ -234,7 +230,6 @@ def _get_msvc_compiler_env(vs_version: int, vs_toolset: str | None = None) -> Ca
             check=True,
         ).stdout
         out = out_bytes.decode("utf-16le", errors="replace")
-        print("Got:", out)
 
         vc_env = {
             key.lower(): value for key, _, value in (line.partition("=") for line in out.splitlines()) if key and value
