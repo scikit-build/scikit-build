@@ -55,41 +55,17 @@ class WindowsPlatform(abstract.CMakePlatform):
 
     def __init__(self) -> None:
         super().__init__()
-        self._vs_help = ""
-        vs_help_template = (
-            textwrap.dedent(
-                """
-            Building windows wheels for Python {pyver} requires Microsoft Visual Studio %s.
-            Get it with "%s":
-
-              %s
+        self._vs_help = textwrap.dedent(
             """
-            )
-            .strip()
-            .format(pyver=".".join(str(v) for v in sys.version_info[:2]))
-        )
+            Building windows wheels requires Microsoft Visual Studio.
+            Get it from:
+
+             https://visualstudio.microsoft.com/vs/
+            """
+        ).strip()
 
         # For Python 3.7 and above: VS2022, VS2019, VS2017
         supported_vs_years = [("2022", "v143"), ("2019", "v142"), ("2017", "v141")]
-        self._vs_help = vs_help_template % (
-            supported_vs_years[0][0],
-            "Visual Studio 2017",
-            "https://visualstudio.microsoft.com/vs/",
-        )
-        self._vs_help += (
-            "\n\n"
-            + textwrap.dedent(
-                """
-            Or with "Visual Studio 2019":
-
-                https://visualstudio.microsoft.com/vs/
-
-            Or with "Visual Studio 2022":
-
-                https://visualstudio.microsoft.com/vs/
-            """
-            ).strip()
-        )
 
         try:
             import ninja  # pylint: disable=import-outside-toplevel
