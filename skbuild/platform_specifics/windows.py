@@ -32,7 +32,7 @@ The different version are identified by their year.
 VS_YEAR_TO_MSC_VER = {
     "2017": "1910",  # VS 2017 - can be +9
     "2019": "1920",  # VS 2019 - can be +9
-    "2022": "1930",  # VS 2022 - can be +9
+    "2022": "1930",  # VS 2022 - can be +19
 }
 
 ARCH_TO_MSVC_ARCH = {

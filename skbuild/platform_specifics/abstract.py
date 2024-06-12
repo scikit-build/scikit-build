@@ -56,7 +56,11 @@ class CMakePlatform:
                 f.write(f"ENABLE_LANGUAGE({language:s})\n")
             f.write(
                 'if("${_SKBUILD_FORCE_MSVC}")\n'
-                '  math(EXPR FORCE_MAX "${_SKBUILD_FORCE_MSVC}+9")\n'
+                '  if("${_SKBUILD_FORCE_MSVC}" STREQUAL "1930")\n'
+                '    math(EXPR FORCE_MAX "${_SKBUILD_FORCE_MSVC}+19")\n'
+                "  else()\n"
+                '    math(EXPR FORCE_MAX "${_SKBUILD_FORCE_MSVC}+9")\n'
+                "  endif()\n"
                 '  math(EXPR FORCE_MIN "${_SKBUILD_FORCE_MSVC}")\n'
                 "  if(NOT MSVC)\n"
                 '    message(FATAL_ERROR "MSVC is required to pass this check.")\n'
