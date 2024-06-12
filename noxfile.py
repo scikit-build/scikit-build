@@ -51,7 +51,7 @@ def tests(session: nox.Session) -> None:
         posargs.append("--cov-config=pyproject.toml")
 
     # Latest versions may break things, so grab them for testing!
-    session.install("-U", "setuptools", "wheel")
+    session.install("-U", "setuptools", "wheel", "virtualenv")
     session.install(install_spec, *numpy)
     session.run("pytest", *posargs, env=env)
 
