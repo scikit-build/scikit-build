@@ -153,7 +153,7 @@ def test_cmake_args_keyword_osx_default(
             license="MIT",
             cmake_args=[{cmake_args}]
         )
-        """.format(cmake_args=",".join(["'%s'" % arg for arg in keyword_cmake_args]))
+        """.format(cmake_args=",".join([f"'{arg}'" for arg in keyword_cmake_args]))
         )
     )
     tmp_dir.join("CMakeLists.txt").write(

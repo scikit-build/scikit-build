@@ -64,8 +64,8 @@ def test_hello_fortran_sdist():
 @project_setup_py_test("hello-fortran", ["bdist_wheel"])
 def test_hello_fortran_wheel():
     expected_content = [
-        "hello/_bonjour%s" % get_ext_suffix(),
-        "hello/_hello%s" % get_ext_suffix(),
+        f"hello/_bonjour{get_ext_suffix()}",
+        f"hello/_hello{get_ext_suffix()}",
         "hello/__init__.py",
         "hello/__main__.py",
     ]
