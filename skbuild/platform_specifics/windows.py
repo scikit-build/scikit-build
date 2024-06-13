@@ -140,7 +140,7 @@ def _find_visual_studio_2017_or_newer(vs_version: int) -> str:
 
     try:
         # vswhere.exe may return multiple locations separated by new line. For
-        # example for 2022 Build Tools and for 2022 Community Edition. Idealy
+        # example for 2022 Build Tools and for 2022 Community Edition. Ideally
         # we want user to have the option to choose, but as a quick fix we just
         # return first available option.
         path = (
