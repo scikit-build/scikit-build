@@ -38,6 +38,8 @@ jobs:
       with:
         fetch-depth: 0
 
+    - uses: yezz123/setup-uv@v4
+
     - name: Set environment for available GHA MSVCs
       if: matrix.runs-on == 'windows-2019'
       shell: bash
@@ -134,6 +136,8 @@ jobs:
     - uses: actions/checkout@v4
       with:
         fetch-depth: 0
+
+    - uses: yezz123/setup-uv@v4
 
     - name: Setup nox
       uses: wntrblm/nox@2024.04.15
