@@ -19,8 +19,7 @@ class CommandMixinProtocol(Protocol):
     install_platlib: str
 
     # pylint: disable-next=missing-function-docstring
-    def finalize_options(self, *args: object, **kwargs: object) -> None:
-        ...
+    def finalize_options(self, *args: object, **kwargs: object) -> None: ...
 
 
 class set_build_base_mixin:
@@ -32,4 +31,4 @@ class set_build_base_mixin:
         if not build_base or build_base == "build":
             self.build_base = SETUPTOOLS_INSTALL_DIR()
 
-        super().finalize_options(*args, **kwargs)
+        super().finalize_options(*args, **kwargs)  # type: ignore[safe-super]

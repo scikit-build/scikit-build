@@ -83,12 +83,10 @@ class VEnv:
         self.dest = env_dir.resolve()
 
     @overload
-    def run(self, *args: str | os.PathLike[str], capture: Literal[True], cwd: Path | None = ...) -> str:
-        ...
+    def run(self, *args: str | os.PathLike[str], capture: Literal[True], cwd: Path | None = ...) -> str: ...
 
     @overload
-    def run(self, *args: str | os.PathLike[str], capture: Literal[False] = ..., cwd: Path | None = ...) -> None:
-        ...
+    def run(self, *args: str | os.PathLike[str], capture: Literal[False] = ..., cwd: Path | None = ...) -> None: ...
 
     def run(self, *args: str | os.PathLike[str], capture: bool = False, cwd: Path | None = None) -> str | None:
         __tracebackhide__ = True
@@ -137,12 +135,10 @@ class VEnv:
         return self.run(str(self.executable), "-c", command, capture=True, cwd=cwd)
 
     @overload
-    def module(self, *args: str | os.PathLike[str], capture: Literal[False] = ..., cwd: Path | None = ...) -> None:
-        ...
+    def module(self, *args: str | os.PathLike[str], capture: Literal[False] = ..., cwd: Path | None = ...) -> None: ...
 
     @overload
-    def module(self, *args: str | os.PathLike[str], capture: Literal[True], cwd: Path | None = ...) -> str:
-        ...
+    def module(self, *args: str | os.PathLike[str], capture: Literal[True], cwd: Path | None = ...) -> str: ...
 
     def module(self, *args: str | os.PathLike[str], capture: bool = False, cwd: Path | None = None) -> None | str:
         return self.run(str(self.executable), "-m", *args, capture=capture, cwd=cwd)  # type: ignore[no-any-return,call-overload]

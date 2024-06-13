@@ -1,7 +1,6 @@
 """This module defines objects useful to discover which CMake generator is
 supported on the current platform."""
 
-
 from __future__ import annotations
 
 import os

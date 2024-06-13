@@ -346,7 +346,7 @@ def test_setup_requires_keyword_include_cmake(mocker, capsys):
             license="MIT",
             setup_requires=[{setup_requires}]
         )
-        """.format(setup_requires=",".join(["'%s'" % package for package in setup_requires]))
+        """.format(setup_requires=",".join([f"'{package}'" for package in setup_requires]))
         )
     )
     tmp_dir.join("CMakeLists.txt").write(

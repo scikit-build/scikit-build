@@ -109,7 +109,7 @@ replacement = '`@\1 <https://github.com/\1>`_'
 [tool.mypy]
 files = ["skbuild", "tests"]
 exclude = ["tests/samples"]
-python_version = "3.7"
+python_version = "3.8"
 warn_unused_configs = true
 enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
 strict = true
