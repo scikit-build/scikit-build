@@ -630,7 +630,8 @@ def setup(
                         executable += ".exe"
                     st = os.stat(executable)
                     permissions = st.st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
-                    os.chmod(executable, permissions)
+                    with contextlib.suppress(PermissionError):
+                        os.chmod(executable, permissions)
                 cmake_executable = os.path.join(CMAKE_BIN_DIR, "cmake")
                 break
 
