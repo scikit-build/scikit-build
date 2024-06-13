@@ -69,7 +69,9 @@ jobs:
     # We check minimum Python and maximum Python on all OS's.
 
     - name: Test on 🐍 3.7
-      run: nox -s tests-3.7 -- --cov --cov-report=xml --cov-report=term --durations=20
+      run: >
+        nox --default-venv-backend=${{ startsWith(matrix.runs-on, 'windows') && 'virtualenv' || 'uv'}}
+        -s tests-3.7 -- --cov --cov-report=xml --cov-report=term --durations=20
     - name: Test on 🐍 3.8
       if: runner.os == 'Linux'
       run: nox -s tests-3.8 -- --cov --cov-report=xml --cov-report=term --cov-append --durations=20
