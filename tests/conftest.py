@@ -29,7 +29,7 @@ pytest.register_assert_rewrite("tests.pytest_helpers")
 
 @pytest.fixture(scope="session")
 def pep518_wheelhouse(tmp_path_factory: pytest.TempPathFactory) -> Path:
-    numpy = ["numpy"] if sys.version_info < (3, 12) else []
+    numpy = ["numpy"] if sys.version_info < (3, 13) else []
     wheelhouse = tmp_path_factory.mktemp("wheelhouse")
     subprocess.run(
         [

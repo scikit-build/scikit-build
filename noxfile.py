@@ -42,7 +42,7 @@ def tests(session: nox.Session) -> None:
             contained = "1" if version in known_MSVC else "0"
             env[f"SKBUILD_TEST_FIND_VS{version}_INSTALLATION_EXPECTED"] = contained
 
-    numpy = [] if "pypy" in session.python or "3.12" in session.python else ["numpy"]
+    numpy = [] if "pypy" in session.python or "3.13" in session.python else ["numpy"]
     install_spec = "-e.[test,cov,doctest]" if "--cov" in posargs else ".[test,doctest]"
     if "--cov" in posargs:
         posargs.append("--cov-config=pyproject.toml")
