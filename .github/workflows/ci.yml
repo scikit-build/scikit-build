@@ -30,7 +30,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runs-on: [ubuntu-20.04, macos-13, windows-2019, windows-2022]
+        runs-on: [ubuntu-22.04, macos-13, windows-2019, windows-2022]
 
     name: Tests on ${{ matrix.runs-on }}
     steps:
@@ -63,7 +63,7 @@ jobs:
     - name: Setup nox
       uses: wntrblm/nox@2024.04.15
       with:
-        python-versions: "3.7,3.8,3.9,3.10,3.11,3.12"
+        python-versions: "3.7,3.8,3.9,3.10,3.11,3.12,3.13"
 
     # We check all Python's on Linux, because it's fast.
     # We check minimum Python and maximum Python on all OS's.
@@ -86,6 +86,8 @@ jobs:
     - name: Test on 🐍 3.12
       run: nox -s tests-3.12 -- --cov --cov-report=xml --cov-report=term --cov-append --durations=20
       if: runner.os == 'Linux'
+    - name: Test on 🐍 3.13
+      run: nox -s tests-3.13 -- --cov --cov-report=xml --cov-report=term --cov-append --durations=20
 
     - name: Upload coverage report
       uses: codecov/codecov-action@v4

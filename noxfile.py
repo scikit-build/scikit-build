@@ -12,7 +12,7 @@ nox.needs_version = ">=2024.3.2"
 nox.options.default_venv_backend = "uv|virtualenv"
 nox.options.sessions = ["lint", "tests"]
 
-PYTHON_ALL_VERSIONS = ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12", "pypy3.7", "pypy3.8", "pypy3.9"]
+PYTHON_ALL_VERSIONS = ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12", "3.13", "pypy3.7", "pypy3.8", "pypy3.9", "pypy3.10"]
 MSVC_ALL_VERSIONS = {"2017", "2019", "2022"}
 
 
@@ -42,7 +42,7 @@ def tests(session: nox.Session) -> None:
             contained = "1" if version in known_MSVC else "0"
             env[f"SKBUILD_TEST_FIND_VS{version}_INSTALLATION_EXPECTED"] = contained
 
-    numpy = [] if "pypy" in session.python or "3.12" in session.python else ["numpy"]
+    numpy = [] if "pypy" in session.python or "3.13" in session.python else ["numpy"]
     install_spec = "-e.[test,cov,doctest]" if "--cov" in posargs else ".[test,doctest]"
     if "--cov" in posargs:
         posargs.append("--cov-config=pyproject.toml")
