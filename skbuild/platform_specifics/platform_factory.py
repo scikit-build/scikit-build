@@ -30,7 +30,7 @@ def get_platform() -> abstract.CMakePlatform:
 
         return cygwin.CygwinPlatform()
 
-    if this_platform == "darwin":
+    if this_platform in ["darwin", "ios"]:
         from . import osx
 
         return osx.OSXPlatform()
