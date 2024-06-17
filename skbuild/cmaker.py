@@ -515,9 +515,11 @@ class CMaker:
                     libdir_masd = os.path.join(libdir, masd)
                     if os.path.exists(libdir_masd):
                         libdir = libdir_masd
-            libpath = os.path.join(libdir, ldlibrary)
-            if libpath and os.path.exists(libpath):
-                return libpath
+            libpath = Path(libdir) / ldlibrary
+            if sys.platform.startswith("win") and libpath.suffix == ".dll":
+                libpath = libpath.with_suffix(".lib")
+            if libpath.is_file():
+                return str(libpath)
 
         return CMaker._guess_python_library(python_version)
 
