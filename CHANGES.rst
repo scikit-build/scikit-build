@@ -23,7 +23,8 @@ This release bumps the minimum required CMake to 3.5 and supports CPython 3.13.
 Bug fixes
 ---------
 
-* cmake 3.5+ requirement in :pr:`1095`
+* Support MSVC 17.10 in :pr:`1081`
+* CMake 3.5+ requirement in :pr:`1095`
 * Support CPython 3.13 with windows lib finding fix in :pr:`1094`
 * Don't die on PermissionError during chmod by :user:`mweinelt` in :pr:`1073`
 * Remove usage of deprecated distutils in cmake files by :user:`hmaarrfk` in :pr:`1032`
