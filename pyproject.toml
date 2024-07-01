@@ -4,8 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "scikit-build"
-version = "0.17.6"
-dynamic = ["readme"]
+dynamic = ["version", "readme"]
 description = "Improved build system generator for Python C/C++/Fortran/Cython extensions"
 requires-python = ">=3.7"
 authors = [
