@@ -5,13 +5,37 @@ This module defines constants commonly used in scikit-build.
 from __future__ import annotations
 
 import contextlib
+import functools
+import json
 import os
 import platform
 import shutil
+import subprocess
 import sys
 from pathlib import Path
 
 from distutils.util import get_platform
+from packaging.version import InvalidVersion, Version
+
+
+@functools.lru_cache(maxsize=None)
+def get_cmake_version(cmake_path: os.PathLike[str] | str) -> Version:
+    try:
+        result = subprocess.run([str(cmake_path), "-E", "capabilities"], capture_output=True, text=True, check=False)
+        with contextlib.suppress(json.decoder.JSONDecodeError, KeyError, InvalidVersion):
+            return Version(json.loads(result.stdout)["version"]["string"])
+    except subprocess.CalledProcessError:
+        # In some cases (like Pyodide<0.26's cmake wrapper), `-E` isn't handled
+        # correctly, so let's try `--version`, which is more common so more
+        # likely to be wrapped correctly
+        with contextlib.suppress(subprocess.CalledProcessError):
+            result = subprocess.run([str(cmake_path), "--version"], capture_output=True, text=True, check=False)
+            with contextlib.suppress(IndexError, InvalidVersion):
+                return Version(result.stdout.splitlines()[0].split()[-1].split("-")[0])
+    except PermissionError:
+        pass
+
+    return Version("0.0")
 
 
 def _get_cmake_executable() -> str:
@@ -23,9 +47,9 @@ def _get_cmake_executable() -> str:
             return f"{path}.exe"
         return path
 
-    for name in ("cmake3", "cmake"):
+    for name in ("cmake", "cmake3"):
         prog = shutil.which(name)
-        if prog:
+        if prog and get_cmake_version(prog) >= Version("3.5"):
             return prog
 
     # Just guess otherwise

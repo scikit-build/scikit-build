@@ -15,6 +15,51 @@ and backport changes here.
 
 .. START-BRIEF-CHANGELOG
 
+Scikit-build 0.18.0
+===================
+
+This release bumps the minimum required CMake to 3.5 and supports CPython 3.13.
+
+Bug fixes
+---------
+
+* Support MSVC 17.10 in :pr:`1081`
+* CMake 3.5+ requirement in :pr:`1095`
+* Support CPython 3.13 with windows lib finding fix in :pr:`1094`
+* Don't die on PermissionError during chmod by :user:`mweinelt` in :pr:`1073`
+* Remove usage of deprecated distutils in cmake files by :user:`hmaarrfk` in :pr:`1032`
+* Use first available option for vswhere output by :user:`ZzEeKkAa` in :pr:`1030`
+
+
+Testing
+-------
+
+* Support setuptools 69.3.0 changes in two tests by :user:`s-t-e-v-e-n-k` in :pr:`1087`
+* Use uv in a few places in :pr:`1092`
+
+Fedora CI
+---------
+
+* Fedora maintenance by :user:`LecrisUT` in :pr:`1078`
+* Fedora: Fix rsync filter rule by :user:`LecrisUT` in :pr:`1003`
+* Fix Fedora tests by :user:`LecrisUT` in :pr:`1050`
+* Fedora downstream CI by :user:`LecrisUT` in :pr:`993`
+
+Miscellaneous
+-------------
+
+* Clean up pylint in :pr:`1017`
+* Fix mypy type ignores for new setuptools types in :pr:`1082`
+* Move to Ruff-format in :pr:`1035`
+* Remove pkg_resources and test command in :pr:`1014`
+* Ruff moved to astral-sh in :pr:`1007`
+* Target-version no longer needed by Black or Ruff in :pr:`1008`
+* Update ruff and fix warnings in :pr:`1060`
+* Use 2x faster black mirror in :pr:`1021`
+* Group dependabot updates in :pr:`1054`
+* macos-latest is changing to macos-14 ARM runners in :pr:`1083`
+* Skip win PyPy PEP 518 in :pr:`1091`
+
 
 Scikit-build 0.17.6
 ===================
