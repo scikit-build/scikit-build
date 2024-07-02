@@ -319,9 +319,7 @@ def _package_data_contain_module(module: tuple[str, str, str], package_data: Map
     # and the entry in package_data would look like this:
     #
     #   {'foo.bar' : ['module.py']}
-    if strip_package(package.split("."), module_file) in package_data[package]:
-        return True
-    return False
+    return strip_package(package.split("."), module_file) in package_data[package]
 
 
 def _should_run_cmake(commands: Sequence[str], cmake_with_sdist: bool) -> bool:
@@ -344,9 +342,7 @@ def _should_run_cmake(commands: Sequence[str], cmake_with_sdist: bool) -> bool:
 
     if expected_commands & given_commands:
         return True
-    if "sdist" in given_commands and cmake_with_sdist:
-        return True
-    return False
+    return bool("sdist" in given_commands and cmake_with_sdist)
 
 
 def _save_cmake_spec(args: Mapping[str, Any]) -> None:
