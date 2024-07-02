@@ -20,7 +20,7 @@ def get_platform() -> abstract.CMakePlatform:
         return windows.WindowsPlatform()
 
     # Some flexibility based on what emcripten distros decide to call themselves
-    if this_platform.startswith(("linux", "emscripten", "pyodide")):
+    if this_platform.startswith(("linux", "emscripten", "pyodide", "android")):
         from . import linux
 
         return linux.LinuxPlatform()
@@ -30,7 +30,7 @@ def get_platform() -> abstract.CMakePlatform:
 
         return cygwin.CygwinPlatform()
 
-    if this_platform == "darwin":
+    if this_platform in ["darwin", "ios"]:
         from . import osx
 
         return osx.OSXPlatform()
