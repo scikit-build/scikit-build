@@ -221,7 +221,7 @@ def test_cmake_install_dir_keyword(cmake_install_dir, expected_failed, error_cod
 
     assert failed == expected_failed
     if failed:
-        if error_code_type == str:
+        if error_code_type is str:
             assert message == "error: package directory '{}' does not exist".format(
                 os.path.join(CMAKE_INSTALL_DIR(), "banana")
             )
