@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import os
 import pprint
-import sys
 import textwrap
 from collections.abc import Sequence
 from unittest.mock import patch
@@ -324,9 +323,6 @@ def test_cmake_minimum_required_version_keyword():
     "See https://github.com/conda/conda/issues/508",
 )
 @pytest.mark.skipif(not is_site_reachable("https://pypi.org/simple/cmake/"), reason="pypi.org website not reachable")
-@pytest.mark.xfail(
-    sys.platform.startswith("cygwin"), strict=False, reason="Cygwin needs a release of scikit-build first"
-)
 def test_setup_requires_keyword_include_cmake(mocker, capsys):
     mock_setup = mocker.patch("skbuild.setuptools_wrap.setuptools.setup")
 

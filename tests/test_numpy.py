@@ -13,7 +13,6 @@ BASE = os.path.dirname(DIR)
 
 
 @pytest.mark.isolated()
-@pytest.mark.skipif(sys.platform.startswith("cygwin"), reason="Needs release of scikit-build to make cmake work")
 @pytest.mark.skipif(
     platform.python_implementation() == "PyPy" and sys.version_info >= (3, 9),
     reason="NumPy not released for PyPy 3.9 yet",
