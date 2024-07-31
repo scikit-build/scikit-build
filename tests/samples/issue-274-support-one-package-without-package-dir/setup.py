@@ -9,5 +9,4 @@ setup(
     author="The scikit-build team",
     license="MIT",
     packages=["hello"],
-    test_suite="hello_tests",
 )
