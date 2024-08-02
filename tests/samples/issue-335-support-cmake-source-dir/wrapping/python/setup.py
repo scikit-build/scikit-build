@@ -9,7 +9,6 @@ setup(
     author="The scikit-build team",
     license="MIT",
     packages=["hello"],
-    tests_require=[],
     setup_requires=[],
     cmake_source_dir="../../",
 )
