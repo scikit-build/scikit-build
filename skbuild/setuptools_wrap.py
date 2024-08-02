@@ -745,14 +745,19 @@ def setup(
             _copy_file(data_file, dest_data_file, hide_listing)
 
     kw["package_data"] = package_data
-    kw["package_dir"] = {
-        package: (
-            os.path.join(CMAKE_INSTALL_DIR(), prefix)
-            if os.path.exists(os.path.join(CMAKE_INSTALL_DIR(), prefix))
-            else prefix
-        )
-        for prefix, package in package_prefixes
-    }
+
+    # Update the entries of the package_dir kw without removing main package entry
+    package_dir.update(
+        {
+            package: (
+                os.path.join(CMAKE_INSTALL_DIR(), prefix)
+                if os.path.exists(os.path.join(CMAKE_INSTALL_DIR(), prefix))
+                else prefix
+            )
+            for prefix, package in package_prefixes
+        }
+    )
+    kw["package_dir"] = package_dir
 
     kw["scripts"] = [
         os.path.join(CMAKE_INSTALL_DIR(), script) if mask else script for script, mask in new_scripts.items()
