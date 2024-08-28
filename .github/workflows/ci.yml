@@ -58,7 +58,9 @@ jobs:
 
     - name: Set environment for Fortran compiler on MacOS
       if: runner.os == 'macOS'
-      run: echo "FC=gfortran-11" >> $GITHUB_ENV
+      run: |
+        brew reinstall gfortran
+        echo "FC=gfortran" >> $GITHUB_ENV
 
     - name: Setup nox
       uses: wntrblm/nox@2024.04.15
