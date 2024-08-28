@@ -15,6 +15,27 @@ and backport changes here.
 
 .. START-BRIEF-CHANGELOG
 
+Scikit-build 0.18.1
+===================
+
+This release fixes issues with setuptools 74, and avoids a warning from recent
+versions of wheel. Android and iOS are now included in known platforms.
+
+Bug fixes
+---------
+
+* Support for setuptools 74 in :pr:`1116`
+* iOS and Android support by :user:`FeodorFitsner` in :pr:`1101`
+
+
+Testing
+-------
+
+* Fix for distutils change in :pr:`1103`
+* Remove test directives by :user:`s-t-e-v-e-n-k` in :pr:`1108`
+
+
+
 Scikit-build 0.18.0
 ===================
 
