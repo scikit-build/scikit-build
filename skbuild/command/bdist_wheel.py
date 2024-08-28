@@ -3,8 +3,18 @@ command."""
 
 from __future__ import annotations
 
-from wheel.bdist_wheel import bdist_wheel as _bdist_wheel
-from wheel.wheelfile import WheelFile
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from wheel.bdist_wheel import bdist_wheel as _bdist_wheel
+    from wheel.wheelfile import WheelFile
+else:
+    try:
+        from setuptools.command.bdist_wheel import WheelFile  # type: ignore[attr-defined]
+        from setuptools.command.bdist_wheel import bdist_wheel as _bdist_wheel
+    except ImportError:
+        from wheel.bdist_wheel import bdist_wheel as _bdist_wheel
+        from wheel.wheelfile import WheelFile
 
 from .._version import version as skbuild_version
 from ..utils import distribution_hide_listing
