@@ -215,7 +215,7 @@ def _get_msvc_compiler_env(vs_version: int, vs_toolset: str | None = None) -> Ca
         return __get_msvc_compiler_env_cache[cache_key]
 
     if hasattr(monkey, "patch_for_msvc_specialized_compiler"):
-        monkey.patch_for_msvc_specialized_compiler()  # type: ignore[no-untyped-call]
+        monkey.patch_for_msvc_specialized_compiler()
 
     vc_dir = find_visual_studio(vs_version)
     vcvarsall = os.path.join(vc_dir, "vcvarsall.bat")
