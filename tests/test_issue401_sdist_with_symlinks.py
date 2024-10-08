@@ -11,7 +11,7 @@ from . import project_setup_py_test
 from .pytest_helpers import check_sdist_content
 
 
-@pytest.mark.nosetuptoolsscm()
+@pytest.mark.nosetuptoolsscm
 @pytest.mark.skipif(sys.platform == "win32", reason="Symlinks not supported on Windows")
 @project_setup_py_test("issue-401-sdist-with-symlinks", ["sdist"])
 def test_sdist_with_symlinks():

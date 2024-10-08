@@ -171,7 +171,7 @@ def test_hello_cleans(capfd, caplog):
         assert "running clean" in msg
 
 
-@pytest.mark.deprecated()
+@pytest.mark.deprecated
 @project_setup_py_test("hello-cpp", ["develop"])
 def test_hello_develop():
     for expected_file in [

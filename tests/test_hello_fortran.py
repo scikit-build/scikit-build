@@ -19,7 +19,7 @@ from .pytest_helpers import check_sdist_content, check_wheel_content
 pytest.importorskip("numpy")
 
 
-@pytest.mark.fortran()
+@pytest.mark.fortran
 @pytest.mark.skipif(sys.platform.startswith("win"), reason="Fortran not supported on Windows")
 @pytest.mark.skipif(not ("FC" in os.environ or shutil.which("gfortran")), reason="GFortran required")
 @project_setup_py_test("hello-fortran", ["build"])
@@ -27,7 +27,7 @@ def test_hello_fortran_build():
     pass
 
 
-@pytest.mark.fortran()
+@pytest.mark.fortran
 @project_setup_py_test("hello-fortran", ["sdist"])
 def test_hello_fortran_sdist():
     sdists_tar = glob.glob("dist/*.tar.gz")
@@ -58,7 +58,7 @@ def test_hello_fortran_sdist():
     check_sdist_content(sdist_archive, dirname, expected_content)
 
 
-@pytest.mark.fortran()
+@pytest.mark.fortran
 @pytest.mark.skipif(sys.platform.startswith("win"), reason="Fortran not supported on Windows")
 @pytest.mark.skipif(not ("FC" in os.environ or shutil.which("gfortran")), reason="GFortran required")
 @project_setup_py_test("hello-fortran", ["bdist_wheel"])
