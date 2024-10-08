@@ -76,7 +76,7 @@ def test_include_exclude_data():
     check_whls("test_include_exclude_data-0.1.0")
 
 
-@pytest.mark.nosetuptoolsscm()
+@pytest.mark.nosetuptoolsscm
 @project_setup_py_test("test-include-exclude-data", ["sdist"])
 def test_hello_sdist():
     check_sdist("test_include_exclude_data-0.1.0")
@@ -87,7 +87,7 @@ def test_include_exclude_data_with_base():
     check_whls("test_include_exclude_data_with_base-0.1.0")
 
 
-@pytest.mark.nosetuptoolsscm()
+@pytest.mark.nosetuptoolsscm
 @project_setup_py_test("test-include-exclude-data-with-base", ["sdist"])
 def test_hello_sdist_with_base():
     check_sdist("test_include_exclude_data_with_base-0.1.0", base="src")

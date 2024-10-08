@@ -9,7 +9,7 @@ from . import initialize_git_repo_and_commit, prepare_project
 DIR = Path(__file__).parent.resolve()
 
 
-@pytest.mark.isolated()
+@pytest.mark.isolated
 def test_source_distribution(isolated, tmp_path):
     sdist_dir = tmp_path / "dist"
     workspace = tmp_path / "workspace"
@@ -26,7 +26,7 @@ def test_source_distribution(isolated, tmp_path):
     isolated.run("python", "setup.py", "bdist_wheel", cwd=workspace)
 
 
-@pytest.mark.isolated()
+@pytest.mark.isolated
 def test_wheel(isolated, tmp_path):
     wheel_dir = tmp_path / "dist"
     workspace = tmp_path / "workspace"
