@@ -218,7 +218,7 @@ def execute_setup_py(project_dir, setup_args, disable_languages_test=False):
     to_clear = getattr(
         distutils.dir_util, "SkipRepeatAbsolutePaths", getattr(distutils.dir_util, "_path_created", None)
     )
-    assert to_clear, "Must have one of the two supported clearing mechanisms"
+    assert to_clear is not None, "Must have one of the two supported clearing mechanisms"
     to_clear.clear()
 
     # Clear _PYTHON_HOST_PLATFORM to ensure value sets in skbuild.setuptools_wrap.setup() does not
