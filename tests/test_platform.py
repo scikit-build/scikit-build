@@ -61,7 +61,7 @@ def test_cxx_compiler():
 @pytest.mark.skipif(
     platform.system().lower() in ["darwin", "windows"], reason="no fortran compiler is available by default"
 )
-@pytest.mark.fortran()
+@pytest.mark.fortran
 def test_fortran_compiler():
     generator = skbuild_platform.get_best_generator(languages=["Fortran"])
     # TODO: this isn't a true unit test.  It depends on the test
