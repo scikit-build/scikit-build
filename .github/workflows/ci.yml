@@ -63,7 +63,7 @@ jobs:
         echo "FC=gfortran" >> $GITHUB_ENV
 
     - name: Setup nox
-      uses: wntrblm/nox@2024.04.15
+      uses: wntrblm/nox@2024.10.09
       with:
         python-versions: "3.8,3.9,3.10,3.11,3.12,3.13"
 
@@ -87,7 +87,7 @@ jobs:
       run: nox -s tests-3.13 -- --cov --cov-report=xml --cov-report=term --cov-append --durations=20
 
     - name: Upload coverage report
-      uses: codecov/codecov-action@v4
+      uses: codecov/codecov-action@v5
       with:
         name: ${{ matrix.runs-on }}-any
         verbose: true
@@ -104,7 +104,7 @@ jobs:
       with:
         fetch-depth: 0
 
-    - uses: cygwin/cygwin-install-action@v4
+    - uses: cygwin/cygwin-install-action@v5
       with:
         platform: x86_64
         packages: cmake ninja git make gcc-g++ gcc-fortran python39 python39-devel python39-pip
@@ -141,7 +141,7 @@ jobs:
     - uses: yezz123/setup-uv@v4
 
     - name: Setup nox
-      uses: wntrblm/nox@2024.04.15
+      uses: wntrblm/nox@2024.10.09
 
     - uses: actions/setup-python@v5
       with:
@@ -154,7 +154,7 @@ jobs:
         ${{ matrix.runs-on == 'windows-latest' && '-k "not pep518"' || '' }}
 
     - name: Upload coverage report
-      uses: codecov/codecov-action@v4
+      uses: codecov/codecov-action@v5
       with:
         name: ${{ runner.os }}-${{ matrix.pypy-version }}
         verbose: true
