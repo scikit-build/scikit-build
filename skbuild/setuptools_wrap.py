@@ -250,7 +250,7 @@ def _parse_setuptools_arguments(
 
     return (
         display_only,
-        dist.help_commands,  # type: ignore[attr-defined]
+        bool(dist.help_commands),
         dist.commands,
         dist.hide_listing,  # type: ignore[attr-defined]
         dist.force_cmake,  # type: ignore[attr-defined]

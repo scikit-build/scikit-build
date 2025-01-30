@@ -73,7 +73,7 @@ class build_py(set_build_base_mixin, _build_py):
             try:
                 (package_dir, checked) = packages[package]
             except KeyError:
-                package_dir = self.get_package_dir(package)  # type: ignore[no-untyped-call]
+                package_dir = self.get_package_dir(package)
                 checked = False
 
             if not checked:
