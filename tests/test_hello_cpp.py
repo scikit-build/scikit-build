@@ -116,7 +116,7 @@ def test_hello_clean(dry_run, capfd):
         assert tmp_dir.join(SKBUILD_DIR()).exists()
 
         # XXX Since using capfd.disabled() context manager prevents
-        # the output from being captured atfer it exits, we display
+        # the output from being captured after it exits, we display
         # a separator allowing to differentiate the build and clean output.
         print("<<-->>")
 
