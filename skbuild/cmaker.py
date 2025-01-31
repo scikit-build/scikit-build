@@ -277,9 +277,12 @@ class CMaker:
             f"-DCMAKE_INSTALL_PREFIX:PATH={cmake_install_prefix}",
             f"-DPYTHON_VERSION_STRING:STRING={python_version_string}",
             "-DSKBUILD:INTERNAL=TRUE",
-            f"-DCMAKE_MODULE_PATH:PATH={cmake_resource_dir}",
             f"-DPYTHON_EXECUTABLE:PATH={sys.executable}",
         ]
+        if "CMAKE_MODULE_PATH" in os.environ:
+            cmd.append(f"-DCMAKE_MODULE_PATH:PATH={cmake_resource_dir};{os.environ['CMAKE_MODULE_PATH']}")
+        else:
+            cmd.append(f"-DCMAKE_MODULE_PATH:PATH={cmake_resource_dir}")
         if python_include_dir:
             cmd.append(f"-DPYTHON_INCLUDE_DIR:PATH={python_include_dir}")
         if python_library:
