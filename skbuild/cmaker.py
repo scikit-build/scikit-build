@@ -679,8 +679,7 @@ class CMaker:
         clargs, install_target = pop_arg("--install-target", clargs, install_target)
         if not os.path.exists(CMAKE_BUILD_DIR()):
             msg = (
-                f"CMake build folder ({CMAKE_BUILD_DIR()}) does not exist. "
-                "Did you forget to run configure before make?"
+                f"CMake build folder ({CMAKE_BUILD_DIR()}) does not exist. Did you forget to run configure before make?"
             )
             raise SKBuildError(msg)
 

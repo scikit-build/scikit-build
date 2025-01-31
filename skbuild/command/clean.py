@@ -24,5 +24,5 @@ class clean(set_build_base_mixin, _clean):
             if os.path.exists(dir_):
                 logger.info("removing '%s'", dir_)
             # This seems to be there but isn't typed in the stubs TODO
-            if not self.dry_run and os.path.exists(dir_):  # type: ignore[attr-defined]
+            if not self.dry_run and os.path.exists(dir_):
                 rmtree(dir_)

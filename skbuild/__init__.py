@@ -13,7 +13,7 @@ __author__ = "The scikit-build team"
 __email__ = "scikit-build@googlegroups.com"
 
 
-__all__ = ["setup", "__version__"]
+__all__ = ["__version__", "setup"]
 
 
 # Cleaner Python 3.7 command line completion

@@ -147,14 +147,14 @@ class VEnv:
         self.module("pip", "install", *args)
 
 
-@pytest.fixture()
+@pytest.fixture
 def pep518(pep518_wheelhouse, monkeypatch):
     monkeypatch.setenv("PIP_FIND_LINKS", str(pep518_wheelhouse))
     monkeypatch.setenv("PIP_NO_INDEX", "true")
     return pep518_wheelhouse
 
 
-@pytest.fixture()
+@pytest.fixture
 def isolated(tmp_path: Path, pep518_wheelhouse: Path) -> Generator[VEnv, None, None]:
     path = tmp_path / "venv"
     try:

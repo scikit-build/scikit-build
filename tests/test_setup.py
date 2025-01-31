@@ -316,7 +316,7 @@ def test_cmake_minimum_required_version_keyword():
         assert "CMake version 99.98.97 or higher is required." in message
 
 
-@pytest.mark.deprecated()
+@pytest.mark.deprecated
 @pytest.mark.filterwarnings("ignore:setuptools.installer is deprecated:Warning")
 @pytest.mark.skipif(
     os.environ.get("CONDA_BUILD", "0") == "1",
