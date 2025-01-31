@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "scikit-build"
 dynamic = ["version", "readme"]
 description = "Improved build system generator for Python C/C++/Fortran/Cython extensions"
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 authors = [
     { name = "The scikit-build team" },
 ]
@@ -19,7 +19,6 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Natural Language :: English",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
@@ -33,7 +32,6 @@ dependencies = [
     'packaging',
     'setuptools>=42.0.0',
     'tomli; python_version<"3.11"',
-    'typing-extensions>=3.7; python_version<"3.8"',
     'wheel>=0.32.0',
 ]
 
@@ -56,7 +54,6 @@ doctest = [
 test = [
     'build>=0.7',
     'cython>=0.25.1',
-    'importlib-metadata;python_version<"3.8"',
     'pip',
     'pytest-mock>=1.10.4',
     'pytest>=6.0.0',
@@ -135,7 +132,7 @@ ignore_missing_imports = true
 
 
 [tool.pylint]
-py-version = "3.7"
+py-version = "3.8"
 jobs = "0"
 reports.output-format = "colorized"
 similarities.ignore-imports = "yes"

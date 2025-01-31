@@ -11,10 +11,10 @@ jobs:
       matrix:
         Python37:
           python.arch: 'x86'
-          python.version: '3.7'
+          python.version: '3.8'
         Python37-x64:
           python.arch: 'x64'
-          python.version: '3.7'
+          python.version: '3.8'
       maxParallel: 2
 
     steps:

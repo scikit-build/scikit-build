@@ -6,17 +6,12 @@ import shutil
 import subprocess
 import sys
 from collections.abc import Generator
+from importlib import metadata
 from pathlib import Path
+from typing import Literal, overload
 
 import pytest
 import virtualenv as _virtualenv
-
-if sys.version_info < (3, 8):
-    import importlib_metadata as metadata
-    from typing_extensions import Literal, overload
-else:
-    from importlib import metadata
-    from typing import Literal, overload
 
 HAS_SETUPTOOLS_SCM = importlib.util.find_spec("setuptools_scm") is not None
 
