@@ -316,13 +316,15 @@ class CMaker:
 
         # Parse CMAKE_ARGS only if SKBUILD_CONFIGURE_OPTIONS is not present
         if "SKBUILD_CONFIGURE_OPTIONS" in os.environ:
-            env_cmake_args = list(filter(None, shlex.split(os.environ["SKBUILD_CONFIGURE_OPTIONS"])))
+            env_cmake_args = shlex.split(os.environ["SKBUILD_CONFIGURE_OPTIONS"])
             if any("CMAKE_INSTALL_PREFIX" in arg for arg in env_cmake_args):
                 msg = "CMAKE_INSTALL_PREFIX may not be passed via SKBUILD_CONFIGURE_OPTIONS."
                 raise ValueError(msg)
+        elif "CMAKE_ARGS" in os.environ:
+            env_cmake_args = shlex.split(os.environ["CMAKE_ARGS"])
+            env_cmake_args = [s for s in env_cmake_args if "CMAKE_INSTALL_PREFIX" not in s]
         else:
-            env_cmake_args_filtered = filter(None, shlex.split(os.environ.get("CMAKE_ARGS", "")))
-            env_cmake_args = [s for s in env_cmake_args_filtered if "CMAKE_INSTALL_PREFIX" not in s]
+            env_cmake_args = []
 
         cmd.extend(env_cmake_args)
 

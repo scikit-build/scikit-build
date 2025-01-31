@@ -13,6 +13,7 @@ import json
 import os
 import os.path
 import platform
+import shlex
 import shutil
 import stat
 import sys
@@ -535,8 +536,11 @@ def setup(
         cmake_install_target = cmake_install_target_from_setup
 
     # Parse CMAKE_ARGS
-    env_cmake_args = os.environ["CMAKE_ARGS"].split() if "CMAKE_ARGS" in os.environ else []
-    env_cmake_args = [s for s in env_cmake_args if "CMAKE_INSTALL_PREFIX" not in s]
+    if "CMAKE_ARGS" in os.environ:
+        env_cmake_args = shlex.split(os.environ["CMAKE_ARGS"])
+        env_cmake_args = [s for s in env_cmake_args if "CMAKE_INSTALL_PREFIX" not in s]
+    else:
+        env_cmake_args = []
 
     # Since CMake arguments provided through the command line have more weight
     # and when CMake is given multiple times a argument, only the last one is
