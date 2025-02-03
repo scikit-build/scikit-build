@@ -38,7 +38,7 @@ jobs:
       with:
         fetch-depth: 0
 
-    - uses: astral-sh/setup-uv@v4
+    - uses: astral-sh/setup-uv@v5
 
     - name: Set environment for available GHA MSVCs
       if: matrix.runs-on == 'windows-2019'
