@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import sys
 import tarfile
+from importlib import metadata
 from zipfile import ZipFile
 
 from packaging.version import Version
@@ -9,11 +10,6 @@ from packaging.version import Version
 from skbuild import __version__ as skbuild_version
 
 from . import list_ancestors
-
-if sys.version_info < (3, 8):
-    import importlib_metadata as metadata
-else:
-    from importlib import metadata
 
 
 def check_sdist_content(sdist_archive, expected_distribution_name, expected_content, package_dir=""):

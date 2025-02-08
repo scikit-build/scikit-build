@@ -33,7 +33,7 @@ Make a fold name my_project as your project root folder, place the following in 
         author='The scikit-build team',
         license="MIT",
         packages=['hello'],
-        python_requires=">=3.7",
+        python_requires=">=3.8",
     )
 
 Your project now uses scikit-build instead of setuptools.

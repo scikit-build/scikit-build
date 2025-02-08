@@ -16,6 +16,6 @@ __email__ = "scikit-build@googlegroups.com"
 __all__ = ["__version__", "setup"]
 
 
-# Cleaner Python 3.7 command line completion
+# Cleaner Python 3.7+ command line completion
 def __dir__() -> list[str]:
     return __all__

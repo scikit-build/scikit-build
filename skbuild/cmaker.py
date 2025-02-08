@@ -371,7 +371,7 @@ class CMaker:
             >>> from skbuild.cmaker import CMaker
             >>> python_version = CMaker.get_python_version()
             >>> print('python_version = {!r}'.format(python_version))
-            python_version = '3.7'
+            python_version = '3.8'
         """
         python_version = sysconfig.get_config_var("VERSION")
 
@@ -404,7 +404,7 @@ class CMaker:
             >>> python_version = CMaker.get_python_version()
             >>> python_include_dir = CMaker.get_python_include_dir(python_version)
             >>> print('python_include_dir = {!r}'.format(python_include_dir))
-            python_include_dir = '.../conda/envs/py37/include/python3.7m'
+            python_include_dir = '.../conda/envs/py38/include/python3.8m'
         """
         # determine python include dir
         python_include_dir: str | None = sysconfig.get_config_var("INCLUDEPY")
