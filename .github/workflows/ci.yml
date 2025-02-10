@@ -63,7 +63,7 @@ jobs:
         echo "FC=gfortran" >> $GITHUB_ENV
 
     - name: Setup nox
-      uses: wntrblm/nox@2024.10.09
+      uses: wntrblm/nox@2025.02.09
       with:
         python-versions: "3.8,3.9,3.10,3.11,3.12,3.13"
 
@@ -141,7 +141,7 @@ jobs:
     - uses: yezz123/setup-uv@v4
 
     - name: Setup nox
-      uses: wntrblm/nox@2024.10.09
+      uses: wntrblm/nox@2025.02.09
 
     - uses: actions/setup-python@v5
       with:
