@@ -66,7 +66,7 @@
 #   case, CMake is not used to find the compiler and configure the associated build system.
 #
 
-find_program(F2PY_EXECUTABLE NAMES f2py${PYTHON_VERSION_MAJOR} f2py)
+find_program(F2PY_EXECUTABLE NAMES f2py f2py${PYTHON_VERSION_MAJOR} )
 
 # XXX This is required to support NumPy < v0.15.0. See note in module documentation above.
 if(NOT F2PY_EXECUTABLE)
