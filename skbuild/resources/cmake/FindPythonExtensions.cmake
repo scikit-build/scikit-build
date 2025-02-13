@@ -242,14 +242,14 @@
 # limitations under the License.
 #=============================================================================
 
-find_package(PythonInterp REQUIRED)
+find_package(Python COMPONENTS Interpreter)
 if(SKBUILD AND NOT PYTHON_LIBRARY)
   set(PYTHON_LIBRARY "no-library-required")
-  find_package(PythonLibs)
+  find_package(Python COMPONENTS Development)
   unset(PYTHON_LIBRARY)
   unset(PYTHON_LIBRARIES)
 else()
-  find_package(PythonLibs)
+  find_package(Python COMPONENTS Development)
 endif()
 include(targetLinkLibrariesWithDynamicLookup)
 
@@ -308,7 +308,7 @@ sys.stdout.write(\";\".join((
 )))
 ")
 
-execute_process(COMMAND "${PYTHON_EXECUTABLE}" -c "${_command}"
+execute_process(COMMAND "${Python_EXECUTABLE}" -c "${_command}"
                 OUTPUT_VARIABLE _list
                 RESULT_VARIABLE _result)
 
