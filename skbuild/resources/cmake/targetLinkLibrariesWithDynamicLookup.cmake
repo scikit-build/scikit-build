@@ -253,6 +253,7 @@ function(_test_weak_link_project
 
 
     file(WRITE "${test_project_src_dir}/CMakeLists.txt" "
+      message(STATUS \"Using CMake \${CMAKE_VERSION}\")
       cmake_minimum_required(VERSION ${CMAKE_VERSION})
       project(${project_name} C)
 

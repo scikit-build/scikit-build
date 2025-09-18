@@ -120,6 +120,7 @@ class CMaker:
         >>> cmake_fpath = join(src_dpath, 'CMakeLists.txt')
         >>> open(cmake_fpath, 'w').write(ub.codeblock(
                 '''
+                message(STATUS "Using CMake ${CMAKE_VERSION}")
                 cmake_minimum_required(VERSION 3.5.0)
                 project(foobar NONE)
                 file(WRITE "${CMAKE_BINARY_DIR}/foo.txt" "# foo")
