@@ -121,7 +121,7 @@ class CMaker:
         >>> open(cmake_fpath, 'w').write(ub.codeblock(
                 '''
                 message(STATUS "Using CMake ${CMAKE_VERSION}")
-                cmake_minimum_required(VERSION 3.5...3.20)
+                cmake_minimum_required(VERSION 3.5...3.26)
                 project(foobar NONE)
                 file(WRITE "${CMAKE_BINARY_DIR}/foo.txt" "# foo")
                 install(FILES "${CMAKE_BINARY_DIR}/foo.txt" DESTINATION ".")
