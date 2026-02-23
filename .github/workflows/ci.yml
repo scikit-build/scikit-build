@@ -19,8 +19,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-python@v5
+    - uses: actions/checkout@v6
+    - uses: actions/setup-python@v6
     - uses: pre-commit/action@v3.0.1
 
   tests:
@@ -34,11 +34,11 @@ jobs:
 
     name: Tests on ${{ matrix.runs-on }}
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         fetch-depth: 0
 
-    - uses: astral-sh/setup-uv@v5
+    - uses: astral-sh/setup-uv@v7
 
     - name: Set environment for available GHA MSVCs
       if: matrix.runs-on == 'windows-2022'
@@ -55,7 +55,7 @@ jobs:
         echo "FC=gfortran" >> $GITHUB_ENV
 
     - name: Setup nox
-      uses: wntrblm/nox@2025.02.09
+      uses: wntrblm/nox@2026.02.09
       with:
         python-versions: "3.8,3.9,3.10,3.11,3.12,3.13"
 
@@ -92,7 +92,7 @@ jobs:
     needs: [lint]
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         fetch-depth: 0
 
@@ -126,16 +126,16 @@ jobs:
           pypy-version: "3.9"
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         fetch-depth: 0
 
     - uses: yezz123/setup-uv@v4
 
     - name: Setup nox
-      uses: wntrblm/nox@2025.02.09
+      uses: wntrblm/nox@2026.02.09
 
-    - uses: actions/setup-python@v5
+    - uses: actions/setup-python@v6
       with:
         python-version: pypy-${{ matrix.pypy-version }}
 
@@ -157,14 +157,14 @@ jobs:
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         fetch-depth: 0
 
     - name: Build SDist and wheel
       run: pipx run build
 
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v6
       with:
         path: dist/*
 
