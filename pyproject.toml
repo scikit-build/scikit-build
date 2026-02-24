@@ -183,7 +183,7 @@ filterwarnings = [
   'ignore:onerror argument is deprecated, use onexc instead:DeprecationWarning',  # Caused by wheel and Python 3.12
   'ignore:(ast.Str|Attribute s|ast.NameConstant|ast.Num) is deprecated:DeprecationWarning:_pytest',
 ]
-log_cli_level = "info"
+log_level = "INFO"
 markers = [
   "fortran: Fortran testing",
   "deprecated: These tests deprecated setuptools features",
