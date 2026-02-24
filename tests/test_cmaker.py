@@ -82,7 +82,7 @@ def test_make_without_configure_fails(capfd):
         CMaker().make()
     _, err = capfd.readouterr()
     assert "An error occurred while building with CMake." in str(excinfo.value)
-    assert "Error: could not load cache" in err
+    assert "Error: could not load cache" in err or "Error: not a CMake build directory (missing CMakeCache.txt)" in err
 
 
 @pytest.mark.parametrize("configure_with_cmake_source_dir", [True, False])

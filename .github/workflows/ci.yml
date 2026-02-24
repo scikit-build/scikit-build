@@ -123,7 +123,7 @@ jobs:
         pypy-version: ["3.11"]
         include:
         - runs-on: ubuntu-latest
-          pypy-version: "3.8"
+          pypy-version: "3.9"
 
     steps:
     - uses: actions/checkout@v4
