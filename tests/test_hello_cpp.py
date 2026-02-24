@@ -104,6 +104,7 @@ def test_hello_wheel():
 
 def test_hello_clean(capfd):
     with push_dir():
+
         @project_setup_py_test("hello-cpp", ["build"], ret=True)
         def run_build():
             pass
