@@ -58,7 +58,7 @@ def test_distribution_is_pure(distribution_type, tmpdir):
         cmakelists_txt = tmpdir.join("CMakeLists.txt")
         cmakelists_txt.write(
             """
-            cmake_minimum_required(VERSION 3.5.0)
+            cmake_minimum_required(VERSION 3.5...3.26)
             project(test NONE)
             install(CODE "execute_process(
               COMMAND \\${CMAKE_COMMAND} -E sleep 0)")
@@ -114,7 +114,7 @@ def test_cmake_args_keyword(cmake_args, capfd):
     tmp_dir.join("CMakeLists.txt").write(
         textwrap.dedent(
             """
-        cmake_minimum_required(VERSION 3.5.0)
+        cmake_minimum_required(VERSION 3.5...3.26)
         project(test NONE)
         message(STATUS "VAR[${VAR}]")
         message(STATUS "VAR_WITH_SPACE[${VAR_WITH_SPACE}]")
@@ -195,7 +195,7 @@ def test_cmake_install_dir_keyword(cmake_install_dir, expected_failed, error_cod
     tmp_dir.join("CMakeLists.txt").write(
         textwrap.dedent(
             """
-        cmake_minimum_required(VERSION 3.5.0)
+        cmake_minimum_required(VERSION 3.5...3.26)
         project(banana NONE)
         file(WRITE "${CMAKE_BINARY_DIR}/__init__.py" "")
         install(FILES "${CMAKE_BINARY_DIR}/__init__.py" DESTINATION ".")
@@ -254,7 +254,7 @@ def test_cmake_with_sdist_keyword(cmake_with_sdist, capfd):
     tmp_dir.join("CMakeLists.txt").write(
         textwrap.dedent(
             """
-        cmake_minimum_required(VERSION 3.5.0)
+        cmake_minimum_required(VERSION 3.5...3.26)
         project(test NONE)
         install(CODE "execute_process(
           COMMAND \\${CMAKE_COMMAND} -E sleep 0)")
@@ -296,7 +296,7 @@ def test_cmake_minimum_required_version_keyword():
     tmp_dir.join("CMakeLists.txt").write(
         textwrap.dedent(
             """
-        cmake_minimum_required(VERSION 3.5.0)
+        cmake_minimum_required(VERSION 3.5...3.26)
         project(test NONE)
         install(CODE "execute_process(
           COMMAND \\${CMAKE_COMMAND} -E sleep 0)")
@@ -352,7 +352,7 @@ def test_setup_requires_keyword_include_cmake(mocker, capsys):
     tmp_dir.join("CMakeLists.txt").write(
         textwrap.dedent(
             """
-        cmake_minimum_required(VERSION 3.5.0)
+        cmake_minimum_required(VERSION 3.5...3.26)
         project(test NONE)
         install(CODE "execute_process(
           COMMAND \\${CMAKE_COMMAND} -E sleep 0)")
@@ -420,7 +420,7 @@ def test_script_keyword(distribution_type, capsys, caplog):
         tmp_dir.join("CMakeLists.txt").write(
             textwrap.dedent(
                 """
-            cmake_minimum_required(VERSION 3.5.0)
+            cmake_minimum_required(VERSION 3.5...3.26)
             project(foo NONE)
             file(WRITE "${CMAKE_BINARY_DIR}/foo.py" "# foo.py")
             file(WRITE "${CMAKE_BINARY_DIR}/bar.py" "# bar.py")
@@ -501,7 +501,7 @@ def test_py_modules_keyword(distribution_type, capsys, caplog):
         tmp_dir.join("CMakeLists.txt").write(
             textwrap.dedent(
                 """
-            cmake_minimum_required(VERSION 3.5.0)
+            cmake_minimum_required(VERSION 3.5...3.26)
             project(foobar NONE)
             file(WRITE "${CMAKE_BINARY_DIR}/foo.py" "# foo.py")
             file(WRITE "${CMAKE_BINARY_DIR}/bar.py" "# bar.py")
@@ -724,7 +724,7 @@ def test_setup_inputs(
     src_dir.join("CMakeLists.txt").write(
         textwrap.dedent(
             """
-        cmake_minimum_required(VERSION 3.5.0)
+        cmake_minimum_required(VERSION 3.5...3.26)
         project(hybrid NONE)
         set(build_dir ${{CMAKE_BINARY_DIR}})
 
@@ -1004,7 +1004,7 @@ def test_cmake_install_into_pure_package(with_cmake_source_dir, capsys, caplog):
     cmake_src_dir.join("CMakeLists.txt").write(
         textwrap.dedent(
             """
-        cmake_minimum_required(VERSION 3.5.0)
+        cmake_minimum_required(VERSION 3.5...3.26)
         project(test NONE)
         file(WRITE "${CMAKE_BINARY_DIR}/apple.py" "# apple.py")
         file(WRITE "${CMAKE_BINARY_DIR}/banana.py" "# banana.py")
@@ -1076,7 +1076,7 @@ def test_zip_safe_default(zip_safe, mocker):
     tmp_dir.join("CMakeLists.txt").write(
         textwrap.dedent(
             """
-        cmake_minimum_required(VERSION 3.5.0)
+        cmake_minimum_required(VERSION 3.5...3.26)
         project(test NONE)
         install(CODE "execute_process(
           COMMAND \\${CMAKE_COMMAND} -E sleep 0)")

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5.0)
+cmake_minimum_required(VERSION 3.5...3.26)
 
 project(fail_with_syntax_error_cmakelists NONE)
 

@@ -93,7 +93,7 @@ def test_make(configure_with_cmake_source_dir, capfd):
         src_dir.join("CMakeLists.txt").write(
             textwrap.dedent(
                 """
-            cmake_minimum_required(VERSION 3.5.0)
+            cmake_minimum_required(VERSION 3.5...3.26)
             project(foobar NONE)
             file(WRITE "${CMAKE_BINARY_DIR}/foo.txt" "# foo")
             install(FILES "${CMAKE_BINARY_DIR}/foo.txt" DESTINATION ".")
@@ -140,7 +140,7 @@ def test_make_with_install_target(install_target, capfd):
         tmp_dir.join("CMakeLists.txt").write(
             textwrap.dedent(
                 """
-            cmake_minimum_required(VERSION 3.5.0)
+            cmake_minimum_required(VERSION 3.5...3.26)
             project(foobar NONE)
             file(WRITE "${CMAKE_BINARY_DIR}/foo.txt" "# foo")
             file(WRITE "${CMAKE_BINARY_DIR}/runtime.txt" "# runtime")
@@ -190,7 +190,7 @@ def test_configure_with_cmake_args(capfd):
         tmp_dir.join("CMakeLists.txt").write(
             textwrap.dedent(
                 """
-            cmake_minimum_required(VERSION 3.5.0)
+            cmake_minimum_required(VERSION 3.5...3.26)
             project(foobar NONE)
             # Do not complain about missing arguments passed to the main
             # project
