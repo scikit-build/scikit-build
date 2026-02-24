@@ -8,11 +8,13 @@ from pathlib import Path
 
 import nox
 
-nox.needs_version = ">=2024.3.2"
+nox.needs_version = ">=2025.02.09"
 nox.options.default_venv_backend = "uv|virtualenv"
-nox.options.sessions = ["lint", "tests"]
 
-PYTHON_ALL_VERSIONS = ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13", "pypy3.8", "pypy3.9", "pypy3.10", "pypy3.11"]
+PYPROJECT = nox.project.load_toml("pyproject.toml")
+PYTHON_VERSIONS = nox.project.python_versions(PYPROJECT)
+
+PYTHON_ALL_VERSIONS = [*PYTHON_VERSIONS, "pypy3.8", "pypy3.9", "pypy3.10", "pypy3.11"]
 MSVC_ALL_VERSIONS = {"2017", "2019", "2022"}
 
 
@@ -53,7 +55,7 @@ def tests(session: nox.Session) -> None:
     session.run("pytest", *posargs, env=env)
 
 
-@nox.session
+@nox.session(default=False)
 def pylint(session):
     """
     Run PyLint.
@@ -63,7 +65,7 @@ def pylint(session):
     session.run("pylint", "skbuild", *session.posargs)
 
 
-@nox.session
+@nox.session(default=False)
 def docs(session):
     """
     Build the docs. Use "-R" to rebuild faster. Check options with "-- -h".
@@ -84,7 +86,7 @@ def docs(session):
         session.run("python", "-m", "http.server", "8000", "-d", "_build/html")
 
 
-@nox.session
+@nox.session(default=False)
 def build(session):
     """
     Make an SDist and a wheel.
@@ -94,7 +96,7 @@ def build(session):
     session.run("python", "-m", "build")
 
 
-@nox.session(reuse_venv=True)
+@nox.session(reuse_venv=True, default=False)
 def build_api_docs(session: nox.Session) -> None:
     """
     Build (regenerate) API docs.
@@ -113,7 +115,7 @@ def build_api_docs(session: nox.Session) -> None:
     )
 
 
-@nox.session(reuse_venv=True)
+@nox.session(reuse_venv=True, default=False)
 def downstream(session: nox.Session) -> None:
     """
     Build a downstream project.
