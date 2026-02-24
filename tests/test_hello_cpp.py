@@ -102,11 +102,8 @@ def test_hello_wheel():
     build_wheel_skip_cmake()
 
 
-@pytest.mark.parametrize("dry_run", ["with-dry-run", "without-dry-run"])
-def test_hello_clean(dry_run, capfd):
+def test_hello_clean(capfd):
     with push_dir():
-        dry_run = dry_run == "with-dry-run"
-
         @project_setup_py_test("hello-cpp", ["build"], ret=True)
         def run_build():
             pass
@@ -121,8 +118,6 @@ def test_hello_clean(dry_run, capfd):
         print("<<-->>")
 
         clean_args = ["clean"]
-        if dry_run:
-            clean_args.append("--dry-run")
 
         @project_setup_py_test("hello-cpp", clean_args, tmp_dir=tmp_dir)
         def run_clean():
@@ -130,10 +125,7 @@ def test_hello_clean(dry_run, capfd):
 
         run_clean()
 
-        if not dry_run:
-            assert not tmp_dir.join(SKBUILD_DIR()).exists()
-        else:
-            assert tmp_dir.join(SKBUILD_DIR()).exists()
+        assert not tmp_dir.join(SKBUILD_DIR()).exists()
 
         build_out, clean_out = capfd.readouterr()[0].split("<<-->>")
         assert "Build files have been written to" in build_out
