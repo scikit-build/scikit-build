@@ -24,7 +24,7 @@ pytest.register_assert_rewrite("tests.pytest_helpers")
 
 @pytest.fixture(scope="session")
 def pep518_wheelhouse(tmp_path_factory: pytest.TempPathFactory) -> Path:
-    numpy = ["numpy"] if sys.version_info < (3, 13) else []
+    numpy = ["numpy"] if sys.version_info < (3, 15) and sys.platform != "cygwin" else []
     wheelhouse = tmp_path_factory.mktemp("wheelhouse")
     subprocess.run(
         [
