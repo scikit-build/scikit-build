@@ -9,8 +9,6 @@ from __future__ import annotations
 import glob
 import os
 
-import pytest
-
 from skbuild.constants import CMAKE_BUILD_DIR, SKBUILD_DIR
 from skbuild.utils import push_dir
 
@@ -162,25 +160,3 @@ def test_hello_cleans(capfd, caplog):
         txt2 = caplog.text
         msg = capfd.readouterr().out + txt2
         assert "running clean" in msg
-
-
-@pytest.mark.deprecated
-@project_setup_py_test("hello-cpp", ["develop"])
-def test_hello_develop():
-    for expected_file in [
-        # These files are the "regular" source files
-        "setup.py",
-        "CMakeLists.txt",
-        "bonjour/__init__.py",
-        "bonjourModule.py",
-        "hello/__init__.py",
-        "hello/__main__.py",
-        "hello/_hello.cxx",
-        "hello/CMakeLists.txt",
-        # These files are "generated" by CMake and
-        # are copied from CMAKE_INSTALL_DIR
-        f"hello/_hello{get_ext_suffix()}",
-        "hello/world.py",
-        "helloModule.py",
-    ]:
-        assert os.path.exists(expected_file)
