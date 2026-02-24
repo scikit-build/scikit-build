@@ -447,7 +447,7 @@ def setup(
     try:
         _check_skbuild_parameters(cmake_install_dir, cmake_source_dir)
     except SKBuildError as ex:
-        import traceback  # pylint: disable=import-outside-toplevel
+        import traceback  # noqa: PLC0415
 
         print("Traceback (most recent call last):", file=sys.stderr)
         traceback.print_tb(sys.exc_info()[2])
@@ -505,7 +505,7 @@ def setup(
             print('Arguments following a "--" are passed directly to CMake (e.g. -DMY_VAR:BOOL=TRUE).')
             print('Arguments following a second "--" are passed directly to the build tool.')
             print(flush=True)
-        return setuptools.setup(**kw)
+        return setuptools.setup(**kw)  # type: ignore[no-any-return]
 
     developer_mode = "develop" in commands or build_ext_inplace
 
@@ -530,10 +530,7 @@ def setup(
     # Setting target from command takes precedence
     # cmake_install_target_from_setup has the default 'install',
     # so cmake_install_target would never be empty.
-    if cmake_install_target_from_command:
-        cmake_install_target = cmake_install_target_from_command
-    else:
-        cmake_install_target = cmake_install_target_from_setup
+    cmake_install_target = cmake_install_target_from_command or cmake_install_target_from_setup
 
     # Parse CMAKE_ARGS
     if "CMAKE_ARGS" in os.environ:
@@ -622,7 +619,7 @@ def setup(
 
                 # A local "cmake" folder can be imported by mistake, keep going if it is
                 # pylint: disable-next=import-outside-toplevel
-                from cmake import CMAKE_BIN_DIR
+                from cmake import CMAKE_BIN_DIR  # noqa: PLC0415
 
                 for executable_name in ("cmake", "cpack", "ctest"):
                     executable = os.path.join(CMAKE_BIN_DIR, executable_name)
@@ -673,7 +670,7 @@ def setup(
     except SKBuildGeneratorNotFoundError as ex:
         sys.exit(ex)  # type: ignore[arg-type]
     except SKBuildError as ex:
-        import traceback  # pylint: disable=import-outside-toplevel
+        import traceback  # noqa: PLC0415
 
         print("Traceback (most recent call last):", file=sys.stderr)
         traceback.print_tb(sys.exc_info()[2])
@@ -776,7 +773,7 @@ def setup(
 
     print(flush=True)
 
-    return setuptools.setup(**kw)
+    return setuptools.setup(**kw)  # type: ignore[no-any-return]
 
 
 def _collect_package_prefixes(package_dir: dict[str, str], packages: list[Any | str]) -> list[Any | tuple[str, str]]:

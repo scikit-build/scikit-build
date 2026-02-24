@@ -67,7 +67,7 @@ n
         supported_vs_years = [("2022", "v144"), ("2022", "v143"), ("2019", "v142"), ("2017", "v141")]
 
         try:
-            import ninja  # pylint: disable=import-outside-toplevel
+            import ninja  # noqa: PLC0415
 
             ninja_executable_path = os.path.join(ninja.BIN_DIR, "ninja")
             ninja_args = [f"-DCMAKE_MAKE_PROGRAM:FILEPATH={ninja_executable_path}"]

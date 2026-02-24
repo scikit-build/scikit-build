@@ -40,7 +40,7 @@ def get_cmake_version(cmake_path: os.PathLike[str] | str) -> Version:
 
 def _get_cmake_executable() -> str:
     with contextlib.suppress(ImportError):
-        from cmake import CMAKE_BIN_DIR  # pylint: disable=import-outside-toplevel
+        from cmake import CMAKE_BIN_DIR  # noqa: PLC0415
 
         path = f"{CMAKE_BIN_DIR}/cmake"
         if Path(f"{path}.exe").is_file():

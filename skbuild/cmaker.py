@@ -245,7 +245,7 @@ class CMaker:
         ninja_executable_path = None
         if generator.name == "Ninja":
             with contextlib.suppress(ImportError):
-                import ninja  # pylint: disable=import-outside-toplevel
+                import ninja  # noqa: PLC0415
 
                 ninja_executable_path = os.path.join(ninja.BIN_DIR, "ninja")
 
@@ -301,7 +301,7 @@ class CMaker:
                 cmd.append(f"{prefix}_FIND_IMPLEMENTATIONS:STRING=PyPy")
 
             with contextlib.suppress(ImportError):
-                import numpy as np  # pylint: disable=import-outside-toplevel
+                import numpy as np  # noqa: PLC0415
 
                 cmd.append(f"{prefix}_NumPy_INCLUDE_DIRS:PATH=" + np.get_include())
 
