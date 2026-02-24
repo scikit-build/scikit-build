@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5.0)
+cmake_minimum_required(VERSION 3.5...3.26)
 project(foobar NONE)
 
 # Sanskrit for "I can eat glass, it does not hurt me"

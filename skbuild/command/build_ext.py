@@ -35,6 +35,6 @@ class build_ext(set_build_base_mixin, _build_ext):
             # Always copy, even if source is older than destination, to ensure
             # that the right extensions for the current Python/platform are
             # used.
-            copy_file(src_filename, dest_filename, verbose=self.verbose, dry_run=self.dry_run)  # type: ignore[attr-defined]
+            copy_file(src_filename, dest_filename, verbose=self.verbose)  # type: ignore[attr-defined]
             if ext._needs_stub:
                 self.write_stub(package_dir or os.curdir, ext, True)

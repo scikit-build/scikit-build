@@ -11,5 +11,4 @@ setup(
     packages=["hello", "bonjour"],
     # package_dir={"hello_fortran": "hello"},
     cmake_languages=("C", "Fortran"),
-    cmake_minimum_required_version="3.5",
 )

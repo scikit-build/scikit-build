@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5.0)
+cmake_minimum_required(VERSION 3.5...3.26)
 
 project(test_include_exclude_data_with_base NONE)
 
