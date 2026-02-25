@@ -57,7 +57,7 @@ jobs:
     - name: Setup nox
       uses: wntrblm/nox@2026.02.09
       with:
-        python-versions: "3.8,3.9,3.10,3.11,3.12,3.13"
+        python-versions: "3.8,3.9,3.10,3.11,3.12,3.13,3.14"
 
     # We check all Python's on Linux, because it's fast.
     # We check minimum Python and maximum Python on all OS's.
@@ -77,6 +77,9 @@ jobs:
       if: runner.os == 'Linux'
     - name: Test on 🐍 3.13
       run: nox -s tests-3.13 -- --cov --cov-report=xml --cov-report=term --cov-append --durations=20
+      if: runner.os == 'Linux'
+    - name: Test on 🐍 3.14
+      run: nox -s tests-3.14 -- --cov --cov-report=xml --cov-report=term --cov-append --durations=20
 
     - name: Upload coverage report
       uses: codecov/codecov-action@v5
@@ -176,7 +179,7 @@ jobs:
     if: always()
     timeout-minutes: 1
     needs: [tests, tests-pypy, dist]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     steps:
      - name: Decide whether the needed jobs succeeded or failed
        uses: re-actors/alls-green@release/v1
