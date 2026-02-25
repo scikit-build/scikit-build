@@ -161,6 +161,8 @@ messages_control.disable = [
   "wrong-import-position",
   "global-statement", # Covered by Ruff
   "unused-import", # Covered by Ruff
+  "import-outside-toplevel",  # Covered by Ruff
+  "too-many-positional-arguments",
 ]
 
 
@@ -229,8 +231,8 @@ isort.force-to-top = ["setuptools"]
 isort.required-imports = ["from __future__ import annotations"]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**" = ["T20"]
-"noxfile.py" = ["T20"]
+"tests/**" = ["T20", "PLC0415"]
+"noxfile.py" = ["T20", "PLC0415"]
 "*.pyx" = ["I"]
 
 

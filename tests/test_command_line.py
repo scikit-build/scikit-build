@@ -25,7 +25,7 @@ from . import (
 
 @project_setup_py_test("hello-no-language", ["--help"], disable_languages_test=True)
 def test_help(capsys):
-    out, err = capsys.readouterr()
+    out, _ = capsys.readouterr()
     assert "scikit-build options" not in out
     assert "Global options:" in out
     assert "usage:" in out
@@ -33,7 +33,7 @@ def test_help(capsys):
 
 @project_setup_py_test("hello-no-language", ["--help-commands"], disable_languages_test=True)
 def test_help_commands(capsys):
-    out, err = capsys.readouterr()
+    out, _ = capsys.readouterr()
     assert "scikit-build options" in out
     assert "--build-type" in out
     assert "Global options:" not in out
@@ -42,7 +42,7 @@ def test_help_commands(capsys):
 
 @project_setup_py_test("hello-no-language", ["--author", "--name"], disable_languages_test=True)
 def test_metadata_display(capsys):
-    out, err = capsys.readouterr()
+    out, _ = capsys.readouterr()
     assert "scikit-build options" not in out
     assert "Global options:" not in out
     assert "usage:" not in out

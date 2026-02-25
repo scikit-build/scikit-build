@@ -447,7 +447,7 @@ def setup(
     try:
         _check_skbuild_parameters(cmake_install_dir, cmake_source_dir)
     except SKBuildError as ex:
-        import traceback  # pylint: disable=import-outside-toplevel
+        import traceback  # noqa: PLC0415
 
         print("Traceback (most recent call last):", file=sys.stderr)
         traceback.print_tb(sys.exc_info()[2])
@@ -514,10 +514,10 @@ def setup(
     package_data = {k: copy.copy(v) for k, v in kw.get("package_data", {}).items()}
 
     py_modules = kw.get("py_modules", [])
-    new_py_modules = {py_module: False for py_module in py_modules}
+    new_py_modules = dict.fromkeys(py_modules, False)
 
     scripts = kw.get("scripts", [])
-    new_scripts = {script: False for script in scripts}
+    new_scripts = dict.fromkeys(scripts, False)
 
     data_files = {(parent_dir or "."): set(file_list) for parent_dir, file_list in kw.get("data_files", [])}
 
@@ -530,10 +530,7 @@ def setup(
     # Setting target from command takes precedence
     # cmake_install_target_from_setup has the default 'install',
     # so cmake_install_target would never be empty.
-    if cmake_install_target_from_command:
-        cmake_install_target = cmake_install_target_from_command
-    else:
-        cmake_install_target = cmake_install_target_from_setup
+    cmake_install_target = cmake_install_target_from_command or cmake_install_target_from_setup
 
     # Parse CMAKE_ARGS
     if "CMAKE_ARGS" in os.environ:
@@ -622,7 +619,7 @@ def setup(
 
                 # A local "cmake" folder can be imported by mistake, keep going if it is
                 # pylint: disable-next=import-outside-toplevel
-                from cmake import CMAKE_BIN_DIR
+                from cmake import CMAKE_BIN_DIR  # noqa: PLC0415
 
                 for executable_name in ("cmake", "cpack", "ctest"):
                     executable = os.path.join(CMAKE_BIN_DIR, executable_name)
@@ -673,7 +670,7 @@ def setup(
     except SKBuildGeneratorNotFoundError as ex:
         sys.exit(ex)  # type: ignore[arg-type]
     except SKBuildError as ex:
-        import traceback  # pylint: disable=import-outside-toplevel
+        import traceback  # noqa: PLC0415
 
         print("Traceback (most recent call last):", file=sys.stderr)
         traceback.print_tb(sys.exc_info()[2])

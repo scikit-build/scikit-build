@@ -15,7 +15,7 @@ class UnixPlatform(abstract.CMakePlatform):
     def __init__(self) -> None:
         super().__init__()
         try:
-            import ninja  # pylint: disable=import-outside-toplevel
+            import ninja  # noqa: PLC0415
 
             ninja_executable_path = os.path.join(ninja.BIN_DIR, "ninja")
             ninja_args = [f"-DCMAKE_MAKE_PROGRAM:FILEPATH={ninja_executable_path}"]

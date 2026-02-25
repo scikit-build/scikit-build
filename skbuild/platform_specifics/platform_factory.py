@@ -15,38 +15,38 @@ def get_platform() -> abstract.CMakePlatform:
     this_platform = platform.system().lower()
 
     if this_platform == "windows":
-        from . import windows
+        from . import windows  # noqa: PLC0415
 
         return windows.WindowsPlatform()
 
     # Some flexibility based on what emcripten distros decide to call themselves
     if this_platform.startswith(("linux", "emscripten", "pyodide", "android")):
-        from . import linux
+        from . import linux  # noqa: PLC0415
 
         return linux.LinuxPlatform()
 
     if this_platform.startswith("cygwin"):
-        from . import cygwin
+        from . import cygwin  # noqa: PLC0415
 
         return cygwin.CygwinPlatform()
 
     if this_platform in ["darwin", "ios"]:
-        from . import osx
+        from . import osx  # noqa: PLC0415
 
         return osx.OSXPlatform()
 
     if this_platform in {"freebsd", "netbsd", "os400", "openbsd"}:
-        from . import bsd
+        from . import bsd  # noqa: PLC0415
 
         return bsd.BSDPlatform()
 
     if this_platform == "sunos":
-        from . import sunos
+        from . import sunos  # noqa: PLC0415
 
         return sunos.SunOSPlatform()
 
     if this_platform == "aix":
-        from . import aix
+        from . import aix  # noqa: PLC0415
 
         return aix.AIXPlatform()
 
