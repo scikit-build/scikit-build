@@ -10,10 +10,44 @@ Next Release
 
 We are hard at work on the next generation of scikit-build `scikit-build-core
 <https://github.com/scikit-build/scikit-build-core>`_, which will eventually
-replace the backend here. We are also continuing to fix bugs, make improvements,
-and backport changes here.
+replace the backend here. We are also continuing to fix bugs, make
+improvements, and backport changes here, but new and existing projects are
+encouraged to switch.
 
 .. START-BRIEF-CHANGELOG
+
+Scikit-build 0.19.0
+===================
+
+This release updates for changes in setuptools and CMake 4, and drops Python 3.7.
+
+Features
+--------
+
+* Drop Python 3.7 in :pr:`1134`
+
+
+Bug fixes
+---------
+
+* Update for newer setuptools in :pr:`1120`
+* ``setuptools_wrap.py``: parse ``CMAKE_ARGS`` with ``shlex.split`` like elsewhere by :user:`haampie` in :pr:`1126`
+* Drop ``dry-run`` (removed in setuptools) in :pr:`1166`
+* Ensure generic f2py executable is looked up first by :user:`smiet` in :pr:`1111`
+
+Testing
+-------
+
+* Support Python 3.14 in CI in :pr:`1167`
+* pytest ``log_level`` is better than ``log_cli_level`` in :pr:`1164`
+
+
+Miscellaneous
+-------------
+
+* Bot suffix now required for changelog filtering in :pr:`1168`
+
+
 
 Scikit-build 0.18.1
 ===================
