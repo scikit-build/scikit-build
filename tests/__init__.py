@@ -8,7 +8,6 @@ try:
 except ImportError:
     import distutils  # Python < 3.10
 
-import functools
 import os
 import pathlib
 import re
@@ -33,7 +32,6 @@ __all__ = [
     "initialize_git_repo_and_commit",
     "list_ancestors",
     "prepare_project",
-    "project_setup_py_test",
     "push_dir",
     "push_env",
 ]
@@ -241,32 +239,6 @@ def execute_setup_py(project_dir, setup_args, disable_languages_test=False):
                     exec(setup_code)
 
         yield
-
-
-def project_setup_py_test(project, setup_args, tmp_dir=None, verbose_git=True, disable_languages_test=False, ret=False):
-    def dec(fun):
-        @functools.wraps(fun)
-        def wrapped(*iargs, **ikwargs):
-            if wrapped.tmp_dir is None:  # type: ignore[attr-defined]
-                wrapped.tmp_dir = _tmpdir(fun.__name__)  # type: ignore[attr-defined]
-                prepare_project(wrapped.project, wrapped.tmp_dir)  # type: ignore[attr-defined]
-                initialize_git_repo_and_commit(wrapped.tmp_dir, verbose=wrapped.verbose_git)  # type: ignore[attr-defined]
-
-            with execute_setup_py(wrapped.tmp_dir, wrapped.setup_args, disable_languages_test=disable_languages_test):  # type: ignore[attr-defined]
-                result2 = fun(*iargs, **ikwargs)
-
-            if ret:
-                return wrapped.tmp_dir, result2  # type: ignore[attr-defined]
-            return None
-
-        wrapped.project = project  # type: ignore[attr-defined]
-        wrapped.setup_args = setup_args  # type: ignore[attr-defined]
-        wrapped.tmp_dir = tmp_dir  # type: ignore[attr-defined]
-        wrapped.verbose_git = verbose_git  # type: ignore[attr-defined]
-
-        return wrapped
-
-    return dec
 
 
 def get_cmakecache_variables(cmakecache):

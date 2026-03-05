@@ -1,16 +1,14 @@
 from __future__ import annotations
 
-from . import project_setup_py_test
 
-
-def test_install_command(capfd, monkeypatch):
-    @project_setup_py_test("issue-707-nested-packages", ["build_ext", "--inplace"], disable_languages_test=True)
-    def build():
+def test_install_command(capfd, monkeypatch, project_setup_py_test):
+    with project_setup_py_test(
+        "issue-707-nested-packages", ["build_ext", "--inplace"], disable_languages_test=True
+    ) as tmp_dir:
         pass
 
-    build()
     capfd.readouterr()
-    monkeypatch.syspath_prepend(build.tmp_dir)
+    monkeypatch.syspath_prepend(tmp_dir)
 
     # Verify that both
     import hello_nested

@@ -8,12 +8,10 @@ in setup.py works.
 
 from __future__ import annotations
 
-from . import project_setup_py_test
 
-
-@project_setup_py_test("test-cmake-target", ["build"], disable_languages_test=True)
-def test_cmake_target_build(capsys):
-    out, err = capsys.readouterr()
-    dist_warning = "Unknown distribution option: 'cmake_target'"
-    assert dist_warning not in err
-    assert dist_warning not in out
+def test_cmake_target_build(capsys, project_setup_py_test):
+    with project_setup_py_test("test-cmake-target", ["build"], disable_languages_test=True):
+        out, err = capsys.readouterr()
+        dist_warning = "Unknown distribution option: 'cmake_target'"
+        assert dist_warning not in err
+        assert dist_warning not in out

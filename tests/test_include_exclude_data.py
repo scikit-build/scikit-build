@@ -7,7 +7,6 @@ import pytest
 
 from skbuild.utils import to_unix_path
 
-from . import project_setup_py_test
 from .pytest_helpers import check_sdist_content, check_wheel_content
 
 
@@ -71,23 +70,23 @@ def check_sdist(proj, base=""):
     check_sdist_content(sdist_archive, proj, expected_content, package_dir=base)
 
 
-@project_setup_py_test("test-include-exclude-data", ["bdist_wheel"])
-def test_include_exclude_data():
-    check_whls("test_include_exclude_data-0.1.0")
+def test_include_exclude_data(project_setup_py_test):
+    with project_setup_py_test("test-include-exclude-data", ["bdist_wheel"]):
+        check_whls("test_include_exclude_data-0.1.0")
 
 
 @pytest.mark.nosetuptoolsscm
-@project_setup_py_test("test-include-exclude-data", ["sdist"])
-def test_hello_sdist():
-    check_sdist("test_include_exclude_data-0.1.0")
+def test_hello_sdist(project_setup_py_test):
+    with project_setup_py_test("test-include-exclude-data", ["sdist"]):
+        check_sdist("test_include_exclude_data-0.1.0")
 
 
-@project_setup_py_test("test-include-exclude-data-with-base", ["bdist_wheel"])
-def test_include_exclude_data_with_base():
-    check_whls("test_include_exclude_data_with_base-0.1.0")
+def test_include_exclude_data_with_base(project_setup_py_test):
+    with project_setup_py_test("test-include-exclude-data-with-base", ["bdist_wheel"]):
+        check_whls("test_include_exclude_data_with_base-0.1.0")
 
 
 @pytest.mark.nosetuptoolsscm
-@project_setup_py_test("test-include-exclude-data-with-base", ["sdist"])
-def test_hello_sdist_with_base():
-    check_sdist("test_include_exclude_data_with_base-0.1.0", base="src")
+def test_hello_sdist_with_base(project_setup_py_test):
+    with project_setup_py_test("test-include-exclude-data-with-base", ["sdist"]):
+        check_sdist("test_include_exclude_data_with_base-0.1.0", base="src")

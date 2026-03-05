@@ -19,7 +19,7 @@ from skbuild.exceptions import SKBuildError
 from skbuild.platform_specifics import get_platform
 from skbuild.platform_specifics.windows import VS_YEAR_TO_VERSION, find_visual_studio
 
-from . import get_cmakecache_variables, project_setup_py_test, push_dir, push_env
+from . import get_cmakecache_variables, push_dir, push_env
 
 
 def test_generator_selection():
@@ -76,7 +76,7 @@ def test_generator_selection():
 @pytest.mark.parametrize(
     ("generator", "expected_make_program"), [("NMake Makefiles", "nmake"), ("Unix Makefiles", "make")]
 )
-def test_generator(generator, expected_make_program):
+def test_generator(generator, expected_make_program, project_setup_py_test):
     generator_platform = {"NMake Makefiles": ["windows"], "Unix Makefiles": ["darwin", "linux"]}
     assert generator in generator_platform
 
@@ -87,12 +87,9 @@ def test_generator(generator, expected_make_program):
     if shutil.which(expected_make_program) is None:
         pytest.skip(f"{expected_make_program} not available")
 
-    @project_setup_py_test("hello-cpp", ["build"], ret=True)
-    def run_build():
-        pass
-
     with push_env(CMAKE_GENERATOR=generator):
-        tmp_dir = run_build()[0]
+        with project_setup_py_test("hello-cpp", ["build"]) as tmp_dir:
+            pass
         cmakecache = tmp_dir / CMAKE_BUILD_DIR() / "CMakeCache.txt"
         assert cmakecache.exists()
         variables = get_cmakecache_variables(str(cmakecache))
@@ -107,19 +104,16 @@ def test_generator(generator, expected_make_program):
         ["--", "-G", "invalid"],
     ],
 )
-def test_invalid_generator(generator_args):
+def test_invalid_generator(generator_args, project_setup_py_test):
     with push_dir():
         build_args = ["build"]
         build_args.extend(generator_args)
 
-        @project_setup_py_test("hello-no-language", build_args, disable_languages_test=True)
-        def run():
-            pass
-
         failed = False
         message = ""
         try:
-            run()
+            with project_setup_py_test("hello-no-language", build_args, disable_languages_test=True):
+                pass
         except SystemExit as e:
             failed = isinstance(e.code, SKBuildError)
             message = str(e)
@@ -153,7 +147,7 @@ def test_platform_windows_find_visual_studio(vs_year, capsys):
 
 
 @pytest.mark.skipif(sys.platform != "win32", reason="Requires Windows")
-def test_toolset():
+def test_toolset(project_setup_py_test):
     has_vs_2017 = find_visual_studio(vs_version=VS_YEAR_TO_VERSION["2017"])
     if not has_vs_2017:
         pytest.skip("Visual Studio 15 2017 is not found")
@@ -164,11 +158,8 @@ def test_toolset():
     if arch == "64bit":
         vs_generator += " Win64"
 
-    @project_setup_py_test("hello-cpp", ["build", "-G", vs_generator], ret=True)
-    def run_build():
+    with project_setup_py_test("hello-cpp", ["build", "-G", vs_generator]) as tmp_dir:
         pass
-
-    tmp_dir = run_build()[0]
 
     cmakecache = tmp_dir / CMAKE_BUILD_DIR() / "CMakeCache.txt"
     variables = get_cmakecache_variables(str(cmakecache))
