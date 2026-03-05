@@ -200,7 +200,7 @@ def prepare_project(project, tmp_project_dir, force=False):
     if not any(tmp_project_dir.iterdir()) or force:
         _copy_dir(tmp_project_dir, os.path.join(SAMPLES_DIR, project))
 
-        version_actual = pathlib.Path(str(tmp_project_dir.join("VERSION.actual")))
+        version_actual = tmp_project_dir / "VERSION.actual"
         version = version_actual.with_name("VERSION")
         if version_actual.exists() and not version.exists():
             version.symlink_to(version_actual.name)
