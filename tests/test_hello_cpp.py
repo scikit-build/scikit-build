@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import glob
 import os
+from pathlib import Path
 
 from skbuild.constants import CMAKE_BUILD_DIR, SKBUILD_DIR
 from skbuild.utils import push_dir
@@ -83,16 +84,17 @@ def test_hello_wheel():
         assert len(whls) == 1
         check_wheel_content(whls[0], expected_distribution_name, expected_content)
         os.remove(whls[0])
-        assert not os.path.exists(whls[0])
+        assert not Path(whls[0]).exists()
 
-        assert os.path.exists(os.path.join(CMAKE_BUILD_DIR(), "CMakeCache.txt"))
-        os.remove(os.path.join(CMAKE_BUILD_DIR(), "CMakeCache.txt"))
+        cmake_cache = Path(CMAKE_BUILD_DIR()) / "CMakeCache.txt"
+        assert cmake_cache.exists()
+        cmake_cache.unlink()
 
     tmp_dir = build_wheel()[0]
 
     @project_setup_py_test("hello-cpp", ["--skip-cmake", "bdist_wheel"], tmp_dir=tmp_dir)
     def build_wheel_skip_cmake():
-        assert not os.path.exists(os.path.join(CMAKE_BUILD_DIR(), "CMakeCache.txt"))
+        assert not (Path(CMAKE_BUILD_DIR()) / "CMakeCache.txt").exists()
         whls = glob.glob("dist/*.whl")
         assert len(whls) == 1
         check_wheel_content(whls[0], expected_distribution_name, expected_content)
@@ -109,7 +111,7 @@ def test_hello_clean(capfd):
 
         tmp_dir = run_build()[0]
 
-        assert tmp_dir.join(SKBUILD_DIR()).exists()
+        assert (tmp_dir / SKBUILD_DIR()).exists()
 
         # XXX Since using capfd.disabled() context manager prevents
         # the output from being captured after it exits, we display
@@ -124,7 +126,7 @@ def test_hello_clean(capfd):
 
         run_clean()
 
-        assert not tmp_dir.join(SKBUILD_DIR()).exists()
+        assert not (tmp_dir / SKBUILD_DIR()).exists()
 
         build_out, clean_out = capfd.readouterr()[0].split("<<-->>")
         assert "Build files have been written to" in build_out
@@ -135,7 +137,7 @@ def test_hello_cleans(capfd, caplog):
     with push_dir():
         tmp_dir = _tmpdir("test_hello_cleans")
 
-        _copy_dir(tmp_dir, os.path.join(SAMPLES_DIR, "hello-cpp"))
+        _copy_dir(tmp_dir, SAMPLES_DIR / "hello-cpp")
 
         @project_setup_py_test("hello-cpp", ["build"], tmp_dir=tmp_dir)
         def run_build():

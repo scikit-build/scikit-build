@@ -10,6 +10,7 @@ import os
 import platform
 import shutil
 import sys
+from pathlib import Path
 
 import pytest
 
@@ -43,7 +44,7 @@ def test_generator_selection():
 
         # As of Dec 2016, this is available only for VS 9.0
         has_vs_for_python_vcvars = any(
-            os.path.exists(os.path.expanduser(path_pattern % vs_version))
+            Path(path_pattern % vs_version).expanduser().exists()
             for path_pattern in [
                 "~/AppData/Local/Programs/Common/Microsoft/Visual C++ for Python/%.1f/vcvarsall.bat",
                 "C:/Program Files (x86)/Common Files/Microsoft/Visual C++ for Python/%.1f/vcvarsall.bat",
@@ -92,7 +93,7 @@ def test_generator(generator, expected_make_program):
 
     with push_env(CMAKE_GENERATOR=generator):
         tmp_dir = run_build()[0]
-        cmakecache = tmp_dir.join(CMAKE_BUILD_DIR()).join("CMakeCache.txt")
+        cmakecache = tmp_dir / CMAKE_BUILD_DIR() / "CMakeCache.txt"
         assert cmakecache.exists()
         variables = get_cmakecache_variables(str(cmakecache))
         make_program = variables["CMAKE_MAKE_PROGRAM"][1] if "CMAKE_MAKE_PROGRAM" in variables else ""
@@ -146,7 +147,7 @@ def test_platform_windows_find_visual_studio(vs_year, capsys):
     if valid_path_expected:
         with capsys.disabled():
             print(f"\nFound VS {vs_year} @ {vs_path}")
-        assert os.path.exists(vs_path)
+        assert Path(vs_path).exists()
     else:
         assert not vs_path
 
@@ -169,7 +170,7 @@ def test_toolset():
 
     tmp_dir = run_build()[0]
 
-    cmakecache = tmp_dir.join(CMAKE_BUILD_DIR()).join("CMakeCache.txt")
+    cmakecache = tmp_dir / CMAKE_BUILD_DIR() / "CMakeCache.txt"
     variables = get_cmakecache_variables(str(cmakecache))
 
     generator = variables["CMAKE_GENERATOR"][1]

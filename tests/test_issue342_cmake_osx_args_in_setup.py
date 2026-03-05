@@ -141,7 +141,7 @@ def test_cmake_args_keyword_osx_default(
 ):
     tmp_dir = _tmpdir("cmake_args_keyword_osx_default")
 
-    tmp_dir.join("setup.py").write(
+    (tmp_dir / "setup.py").write_text(
         textwrap.dedent(
             """
         from skbuild import setup
@@ -156,7 +156,7 @@ def test_cmake_args_keyword_osx_default(
         """.format(cmake_args=",".join([f"'{arg}'" for arg in keyword_cmake_args]))
         )
     )
-    tmp_dir.join("CMakeLists.txt").write(
+    (tmp_dir / "CMakeLists.txt").write_text(
         textwrap.dedent(
             """
         message(FATAL_ERROR "This error message should not be displayed")

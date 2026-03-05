@@ -6,9 +6,9 @@ Tests for CMaker functionality.
 
 from __future__ import annotations
 
-import os
 import re
 import textwrap
+from pathlib import Path
 
 import pytest
 
@@ -31,13 +31,13 @@ def test_get_python_version():
 def test_get_python_include_dir():
     python_include_dir = CMaker.get_python_include_dir(CMaker.get_python_version())
     assert python_include_dir
-    assert os.path.exists(python_include_dir)
+    assert Path(python_include_dir).exists()
 
 
 def test_get_python_library():
     python_library = CMaker.get_python_library(CMaker.get_python_version())
     assert python_library
-    assert os.path.exists(python_library)
+    assert Path(python_library).exists()
 
 
 def test_cmake_executable():
@@ -77,7 +77,7 @@ def test_make_without_build_dir_fails():
 
 def test_make_without_configure_fails(capfd):
     src_dir = _tmpdir("test_make_without_configure_fails")
-    src_dir.ensure(CMAKE_BUILD_DIR(), dir=1)
+    (src_dir / CMAKE_BUILD_DIR()).mkdir(parents=True, exist_ok=True)
     with push_dir(str(src_dir)), pytest.raises(SKBuildError) as excinfo:
         CMaker().make()
     _, err = capfd.readouterr()
@@ -89,8 +89,9 @@ def test_make_without_configure_fails(capfd):
 def test_make(configure_with_cmake_source_dir, capfd):
     tmp_dir = _tmpdir("test_make")
     with push_dir(str(tmp_dir)):
-        src_dir = tmp_dir.ensure("SRC", dir=1)
-        src_dir.join("CMakeLists.txt").write(
+        src_dir = tmp_dir / "SRC"
+        src_dir.mkdir(parents=True, exist_ok=True)
+        (src_dir / "CMakeLists.txt").write_text(
             textwrap.dedent(
                 """
             cmake_minimum_required(VERSION 3.5...3.26)
@@ -103,9 +104,12 @@ def test_make(configure_with_cmake_source_dir, capfd):
             """
             )
         )
-        src_dir.ensure(CMAKE_BUILD_DIR(), dir=1)
+        (src_dir / CMAKE_BUILD_DIR()).mkdir(parents=True, exist_ok=True)
 
-        with push_dir(str(src_dir) if not configure_with_cmake_source_dir else str(tmp_dir.ensure("BUILD", dir=1))):
+        if configure_with_cmake_source_dir:
+            build_dir = tmp_dir / "BUILD"
+            build_dir.mkdir(parents=True, exist_ok=True)
+        with push_dir(str(src_dir) if not configure_with_cmake_source_dir else str(build_dir)):
             cmkr = CMaker()
             config_kwargs = {}
             if configure_with_cmake_source_dir:
@@ -137,7 +141,7 @@ def test_make(configure_with_cmake_source_dir, capfd):
 def test_make_with_install_target(install_target, capfd):
     tmp_dir = _tmpdir("test_make_with_install_target")
     with push_dir(str(tmp_dir)):
-        tmp_dir.join("CMakeLists.txt").write(
+        (tmp_dir / "CMakeLists.txt").write_text(
             textwrap.dedent(
                 """
             cmake_minimum_required(VERSION 3.5...3.26)
@@ -187,7 +191,7 @@ def test_make_with_install_target(install_target, capfd):
 def test_configure_with_cmake_args(capfd):
     tmp_dir = _tmpdir("test_configure_with_cmake_args")
     with push_dir(str(tmp_dir)):
-        tmp_dir.join("CMakeLists.txt").write(
+        (tmp_dir / "CMakeLists.txt").write_text(
             textwrap.dedent(
                 """
             cmake_minimum_required(VERSION 3.5...3.26)
@@ -202,7 +206,7 @@ def test_configure_with_cmake_args(capfd):
             cmkr = CMaker()
             cmkr.configure(clargs=["-DCMAKE_EXPECTED_FOO:STRING=foo", "-DCMAKE_EXPECTED_BAR:STRING=bar"], cleanup=False)
 
-        cmakecache = tmp_dir.join("_cmake_test_compile", "build", "CMakeCache.txt")
+        cmakecache = tmp_dir / "_cmake_test_compile" / "build" / "CMakeCache.txt"
         assert cmakecache.exists()
         variables = get_cmakecache_variables(str(cmakecache))
         assert variables.get("CMAKE_EXPECTED_FOO", (None, None))[1] == "foo"
@@ -213,9 +217,11 @@ def test_configure_with_cmake_args(capfd):
         assert unexpected not in err
 
 
-def test_check_for_bad_installs(tmpdir):
-    with push_dir(str(tmpdir)):
-        tmpdir.ensure(CMAKE_BUILD_DIR(), "cmake_install.cmake").write(
+def test_check_for_bad_installs(tmp_path):
+    with push_dir(str(tmp_path)):
+        cmake_install = tmp_path / CMAKE_BUILD_DIR() / "cmake_install.cmake"
+        cmake_install.parent.mkdir(parents=True, exist_ok=True)
+        cmake_install.write_text(
             textwrap.dedent(
                 """
             file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/../hello" TYPE FILE FILES "/path/to/hello/world.py")

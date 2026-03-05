@@ -7,13 +7,14 @@ Tests for `skbuild.setup` function.
 from __future__ import annotations
 
 import os
+import pathlib
 import pprint
 import sys
+import tempfile
 import textwrap
 from collections.abc import Sequence
 from unittest.mock import patch
 
-import py.path
 import pytest
 from setuptools import Distribution as setuptool_Distribution
 from distutils.core import Distribution as distutils_Distribution
@@ -35,7 +36,7 @@ from . import (
 
 
 @pytest.mark.parametrize("distribution_type", ["unknown", "py_modules", "packages", "skbuild"])
-def test_distribution_is_pure(distribution_type, tmpdir):
+def test_distribution_is_pure(distribution_type, tmp_path):
     skbuild_setup_kwargs = {}
 
     if distribution_type == "unknown":
@@ -43,20 +44,22 @@ def test_distribution_is_pure(distribution_type, tmpdir):
 
     elif distribution_type == "py_modules":
         is_pure = True
-        hello_py = tmpdir.join("hello.py")
-        hello_py.write("")
+        hello_py = tmp_path / "hello.py"
+        hello_py.write_text("")
         skbuild_setup_kwargs["py_modules"] = ["hello"]
 
     elif distribution_type == "packages":
         is_pure = True
-        init_py = tmpdir.mkdir("hello").join("__init__.py")
-        init_py.write("")
+        package_dir = tmp_path / "hello"
+        package_dir.mkdir()
+        init_py = package_dir / "__init__.py"
+        init_py.write_text("")
         skbuild_setup_kwargs["packages"] = ["hello"]
 
     elif distribution_type == "skbuild":
         is_pure = False
-        cmakelists_txt = tmpdir.join("CMakeLists.txt")
-        cmakelists_txt.write(
+        cmakelists_txt = tmp_path / "CMakeLists.txt"
+        cmakelists_txt.write_text(
             """
             cmake_minimum_required(VERSION 3.5...3.26)
             project(test NONE)
@@ -75,7 +78,7 @@ def test_distribution_is_pure(distribution_type, tmpdir):
         original_write_test_cmakelist([])
 
     with patch.object(type(platform), "write_test_cmakelist", new=write_test_cmakelist_no_languages):
-        with push_dir(str(tmpdir)), push_argv(["setup.py", "build"]):
+        with push_dir(str(tmp_path)), push_argv(["setup.py", "build"]):
             distribution = skbuild_setup(
                 name="test",
                 version="0.0.1",
@@ -92,7 +95,7 @@ def test_distribution_is_pure(distribution_type, tmpdir):
 def test_cmake_args_keyword(cmake_args, capfd):
     tmp_dir = _tmpdir("cmake_args_keyword")
 
-    tmp_dir.join("setup.py").write(
+    (tmp_dir / "setup.py").write_text(
         textwrap.dedent(
             """
         from skbuild import setup
@@ -111,7 +114,7 @@ def test_cmake_args_keyword(cmake_args, capfd):
         """
         )
     )
-    tmp_dir.join("CMakeLists.txt").write(
+    (tmp_dir / "CMakeLists.txt").write_text(
         textwrap.dedent(
             """
         cmake_minimum_required(VERSION 3.5...3.26)
@@ -142,7 +145,7 @@ def test_cmake_args_keyword(cmake_args, capfd):
     [
         (None, True, str),
         ("", True, str),
-        (str(py.path.local.get_temproot().join("scikit-build")), True, SKBuildError),
+        (str(pathlib.Path(tempfile.gettempdir()) / "scikit-build"), True, SKBuildError),
         ("banana", False, str),
     ],
 )
@@ -173,7 +176,7 @@ def test_cmake_install_dir_keyword(cmake_install_dir, expected_failed, error_cod
     if cmake_install_dir is not None:
         setup_kwarg = f"cmake_install_dir={str(cmake_install_dir)!r}"
 
-    tmp_dir.join("setup.py").write(
+    (tmp_dir / "setup.py").write_text(
         textwrap.dedent(
             f"""
         from skbuild import setup
@@ -192,7 +195,7 @@ def test_cmake_install_dir_keyword(cmake_install_dir, expected_failed, error_cod
 
     # Install location purposely set to "." so that we can test
     # usage of "cmake_install_dir" skbuild.setup keyword.
-    tmp_dir.join("CMakeLists.txt").write(
+    (tmp_dir / "CMakeLists.txt").write_text(
         textwrap.dedent(
             """
         cmake_minimum_required(VERSION 3.5...3.26)
@@ -203,7 +206,9 @@ def test_cmake_install_dir_keyword(cmake_install_dir, expected_failed, error_cod
         )
     )
 
-    tmp_dir.ensure("apple", "__init__.py")
+    apple_init = tmp_dir / "apple" / "__init__.py"
+    apple_init.parent.mkdir(parents=True, exist_ok=True)
+    apple_init.touch(exist_ok=True)
 
     failed = False
     message = ""
@@ -236,7 +241,7 @@ def test_cmake_install_dir_keyword(cmake_install_dir, expected_failed, error_cod
 def test_cmake_with_sdist_keyword(cmake_with_sdist, capfd):
     tmp_dir = _tmpdir("cmake_with_sdist")
 
-    tmp_dir.join("setup.py").write(
+    (tmp_dir / "setup.py").write_text(
         textwrap.dedent(
             f"""
         from skbuild import setup
@@ -251,7 +256,7 @@ def test_cmake_with_sdist_keyword(cmake_with_sdist, capfd):
         """
         )
     )
-    tmp_dir.join("CMakeLists.txt").write(
+    (tmp_dir / "CMakeLists.txt").write_text(
         textwrap.dedent(
             """
         cmake_minimum_required(VERSION 3.5...3.26)
@@ -278,7 +283,7 @@ def test_cmake_with_sdist_keyword(cmake_with_sdist, capfd):
 def test_cmake_minimum_required_version_keyword():
     tmp_dir = _tmpdir("cmake_minimum_required_version")
 
-    tmp_dir.join("setup.py").write(
+    (tmp_dir / "setup.py").write_text(
         textwrap.dedent(
             """
         from skbuild import setup
@@ -293,7 +298,7 @@ def test_cmake_minimum_required_version_keyword():
         """
         )
     )
-    tmp_dir.join("CMakeLists.txt").write(
+    (tmp_dir / "CMakeLists.txt").write_text(
         textwrap.dedent(
             """
         cmake_minimum_required(VERSION 3.5...3.26)
@@ -334,7 +339,7 @@ def test_setup_requires_keyword_include_cmake(mocker, capsys):
 
     setup_requires = ["cmake>=3.10"]
 
-    tmp_dir.join("setup.py").write(
+    (tmp_dir / "setup.py").write_text(
         textwrap.dedent(
             """
         from skbuild import setup
@@ -349,7 +354,7 @@ def test_setup_requires_keyword_include_cmake(mocker, capsys):
         """.format(setup_requires=",".join([f"'{package}'" for package in setup_requires]))
         )
     )
-    tmp_dir.join("CMakeLists.txt").write(
+    (tmp_dir / "CMakeLists.txt").write_text(
         textwrap.dedent(
             """
         cmake_minimum_required(VERSION 3.5...3.26)
@@ -399,7 +404,7 @@ def test_script_keyword(distribution_type, capsys, caplog):
 
     tmp_dir = _tmpdir("script_keyword")
 
-    tmp_dir.join("setup.py").write(
+    (tmp_dir / "setup.py").write_text(
         textwrap.dedent(
             """
         from skbuild import setup
@@ -417,7 +422,7 @@ def test_script_keyword(distribution_type, capsys, caplog):
     )
 
     if distribution_type == "skbuild":
-        tmp_dir.join("CMakeLists.txt").write(
+        (tmp_dir / "CMakeLists.txt").write_text(
             textwrap.dedent(
                 """
             cmake_minimum_required(VERSION 3.5...3.26)
@@ -440,8 +445,8 @@ def test_script_keyword(distribution_type, capsys, caplog):
         ]
 
     elif distribution_type == "pure":
-        tmp_dir.join("foo.py").write("# foo.py")
-        tmp_dir.join("bar.py").write("# bar.py")
+        (tmp_dir / "foo.py").write_text("# foo.py")
+        (tmp_dir / "bar.py").write_text("# bar.py")
 
         messages = [f"copying {module}.py -> {SKBUILD_DIR()}/setuptools/scripts-" for module in ["foo", "bar"]]
 
@@ -481,7 +486,7 @@ def test_py_modules_keyword(distribution_type, capsys, caplog):
 
     tmp_dir = _tmpdir("py_modules_keyword")
 
-    tmp_dir.join("setup.py").write(
+    (tmp_dir / "setup.py").write_text(
         textwrap.dedent(
             """
         from skbuild import setup
@@ -498,7 +503,7 @@ def test_py_modules_keyword(distribution_type, capsys, caplog):
     )
 
     if distribution_type == "skbuild":
-        tmp_dir.join("CMakeLists.txt").write(
+        (tmp_dir / "CMakeLists.txt").write_text(
             textwrap.dedent(
                 """
             cmake_minimum_required(VERSION 3.5...3.26)
@@ -520,8 +525,8 @@ def test_py_modules_keyword(distribution_type, capsys, caplog):
         ]
 
     elif distribution_type == "pure":
-        tmp_dir.join("foo.py").write("# foo.py")
-        tmp_dir.join("bar.py").write("# bar.py")
+        (tmp_dir / "foo.py").write_text("# foo.py")
+        (tmp_dir / "bar.py").write_text("# bar.py")
 
         messages = [f"copying {module}.py -> {SKBUILD_DIR()}/setuptools/lib" for module in ["foo", "bar"]]
 
@@ -667,7 +672,7 @@ def test_setup_inputs(
     #         data/
     #             pure.dat               # Setuptools
 
-    tmp_dir.join("setup.py").write(
+    (tmp_dir / "setup.py").write_text(
         textwrap.dedent(
             """
         from skbuild import setup
@@ -719,9 +724,10 @@ def test_setup_inputs(
         )
     )
 
-    src_dir = tmp_dir.ensure(package_base, dir=1)
+    src_dir = tmp_dir / package_base
+    src_dir.mkdir(parents=True, exist_ok=True)
 
-    src_dir.join("CMakeLists.txt").write(
+    (src_dir / "CMakeLists.txt").write_text(
         textwrap.dedent(
             """
         cmake_minimum_required(VERSION 3.5...3.26)
@@ -831,7 +837,9 @@ def test_setup_inputs(
     ):
         assert _type in {"p", "pm", "h"}
         root = package_base if _type in {"p", "pm"} else cmake_source_dir
-        tmp_dir.ensure(os.path.join(root, path))
+        expected_path = tmp_dir / root / path
+        expected_path.parent.mkdir(parents=True, exist_ok=True)
+        expected_path.touch(exist_ok=True)
 
     # Do not call the real setup function. Instead, replace it with
     # a MagicMock allowing to check with which arguments it was invoked.
@@ -912,7 +920,9 @@ def test_setup_inputs(
         # py_modules (corresponds to files associated with empty package)
         expected_py_modules = []
         if "" in expected_package_data:
-            expected_py_modules = [os.path.splitext(module_file)[0] for module_file in expected_package_data[""]]
+            expected_py_modules = [
+                str(pathlib.PurePosixPath(module_file).with_suffix("")) for module_file in expected_package_data[""]
+            ]
         _pprint("expected_py_modules", expected_py_modules)
         _pprint("py_modules")
 
@@ -982,7 +992,7 @@ def test_cmake_install_into_pure_package(with_cmake_source_dir, capsys, caplog):
 
     cmake_source_dir = "src" if with_cmake_source_dir else ""
 
-    tmp_dir.join("setup.py").write(
+    (tmp_dir / "setup.py").write_text(
         textwrap.dedent(
             f"""
         from skbuild import setup
@@ -1000,8 +1010,9 @@ def test_cmake_install_into_pure_package(with_cmake_source_dir, capsys, caplog):
         )
     )
 
-    cmake_src_dir = tmp_dir.ensure(cmake_source_dir, dir=1)
-    cmake_src_dir.join("CMakeLists.txt").write(
+    cmake_src_dir = tmp_dir / cmake_source_dir
+    cmake_src_dir.mkdir(parents=True, exist_ok=True)
+    (cmake_src_dir / "CMakeLists.txt").write_text(
         textwrap.dedent(
             """
         cmake_minimum_required(VERSION 3.5...3.26)
@@ -1026,7 +1037,9 @@ def test_cmake_install_into_pure_package(with_cmake_source_dir, capsys, caplog):
         )
     )
 
-    tmp_dir.ensure("fruits/__init__.py")
+    fruits_init = tmp_dir / "fruits" / "__init__.py"
+    fruits_init.parent.mkdir(parents=True, exist_ok=True)
+    fruits_init.touch(exist_ok=True)
 
     with execute_setup_py(tmp_dir, ["build"], disable_languages_test=True):
         pass
@@ -1058,7 +1071,7 @@ def test_zip_safe_default(zip_safe, mocker):
     if zip_safe is not None:
         setup_kwarg = f"zip_safe={zip_safe}"
 
-    tmp_dir.join("setup.py").write(
+    (tmp_dir / "setup.py").write_text(
         textwrap.dedent(
             f"""
         from skbuild import setup
@@ -1073,7 +1086,7 @@ def test_zip_safe_default(zip_safe, mocker):
         """
         )
     )
-    tmp_dir.join("CMakeLists.txt").write(
+    (tmp_dir / "CMakeLists.txt").write_text(
         textwrap.dedent(
             """
         cmake_minimum_required(VERSION 3.5...3.26)

@@ -1,14 +1,14 @@
 from __future__ import annotations
 
-import os
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
 
-DIR = os.path.dirname(os.path.abspath(__file__))
-HELLO_PEP518 = os.path.join(DIR, "samples/hello-pep518")
-BASE = os.path.dirname(DIR)
+DIR = Path(__file__).resolve().parent
+HELLO_PEP518 = DIR / "samples/hello-pep518"
+BASE = DIR.parent
 
 
 @pytest.mark.isolated

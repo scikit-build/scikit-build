@@ -6,9 +6,9 @@ Tests for platforms, to verify that CMake correctly does a test compilation.
 
 from __future__ import annotations
 
-import os
 import platform
 import sys
+from pathlib import Path
 
 import pytest
 
@@ -34,15 +34,15 @@ def test_write_compiler_test_file():
     try:
         # verify that the test file exists (it's not valid, because it has no
         # languages)
-        assert os.path.exists(os.path.join(test_folder, "CMakeLists.txt"))
+        assert (Path(test_folder) / "CMakeLists.txt").exists()
     finally:
         skbuild_platform.cleanup_test()
 
 
 def test_cxx_compiler():
     # Create a unique subdirectory 'foo' that is expected to be removed.
-    test_build_folder = os.path.join(test_folder, "build", "foo")
-    mkdir_p(test_build_folder)
+    test_build_folder = Path(test_folder) / "build" / "foo"
+    mkdir_p(str(test_build_folder))
 
     generator = skbuild_platform.get_best_generator(languages=["CXX", "C"], cleanup=False)
     # TODO: this isn't a true unit test.  It depends on the test CMakeLists.txt
@@ -53,7 +53,7 @@ def test_cxx_compiler():
     # doesn't actually compile anything.
     try:
         assert generator is not None
-        assert not os.path.exists(test_build_folder)
+        assert not test_build_folder.exists()
     finally:
         skbuild_platform.cleanup_test()
 
@@ -79,7 +79,7 @@ def test_fortran_compiler():
 def test_generator_cleanup():
     # TODO: this isn't a true unit test.  It is checking that none of the
     # other tests have left a mess.
-    assert not os.path.exists(test_folder)
+    assert not Path(test_folder).exists()
 
 
 @pytest.mark.parametrize(

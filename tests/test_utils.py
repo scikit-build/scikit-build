@@ -7,6 +7,7 @@ Tests for utils functions.
 from __future__ import annotations
 
 import os
+from pathlib import Path
 
 import pytest
 
@@ -25,7 +26,7 @@ saved_cwd = os.getcwd()
 
 def setup_module():
     """setup any state specific to the execution of the given module."""
-    os.chdir(os.path.dirname(__file__))
+    os.chdir(Path(__file__).parent)
 
 
 def teardown_module():
@@ -35,79 +36,83 @@ def teardown_module():
     os.chdir(saved_cwd)
 
 
-def test_push_dir(tmpdir):
+def test_push_dir(tmp_path):
     old_cwd = os.getcwd()
     try:
-        level1 = tmpdir.mkdir("level1")
-        level2 = level1.mkdir("level2")
+        level1 = tmp_path / "level1"
+        level1.mkdir()
+        level2 = level1 / "level2"
+        level2.mkdir()
 
         os.chdir(str(level2))
-        assert os.path.split(os.getcwd())[-1] == "level2"
+        assert Path.cwd().name == "level2"
 
         # No directory
         with push_dir():
-            os.chdir(os.path.join(os.getcwd(), ".."))
-            assert os.path.split(os.getcwd())[-1] == "level1"
-        assert os.path.split(os.getcwd())[-1] == "level2"
+            os.chdir(Path.cwd().parent)
+            assert Path.cwd().name == "level1"
+        assert Path.cwd().name == "level2"
 
         # With existing directory
-        with push_dir(directory=os.path.join(os.getcwd(), "..")):
-            assert os.path.split(os.getcwd())[-1] == "level1"
-        assert os.path.split(os.getcwd())[-1] == "level2"
+        with push_dir(directory=str(Path.cwd().parent)):
+            assert Path.cwd().name == "level1"
+        assert Path.cwd().name == "level2"
 
-        foo_directory = os.path.join(str(tmpdir), "foo")
+        foo_directory = tmp_path / "foo"
 
         # With non existing directory
         failed = False
         try:
-            with push_dir(directory=foo_directory):
+            with push_dir(directory=str(foo_directory)):
                 pass
         except OSError:
             failed = True
         assert failed
-        assert not os.path.isdir(foo_directory)
+        assert not foo_directory.is_dir()
 
         # With make_directory option
         with push_dir(directory=foo_directory, make_directory=True):
-            assert os.getcwd() == foo_directory
-        assert os.path.split(os.getcwd())[-1] == "level2"
-        assert os.path.isdir(foo_directory)
+            assert os.getcwd() == str(foo_directory)
+        assert Path.cwd().name == "level2"
+        assert foo_directory.is_dir()
     finally:
         os.chdir(old_cwd)
 
 
-def test_push_dir_decorator(tmpdir):
+def test_push_dir_decorator(tmp_path):
     old_cwd = os.getcwd()
     try:
-        level1 = tmpdir.mkdir("level1")
-        level2 = level1.mkdir("level2")
+        level1 = tmp_path / "level1"
+        level1.mkdir()
+        level2 = level1 / "level2"
+        level2.mkdir()
         os.chdir(str(level2))
-        assert os.path.split(os.getcwd())[-1] == "level2"
+        assert Path.cwd().name == "level2"
 
         # No directory
         @push_dir()
         def test_default():
-            os.chdir(os.path.join(os.getcwd(), ".."))
-            assert os.path.split(os.getcwd())[-1] == "level1"
+            os.chdir(Path.cwd().parent)
+            assert Path.cwd().name == "level1"
 
         test_default()
-        assert os.path.split(os.getcwd())[-1] == "level2"
+        assert Path.cwd().name == "level2"
 
         # With existing directory
-        @push_dir(directory=os.path.join(os.getcwd(), ".."))
+        @push_dir(directory=str(Path.cwd().parent))
         def test():
-            assert os.path.split(os.getcwd())[-1] == "level1"
+            assert Path.cwd().name == "level1"
 
         test()
-        assert os.path.split(os.getcwd())[-1] == "level2"
+        assert Path.cwd().name == "level2"
 
-        foo_directory = os.path.join(str(tmpdir), "foo")
+        foo_directory = tmp_path / "foo"
 
         # With non existing directory
         failed = False
         try:
 
-            @push_dir(directory=foo_directory)
+            @push_dir(directory=str(foo_directory))
             def test():
                 pass
 
@@ -115,32 +120,31 @@ def test_push_dir_decorator(tmpdir):
         except OSError:
             failed = True
         assert failed
-        assert not os.path.isdir(foo_directory)
+        assert not foo_directory.is_dir()
 
         # With make_directory option
         @push_dir(directory=foo_directory, make_directory=True)
         def test():
-            assert os.getcwd() == foo_directory
+            assert os.getcwd() == str(foo_directory)
 
         test()
-        assert os.path.split(os.getcwd())[-1] == "level2"
-        assert os.path.isdir(foo_directory)
+        assert Path.cwd().name == "level2"
+        assert foo_directory.is_dir()
     finally:
         os.chdir(old_cwd)
 
 
-def test_mkdir_p(tmpdir):
-    tmp_dir = str(tmpdir)
-    assert os.path.isdir(tmp_dir)
+def test_mkdir_p(tmp_path):
+    assert tmp_path.is_dir()
 
-    foo_bar_dir = os.path.join(tmp_dir, "foo", "bar")
+    foo_bar_dir = tmp_path / "foo" / "bar"
 
     mkdir_p(foo_bar_dir)
-    assert os.path.isdir(foo_bar_dir)
+    assert foo_bar_dir.is_dir()
 
     # Make sure calling function twice does not raise an exception
     mkdir_p(foo_bar_dir)
-    assert os.path.isdir(foo_bar_dir)
+    assert foo_bar_dir.is_dir()
 
 
 def test_push_env():
@@ -173,7 +177,7 @@ def test_push_env():
 
 
 def test_python_module_finder():
-    modules = PythonModuleFinder(["bonjour", "hello"], {}, []).find_all_modules(os.path.join(SAMPLES_DIR, "hello-cpp"))
+    modules = PythonModuleFinder(["bonjour", "hello"], {}, []).find_all_modules(str(SAMPLES_DIR / "hello-cpp"))
     assert sorted(modules) == sorted(
         [
             ("bonjour", "__init__", to_platform_path("bonjour/__init__.py")),
