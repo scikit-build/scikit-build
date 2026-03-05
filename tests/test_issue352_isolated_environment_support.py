@@ -14,7 +14,7 @@ from . import _tmpdir, execute_setup_py
 def test_isolated_env_trigger_reconfigure(mocker):
     tmp_dir = _tmpdir("isolated_env_trigger_reconfigure")
 
-    tmp_dir.join("setup.py").write(
+    (tmp_dir / "setup.py").write_text(
         textwrap.dedent(
             """
         from skbuild import setup
@@ -28,7 +28,7 @@ def test_isolated_env_trigger_reconfigure(mocker):
         """
         )
     )
-    tmp_dir.join("CMakeLists.txt").write(
+    (tmp_dir / "CMakeLists.txt").write_text(
         textwrap.dedent(
             """
         message(FATAL_ERROR "This error message should not be displayed")
@@ -41,7 +41,9 @@ def test_isolated_env_trigger_reconfigure(mocker):
     #
     def fake_configure(*args, **kwargs):
         # Simulate a successful configuration creating a CMakeCache.txt
-        tmp_dir.ensure(CMAKE_BUILD_DIR(), dir=1).join("CMakeCache.txt").write(
+        cmakecache = tmp_dir / CMAKE_BUILD_DIR() / "CMakeCache.txt"
+        cmakecache.parent.mkdir(parents=True, exist_ok=True)
+        cmakecache.write_text(
             textwrap.dedent(
                 """
             //Name of generator.

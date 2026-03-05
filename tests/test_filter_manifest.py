@@ -24,7 +24,7 @@ def test_bdist_wheel_command():
 
     relative_setup_path = "wrapping/python/"
 
-    with execute_setup_py(tmp_dir.join(relative_setup_path), ["bdist_wheel"]):
+    with execute_setup_py(tmp_dir / relative_setup_path, ["bdist_wheel"]):
         whls = glob.glob("dist/*.whl")
         assert len(whls) == 1
         check_wheel_content(whls[0], expected_distribution_name, expected_content)

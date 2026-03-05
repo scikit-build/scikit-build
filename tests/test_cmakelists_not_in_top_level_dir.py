@@ -38,7 +38,7 @@ def test_build(capsys):
 def test_cmake_source_dir(cmake_source_dir, expected_failed):
     tmp_dir = _tmpdir("test_cmake_source_dir")
 
-    tmp_dir.join("setup.py").write(
+    (tmp_dir / "setup.py").write_text(
         textwrap.dedent(
             f"""
         from skbuild import setup

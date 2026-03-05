@@ -77,63 +77,7 @@ def prepend_sys_path(paths):
     sys.path = saved_paths
 
 
-class _CompatPath(type(pathlib.Path())):
-    def join(self, *parts):
-        return type(self)(self.joinpath(*parts))
-
-    def ensure(self, *parts, dir=False):
-        path = self.joinpath(*parts)
-        if dir:
-            path.mkdir(parents=True, exist_ok=True)
-        else:
-            path.parent.mkdir(parents=True, exist_ok=True)
-            path.touch(exist_ok=True)
-        return type(self)(path)
-
-    def listdir(self):
-        return [type(self)(entry) for entry in self.iterdir()]
-
-    def isdir(self):
-        return self.is_dir()
-
-    @property
-    def basename(self):
-        return self.name
-
-    @property
-    def islink(self):
-        return self.is_symlink()
-
-    def copy(self, target):
-        target_path = pathlib.Path(target)
-        if self.is_dir():
-            destination = target_path / self.name if target_path.exists() and target_path.is_dir() else target_path
-            if destination.exists():
-                shutil.rmtree(destination)
-            shutil.copytree(self, destination, symlinks=True)
-            return type(self)(destination)
-        destination = target_path / self.name if target_path.is_dir() else target_path
-        shutil.copy2(self, destination)
-        return type(self)(destination)
-
-    def mksymlinkto(self, target):
-        self.symlink_to(target)
-
-    def realpath(self):
-        return type(self)(self.resolve())
-
-    def write(self, content):
-        self.write_text(content)
-
-    def mkdir(self, *args, **kwargs):
-        if args and isinstance(args[0], str):
-            path = self / args[0]
-            path.mkdir(parents=True, exist_ok=True)
-            return type(self)(path)
-        return super().mkdir(*args, **kwargs)
-
-
-def _tmpdir(basename: str) -> _CompatPath:
+def _tmpdir(basename: str) -> pathlib.Path:
     """This function returns a temporary directory similar to the one
     returned by the ``tmp_path`` pytest fixture.
     The difference is that the `basetemp` is not configurable using
@@ -145,7 +89,7 @@ def _tmpdir(basename: str) -> _CompatPath:
         basename = basename[:max_val]
 
     try:
-        basetemp = _tmpdir._basetemp
+        basetemp = _tmpdir._basetemp  # type: ignore[attr-defined]
     except AttributeError:
         rootdir = pathlib.Path(tempfile.gettempdir())
         user = os.environ.get("USER")
@@ -153,9 +97,9 @@ def _tmpdir(basename: str) -> _CompatPath:
             rootdir = rootdir / f"pytest-of-{user}"
         rootdir.mkdir(parents=True, exist_ok=True)
         basetemp = pathlib.Path(tempfile.mkdtemp(prefix="pytest-", dir=rootdir))
-        _tmpdir._basetemp = basetemp
+        _tmpdir._basetemp = basetemp  # type: ignore[attr-defined]
 
-    return _CompatPath(tempfile.mkdtemp(prefix=f"{basename}-", dir=basetemp))
+    return pathlib.Path(tempfile.mkdtemp(prefix=f"{basename}-", dir=basetemp))
 
 
 def _copy(src, target):

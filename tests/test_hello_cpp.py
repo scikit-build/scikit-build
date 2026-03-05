@@ -109,7 +109,7 @@ def test_hello_clean(capfd):
 
         tmp_dir = run_build()[0]
 
-        assert tmp_dir.join(SKBUILD_DIR()).exists()
+        assert (tmp_dir / SKBUILD_DIR()).exists()
 
         # XXX Since using capfd.disabled() context manager prevents
         # the output from being captured after it exits, we display
@@ -124,7 +124,7 @@ def test_hello_clean(capfd):
 
         run_clean()
 
-        assert not tmp_dir.join(SKBUILD_DIR()).exists()
+        assert not (tmp_dir / SKBUILD_DIR()).exists()
 
         build_out, clean_out = capfd.readouterr()[0].split("<<-->>")
         assert "Build files have been written to" in build_out
