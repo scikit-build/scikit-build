@@ -14,7 +14,7 @@ from typing import Literal, overload
 import pytest
 import virtualenv as _virtualenv
 
-from . import execute_setup_py, initialize_git_repo_and_commit, prepare_project
+from . import _tmpdir, execute_setup_py, initialize_git_repo_and_commit, prepare_project
 
 HAS_SETUPTOOLS_SCM = importlib.util.find_spec("setuptools_scm") is not None
 
@@ -162,7 +162,7 @@ def isolated(tmp_path: Path, pep518_wheelhouse: Path) -> Generator[VEnv, None, N
 
 
 @pytest.fixture
-def project_setup_py_test(tmp_path: Path) -> Callable[..., AbstractContextManager[Path]]:
+def project_setup_py_test() -> Callable[..., AbstractContextManager[Path]]:
     def _project_setup_py_test(
         project: str,
         setup_args: list[str],
@@ -171,7 +171,7 @@ def project_setup_py_test(tmp_path: Path) -> Callable[..., AbstractContextManage
         verbose_git: bool = True,
         disable_languages_test: bool = False,
     ) -> AbstractContextManager[Path]:
-        project_dir = Path(tmp_dir) if tmp_dir is not None else tmp_path / project
+        project_dir = Path(tmp_dir) if tmp_dir is not None else _tmpdir(project)
         project_dir.mkdir(parents=True, exist_ok=True)
         prepare_project(project, project_dir)
         initialize_git_repo_and_commit(project_dir, verbose=verbose_git)
