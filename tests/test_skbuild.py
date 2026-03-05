@@ -10,6 +10,7 @@ import os
 import platform
 import shutil
 import sys
+from pathlib import Path
 
 import pytest
 
@@ -43,7 +44,7 @@ def test_generator_selection():
 
         # As of Dec 2016, this is available only for VS 9.0
         has_vs_for_python_vcvars = any(
-            os.path.exists(os.path.expanduser(path_pattern % vs_version))
+            Path(path_pattern % vs_version).expanduser().exists()
             for path_pattern in [
                 "~/AppData/Local/Programs/Common/Microsoft/Visual C++ for Python/%.1f/vcvarsall.bat",
                 "C:/Program Files (x86)/Common Files/Microsoft/Visual C++ for Python/%.1f/vcvarsall.bat",
@@ -146,7 +147,7 @@ def test_platform_windows_find_visual_studio(vs_year, capsys):
     if valid_path_expected:
         with capsys.disabled():
             print(f"\nFound VS {vs_year} @ {vs_path}")
-        assert os.path.exists(vs_path)
+        assert Path(vs_path).exists()
     else:
         assert not vs_path
 

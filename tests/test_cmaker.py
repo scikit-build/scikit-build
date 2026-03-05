@@ -6,9 +6,9 @@ Tests for CMaker functionality.
 
 from __future__ import annotations
 
-import os
 import re
 import textwrap
+from pathlib import Path
 
 import pytest
 
@@ -31,13 +31,13 @@ def test_get_python_version():
 def test_get_python_include_dir():
     python_include_dir = CMaker.get_python_include_dir(CMaker.get_python_version())
     assert python_include_dir
-    assert os.path.exists(python_include_dir)
+    assert Path(python_include_dir).exists()
 
 
 def test_get_python_library():
     python_library = CMaker.get_python_library(CMaker.get_python_version())
     assert python_library
-    assert os.path.exists(python_library)
+    assert Path(python_library).exists()
 
 
 def test_cmake_executable():

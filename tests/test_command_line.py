@@ -6,7 +6,7 @@ Tests for various command line functionality.
 
 from __future__ import annotations
 
-import os
+from pathlib import Path
 
 import pytest
 
@@ -64,7 +64,7 @@ def test_no_command():
             failed = "error: no commands supplied" in e.args[0]
 
         assert failed
-        assert not os.path.exists("_skbuild")
+        assert not Path("_skbuild").exists()
 
 
 def test_invalid_command():
@@ -81,7 +81,7 @@ def test_invalid_command():
             failed = "error: invalid command" in e.args[0]
 
         assert failed
-        assert not os.path.exists("_skbuild")
+        assert not Path("_skbuild").exists()
 
 
 def test_too_many_separators():
@@ -116,7 +116,7 @@ def test_cmake_initial_cache_as_global_option(tmp_path):
 
     cmakecache_txt = tmp_path / CMAKE_BUILD_DIR() / "CMakeCache.txt"
     assert cmakecache_txt.exists()
-    assert get_cmakecache_variables(str(cmakecache_txt)).get("MY_CMAKE_VARIABLE", (None, None)) == ("BOOL", "1")
+    assert get_cmakecache_variables(cmakecache_txt).get("MY_CMAKE_VARIABLE", (None, None)) == ("BOOL", "1")
 
 
 def test_cmake_executable_arg():

@@ -837,7 +837,7 @@ def test_setup_inputs(
     ):
         assert _type in {"p", "pm", "h"}
         root = package_base if _type in {"p", "pm"} else cmake_source_dir
-        expected_path = tmp_dir / os.path.join(root, path)
+        expected_path = tmp_dir / root / path
         expected_path.parent.mkdir(parents=True, exist_ok=True)
         expected_path.touch(exist_ok=True)
 
@@ -920,7 +920,9 @@ def test_setup_inputs(
         # py_modules (corresponds to files associated with empty package)
         expected_py_modules = []
         if "" in expected_package_data:
-            expected_py_modules = [os.path.splitext(module_file)[0] for module_file in expected_package_data[""]]
+            expected_py_modules = [
+                str(pathlib.PurePosixPath(module_file).with_suffix("")) for module_file in expected_package_data[""]
+            ]
         _pprint("expected_py_modules", expected_py_modules)
         _pprint("py_modules")
 

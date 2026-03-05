@@ -10,7 +10,6 @@ except ImportError:
 
 import functools
 import os
-import os.path
 import pathlib
 import re
 import shutil
@@ -25,10 +24,7 @@ import requests
 from skbuild.platform_specifics import get_platform
 from skbuild.utils import push_dir
 
-SAMPLES_DIR = os.path.join(
-    os.path.dirname(os.path.realpath(__file__)),
-    "samples",
-)
+SAMPLES_DIR = pathlib.Path(__file__).resolve().parent / "samples"
 
 __all__ = [
     "SAMPLES_DIR",
@@ -198,7 +194,7 @@ def prepare_project(project, tmp_project_dir, force=False):
 
     # If empty or if force is True, copy project files and initialize git
     if not any(tmp_project_dir.iterdir()) or force:
-        _copy_dir(tmp_project_dir, os.path.join(SAMPLES_DIR, project))
+        _copy_dir(tmp_project_dir, SAMPLES_DIR / project)
 
         version_actual = tmp_project_dir / "VERSION.actual"
         version = version_actual.with_name("VERSION")
