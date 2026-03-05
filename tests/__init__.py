@@ -205,6 +205,11 @@ def prepare_project(project, tmp_project_dir, force=False):
     if not tmp_project_dir.listdir() or force:
         _copy_dir(tmp_project_dir, os.path.join(SAMPLES_DIR, project))
 
+        version_actual = pathlib.Path(str(tmp_project_dir.join("VERSION.actual")))
+        version = version_actual.with_name("VERSION")
+        if version_actual.exists() and not version.exists():
+            version.symlink_to(version_actual.name)
+
 
 @contextmanager
 def execute_setup_py(project_dir, setup_args, disable_languages_test=False):
