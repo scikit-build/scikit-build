@@ -198,6 +198,7 @@ markers = [
 [tool.ruff]
 line-length = 120
 exclude = []
+show-fixes = true
 
 [tool.ruff.format]
 exclude = ["docs/conf.py"]
@@ -234,10 +235,6 @@ isort.required-imports = ["from __future__ import annotations"]
 "tests/**" = ["T20", "PLC0415"]
 "noxfile.py" = ["T20", "PLC0415"]
 "*.pyx" = ["I"]
-
-
-[tool.check-sdist]
-sdist-only = ["skbuild/_version.py"]
 
 
 [tool.coverage.run]

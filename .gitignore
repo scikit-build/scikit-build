@@ -67,3 +67,4 @@ skbuild/_version.py
 
 # pyenv
 .python-version
+uv.lock

@@ -26,18 +26,18 @@ repos:
   hooks:
   - id: "blacken-docs"
     additional_dependencies:
-    - black==24.*
+    - black==26.*
 
 - repo: https://github.com/astral-sh/ruff-pre-commit
   rev: v0.15.4
   hooks:
-  - id: ruff
-    args: ["--fix", "--show-fixes"]
+  - id: ruff-check
+    args: ["--fix"]
   - id: ruff-format
     exclude: ^docs/conf\.py$
 
 - repo: https://github.com/codespell-project/codespell
-  rev: "v2.4.1"
+  rev: "v2.4.2"
   hooks:
   - id: codespell
     exclude: "(.png|.svg|^_version.py)$"
@@ -51,7 +51,7 @@ repos:
   - id: rst-inline-touching-normal
 
 - repo: https://github.com/henryiii/check-sdist
-  rev: "v1.3.2"
+  rev: "v1.4.0"
   hooks:
    - id: check-sdist
      args: [--inject-junk]
