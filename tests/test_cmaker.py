@@ -213,9 +213,11 @@ def test_configure_with_cmake_args(capfd):
         assert unexpected not in err
 
 
-def test_check_for_bad_installs(tmpdir):
-    with push_dir(str(tmpdir)):
-        tmpdir.ensure(CMAKE_BUILD_DIR(), "cmake_install.cmake").write(
+def test_check_for_bad_installs(tmp_path):
+    with push_dir(str(tmp_path)):
+        cmake_install = tmp_path / CMAKE_BUILD_DIR() / "cmake_install.cmake"
+        cmake_install.parent.mkdir(parents=True, exist_ok=True)
+        cmake_install.write_text(
             textwrap.dedent(
                 """
             file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/../hello" TYPE FILE FILES "/path/to/hello/world.py")

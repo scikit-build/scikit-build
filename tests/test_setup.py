@@ -7,13 +7,14 @@ Tests for `skbuild.setup` function.
 from __future__ import annotations
 
 import os
+import pathlib
 import pprint
 import sys
+import tempfile
 import textwrap
 from collections.abc import Sequence
 from unittest.mock import patch
 
-import py.path
 import pytest
 from setuptools import Distribution as setuptool_Distribution
 from distutils.core import Distribution as distutils_Distribution
@@ -35,7 +36,7 @@ from . import (
 
 
 @pytest.mark.parametrize("distribution_type", ["unknown", "py_modules", "packages", "skbuild"])
-def test_distribution_is_pure(distribution_type, tmpdir):
+def test_distribution_is_pure(distribution_type, tmp_path):
     skbuild_setup_kwargs = {}
 
     if distribution_type == "unknown":
@@ -43,20 +44,22 @@ def test_distribution_is_pure(distribution_type, tmpdir):
 
     elif distribution_type == "py_modules":
         is_pure = True
-        hello_py = tmpdir.join("hello.py")
-        hello_py.write("")
+        hello_py = tmp_path / "hello.py"
+        hello_py.write_text("")
         skbuild_setup_kwargs["py_modules"] = ["hello"]
 
     elif distribution_type == "packages":
         is_pure = True
-        init_py = tmpdir.mkdir("hello").join("__init__.py")
-        init_py.write("")
+        package_dir = tmp_path / "hello"
+        package_dir.mkdir()
+        init_py = package_dir / "__init__.py"
+        init_py.write_text("")
         skbuild_setup_kwargs["packages"] = ["hello"]
 
     elif distribution_type == "skbuild":
         is_pure = False
-        cmakelists_txt = tmpdir.join("CMakeLists.txt")
-        cmakelists_txt.write(
+        cmakelists_txt = tmp_path / "CMakeLists.txt"
+        cmakelists_txt.write_text(
             """
             cmake_minimum_required(VERSION 3.5...3.26)
             project(test NONE)
@@ -75,7 +78,7 @@ def test_distribution_is_pure(distribution_type, tmpdir):
         original_write_test_cmakelist([])
 
     with patch.object(type(platform), "write_test_cmakelist", new=write_test_cmakelist_no_languages):
-        with push_dir(str(tmpdir)), push_argv(["setup.py", "build"]):
+        with push_dir(str(tmp_path)), push_argv(["setup.py", "build"]):
             distribution = skbuild_setup(
                 name="test",
                 version="0.0.1",
@@ -142,7 +145,7 @@ def test_cmake_args_keyword(cmake_args, capfd):
     [
         (None, True, str),
         ("", True, str),
-        (str(py.path.local.get_temproot().join("scikit-build")), True, SKBuildError),
+        (str(pathlib.Path(tempfile.gettempdir()) / "scikit-build"), True, SKBuildError),
         ("banana", False, str),
     ],
 )

@@ -35,11 +35,13 @@ def teardown_module():
     os.chdir(saved_cwd)
 
 
-def test_push_dir(tmpdir):
+def test_push_dir(tmp_path):
     old_cwd = os.getcwd()
     try:
-        level1 = tmpdir.mkdir("level1")
-        level2 = level1.mkdir("level2")
+        level1 = tmp_path / "level1"
+        level1.mkdir()
+        level2 = level1 / "level2"
+        level2.mkdir()
 
         os.chdir(str(level2))
         assert os.path.split(os.getcwd())[-1] == "level2"
@@ -55,7 +57,7 @@ def test_push_dir(tmpdir):
             assert os.path.split(os.getcwd())[-1] == "level1"
         assert os.path.split(os.getcwd())[-1] == "level2"
 
-        foo_directory = os.path.join(str(tmpdir), "foo")
+        foo_directory = str(tmp_path / "foo")
 
         # With non existing directory
         failed = False
@@ -76,11 +78,13 @@ def test_push_dir(tmpdir):
         os.chdir(old_cwd)
 
 
-def test_push_dir_decorator(tmpdir):
+def test_push_dir_decorator(tmp_path):
     old_cwd = os.getcwd()
     try:
-        level1 = tmpdir.mkdir("level1")
-        level2 = level1.mkdir("level2")
+        level1 = tmp_path / "level1"
+        level1.mkdir()
+        level2 = level1 / "level2"
+        level2.mkdir()
         os.chdir(str(level2))
         assert os.path.split(os.getcwd())[-1] == "level2"
 
@@ -101,7 +105,7 @@ def test_push_dir_decorator(tmpdir):
         test()
         assert os.path.split(os.getcwd())[-1] == "level2"
 
-        foo_directory = os.path.join(str(tmpdir), "foo")
+        foo_directory = str(tmp_path / "foo")
 
         # With non existing directory
         failed = False
@@ -129,8 +133,8 @@ def test_push_dir_decorator(tmpdir):
         os.chdir(old_cwd)
 
 
-def test_mkdir_p(tmpdir):
-    tmp_dir = str(tmpdir)
+def test_mkdir_p(tmp_path):
+    tmp_dir = str(tmp_path)
     assert os.path.isdir(tmp_dir)
 
     foo_bar_dir = os.path.join(tmp_dir, "foo", "bar")
