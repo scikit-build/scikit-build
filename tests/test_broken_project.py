@@ -17,18 +17,14 @@ from skbuild.exceptions import SKBuildError
 from skbuild.platform_specifics import CMakeGenerator, get_platform
 from skbuild.utils import push_dir
 
-from . import project_setup_py_test, push_env
+from . import push_env
 
 
-def test_cmakelists_with_fatalerror_fails(capfd):
+def test_cmakelists_with_fatalerror_fails(capfd, project_setup_py_test):
     with push_dir():
-
-        @project_setup_py_test("fail-with-fatal-error-cmakelists", ["build"], disable_languages_test=True)
-        def should_fail():
-            pass
-
         with pytest.raises(SystemExit) as excinfo:
-            should_fail()
+            with project_setup_py_test("fail-with-fatal-error-cmakelists", ["build"], disable_languages_test=True):
+                pass
 
         e = excinfo.value
         assert isinstance(e.code, SKBuildError)
@@ -38,15 +34,11 @@ def test_cmakelists_with_fatalerror_fails(capfd):
     assert "An error occurred while configuring with CMake." in str(e)
 
 
-def test_cmakelists_with_syntaxerror_fails(capfd):
+def test_cmakelists_with_syntaxerror_fails(capfd, project_setup_py_test):
     with push_dir():
-
-        @project_setup_py_test("fail-with-syntax-error-cmakelists", ["build"], disable_languages_test=True)
-        def should_fail():
-            pass
-
         with pytest.raises(SystemExit) as excinfo:
-            should_fail()
+            with project_setup_py_test("fail-with-syntax-error-cmakelists", ["build"], disable_languages_test=True):
+                pass
 
         e = excinfo.value
         assert isinstance(e.code, SKBuildError)
@@ -56,15 +48,11 @@ def test_cmakelists_with_syntaxerror_fails(capfd):
     assert "An error occurred while configuring with CMake." in str(e)
 
 
-def test_hello_with_compileerror_fails(capfd):
+def test_hello_with_compileerror_fails(capfd, project_setup_py_test):
     with push_dir():
-
-        @project_setup_py_test("fail-hello-with-compile-error", ["build"])
-        def should_fail():
-            pass
-
         with pytest.raises(SystemExit) as excinfo:
-            should_fail()
+            with project_setup_py_test("fail-hello-with-compile-error", ["build"]):
+                pass
 
         e = excinfo.value
         assert isinstance(e.code, SKBuildError)
@@ -75,7 +63,7 @@ def test_hello_with_compileerror_fails(capfd):
 
 
 @pytest.mark.parametrize("exception", [CalledProcessError, OSError])
-def test_invalid_cmake(exception, mocker):
+def test_invalid_cmake(exception, mocker, project_setup_py_test):
     exceptions = {
         OSError: OSError("Unknown error"),
         CalledProcessError: CalledProcessError(1, [CMAKE_DEFAULT_EXECUTABLE, "--version"]),
@@ -91,13 +79,9 @@ def test_invalid_cmake(exception, mocker):
     mocker.patch("skbuild.cmaker.subprocess.run", new=run_mock)
 
     with push_dir():
-
-        @project_setup_py_test("hello-no-language", ["build"], disable_languages_test=True)
-        def should_fail():
-            pass
-
         with pytest.raises(SystemExit) as excinfo:
-            should_fail()
+            with project_setup_py_test("hello-no-language", ["build"], disable_languages_test=True):
+                pass
 
         e = excinfo.value
         assert isinstance(e.code, SKBuildError)
@@ -105,7 +89,7 @@ def test_invalid_cmake(exception, mocker):
     assert "Problem with the CMake installation, aborting build." in str(e)
 
 
-def test_first_invalid_generator(mocker, capfd):
+def test_first_invalid_generator(mocker, capfd, project_setup_py_test):
     platform = get_platform()
     default_generators = [CMakeGenerator("Invalid")]
     default_generators.extend(platform.default_generators)
@@ -116,18 +100,14 @@ def test_first_invalid_generator(mocker, capfd):
     mocker.patch("skbuild.cmaker.get_platform", return_value=platform)
 
     with push_dir(), push_env(CMAKE_GENERATOR=None):
-
-        @project_setup_py_test("hello-no-language", ["build"])
-        def run_build():
+        with project_setup_py_test("hello-no-language", ["build"]):
             pass
-
-        run_build()
 
     _, err = capfd.readouterr()
     assert "CMake Error: Could not create named generator Invalid" in err
 
 
-def test_invalid_generator(mocker, capfd):
+def test_invalid_generator(mocker, capfd, project_setup_py_test):
     platform = get_platform()
     mocker.patch.object(
         type(platform), "default_generators", new_callable=mocker.PropertyMock, return_value=[CMakeGenerator("Invalid")]
@@ -135,13 +115,9 @@ def test_invalid_generator(mocker, capfd):
     mocker.patch("skbuild.cmaker.get_platform", return_value=platform)
 
     with push_dir(), push_env(CMAKE_GENERATOR=None):
-
-        @project_setup_py_test("hello-no-language", ["build"])
-        def should_fail():
-            pass
-
         with pytest.raises(SystemExit) as excinfo:
-            should_fail()
+            with project_setup_py_test("hello-no-language", ["build"]):
+                pass
 
         e = excinfo.value
         assert isinstance(e.code, SKBuildError)

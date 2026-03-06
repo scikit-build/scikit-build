@@ -5,13 +5,16 @@ import os
 import shutil
 import subprocess
 import sys
-from collections.abc import Generator
+from collections.abc import Callable, Generator
+from contextlib import AbstractContextManager, contextmanager
 from importlib import metadata
 from pathlib import Path
 from typing import Literal, overload
 
 import pytest
 import virtualenv as _virtualenv
+
+from . import _tmpdir, execute_setup_py, initialize_git_repo_and_commit, prepare_project
 
 HAS_SETUPTOOLS_SCM = importlib.util.find_spec("setuptools_scm") is not None
 
@@ -156,6 +159,31 @@ def isolated(tmp_path: Path, pep518_wheelhouse: Path) -> Generator[VEnv, None, N
         yield VEnv(path, wheelhouse=pep518_wheelhouse)
     finally:
         shutil.rmtree(path, ignore_errors=True)
+
+
+@pytest.fixture
+def project_setup_py_test() -> Callable[..., AbstractContextManager[Path]]:
+    def _project_setup_py_test(
+        project: str,
+        setup_args: list[str],
+        *,
+        tmp_dir: Path | None = None,
+        verbose_git: bool = True,
+        disable_languages_test: bool = False,
+    ) -> AbstractContextManager[Path]:
+        project_dir = Path(tmp_dir) if tmp_dir is not None else _tmpdir(project)
+        project_dir.mkdir(parents=True, exist_ok=True)
+        prepare_project(project, project_dir)
+        initialize_git_repo_and_commit(project_dir, verbose=verbose_git)
+
+        @contextmanager
+        def _runner() -> Generator[Path, None, None]:
+            with execute_setup_py(project_dir, setup_args, disable_languages_test=disable_languages_test):
+                yield project_dir
+
+        return _runner()
+
+    return _project_setup_py_test
 
 
 def _get_program(name: str) -> str:

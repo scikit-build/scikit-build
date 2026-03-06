@@ -6,9 +6,7 @@ Tries to build the `cython-flags` sample project.
 
 from __future__ import annotations
 
-from . import project_setup_py_test
 
-
-@project_setup_py_test("cython-flags", ["build"])
-def test_hello_cython_builds():
-    pass
+def test_hello_cython_builds(project_setup_py_test):
+    with project_setup_py_test("cython-flags", ["build"]):
+        pass
