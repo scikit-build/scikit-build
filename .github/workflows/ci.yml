@@ -123,7 +123,7 @@ jobs:
       fail-fast: false
       matrix:
         runs-on: [ubuntu-latest, macos-15-intel, windows-latest]
-        pypy-version: ["3.11"]
+        pypy-version: ["3.11-v7.3.22"]
         include:
         - runs-on: ubuntu-latest
           pypy-version: "3.9"
@@ -140,7 +140,7 @@ jobs:
 
     - uses: actions/setup-python@v6
       with:
-        python-version: pypy-${{ matrix.pypy-version }}
+        python-version: pypy${{ matrix.pypy-version }}
 
     - name: Test on 🐍 PyPy ${{ matrix.pypy-version }}
       run: >
