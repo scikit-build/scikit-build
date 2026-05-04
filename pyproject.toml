@@ -185,7 +185,7 @@ filterwarnings = [
   'ignore:pkg_resources is deprecated as an API:DeprecationWarning',
   'ignore:onerror argument is deprecated, use onexc instead:DeprecationWarning',  # Caused by wheel and Python 3.12
   'ignore:(ast.Str|Attribute s|ast.NameConstant|ast.Num) is deprecated:DeprecationWarning:_pytest',
-  "ignore:version of cmake-example already set:UserWarning",  # Caused by setuptoools-scm 9+ being installed
+  "ignore:No GlobalOverrides context is active:UserWarning",  # Caused by setuptoools-scm 9+ being installed
 ]
 log_level = "INFO"
 markers = [
