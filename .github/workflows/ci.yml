@@ -38,7 +38,7 @@ jobs:
       with:
         fetch-depth: 0
 
-    - uses: astral-sh/setup-uv@v8.0.0
+    - uses: astral-sh/setup-uv@v8.2.0
 
     - name: Set environment for available GHA MSVCs
       if: matrix.runs-on == 'windows-2022'
@@ -82,7 +82,7 @@ jobs:
       run: nox -s tests-3.14 -- --cov --cov-report=xml --cov-report=term --cov-append --durations=20
 
     - name: Upload coverage report
-      uses: codecov/codecov-action@v6
+      uses: codecov/codecov-action@v7
       with:
         name: ${{ matrix.runs-on }}-any
         verbose: true
@@ -145,7 +145,7 @@ jobs:
         ${{ matrix.runs-on == 'windows-latest' && '-k "not pep518"' || '' }}
 
     - name: Upload coverage report
-      uses: codecov/codecov-action@v6
+      uses: codecov/codecov-action@v7
       with:
         name: ${{ runner.os }}-pypy3.11
         verbose: true
