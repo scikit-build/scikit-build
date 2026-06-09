@@ -20,6 +20,7 @@ VS_YEAR_TO_VERSION = {
     "2017": 15,
     "2019": 16,
     "2022": 17,
+    "2026": 18,
 }
 """Describes the version of `Visual Studio` supported by
 :class:`CMakeVisualStudioIDEGenerator` and
@@ -32,6 +33,7 @@ VS_YEAR_TO_MSC_VER = {
     "2017": "1910",  # VS 2017 - can be +9
     "2019": "1920",  # VS 2019 - can be +9
     "2022": "1930",  # VS 2022 - can be +19
+    "2026": "1950",  # VS 2026
 }
 
 ARCH_TO_MSVC_ARCH = {
@@ -63,8 +65,14 @@ n
             """
         ).strip()
 
-        # For Python 3.8 and above: VS2022, VS2019, VS2017
-        supported_vs_years = [("2022", "v144"), ("2022", "v143"), ("2019", "v142"), ("2017", "v141")]
+        # For Python 3.8 and above: VS2026, VS2022, VS2019, VS2017
+        supported_vs_years = [
+            ("2026", "v145"),
+            ("2022", "v144"),
+            ("2022", "v143"),
+            ("2019", "v142"),
+            ("2017", "v141"),
+        ]
 
         try:
             import ninja  # noqa: PLC0415
