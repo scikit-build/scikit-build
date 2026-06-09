@@ -8,20 +8,17 @@ from __future__ import annotations
 
 import glob
 
-from skbuild.constants import SKBUILD_DIR
-from skbuild.utils import push_dir
-
+from . import push_dir
 from .pytest_helpers import check_sdist_content, check_wheel_content
 
 
-def test_hello_pure_builds(capsys, project_setup_py_test):
-    with project_setup_py_test("hello-pure", ["build"], disable_languages_test=True):
-        out, _ = capsys.readouterr()
-        assert "skipping skbuild (no CMakeLists.txt found)" in out
+def test_hello_pure_builds(project_setup_py_test):
+    with project_setup_py_test("hello-pure", ["build"]):
+        pass
 
 
 def test_hello_pure_sdist(project_setup_py_test):
-    with project_setup_py_test("hello-pure", ["sdist"], disable_languages_test=True):
+    with project_setup_py_test("hello-pure", ["sdist"]):
         sdists_tar = glob.glob("dist/*.tar.gz")
         sdists_zip = glob.glob("dist/*.zip")
         assert sdists_tar or sdists_zip
@@ -44,7 +41,7 @@ def test_hello_pure_sdist(project_setup_py_test):
 
 
 def test_hello_pure_wheel(project_setup_py_test):
-    with project_setup_py_test("hello-pure", ["bdist_wheel"], disable_languages_test=True):
+    with project_setup_py_test("hello-pure", ["bdist_wheel"]):
         expected_content = ["hello/__init__.py"]
 
         expected_distribution_name = "hello_pure-1.2.3"
@@ -56,15 +53,15 @@ def test_hello_pure_wheel(project_setup_py_test):
 
 def test_hello_clean(capfd, project_setup_py_test):
     with push_dir():
-        with project_setup_py_test("hello-pure", ["build"], disable_languages_test=True) as tmp_dir:
+        with project_setup_py_test("hello-pure", ["build"]) as tmp_dir:
             pass
 
-        assert (tmp_dir / SKBUILD_DIR()).exists()
+        assert (tmp_dir / "build").exists()
 
-        with project_setup_py_test("hello-pure", ["clean"], tmp_dir=tmp_dir, disable_languages_test=True):
+        with project_setup_py_test("hello-pure", ["clean", "--all"], tmp_dir=tmp_dir):
             pass
 
-        assert not (tmp_dir / SKBUILD_DIR()).exists()
+        assert not (tmp_dir / "build").exists()
 
         out = capfd.readouterr()[0]
         assert "Build files have been written to" not in out

@@ -15,7 +15,7 @@ from .pytest_helpers import check_sdist_content, check_wheel_content
 
 @pytest.mark.nosetuptoolsscm
 def test_manifest_in_sdist(project_setup_py_test):
-    with project_setup_py_test("manifest-in", ["sdist"], disable_languages_test=True):
+    with project_setup_py_test("manifest-in", ["sdist"]):
         sdists_tar = glob.glob("dist/*.tar.gz")
         sdists_zip = glob.glob("dist/*.zip")
         assert sdists_tar or sdists_zip
@@ -39,7 +39,7 @@ def test_manifest_in_sdist(project_setup_py_test):
 
 
 def test_manifest_in_wheel(project_setup_py_test):
-    with project_setup_py_test("manifest-in", ["bdist_wheel"], disable_languages_test=True):
+    with project_setup_py_test("manifest-in", ["bdist_wheel"]):
         whls = glob.glob("dist/*.whl")
         assert len(whls) == 1
 

@@ -7,10 +7,9 @@ import subprocess
 
 import pytest
 
-from skbuild.constants import CMAKE_BUILD_DIR
-
 from . import (
     _tmpdir,
+    cmake_build_dir,
     execute_setup_py,
     initialize_git_repo_and_commit,
     prepare_project,
@@ -36,8 +35,9 @@ def test_symbol_visibility(skip_override):
 
         print(f"Running test with SKBUILD_GNU_SKIP_LOCAL_SYMBOL_EXPORT_OVERRIDE:BOOL={skip_override}")
 
-        lib_dir = str(tmp_dir) + "/" + CMAKE_BUILD_DIR()
-        libs = glob.glob(lib_dir + "/*.so")
+        lib_dir = cmake_build_dir(tmp_dir)
+        assert lib_dir is not None
+        libs = glob.glob(str(lib_dir) + "/**/*.so", recursive=True)
         assert libs
         print(f"Examining the library file: {libs[0]}")
 

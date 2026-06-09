@@ -5,8 +5,7 @@ import os
 
 import pytest
 
-from skbuild.utils import to_unix_path
-
+from . import to_unix_path
 from .pytest_helpers import check_sdist_content, check_wheel_content
 
 

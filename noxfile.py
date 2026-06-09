@@ -15,7 +15,13 @@ PYPROJECT = nox.project.load_toml("pyproject.toml")
 PYTHON_VERSIONS = nox.project.python_versions(PYPROJECT)
 
 PYTHON_ALL_VERSIONS = [*PYTHON_VERSIONS, "pypy3.8", "pypy3.9", "pypy3.10", "pypy3.11"]
-MSVC_ALL_VERSIONS = {"2017", "2019", "2022"}
+
+# TODO: default to a plain "scikit-build-core[setuptools]" requirement once a
+# release containing scikit_build_core.setuptools.wrapper is on PyPI.
+SKBUILD_CORE_REQ = os.environ.get(
+    "SKBUILD_CORE_REQ",
+    "scikit-build-core[setuptools] @ git+https://github.com/scikit-build/scikit-build-core@main",
+)
 
 
 @nox.session
@@ -34,15 +40,7 @@ def tests(session: nox.Session) -> None:
     """
     posargs = list(session.posargs)
     env = os.environ.copy()
-
-    # This should be handled via markers or some other pytest mechanism, but for now, this is usable.
-    # nox -s tests-3.9 -- 2017 2019
-    if sys.platform.startswith("win") and MSVC_ALL_VERSIONS & set(posargs):
-        known_MSVC = {arg for arg in posargs if arg in MSVC_ALL_VERSIONS}
-        posargs = [arg for arg in posargs if arg not in MSVC_ALL_VERSIONS]
-        for version in MSVC_ALL_VERSIONS:
-            contained = "1" if version in known_MSVC else "0"
-            env[f"SKBUILD_TEST_FIND_VS{version}_INSTALLATION_EXPECTED"] = contained
+    env["SKBUILD_CORE_REQ"] = SKBUILD_CORE_REQ
 
     numpy = [] if "pypy" in session.python or sys.platform == "cygwin" else ["numpy"]
     install_spec = "-e.[test,cov,doctest]" if "--cov" in posargs else ".[test,doctest]"
@@ -51,6 +49,7 @@ def tests(session: nox.Session) -> None:
 
     # Latest versions may break things, so grab them for testing!
     session.install("-U", "setuptools", "wheel", "virtualenv")
+    session.install(SKBUILD_CORE_REQ)
     session.install(install_spec, *numpy)
     session.run("pytest", *posargs, env=env)
 
@@ -61,7 +60,8 @@ def pylint(session):
     Run PyLint.
     """
 
-    session.install(".", "pylint", "cmake", "distro")
+    session.install(SKBUILD_CORE_REQ)
+    session.install(".", "pylint", "cmake")
     session.run("pylint", "skbuild", *session.posargs)
 
 
@@ -75,6 +75,7 @@ def docs(session):
     parser.add_argument("--serve", action="store_true", help="Serve the docs")
     args = parser.parse_args(session.posargs)
 
+    session.install(SKBUILD_CORE_REQ)
     session.install("-e.[docs]")
 
     session.chdir("docs")
@@ -115,6 +116,83 @@ def build_api_docs(session: nox.Session) -> None:
     )
 
 
+# Sample projects that build with classic scikit-build (the core-*, hatchling-*,
+# and pi-fortran projects do not use the skbuild setup() wrapper; tower-of-babel
+# has no pyproject.toml and needs Boost, so it can't build in isolation).
+SAMPLE_PROJECTS = [
+    "hello-cpp",
+    "hello-pure",
+    "hello-cython",
+    "hello-pybind11",
+    "pen2-cython",
+    "hello-cmake-package",
+]
+
+
+@nox.session(default=False)
+def sample_projects(session: nox.Session) -> None:
+    """
+    Build the scikit-build-sample-projects against this checkout. Pass the path
+    to a scikit-build-sample-projects checkout (default: ./scikit-build-sample-projects).
+    """
+
+    parser = argparse.ArgumentParser(prog=f"{Path(sys.argv[0]).name} -s sample_projects")
+    parser.add_argument(
+        "path",
+        nargs="?",
+        default="scikit-build-sample-projects",
+        help="Location of a scikit-build-sample-projects checkout",
+    )
+    args = parser.parse_args(session.posargs)
+    projects_dir = Path(args.path).resolve() / "projects"
+
+    tmp_dir = Path(session.create_tmp()).resolve()
+    wheelhouse = tmp_dir / "wheelhouse"
+
+    session.install("build", "pip")
+    session.run(
+        "python",
+        "-m",
+        "pip",
+        "wheel",
+        "--no-cache-dir",
+        "--wheel-dir",
+        str(wheelhouse),
+        ".",
+        SKBUILD_CORE_REQ,
+    )
+    session.run(
+        "python",
+        "-m",
+        "pip",
+        "download",
+        "--dest",
+        str(wheelhouse),
+        "setuptools",
+        "wheel",
+        "cmake",
+        "ninja",
+        "cython",
+        "pybind11",
+        "numpy",
+    )
+
+    # Force the sample projects' "scikit-build" build requirement onto the
+    # local wheel by resolving everything from the wheelhouse.
+    env = {"PIP_NO_INDEX": "1", "PIP_FIND_LINKS": str(wheelhouse)}
+    for project in SAMPLE_PROJECTS:
+        session.run(
+            "python",
+            "-m",
+            "build",
+            "--wheel",
+            "--outdir",
+            str(tmp_dir / "dist" / project),
+            str(projects_dir / project),
+            env=env,
+        )
+
+
 @nox.session(reuse_venv=True, default=False)
 def downstream(session: nox.Session) -> None:
     """
@@ -139,6 +217,7 @@ def downstream(session: nox.Session) -> None:
     proj_dir = tmp_dir / "git"
 
     session.install("build", "hatch-fancy-pypi-readme", "hatch-vcs", "hatchling")
+    session.install(SKBUILD_CORE_REQ)
     session.install(".", "--no-build-isolation")
 
     if proj_dir.is_dir():

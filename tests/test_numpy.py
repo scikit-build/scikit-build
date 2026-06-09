@@ -15,12 +15,8 @@ BASE = DIR.parent
 @pytest.mark.isolated
 @pytest.mark.skipif(sys.platform.startswith("cygwin"), reason="Needs release of scikit-build to make cmake work")
 @pytest.mark.skipif(
-    platform.python_implementation() == "PyPy" and sys.version_info >= (3, 9),
-    reason="NumPy not released for PyPy 3.9 yet",
-)
-@pytest.mark.skipif(
-    sys.version_info >= (3, 12),
-    reason="NumPy not released for Python 3.12 yet",
+    platform.python_implementation() == "PyPy",
+    reason="NumPy wheels not reliably available for PyPy",
 )
 @pytest.mark.usefixtures("pep518")
 def test_pep518_findpython():
