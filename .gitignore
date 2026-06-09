@@ -68,3 +68,7 @@ skbuild/_version.py
 # pyenv
 .python-version
 uv.lock
+
+# Symlink to AGENTS.md
+CLAUDE.md
+.claude/
