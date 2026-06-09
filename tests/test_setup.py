@@ -1,103 +1,155 @@
 """test_setup
 ----------------------------------
 
-Tests for `skbuild.setup` function.
+Tests for the `skbuild.setup` function, now provided by the
+scikit-build-core setuptools wrapper.
 """
 
 from __future__ import annotations
 
-import os
 import pathlib
-import pprint
-import sys
 import tempfile
 import textwrap
-from collections.abc import Sequence
-from unittest.mock import patch
 
 import pytest
-from setuptools import Distribution as setuptool_Distribution
-from distutils.core import Distribution as distutils_Distribution
+from setuptools import Distribution
 
 from skbuild import setup as skbuild_setup
-from skbuild.constants import CMAKE_INSTALL_DIR, SKBUILD_DIR
-from skbuild.exceptions import SKBuildError
-from skbuild.platform_specifics import get_platform
-from skbuild.setuptools_wrap import strip_package
-from skbuild.utils import push_dir, to_platform_path
 
 from . import (
     _tmpdir,
+    cmake_build_dir,
     execute_setup_py,
-    initialize_git_repo_and_commit,
-    is_site_reachable,
     push_argv,
+    push_dir,
+    push_env,
+)
+
+TRIVIAL_CMAKELISTS = textwrap.dedent(
+    """
+    cmake_minimum_required(VERSION 3.15...3.26)
+    project(test NONE)
+    install(CODE "execute_process(
+      COMMAND \\${CMAKE_COMMAND} -E sleep 0)")
+    """
 )
 
 
-@pytest.mark.parametrize("distribution_type", ["unknown", "py_modules", "packages", "skbuild"])
-def test_distribution_is_pure(distribution_type, tmp_path):
-    skbuild_setup_kwargs = {}
+def _make_minimal_project(name: str) -> pathlib.Path:
+    """Create a project directory containing a trivial ``CMakeLists.txt`` and
+    an empty ``pyproject.toml`` (required by the scikit-build-core backend)."""
+    tmp_dir = _tmpdir(name)
+    (tmp_dir / "pyproject.toml").write_text("")
+    (tmp_dir / "CMakeLists.txt").write_text(TRIVIAL_CMAKELISTS)
+    return tmp_dir
 
-    if distribution_type == "unknown":
-        is_pure = False
 
-    elif distribution_type == "py_modules":
-        is_pure = True
-        hello_py = tmp_path / "hello.py"
-        hello_py.write_text("")
-        skbuild_setup_kwargs["py_modules"] = ["hello"]
+def _build_lib_files(base: str = ".") -> set[str]:
+    """Return the relative paths (as posix strings) of all files found under
+    the setuptools build directory (``build/lib*``)."""
+    files: set[str] = set()
+    for lib_dir in pathlib.Path(base).glob("build/lib*"):
+        files |= {path.relative_to(lib_dir).as_posix() for path in lib_dir.rglob("*") if path.is_file()}
+    return files
 
-    elif distribution_type == "packages":
-        is_pure = True
-        package_dir = tmp_path / "hello"
-        package_dir.mkdir()
-        init_py = package_dir / "__init__.py"
-        init_py.write_text("")
-        skbuild_setup_kwargs["packages"] = ["hello"]
 
-    elif distribution_type == "skbuild":
-        is_pure = False
-        cmakelists_txt = tmp_path / "CMakeLists.txt"
-        cmakelists_txt.write_text(
-            """
-            cmake_minimum_required(VERSION 3.5...3.26)
-            project(test NONE)
-            install(CODE "execute_process(
-              COMMAND \\${CMAKE_COMMAND} -E sleep 0)")
-            """
+# -----------------------------------------------------------------------------
+# Wrapper behavior (no CMake build required)
+# -----------------------------------------------------------------------------
+
+
+def test_setup_returns_distribution():
+    tmp_dir = _make_minimal_project("setup_returns_distribution")
+
+    with push_dir(str(tmp_dir)), push_argv(["setup.py", "--name"]):
+        distribution = skbuild_setup(
+            name="test_setup_returns_distribution",
+            version="0.0.1",
         )
-    else:
-        msg = f"Unknown distribution_type: {distribution_type}"
-        raise Exception(msg)
 
-    platform = get_platform()
-    original_write_test_cmakelist = platform.write_test_cmakelist
+    assert isinstance(distribution, Distribution)
+    # The wrapper always enables the CMake build, so the distribution is
+    # never pure.
+    assert not distribution.is_pure()
 
-    def write_test_cmakelist_no_languages(_self, _languages):
-        original_write_test_cmakelist([])
 
-    with patch.object(type(platform), "write_test_cmakelist", new=write_test_cmakelist_no_languages):
-        with push_dir(str(tmp_path)), push_argv(["setup.py", "build"]):
-            distribution = skbuild_setup(
-                name="test",
+def test_cmake_with_sdist_keyword_unsupported():
+    tmp_dir = _make_minimal_project("cmake_with_sdist_unsupported")
+
+    with push_dir(str(tmp_dir)), push_argv(["setup.py", "--name"]):
+        with pytest.raises(AssertionError, match="cmake_with_sdist not supported yet"):
+            skbuild_setup(
+                name="test_cmake_with_sdist",
                 version="0.0.1",
-                description="test object returned by setup function",
-                author="The scikit-build team",
-                license="MIT",
-                **skbuild_setup_kwargs,  # type: ignore[arg-type]
+                cmake_with_sdist=True,
             )
-            assert issubclass(distribution.__class__, (distutils_Distribution, setuptool_Distribution))
-            assert is_pure == distribution.is_pure()
 
 
-@pytest.mark.parametrize("cmake_args", [[], ["--", "-DVAR:STRING=43", "-DVAR_WITH_SPACE:STRING=Ciao Mondo"]])
-def test_cmake_args_keyword(cmake_args, capfd):
+def test_cmake_install_target_keyword_unsupported():
+    tmp_dir = _make_minimal_project("cmake_install_target_unsupported")
+
+    with push_dir(str(tmp_dir)), push_argv(["setup.py", "--name"]):
+        with pytest.raises(AssertionError, match="cmake_install_target not supported yet"):
+            skbuild_setup(
+                name="test_cmake_install_target",
+                version="0.0.1",
+                cmake_install_target="install-runtime",
+            )
+
+
+def test_cmake_languages_keyword_warns():
+    tmp_dir = _make_minimal_project("cmake_languages_warns")
+
+    with push_dir(str(tmp_dir)), push_argv(["setup.py", "--name"]):
+        with pytest.warns(UserWarning, match="cmake_languages no longer has any effect"):
+            distribution = skbuild_setup(
+                name="test_cmake_languages",
+                version="0.0.1",
+                cmake_languages=["C"],
+            )
+
+    assert isinstance(distribution, Distribution)
+
+
+def test_cmake_minimum_required_version_keyword_warns():
+    tmp_dir = _make_minimal_project("cmake_minimum_required_version")
+
+    with push_dir(str(tmp_dir)), push_argv(["setup.py", "--name"]):
+        with pytest.warns(UserWarning, match="Set via pyproject.toml"):
+            skbuild_setup(
+                name="test_cmake_minimum_required_version",
+                version="0.0.1",
+                cmake_minimum_required_version="3.5",
+            )
+
+
+def test_cmake_args_string_raises():
+    tmp_dir = _make_minimal_project("cmake_args_string")
+
+    with push_dir(str(tmp_dir)), push_argv(["setup.py", "--name"]):
+        with pytest.raises(TypeError, match="cmake_args must be a list, not a string"):
+            skbuild_setup(
+                name="test_cmake_args_string",
+                version="0.0.1",
+                cmake_args="-DVAR:STRING=42",
+            )
+
+
+# -----------------------------------------------------------------------------
+# End-to-end tests (require CMake)
+# -----------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("via_env", [False, True], ids=["keyword", "env"])
+def test_cmake_args_keyword(via_env, capfd):
     tmp_dir = _tmpdir("cmake_args_keyword")
+    (tmp_dir / "pyproject.toml").write_text("")
+
+    cmake_args_kwarg = "" if via_env else """cmake_args=["-DVAR:STRING=42", "-DVAR_WITH_SPACE:STRING=Hello World"],"""
 
     (tmp_dir / "setup.py").write_text(
         textwrap.dedent(
-            """
+            f"""
         from skbuild import setup
         setup(
             name="test_cmake_args_keyword",
@@ -105,11 +157,7 @@ def test_cmake_args_keyword(cmake_args, capfd):
             description="a minimal example package",
             author='The scikit-build team',
             license="MIT",
-            cmake_args=[
-                "-DVAR:STRING=42",
-                "-DVAR_WITH_SPACE:STRING=Hello World"
-            ]
-
+            {cmake_args_kwarg}
         )
         """
         )
@@ -117,7 +165,7 @@ def test_cmake_args_keyword(cmake_args, capfd):
     (tmp_dir / "CMakeLists.txt").write_text(
         textwrap.dedent(
             """
-        cmake_minimum_required(VERSION 3.5...3.26)
+        cmake_minimum_required(VERSION 3.15...3.26)
         project(test NONE)
         message(STATUS "VAR[${VAR}]")
         message(STATUS "VAR_WITH_SPACE[${VAR_WITH_SPACE}]")
@@ -127,54 +175,55 @@ def test_cmake_args_keyword(cmake_args, capfd):
         )
     )
 
-    with execute_setup_py(tmp_dir, ["build", *cmake_args], disable_languages_test=True):
+    cmake_args_env = "-DVAR:STRING=43" if via_env else None
+    with push_env(CMAKE_ARGS=cmake_args_env), execute_setup_py(tmp_dir, ["build"]):
         pass
 
     out, _ = capfd.readouterr()
 
-    if not cmake_args:
+    if via_env:
+        assert "VAR[43]" in out
+    else:
         assert "VAR[42]" in out
         assert "VAR_WITH_SPACE[Hello World]" in out
-    else:
-        assert "VAR[43]" in out
-        assert "VAR_WITH_SPACE[Ciao Mondo]" in out
 
 
 @pytest.mark.parametrize(
-    ("cmake_install_dir", "expected_failed", "error_code_type"),
+    "cmake_install_dir",
     [
-        (None, True, str),
-        ("", True, str),
-        (str(pathlib.Path(tempfile.gettempdir()) / "scikit-build"), True, SKBuildError),
-        ("banana", False, str),
+        None,
+        str(pathlib.Path(tempfile.gettempdir()) / "scikit-build"),
+        "banana",
     ],
+    ids=["default", "absolute", "banana"],
 )
-def test_cmake_install_dir_keyword(cmake_install_dir, expected_failed, error_code_type, capsys, caplog):
+def test_cmake_install_dir_keyword(cmake_install_dir):
     # -------------------------------------------------------------------------
     # "SOURCE" tree layout:
     #
     # ROOT/
     #
     #     CMakeLists.txt
+    #     pyproject.toml
     #     setup.py
     #
     #     apple/
     #         __init__.py
     #
-    # -------------------------------------------------------------------------
-    # "BINARY" distribution layout
-    #
-    # ROOT/
-    #
-    #     apple/
+    #     banana/
     #         __init__.py
     #
+    # The CMakeLists.txt installs ``banana.py`` into the install root. With
+    # ``cmake_install_dir='banana'``, the file belongs to the ``banana``
+    # package and is copied into ``build/lib*``; without it, the file does not
+    # belong to any package and becomes a setuptools data file.
 
     tmp_dir = _tmpdir("cmake_install_dir_keyword")
+    (tmp_dir / "pyproject.toml").write_text("")
 
     setup_kwarg = ""
     if cmake_install_dir is not None:
-        setup_kwarg = f"cmake_install_dir={str(cmake_install_dir)!r}"
+        setup_kwarg = f"cmake_install_dir={cmake_install_dir!r},"
 
     (tmp_dir / "setup.py").write_text(
         textwrap.dedent(
@@ -198,485 +247,174 @@ def test_cmake_install_dir_keyword(cmake_install_dir, expected_failed, error_cod
     (tmp_dir / "CMakeLists.txt").write_text(
         textwrap.dedent(
             """
-        cmake_minimum_required(VERSION 3.5...3.26)
+        cmake_minimum_required(VERSION 3.15...3.26)
         project(banana NONE)
-        file(WRITE "${CMAKE_BINARY_DIR}/__init__.py" "")
-        install(FILES "${CMAKE_BINARY_DIR}/__init__.py" DESTINATION ".")
+        file(WRITE "${CMAKE_BINARY_DIR}/banana.py" "")
+        install(FILES "${CMAKE_BINARY_DIR}/banana.py" DESTINATION ".")
         """
         )
     )
 
-    apple_init = tmp_dir / "apple" / "__init__.py"
-    apple_init.parent.mkdir(parents=True, exist_ok=True)
-    apple_init.touch(exist_ok=True)
+    for package in ["apple", "banana"]:
+        init_py = tmp_dir / package / "__init__.py"
+        init_py.parent.mkdir(parents=True, exist_ok=True)
+        init_py.touch(exist_ok=True)
 
-    failed = False
-    message = ""
-    try:
-        with execute_setup_py(tmp_dir, ["build"], disable_languages_test=True):
-            pass
-    except SystemExit as e:
-        # Error is not of type SKBuildError, it is expected to be
-        # raised by distutils.core.setup
-        failed = isinstance(e.code, error_code_type)
-        message = str(e)
+    if cmake_install_dir is not None and pathlib.Path(cmake_install_dir).is_absolute():
+        with pytest.raises(SystemExit, match="cmake_install_dir must be a relative path"):
+            with execute_setup_py(tmp_dir, ["build"]):
+                pass
+        return
 
-    out, _ = capsys.readouterr()
-    out += caplog.text
+    with execute_setup_py(tmp_dir, ["build"]):
+        build_files = _build_lib_files()
+        assert "apple/__init__.py" in build_files
+        assert "banana/__init__.py" in build_files
 
-    assert failed == expected_failed
-    if failed:
-        if error_code_type is str:
-            assert message == "error: package directory '{}' does not exist".format(
-                os.path.join(CMAKE_INSTALL_DIR(), "banana")
-            )
+        skbuild_dir = cmake_build_dir()
+        assert skbuild_dir is not None
+
+        if cmake_install_dir == "banana":
+            # The CMake-installed module belongs to the "banana" package.
+            assert "banana/banana.py" in build_files
+            assert (skbuild_dir / "cmake-install" / "banana" / "banana.py").exists()
         else:
-            assert message.strip().startswith("setup parameter 'cmake_install_dir' is set to an absolute path.")
-    else:
-        init_py = to_platform_path(f"{CMAKE_INSTALL_DIR()}/banana/__init__.py")
-        assert f"copying {init_py}" in out
+            # The CMake-installed module does not belong to any package; like
+            # classic scikit-build, a top-level module becomes a py_module.
+            assert "banana.py" in build_files
+            assert "banana/banana.py" not in build_files
+            assert (skbuild_dir / "cmake-install" / "banana.py").exists()
 
 
-@pytest.mark.parametrize("cmake_with_sdist", [True, False])
-def test_cmake_with_sdist_keyword(cmake_with_sdist, capfd):
-    tmp_dir = _tmpdir("cmake_with_sdist")
-
-    (tmp_dir / "setup.py").write_text(
-        textwrap.dedent(
-            f"""
-        from skbuild import setup
-        setup(
-            name="cmake_with_sdist_keyword",
-            version="1.2.3",
-            description="a minimal example package",
-            author='The scikit-build team',
-            license="MIT",
-            cmake_with_sdist={cmake_with_sdist}
-        )
-        """
-        )
-    )
-    (tmp_dir / "CMakeLists.txt").write_text(
-        textwrap.dedent(
-            """
-        cmake_minimum_required(VERSION 3.5...3.26)
-        project(test NONE)
-        install(CODE "execute_process(
-          COMMAND \\${CMAKE_COMMAND} -E sleep 0)")
-        """
-        )
-    )
-
-    initialize_git_repo_and_commit(tmp_dir)
-
-    with execute_setup_py(tmp_dir, ["sdist"], disable_languages_test=True):
-        pass
-
-    out, _ = capfd.readouterr()
-
-    if cmake_with_sdist:
-        assert "Generating done" in out
-    else:
-        assert "Generating done" not in out
-
-
-def test_cmake_minimum_required_version_keyword():
-    tmp_dir = _tmpdir("cmake_minimum_required_version")
+def test_invalid_cmake_source_dir_fails():
+    tmp_dir = _make_minimal_project("invalid_cmake_source_dir")
 
     (tmp_dir / "setup.py").write_text(
         textwrap.dedent(
             """
         from skbuild import setup
         setup(
-            name="cmake_with_sdist_keyword",
+            name="test_invalid_cmake_source_dir",
             version="1.2.3",
-            description="a minimal example package",
+            description="a package with an invalid cmake_source_dir",
             author='The scikit-build team',
             license="MIT",
-            cmake_minimum_required_version='99.98.97'
+            cmake_source_dir='nonexistent',
         )
-        """
-        )
-    )
-    (tmp_dir / "CMakeLists.txt").write_text(
-        textwrap.dedent(
-            """
-        cmake_minimum_required(VERSION 3.5...3.26)
-        project(test NONE)
-        install(CODE "execute_process(
-          COMMAND \\${CMAKE_COMMAND} -E sleep 0)")
         """
         )
     )
 
-    try:
-        with execute_setup_py(tmp_dir, ["build"], disable_languages_test=True):
+    with pytest.raises(SystemExit, match="cmake_source_dir must be an existing directory"):
+        with execute_setup_py(tmp_dir, ["build"]):
             pass
-    except SystemExit as e:
-        # Error is not of type SKBuildError, it is expected to be
-        # raised by distutils.core.setup
-        failed = isinstance(e.code, SKBuildError)
-        message = str(e)
-        assert failed
-        assert "CMake version 99.98.97 or higher is required." in message
 
 
-@pytest.mark.deprecated
-@pytest.mark.filterwarnings("ignore:setuptools.installer is deprecated:Warning")
-@pytest.mark.skipif(
-    os.environ.get("CONDA_BUILD", "0") == "1",
-    reason="running tests expecting network connection in Conda is not possible. "
-    "See https://github.com/conda/conda/issues/508",
-)
-@pytest.mark.skipif(not is_site_reachable("https://pypi.org/simple/cmake/"), reason="pypi.org website not reachable")
-@pytest.mark.xfail(
-    sys.platform.startswith("cygwin"), strict=False, reason="Cygwin needs a release of scikit-build first"
-)
-def test_setup_requires_keyword_include_cmake(mocker, capsys):
-    mock_setup = mocker.patch("skbuild.setuptools_wrap.setuptools.setup")
-
-    tmp_dir = _tmpdir("setup_requires_keyword_include_cmake")
-
-    setup_requires = ["cmake>=3.10"]
+def test_sdist_does_not_run_cmake():
+    tmp_dir = _make_minimal_project("sdist_without_cmake")
 
     (tmp_dir / "setup.py").write_text(
         textwrap.dedent(
             """
         from skbuild import setup
         setup(
-            name="cmake_with_sdist_keyword",
+            name="sdist_without_cmake",
             version="1.2.3",
             description="a minimal example package",
             author='The scikit-build team',
             license="MIT",
-            setup_requires=[{setup_requires}]
-        )
-        """.format(setup_requires=",".join([f"'{package}'" for package in setup_requires]))
-        )
-    )
-    (tmp_dir / "CMakeLists.txt").write_text(
-        textwrap.dedent(
-            """
-        cmake_minimum_required(VERSION 3.5...3.26)
-        project(test NONE)
-        install(CODE "execute_process(
-          COMMAND \\${CMAKE_COMMAND} -E sleep 0)")
-        """
-        )
-    )
-
-    with execute_setup_py(tmp_dir, ["build"], disable_languages_test=True):
-        assert mock_setup.call_count == 1
-        setup_kw = mock_setup.call_args[1]
-        assert setup_kw["setup_requires"] == setup_requires
-
-        import cmake
-
-        out, _ = capsys.readouterr()
-        if "Searching for cmake>=3.10" in out:
-            assert cmake.__file__.lower().startswith(str(tmp_dir).lower())
-
-
-@pytest.mark.parametrize("distribution_type", ["pure", "skbuild"])
-def test_script_keyword(distribution_type, capsys, caplog):
-    # -------------------------------------------------------------------------
-    #
-    # "SOURCE" tree layout for "pure" distribution:
-    #
-    # ROOT/
-    #     setup.py
-    #     foo.py
-    #     bar.py
-    #
-    # "SOURCE" tree layout for "pure" distribution:
-    #
-    # ROOT/
-    #     setup.py
-    #     CMakeLists.txt
-    #
-    # -------------------------------------------------------------------------
-    # "BINARY" distribution layout is identical for both
-    #
-    # ROOT/
-    #     foo.py
-    #     bar.py
-    #
-
-    tmp_dir = _tmpdir("script_keyword")
-
-    (tmp_dir / "setup.py").write_text(
-        textwrap.dedent(
-            """
-        from skbuild import setup
-        setup(
-            name="test_script_keyword",
-            version="1.2.3",
-            description="a package testing use of script keyword",
-            author='The scikit-build team',
-            license="MIT",
-            scripts=['foo.py', 'bar.py'],
-            packages=[],
+            cmake_with_sdist=False,
         )
         """
         )
     )
 
-    if distribution_type == "skbuild":
-        (tmp_dir / "CMakeLists.txt").write_text(
-            textwrap.dedent(
-                """
-            cmake_minimum_required(VERSION 3.5...3.26)
-            project(foo NONE)
-            file(WRITE "${CMAKE_BINARY_DIR}/foo.py" "# foo.py")
-            file(WRITE "${CMAKE_BINARY_DIR}/bar.py" "# bar.py")
-            install(
-                FILES
-                    "${CMAKE_BINARY_DIR}/foo.py"
-                    "${CMAKE_BINARY_DIR}/bar.py"
-                DESTINATION "."
-                )
-            """
-            )
-        )
-
-        messages = [
-            f"copying {CMAKE_INSTALL_DIR()}/{module}.py -> {SKBUILD_DIR()}/setuptools/scripts-"
-            for module in ["foo", "bar"]
-        ]
-
-    elif distribution_type == "pure":
-        (tmp_dir / "foo.py").write_text("# foo.py")
-        (tmp_dir / "bar.py").write_text("# bar.py")
-
-        messages = [f"copying {module}.py -> {SKBUILD_DIR()}/setuptools/scripts-" for module in ["foo", "bar"]]
-
-    with execute_setup_py(tmp_dir, ["build"], disable_languages_test=True):
-        pass
-
-    out, _ = capsys.readouterr()
-    out += caplog.text
-    for message in messages:
-        assert to_platform_path(message) in out
-
-
-@pytest.mark.parametrize("distribution_type", ["pure", "skbuild"])
-def test_py_modules_keyword(distribution_type, capsys, caplog):
-    # -------------------------------------------------------------------------
-    #
-    # "SOURCE" tree layout for "pure" distribution:
-    #
-    # ROOT/
-    #     setup.py
-    #     foo.py
-    #     bar.py
-    #
-    # "SOURCE" tree layout for "skbuild" distribution:
-    #
-    # ROOT/
-    #     setup.py
-    #     CMakeLists.txt
-    #
-    # -------------------------------------------------------------------------
-    # "BINARY" distribution layout is identical for both
-    #
-    # ROOT/
-    #     foo.py
-    #     bar.py
-    #
-
-    tmp_dir = _tmpdir("py_modules_keyword")
-
-    (tmp_dir / "setup.py").write_text(
-        textwrap.dedent(
-            """
-        from skbuild import setup
-        setup(
-            name="test_py_modules_keyword",
-            version="1.2.3",
-            description="a package testing use of py_modules keyword",
-            author='The scikit-build team',
-            license="MIT",
-            py_modules=['foo', 'bar']
-        )
-        """
-        )
-    )
-
-    if distribution_type == "skbuild":
-        (tmp_dir / "CMakeLists.txt").write_text(
-            textwrap.dedent(
-                """
-            cmake_minimum_required(VERSION 3.5...3.26)
-            project(foobar NONE)
-            file(WRITE "${CMAKE_BINARY_DIR}/foo.py" "# foo.py")
-            file(WRITE "${CMAKE_BINARY_DIR}/bar.py" "# bar.py")
-            install(
-                FILES
-                    "${CMAKE_BINARY_DIR}/foo.py"
-                    "${CMAKE_BINARY_DIR}/bar.py"
-                DESTINATION "."
-                )
-            """
-            )
-        )
-
-        messages = [
-            f"copying {CMAKE_INSTALL_DIR()}/{module}.py -> {SKBUILD_DIR()}/setuptools/lib" for module in ["foo", "bar"]
-        ]
-
-    elif distribution_type == "pure":
-        (tmp_dir / "foo.py").write_text("# foo.py")
-        (tmp_dir / "bar.py").write_text("# bar.py")
-
-        messages = [f"copying {module}.py -> {SKBUILD_DIR()}/setuptools/lib" for module in ["foo", "bar"]]
-
-    with execute_setup_py(tmp_dir, ["build"], disable_languages_test=True):
-        pass
-
-    out, _ = capsys.readouterr()
-    out += caplog.text
-    for message in messages:
-        assert to_platform_path(message) in out
-
-
-@pytest.mark.parametrize(
-    ("package_parts", "module_file", "expected"),
-    [
-        ([], "", ""),
-        ([""], "file.py", "file.py"),
-        ([], "foo/file.py", "foo/file.py"),
-        (["foo"], "", ""),
-        (["foo"], "foo/file.py", "file.py"),
-        (["foo"], "foo\\file.py", "file.py"),
-        (["foo", "bar"], "foo/file.py", "foo/file.py"),
-        (["foo", "bar"], "foo/bar/file.py", "file.py"),
-        (["foo", "bar"], "foo/bar/baz/file.py", "baz/file.py"),
-        (["foo"], "/foo/file.py", "/foo/file.py"),
-    ],
-)
-def test_strip_package(package_parts, module_file, expected):
-    assert strip_package(package_parts, module_file) == expected
+    with execute_setup_py(tmp_dir, ["sdist"]):
+        sdists = list(pathlib.Path("dist").glob("*.tar.gz"))
+        assert len(sdists) == 1
+        assert cmake_build_dir() is None
 
 
 @pytest.mark.parametrize("has_cmake_package", [0, 1])
-@pytest.mark.parametrize("has_cmake_module", [0, 1])
 @pytest.mark.parametrize("has_hybrid_package", [0, 1])
 @pytest.mark.parametrize("has_pure_package", [0, 1])
 @pytest.mark.parametrize("has_pure_module", [0, 1])
 @pytest.mark.parametrize("with_package_base", [0, 1])
 def test_setup_inputs(
     has_cmake_package,
-    has_cmake_module,
     has_hybrid_package,
     has_pure_package,
     has_pure_module,
     with_package_base,
-    mocker,
 ):
-    """This test that a project can have a package with some modules
-    installed using setup.py and some other modules installed using CMake.
-    """
+    """This tests that a project can mix packages and modules installed using
+    setup.py with files installed using CMake."""
 
     tmp_dir = _tmpdir("test_setup_inputs")
+    (tmp_dir / "pyproject.toml").write_text("")
 
     package_base = "to/the/base" if with_package_base else ""
-    package_base_dir = package_base + "/" if package_base else ""
-    cmake_source_dir = package_base
-
-    if cmake_source_dir and (has_cmake_package or has_cmake_module):
-        pytest.skip(
-            "unsupported configuration: "
-            "python package fully generated by CMake does *NOT* work. "
-            "At least __init__.py should be in the project source tree"
-        )
 
     # -------------------------------------------------------------------------
     # Here is the "SOURCE" tree layout:
     #
     # ROOT/
     #
+    #     pyproject.toml
     #     setup.py
     #
     #     [<base>/]
     #
+    #         CMakeLists.txt
+    #
     #         pureModule.py
+    #
+    #         cmake/
+    #             __init__.py
+    #
+    #         hybrid/
+    #             __init__.py
+    #             hybrid_pure.dat
+    #             hybrid_pure.py
     #
     #         pure/
     #             __init__.py
     #             pure.py
     #
-    #             data/
-    #                 pure.dat
-    #
-    #     [<cmake_src_dir>/]
-    #
-    #         hybrid/
-    #             CMakeLists.txt
-    #             __init__.py
-    #             hybrid_pure.dat
-    #             hybrid_pure.py
-    #
-    #             data/
-    #                 hybrid_data_pure.dat
-    #
-    #             hybrid_2/
-    #                 __init__.py
-    #                 hybrid_2_pure.py
-    #
-    #             hybrid_2_pure/
-    #                 __init__.py
-    #                 hybrid_2_pure_1.py
-    #                 hybrid_2_pure_2.py
-    #
-    #
     # -------------------------------------------------------------------------
-    # and here is the "BINARY" distribution layout:
+    # and here is the expected "BINARY" distribution layout (build/lib*):
     #
     # The comment "CMake" or "Setuptools" indicates which tool is responsible
-    # for placing the file in the tree used to create the binary distribution.
+    # for placing the file in the build tree.
     #
     # ROOT/
     #
-    #     cmakeModule.py                 # CMake
+    #     pureModule.py              # Setuptools
     #
     #     cmake/
-    #         __init__.py                # CMake
-    #         cmake.py                   # CMake
+    #         __init__.py            # Setuptools
+    #         cmake_generated.py     # CMake
     #
     #     hybrid/
-    #         hybrid_cmake.dat           # CMake
-    #         hybrid_cmake.py            # CMake
-    #         hybrid_pure.dat            # Setuptools
-    #         hybrid_pure.py             # Setuptools
-    #
-    #         data/
-    #             hybrid_data_pure.dat   # CMake or Setuptools
-    #             hybrid_data_cmake.dat  # CMake                  *NO TEST*
-    #
-    #         hybrid_2/
-    #             __init__.py            # CMake or Setuptools
-    #             hybrid_2_pure.py       # CMake or Setuptools
-    #             hybrid_2_cmake.py      # CMake
-    #
-    #         hybrid_2_pure/
-    #             __init__.py            # CMake or Setuptools
-    #             hybrid_2_pure_1.py     # CMake or Setuptools
-    #             hybrid_2_pure_2.py     # CMake or Setuptools
-    #
-    #     pureModule.py                  # Setuptools
+    #         __init__.py            # Setuptools
+    #         hybrid_cmake.py        # CMake
+    #         hybrid_pure.dat        # Setuptools
+    #         hybrid_pure.py         # Setuptools
     #
     #     pure/
-    #         __init__.py                # Setuptools
-    #         pure.py                    # Setuptools
+    #         __init__.py            # Setuptools
+    #         pure.py                # Setuptools
     #
-    #         data/
-    #             pure.dat               # Setuptools
+    # The CMake-installed file that does not belong to any package
+    # (share/test/hybrid_data.dat) becomes a setuptools data file and is
+    # staged under the CMake build directory instead.
+
+    package_dir_kwarg = f"package_dir={{'': {package_base!r}}}," if with_package_base else ""
 
     (tmp_dir / "setup.py").write_text(
         textwrap.dedent(
             """
         from skbuild import setup
-        #from setuptools import setup
         setup(
             name="test_hybrid_project",
             version="1.2.3",
@@ -686,37 +424,24 @@ def test_setup_inputs(
             license="MIT",
             cmake_source_dir='{cmake_source_dir}',
             cmake_install_dir='{cmake_install_dir}',
-            # Arbitrary order of packages
             packages=[
-        {p_off}    'pure',
-        {h_off}    'hybrid.hybrid_2',
-        {h_off}    'hybrid',
         {c_off}    'cmake',
-        {p_off}    'hybrid.hybrid_2_pure',
+        {h_off}    'hybrid',
+        {p_off}    'pure',
             ],
             py_modules=[
-        {pm_off}   '{package_base}pureModule',
-        {cm_off}   '{package_base}cmakeModule',
+        {pm_off}   'pureModule',
             ],
             package_data={{
-        {p_off}        'pure': ['data/pure.dat'],
-        {h_off}        'hybrid': ['hybrid_pure.dat', 'data/hybrid_data_pure.dat'],
+        {h_off}        'hybrid': ['hybrid_pure.dat'],
             }},
-            # Arbitrary order of package_dir
-            package_dir = {{
-        {p_off}    'hybrid.hybrid_2_pure': '{package_base}hybrid/hybrid_2_pure',
-        {p_off}    'pure': '{package_base}pure',
-        {h_off}    'hybrid': '{package_base}hybrid',
-        {h_off}    'hybrid.hybrid_2': '{package_base}hybrid/hybrid_2',
-        {c_off}    'cmake': '{package_base}cmake',
-            }}
+            {package_dir_kwarg}
         )
         """.format(
-                cmake_source_dir=cmake_source_dir,
+                cmake_source_dir=package_base,
                 cmake_install_dir=package_base,
-                package_base=package_base_dir,
+                package_dir_kwarg=package_dir_kwarg,
                 c_off="" if has_cmake_package else "#",
-                cm_off="" if has_cmake_module else "#",
                 h_off="" if has_hybrid_package else "#",
                 p_off="" if has_pure_package else "#",
                 pm_off="" if has_pure_module else "#",
@@ -724,226 +449,79 @@ def test_setup_inputs(
         )
     )
 
-    src_dir = tmp_dir / package_base
+    src_dir = tmp_dir / package_base if package_base else tmp_dir
     src_dir.mkdir(parents=True, exist_ok=True)
 
     (src_dir / "CMakeLists.txt").write_text(
         textwrap.dedent(
             """
-        cmake_minimum_required(VERSION 3.5...3.26)
+        cmake_minimum_required(VERSION 3.15...3.26)
         project(hybrid NONE)
         set(build_dir ${{CMAKE_BINARY_DIR}})
 
-        {c_off} file(WRITE ${{build_dir}}/__init__.py "")
-        {c_off} file(WRITE ${{build_dir}}/cmake.py "")
+        {c_off} file(WRITE ${{build_dir}}/cmake_generated.py "")
         {c_off} install(
-        {c_off}     FILES
-        {c_off}         ${{build_dir}}/__init__.py
-        {c_off}         ${{build_dir}}/cmake.py
-        {c_off}     DESTINATION cmake
-        {c_off}     )
-
-        {cm_off} file(WRITE ${{build_dir}}/cmakeModule.py "")
-        {cm_off} install(
-        {cm_off}     FILES ${{build_dir}}/cmakeModule.py
-        {cm_off}     DESTINATION .)
-
-        {h_off} file(WRITE ${{build_dir}}/hybrid_cmake.dat "")
-        {h_off} install(
-        {h_off}     FILES ${{build_dir}}/hybrid_cmake.dat
-        {h_off}     DESTINATION hybrid)
+        {c_off}     FILES ${{build_dir}}/cmake_generated.py
+        {c_off}     DESTINATION cmake)
 
         {h_off} file(WRITE ${{build_dir}}/hybrid_cmake.py "")
         {h_off} install(
         {h_off}     FILES ${{build_dir}}/hybrid_cmake.py
         {h_off}     DESTINATION hybrid)
 
-        {h_off} file(WRITE ${{build_dir}}/hybrid_data_cmake.dat "")
-        {h_off} install(
-        {h_off}     FILES ${{build_dir}}/hybrid_data_cmake.dat
-        {h_off}     DESTINATION hybrid/data)
-
-        {h_off} file(WRITE ${{build_dir}}/hybrid_2_cmake.py "")
-        {h_off} install(
-        {h_off}     FILES ${{build_dir}}/hybrid_2_cmake.py
-        {h_off}     DESTINATION hybrid/hybrid_2)
-
-        install(CODE "message(STATUS \\\"Installation complete\\\")")
+        file(WRITE ${{build_dir}}/hybrid_data.dat "")
+        install(
+            FILES ${{build_dir}}/hybrid_data.dat
+            DESTINATION share/test)
         """.format(
                 c_off="" if has_cmake_package else "#",
-                cm_off="" if has_cmake_module else "#",
                 h_off="" if has_hybrid_package else "#",
             )
         )
     )
 
-    # List path types: 'c', 'cm', 'h', 'p' or 'pm'
-    path_types: Sequence[str]
-    try:
-        path_types = next(
-            iter(
-                zip(
-                    *filter(
-                        lambda i: i[1],
-                        [
-                            ("c", has_cmake_package),
-                            ("cm", has_cmake_module),
-                            ("h", has_hybrid_package),
-                            ("p", has_pure_package),
-                            ("pm", has_pure_module),
-                        ],
-                    )
-                )
-            )
-        )
-    except StopIteration:
-        path_types = []
+    source_files = []
+    if has_cmake_package:
+        source_files += ["cmake/__init__.py"]
+    if has_hybrid_package:
+        source_files += ["hybrid/__init__.py", "hybrid/hybrid_pure.py", "hybrid/hybrid_pure.dat"]
+    if has_pure_package:
+        source_files += ["pure/__init__.py", "pure/pure.py"]
+    if has_pure_module:
+        source_files += ["pureModule.py"]
 
-    def select_paths(annotated_paths):
-        """Return a filtered list paths considering ``path_types``.
+    for path in source_files:
+        source_path = src_dir / path
+        source_path.parent.mkdir(parents=True, exist_ok=True)
+        source_path.touch(exist_ok=True)
 
-        `annotated_paths`` is list of tuple ``(type, path)`` where type
-        is either `c`, 'cm', `h`, `p` or 'pm'.
-
-        """
-        return filter(lambda i: i[0] in path_types, annotated_paths)
-
-    # Commented paths are the one expected to be installed by CMake. For
-    # this reason, corresponding files should NOT be created in the source
-    # tree.
-    for _type, path in select_paths(
-        [
-            # ('c', 'cmake/__init__.py'),
-            # ('c', 'cmake/cmake.py'),
-            # ('cm', 'cmakeModule.py'),
-            ("h", "hybrid/__init__.py"),
-            # ('h', 'hybrid/hybrid_cmake.dat'),
-            # ('h', 'hybrid/hybrid_cmake.py'),
-            ("h", "hybrid/hybrid_pure.dat"),
-            ("h", "hybrid/hybrid_pure.py"),
-            # ('h', 'hybrid/data/hybrid_data_cmake.dat'),
-            ("h", "hybrid/data/hybrid_data_pure.dat"),
-            ("h", "hybrid/hybrid_2/__init__.py"),
-            # ('h', 'hybrid/hybrid_2/hybrid_2_cmake.py'),
-            ("h", "hybrid/hybrid_2/hybrid_2_pure.py"),
-            ("p", "hybrid/hybrid_2_pure/__init__.py"),
-            ("p", "hybrid/hybrid_2_pure/hybrid_2_pure_1.py"),
-            ("p", "hybrid/hybrid_2_pure/hybrid_2_pure_2.py"),
-            ("pm", "pureModule.py"),
-            ("p", "pure/__init__.py"),
-            ("p", "pure/pure.py"),
-            ("p", "pure/data/pure.dat"),
-        ]
-    ):
-        assert _type in {"p", "pm", "h"}
-        root = package_base if _type in {"p", "pm"} else cmake_source_dir
-        expected_path = tmp_dir / root / path
-        expected_path.parent.mkdir(parents=True, exist_ok=True)
-        expected_path.touch(exist_ok=True)
-
-    # Do not call the real setup function. Instead, replace it with
-    # a MagicMock allowing to check with which arguments it was invoked.
-    mock_setup = mocker.patch("skbuild.setuptools_wrap.setuptools.setup")
-
-    # Convenience print function
-    def _pprint(desc, value=None):
-        print(
-            "-----------------\n"
-            f"{desc}:\n"
-            "\n"
-            f"{pprint.pformat(setup_kw.get(desc, {}) if value is None else value, indent=2)}\n"
-        )
-
-    with execute_setup_py(tmp_dir, ["build"], disable_languages_test=True):
-        assert mock_setup.call_count == 1
-        setup_kw = mock_setup.call_args[1]
-
-        # packages
-        expected_packages = []
+    with execute_setup_py(tmp_dir, ["build"]):
+        expected_build_files = set()
         if has_cmake_package:
-            expected_packages += ["cmake"]
+            expected_build_files |= {"cmake/__init__.py", "cmake/cmake_generated.py"}
         if has_hybrid_package:
-            expected_packages += ["hybrid", "hybrid.hybrid_2"]
+            expected_build_files |= {
+                "hybrid/__init__.py",
+                "hybrid/hybrid_cmake.py",
+                "hybrid/hybrid_pure.dat",
+                "hybrid/hybrid_pure.py",
+            }
         if has_pure_package:
-            expected_packages += ["hybrid.hybrid_2_pure", "pure"]
+            expected_build_files |= {"pure/__init__.py", "pure/pure.py"}
+        if has_pure_module:
+            expected_build_files.add("pureModule.py")
 
-        _pprint("expected_packages", expected_packages)
-        _pprint("packages")
+        assert _build_lib_files() == expected_build_files
 
-        # package dir
-        expected_package_dir = {
-            package: (os.path.join(CMAKE_INSTALL_DIR(), package_base, package.replace(".", "/")))
-            for package in expected_packages
-        }
-        _pprint("expected_package_dir", expected_package_dir)
-        _pprint("package_dir")
-
-        # package data
-        expected_package_data = {}
-
-        if has_cmake_package:
-            expected_package_data["cmake"] = ["__init__.py", "cmake.py"]
-
-        if has_hybrid_package:
-            expected_package_data["hybrid"] = [
-                "__init__.py",
-                "hybrid_cmake.dat",
-                "hybrid_cmake.py",
-                "hybrid_pure.dat",
-                "hybrid_pure.py",
-                "data/hybrid_data_cmake.dat",
-                "data/hybrid_data_pure.dat",
-            ]
-            expected_package_data["hybrid.hybrid_2"] = ["__init__.py", "hybrid_2_cmake.py", "hybrid_2_pure.py"]
-
-        if has_pure_package:
-            expected_package_data["hybrid.hybrid_2_pure"] = ["__init__.py", "hybrid_2_pure_1.py", "hybrid_2_pure_2.py"]
-            expected_package_data["pure"] = [
-                "__init__.py",
-                "pure.py",
-                "data/pure.dat",
-            ]
-
-        if has_cmake_module or has_pure_module:
-            expected_modules = []
-            if has_cmake_module:
-                expected_modules.append(package_base_dir + "cmakeModule.py")
-            if has_pure_module:
-                expected_modules.append(package_base_dir + "pureModule.py")
-            expected_package_data[""] = expected_modules
-
-        _pprint("expected_package_data", expected_package_data)
-        package_data = {p: sorted(files) for p, files in setup_kw["package_data"].items()}
-
-        _pprint("package_data", package_data)
-
-        # py_modules (corresponds to files associated with empty package)
-        expected_py_modules = []
-        if "" in expected_package_data:
-            expected_py_modules = [
-                str(pathlib.PurePosixPath(module_file).with_suffix("")) for module_file in expected_package_data[""]
-            ]
-        _pprint("expected_py_modules", expected_py_modules)
-        _pprint("py_modules")
-
-        # scripts
-        _pprint("expected_scripts", [])
-        _pprint("scripts")
-
-        # data_files
-        _pprint("expected_data_files", [])
-        _pprint("data_files")
-
-        assert sorted(setup_kw["packages"]) == sorted(expected_packages)
-        assert sorted(setup_kw["package_dir"]) == sorted(expected_package_dir)
-        assert package_data == {p: sorted(files) for p, files in expected_package_data.items()}
-        assert sorted(setup_kw["py_modules"]) == sorted(expected_py_modules)
-        assert sorted(setup_kw["scripts"]) == sorted([])
-        assert sorted(setup_kw["data_files"]) == sorted([])
+        # The CMake-installed file outside of any package is staged as a
+        # setuptools data file.
+        skbuild_dir = cmake_build_dir()
+        assert skbuild_dir is not None
+        assert (skbuild_dir / "cmake-install" / "share" / "test" / "hybrid_data.dat").exists()
 
 
 @pytest.mark.parametrize("with_cmake_source_dir", [0, 1])
-def test_cmake_install_into_pure_package(with_cmake_source_dir, capsys, caplog):
+def test_cmake_install_into_pure_package(with_cmake_source_dir):
     # -------------------------------------------------------------------------
     # "SOURCE" tree layout:
     #
@@ -952,6 +530,7 @@ def test_cmake_install_into_pure_package(with_cmake_source_dir, capsys, caplog):
     # ROOT/
     #
     #     CMakeLists.txt
+    #     pyproject.toml
     #     setup.py
     #
     #     fruits/
@@ -962,6 +541,7 @@ def test_cmake_install_into_pure_package(with_cmake_source_dir, capsys, caplog):
     #
     # ROOT/
     #
+    #     pyproject.toml
     #     setup.py
     #
     #     fruits/
@@ -972,7 +552,7 @@ def test_cmake_install_into_pure_package(with_cmake_source_dir, capsys, caplog):
     #         CMakeLists.txt
     #
     # -------------------------------------------------------------------------
-    # "BINARY" distribution layout:
+    # "BINARY" distribution layout (build/lib*):
     #
     # ROOT/
     #
@@ -989,6 +569,7 @@ def test_cmake_install_into_pure_package(with_cmake_source_dir, capsys, caplog):
     #
 
     tmp_dir = _tmpdir("cmake_install_into_pure_package")
+    (tmp_dir / "pyproject.toml").write_text("")
 
     cmake_source_dir = "src" if with_cmake_source_dir else ""
 
@@ -997,9 +578,9 @@ def test_cmake_install_into_pure_package(with_cmake_source_dir, capsys, caplog):
             f"""
         from skbuild import setup
         setup(
-            name="test_py_modules_keyword",
+            name="test_cmake_install_into_pure_package",
             version="1.2.3",
-            description="a package testing use of py_modules keyword",
+            description="a package testing CMake installs into a pure package",
             author='The scikit-build team',
             license="MIT",
             packages=['fruits'],
@@ -1015,7 +596,7 @@ def test_cmake_install_into_pure_package(with_cmake_source_dir, capsys, caplog):
     (cmake_src_dir / "CMakeLists.txt").write_text(
         textwrap.dedent(
             """
-        cmake_minimum_required(VERSION 3.5...3.26)
+        cmake_minimum_required(VERSION 3.15...3.26)
         project(test NONE)
         file(WRITE "${CMAKE_BINARY_DIR}/apple.py" "# apple.py")
         file(WRITE "${CMAKE_BINARY_DIR}/banana.py" "# banana.py")
@@ -1041,72 +622,11 @@ def test_cmake_install_into_pure_package(with_cmake_source_dir, capsys, caplog):
     fruits_init.parent.mkdir(parents=True, exist_ok=True)
     fruits_init.touch(exist_ok=True)
 
-    with execute_setup_py(tmp_dir, ["build"], disable_languages_test=True):
-        pass
-
-    messages = [
-        f"copying {CMAKE_INSTALL_DIR()}/{module} -> {SKBUILD_DIR()}/setuptools/lib"
-        for module in [
+    with execute_setup_py(tmp_dir, ["build"]):
+        assert _build_lib_files() == {
             "fruits/__init__.py",
             "fruits/apple.py",
             "fruits/banana.py",
             "fruits/data/apple.dat",
             "fruits/data/banana.dat",
-        ]
-    ]
-
-    out, _ = capsys.readouterr()
-    out += caplog.text
-    for message in messages:
-        assert to_platform_path(message) in out
-
-
-@pytest.mark.parametrize("zip_safe", [None, False, True])
-def test_zip_safe_default(zip_safe, mocker):
-    mock_setup = mocker.patch("skbuild.setuptools_wrap.setuptools.setup")
-
-    tmp_dir = _tmpdir("zip_safe_default")
-
-    setup_kwarg = ""
-    if zip_safe is not None:
-        setup_kwarg = f"zip_safe={zip_safe}"
-
-    (tmp_dir / "setup.py").write_text(
-        textwrap.dedent(
-            f"""
-        from skbuild import setup
-        setup(
-            name="zip_safe_default",
-            version="1.2.3",
-            description="a minimal example package",
-            author='The scikit-build team',
-            license="MIT",
-            {setup_kwarg}
-        )
-        """
-        )
-    )
-    (tmp_dir / "CMakeLists.txt").write_text(
-        textwrap.dedent(
-            """
-        cmake_minimum_required(VERSION 3.5...3.26)
-        project(test NONE)
-        install(CODE "execute_process(
-          COMMAND \\${CMAKE_COMMAND} -E sleep 0)")
-        """
-        )
-    )
-
-    with execute_setup_py(tmp_dir, ["build"], disable_languages_test=True):
-        pass
-
-    assert mock_setup.call_count == 1
-    setup_kw = mock_setup.call_args[1]
-
-    assert "zip_safe" in setup_kw
-    if zip_safe is None:
-        assert not setup_kw["zip_safe"]
-    elif zip_safe:
-        assert setup_kw["zip_safe"]
-    else:  # zip_safe is False
-        assert not setup_kw["zip_safe"]
+        }

@@ -1,21 +1,17 @@
 """
 This module defines exceptions commonly used in scikit-build.
+
+``SKBuildError`` is now an alias of the setuptools ``SetupError`` raised by
+the scikit-build-core setuptools plugin, kept so that existing
+``except SKBuildError`` clauses continue to work.
 """
 
 from __future__ import annotations
 
+from setuptools.errors import SetupError as SKBuildError
 
-class SKBuildError(RuntimeError):
-    """Exception raised when an error occurs while configuring or building a
-    project.
-    """
+__all__ = ["SKBuildError"]
 
 
-class SKBuildInvalidFileInstallationError(SKBuildError):
-    """Exception raised when a file is being installed into an invalid location."""
-
-
-class SKBuildGeneratorNotFoundError(SKBuildError):
-    """Exception raised when no suitable generator is found for the current
-    platform.
-    """
+def __dir__() -> list[str]:
+    return __all__

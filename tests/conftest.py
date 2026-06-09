@@ -25,6 +25,14 @@ BASE = DIR.parent
 pytest.register_assert_rewrite("tests.pytest_helpers")
 
 
+# TODO: default to a plain "scikit-build-core[setuptools]" requirement once a
+# release containing scikit_build_core.setuptools.wrapper is on PyPI.
+SKBUILD_CORE_REQ = os.environ.get(
+    "SKBUILD_CORE_REQ",
+    "scikit-build-core[setuptools] @ git+https://github.com/scikit-build/scikit-build-core@main",
+)
+
+
 @pytest.fixture(scope="session")
 def pep518_wheelhouse(tmp_path_factory: pytest.TempPathFactory) -> Path:
     numpy = ["numpy"] if sys.version_info < (3, 15) and sys.platform != "cygwin" else []
@@ -35,9 +43,26 @@ def pep518_wheelhouse(tmp_path_factory: pytest.TempPathFactory) -> Path:
             "-m",
             "pip",
             "wheel",
+            "--no-deps",
             "--wheel-dir",
             str(wheelhouse),
             f"{BASE}",
+        ],
+        check=True,
+    )
+    # scikit-build-core (and its dependencies) may come from git or a local
+    # checkout during development (see SKBUILD_CORE_REQ in noxfile.py); skip
+    # the cache so a stale build of a mutable ref is never reused.
+    subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "pip",
+            "wheel",
+            "--no-cache-dir",
+            "--wheel-dir",
+            str(wheelhouse),
+            SKBUILD_CORE_REQ,
         ],
         check=True,
     )
@@ -169,7 +194,6 @@ def project_setup_py_test() -> Callable[..., AbstractContextManager[Path]]:
         *,
         tmp_dir: Path | None = None,
         verbose_git: bool = True,
-        disable_languages_test: bool = False,
     ) -> AbstractContextManager[Path]:
         project_dir = Path(tmp_dir) if tmp_dir is not None else _tmpdir(project)
         project_dir.mkdir(parents=True, exist_ok=True)
@@ -178,7 +202,7 @@ def project_setup_py_test() -> Callable[..., AbstractContextManager[Path]]:
 
         @contextmanager
         def _runner() -> Generator[Path, None, None]:
-            with execute_setup_py(project_dir, setup_args, disable_languages_test=disable_languages_test):
+            with execute_setup_py(project_dir, setup_args):
                 yield project_dir
 
         return _runner()
@@ -199,11 +223,11 @@ def pytest_report_header() -> str:
     interesting_packages = {
         "build",
         "cmake",
-        "distro",
         "ninja",
         "packaging",
         "pip",
         "scikit-build",
+        "scikit-build-core",
         "setuptools",
         "setuptools_scm",
         "virtualenv",

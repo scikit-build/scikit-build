@@ -29,11 +29,11 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
-    'distro',
-    'packaging',
-    'setuptools>=42.0.0',
-    'tomli; python_version<"3.11"',
-    'wheel>=0.32.0',
+    # TODO: bump to the first release containing scikit_build_core.setuptools.wrapper
+    # (expected 0.13); until then install from
+    # 'scikit-build-core[setuptools] @ git+https://github.com/scikit-build/scikit-build-core@main'
+    # (see noxfile.py / SKBUILD_CORE_REQ).
+    'scikit-build-core[setuptools]>=0.12.3.dev0',
 ]
 
 [project.optional-dependencies]
@@ -62,6 +62,9 @@ test = [
     'requests',
     'virtualenv',
 ]
+
+[project.entry-points."cmake.module"]
+skbuild = "skbuild.resources.cmake"
 
 [project.urls]
 "Bug Tracker" = "https://github.com/scikit-build/scikit-build/issues"
@@ -124,11 +127,7 @@ disallow_untyped_calls = true
 
 [[tool.mypy.overrides]]
 module = [
-  "wheel.*",
-  "setuptools.logging",
-  "setuptools.command.*",
   "numpy",
-  "distro",
 ]
 ignore_missing_imports = true
 
