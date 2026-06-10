@@ -41,6 +41,7 @@ def test_generator_selection():
         has_vs_2017 = find_visual_studio(vs_version=VS_YEAR_TO_VERSION["2017"])
         has_vs_2019 = find_visual_studio(vs_version=VS_YEAR_TO_VERSION["2019"])
         has_vs_2022 = find_visual_studio(vs_version=VS_YEAR_TO_VERSION["2022"])
+        has_vs_2026 = find_visual_studio(vs_version=VS_YEAR_TO_VERSION["2026"])
 
         # As of Dec 2016, this is available only for VS 9.0
         has_vs_for_python_vcvars = any(
@@ -60,7 +61,7 @@ def test_generator_selection():
             # Early versions of 2017 may not ship with Ninja (TODO: check)
             assert get_best_generator().name in {"Ninja", vs_generator}
 
-        elif has_vs_2019 or has_vs_2022:
+        elif has_vs_2019 or has_vs_2022 or has_vs_2026:
             # ninja is provided by the CMake extension bundled with Visual Studio 2017
             # C:/Program Files (x86)/Microsoft Visual Studio/2017/Professional/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe
             assert get_best_generator().name == "Ninja"
@@ -123,7 +124,7 @@ def test_invalid_generator(generator_args, project_setup_py_test):
 
 
 @pytest.mark.skipif(sys.platform != "win32", reason="Requires Windows")
-@pytest.mark.parametrize("vs_year", ["2017", "2019", "2022"])
+@pytest.mark.parametrize("vs_year", ["2017", "2019", "2022", "2026"])
 def test_platform_windows_find_visual_studio(vs_year, capsys):
     """If the environment variable ``SKBUILD_TEST_FIND_VS<vs_year>_INSTALLATION_EXPECTED`` is set,
     this test asserts the value returned by :func:`skbuild.platforms.windows.find_visual_studio()`.
