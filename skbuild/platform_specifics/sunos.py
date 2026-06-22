@@ -14,15 +14,12 @@ class SunOSPlatform(unix.UnixPlatform):
     @property
     def generator_installation_help(self) -> str:
         """Return message guiding the user for installing a valid toolchain."""
-        return (
-            textwrap.dedent(
-                """
+        pyver = ".".join(str(v) for v in sys.version_info[:2])
+        return textwrap.dedent(
+            f"""
             Building SunOS wheels for Python {pyver} requires build toolchain.
             It can be installed using:
 
               pkg install build-essential
             """
-            )
-            .format(pyver=".".join(str(v) for v in sys.version_info[:2]))
-            .strip()
-        )
+        ).strip()

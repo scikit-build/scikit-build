@@ -4,7 +4,6 @@ command."""
 from __future__ import annotations
 
 import os
-import os.path
 from typing import Any
 
 from setuptools.command.egg_info import egg_info as _egg_info

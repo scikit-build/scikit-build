@@ -14,15 +14,12 @@ class OSXPlatform(unix.UnixPlatform):
     @property
     def generator_installation_help(self) -> str:
         """Return message guiding the user for installing a valid toolchain."""
-        return (
-            textwrap.dedent(
-                """
+        pyver = ".".join(str(v) for v in sys.version_info[:2])
+        return textwrap.dedent(
+            f"""
             Building MacOSX wheels for Python {pyver} requires XCode.
             Get it here:
 
               https://developer.apple.com/xcode/
             """
-            )
-            .format(pyver=".".join(str(v) for v in sys.version_info[:2]))
-            .strip()
-        )
+        ).strip()

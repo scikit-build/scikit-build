@@ -23,6 +23,4 @@ class clean(set_build_base_mixin, _clean):
         for dir_ in (CMAKE_INSTALL_DIR(), CMAKE_BUILD_DIR(), SKBUILD_DIR()):
             if os.path.exists(dir_):
                 logger.info("removing '%s'", dir_)
-            # This seems to be there but isn't typed in the stubs TODO
-            if os.path.exists(dir_):
                 rmtree(dir_)

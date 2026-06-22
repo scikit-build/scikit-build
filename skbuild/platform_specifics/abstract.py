@@ -46,9 +46,8 @@ class CMakePlatform:
     def write_test_cmakelist(languages: Iterable[str]) -> None:
         """Write a minimal ``CMakeLists.txt`` useful to check if the
         requested ``languages`` are supported."""
-        if not os.path.exists(test_folder):
-            os.makedirs(test_folder)
-        with open(f"{test_folder}/CMakeLists.txt", "w", encoding="utf-8") as f:
+        os.makedirs(test_folder, exist_ok=True)
+        with open(os.path.join(test_folder, "CMakeLists.txt"), "w", encoding="utf-8") as f:
             f.write("cmake_minimum_required(VERSION 3.5...3.26)\n")
             f.write("PROJECT(compiler_test NONE)\n")
             for language in languages:
