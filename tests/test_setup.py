@@ -15,6 +15,7 @@ import pytest
 from setuptools import Distribution
 
 from skbuild import setup as skbuild_setup
+from skbuild.exceptions import SKBuildError
 
 from . import (
     _tmpdir,
@@ -77,7 +78,7 @@ def test_cmake_with_sdist_keyword_unsupported():
     tmp_dir = _make_minimal_project("cmake_with_sdist_unsupported")
 
     with push_dir(str(tmp_dir)), push_argv(["setup.py", "--name"]):
-        with pytest.raises(AssertionError, match="cmake_with_sdist not supported yet"):
+        with pytest.raises(SKBuildError, match="cmake_with_sdist not supported yet"):
             skbuild_setup(
                 name="test_cmake_with_sdist",
                 version="0.0.1",
@@ -89,7 +90,7 @@ def test_cmake_install_target_keyword_unsupported():
     tmp_dir = _make_minimal_project("cmake_install_target_unsupported")
 
     with push_dir(str(tmp_dir)), push_argv(["setup.py", "--name"]):
-        with pytest.raises(AssertionError, match="cmake_install_target not supported yet"):
+        with pytest.raises(SKBuildError, match="cmake_install_target not supported yet"):
             skbuild_setup(
                 name="test_cmake_install_target",
                 version="0.0.1",
