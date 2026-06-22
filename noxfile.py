@@ -125,8 +125,12 @@ SAMPLE_PROJECTS = [
     "hello-cython",
     "hello-pybind11",
     "pen2-cython",
-    "hello-cmake-package",
 ]
+if not sys.platform.startswith("win"):
+    # hello-cmake-package's "hello" SHARED library exports no symbols, so MSVC
+    # produces no import library and the extension can't link against it. The
+    # sample-projects noxfile skips it on Windows for the same reason.
+    SAMPLE_PROJECTS.append("hello-cmake-package")
 
 
 @nox.session(default=False)
