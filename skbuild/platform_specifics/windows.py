@@ -200,7 +200,9 @@ def find_visual_studio(vs_version: int) -> str:
 
 # To avoid multiple slow calls to ``subprocess.run()`` (either directly or
 # indirectly through ``query_vcvarsall``), results of previous calls are cached.
-__get_msvc_compiler_env_cache: dict[str, CachedEnv] = {}
+# Failures (an empty mapping) are cached too, so a missing or broken Visual
+# Studio edition is probed at most once.
+__get_msvc_compiler_env_cache: dict[str, CachedEnv | dict[str, str]] = {}
 
 
 def _get_msvc_compiler_env(vs_version: int, vs_toolset: str | None = None) -> CachedEnv | dict[str, str]:
@@ -228,6 +230,7 @@ def _get_msvc_compiler_env(vs_version: int, vs_toolset: str | None = None) -> Ca
     vc_dir = find_visual_studio(vs_version)
     vcvarsall = os.path.join(vc_dir, "vcvarsall.bat")
     if not os.path.exists(vcvarsall):
+        __get_msvc_compiler_env_cache[cache_key] = {}
         return {}
 
     # Set vcvars_ver argument based on toolset
@@ -262,6 +265,7 @@ def _get_msvc_compiler_env(vs_version: int, vs_toolset: str | None = None) -> Ca
     except subprocess.CalledProcessError as exc:
         print(exc.output.decode("utf-16le", errors="replace"), file=sys.stderr, flush=True)
 
+    __get_msvc_compiler_env_cache[cache_key] = {}
     return {}
 
 
@@ -286,8 +290,20 @@ class CMakeVisualStudioCommandLineGenerator(CMakeGenerator):
 
         The platform (32-bit or 64-bit or ARM) is automatically selected.
         """
-        arch = _compute_arch()
-        vc_env = _get_msvc_compiler_env(VS_YEAR_TO_VERSION[year], toolset)
-        env = {str(key.upper()): str(value) for key, value in vc_env.items()}
-        super().__init__(name, env, arch=arch, args=args)
+        self._vs_version = VS_YEAR_TO_VERSION[year]
+        self._vs_toolset = toolset
+        super().__init__(name, arch=_compute_arch(), args=args)
         self._description = f"{self.name} ({CMakeVisualStudioIDEGenerator(year, toolset).description})"
+
+    @property
+    def env(self) -> dict[str, str]:
+        """Visual Studio environment, resolved lazily on first use.
+
+        ``WindowsPlatform`` builds one generator per supported toolset, so
+        resolving the environment here (rather than in ``__init__``) avoids
+        running ``vswhere.exe`` / ``vcvarsall.bat`` for editions that are never
+        selected. Results are cached in :data:`__get_msvc_compiler_env_cache`.
+        """
+        vc_env = _get_msvc_compiler_env(self._vs_version, self._vs_toolset)
+        msvc_env = {str(key.upper()): str(value) for key, value in vc_env.items()}
+        return {**os.environ, **msvc_env}
