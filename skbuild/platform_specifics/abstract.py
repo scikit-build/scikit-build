@@ -279,7 +279,7 @@ class CMakeGenerator:
         """
         self._generator_name = name
         self.args = list(args or [])
-        self.env = dict(list(os.environ.items()) + list(env.items() if env else []))
+        self._env: Mapping[str, str] = env or {}
         self._generator_toolset = toolset
         self._generator_architecture = arch
         description_arch = name if arch is None else f"{name} {arch}"
@@ -287,6 +287,15 @@ class CMakeGenerator:
             self._description = description_arch
         else:
             self._description = f"{description_arch} {toolset}"
+
+    @property
+    def env(self) -> dict[str, str]:
+        """Environment associated with the generator, layered on top of ``os.environ``.
+
+        Resolved lazily so that constructing a generator that is never selected
+        does not pay the cost of probing the environment.
+        """
+        return {**os.environ, **self._env}
 
     @property
     def name(self) -> str:
