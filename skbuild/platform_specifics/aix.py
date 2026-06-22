@@ -14,15 +14,12 @@ class AIXPlatform(unix.UnixPlatform):
     @property
     def generator_installation_help(self) -> str:
         """Return message guiding the user for installing a valid toolchain."""
-        return (
-            textwrap.dedent(
-                """
+        pyver = ".".join(str(v) for v in sys.version_info[:2])
+        return textwrap.dedent(
+            f"""
             Building AIX wheels for Python {pyver} requires IBM XL C/C++.
             Get it here:
 
               https://www.ibm.com/products/xl-c-aix-compiler-power
             """
-            )
-            .format(pyver=".".join(str(v) for v in sys.version_info[:2]))
-            .strip()
-        )
+        ).strip()

@@ -55,7 +55,7 @@ class generate_source_manifest(set_build_base_mixin, Command):
                     except subprocess.CalledProcessError:
                         cmd_out = subprocess.run(["git", "ls-files"], stdout=subprocess.PIPE, check=True).stdout
                     git_files = [git_file.strip() for git_file in cmd_out.split(b"\n")]
-                    manifest_text = b"\n".join([b"include %s" % git_file.strip() for git_file in git_files if git_file])
+                    manifest_text = b"\n".join(b"include %s" % git_file for git_file in git_files if git_file)
                     manifest_text += b"\nexclude MANIFEST.in"
                     manifest_in_file.write(manifest_text)
             except subprocess.CalledProcessError:
