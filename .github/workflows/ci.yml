@@ -30,7 +30,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runs-on: [ubuntu-latest, macos-15-intel, windows-2022]
+        runs-on: [ubuntu-latest, macos-15-intel, windows-2022, windows-latest]
 
     name: Tests on ${{ matrix.runs-on }}
     steps:
@@ -47,6 +47,14 @@ jobs:
         echo "SKBUILD_TEST_FIND_VS2017_INSTALLATION_EXPECTED=0" >> $GITHUB_ENV
         echo "SKBUILD_TEST_FIND_VS2019_INSTALLATION_EXPECTED=0" >> $GITHUB_ENV
         echo "SKBUILD_TEST_FIND_VS2022_INSTALLATION_EXPECTED=1" >> $GITHUB_ENV
+
+    - name: Set environment for available GHA MSVCs
+      if: matrix.runs-on == 'windows-latest'
+      shell: bash
+      run: |
+        echo "SKBUILD_TEST_FIND_VS2017_INSTALLATION_EXPECTED=0" >> $GITHUB_ENV
+        echo "SKBUILD_TEST_FIND_VS2019_INSTALLATION_EXPECTED=0" >> $GITHUB_ENV
+        echo "SKBUILD_TEST_FIND_VS2026_INSTALLATION_EXPECTED=1" >> $GITHUB_ENV
 
     - name: Set environment for Fortran compiler on MacOS
       if: runner.os == 'macOS'
