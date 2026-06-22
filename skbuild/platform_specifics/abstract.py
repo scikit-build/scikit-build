@@ -64,7 +64,7 @@ class CMakePlatform:
                 "  if(NOT MSVC)\n"
                 '    message(FATAL_ERROR "MSVC is required to pass this check.")\n'
                 "  elseif(MSVC_VERSION LESS FORCE_MIN OR MSVC_VERSION GREATER FORCE_MAX)\n"
-                '    message(FATAL_ERROR "MSVC ${MSVC_VERSION} does pass this check.")\n'
+                '    message(FATAL_ERROR "MSVC ${MSVC_VERSION} does not pass this check.")\n'
                 "  endif()\n"
                 "endif()\n"
             )
