@@ -87,7 +87,7 @@ def _default_skbuild_plat_name() -> str:
     # it returns the macOS version on which Python was built which may be
     # significantly older than the user's current machine.
     release = os.environ.get("MACOSX_DEPLOYMENT_TARGET", "") or release
-    major_macos, minor_macos = release.split(".")[:2]
+    major_macos, minor_macos = [*release.split("."), "0"][:2]
 
     # On macOS 11+, only the major version matters.
     if int(major_macos) >= 11:
@@ -100,7 +100,7 @@ def _default_skbuild_plat_name() -> str:
 
     archflags = os.environ.get("ARCHFLAGS")
     if archflags is not None:
-        machine = ";".join(set(archflags.split()) & supported_macos_architectures)
+        machine = ";".join(sorted(set(archflags.split()) & supported_macos_architectures))
 
     machine = os.environ.get("CMAKE_OSX_ARCHITECTURES", machine)
 

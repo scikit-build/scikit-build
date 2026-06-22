@@ -60,7 +60,7 @@ class WindowsPlatform(abstract.CMakePlatform):
             """
             Building windows wheels requires Microsoft Visual Studio.
             Get it from:
-n
+
              https://visualstudio.microsoft.com/vs/
             """
         ).strip()
@@ -233,9 +233,9 @@ def _get_msvc_compiler_env(vs_version: int, vs_toolset: str | None = None) -> Ca
     # Set vcvars_ver argument based on toolset
     vcvars_ver = ""
     if vs_toolset is not None:
-        match = re.findall(r"^v(\d\d)(\d+)$", vs_toolset)[0]
+        match = re.match(r"^v(\d\d)(\d+)$", vs_toolset)
         if match:
-            match_str = ".".join(match)
+            match_str = ".".join(match.groups())
             vcvars_ver = f"-vcvars_ver={match_str}"
 
     try:

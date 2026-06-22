@@ -78,7 +78,7 @@ def has_cmake_cache_arg(cmake_args: list[str], arg_name: str, arg_value: str | N
             if arg_value is None:
                 return True
             if "=" in arg:
-                return arg.split("=")[1] == arg_value
+                return arg.split("=", 1)[1] == arg_value
     return False
 
 
