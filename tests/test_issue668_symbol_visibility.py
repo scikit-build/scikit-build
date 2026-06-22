@@ -14,6 +14,7 @@ from . import (
     initialize_git_repo_and_commit,
     prepare_project,
     push_dir,
+    push_env,
 )
 
 
@@ -28,10 +29,11 @@ def test_symbol_visibility(skip_override):
         prepare_project(project, tmp_dir)
         initialize_git_repo_and_commit(tmp_dir, verbose=True)
 
-        with execute_setup_py(
-            tmp_dir, ["build", f"-DSKBUILD_GNU_SKIP_LOCAL_SYMBOL_EXPORT_OVERRIDE:BOOL={skip_override}"]
-        ):
-            pass
+        # The legacy ``-D`` CLI option is gone; cmake args now flow through the
+        # CMAKE_ARGS environment variable read by scikit-build-core.
+        with push_env(CMAKE_ARGS=f"-DSKBUILD_GNU_SKIP_LOCAL_SYMBOL_EXPORT_OVERRIDE:BOOL={skip_override}"):
+            with execute_setup_py(tmp_dir, ["build"]):
+                pass
 
         print(f"Running test with SKBUILD_GNU_SKIP_LOCAL_SYMBOL_EXPORT_OVERRIDE:BOOL={skip_override}")
 

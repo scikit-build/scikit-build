@@ -10,8 +10,10 @@ from __future__ import annotations
 
 import pytest
 
+from skbuild.exceptions import SKBuildError
+
 
 def test_cmake_install_target_errors(project_setup_py_test):
-    with pytest.raises((SystemExit, AssertionError), match="cmake_install_target"):
+    with pytest.raises(SKBuildError, match="cmake_install_target"):
         with project_setup_py_test("test-cmake-target", ["build"]):
             pass
