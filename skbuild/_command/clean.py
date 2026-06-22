@@ -8,8 +8,8 @@ from shutil import rmtree
 import setuptools  # noqa: F401
 from distutils.command.clean import clean as _clean
 
-from ..constants import CMAKE_BUILD_DIR, CMAKE_INSTALL_DIR, SKBUILD_DIR
-from ..utils import logger
+from .._constants import CMAKE_BUILD_DIR, CMAKE_INSTALL_DIR, SKBUILD_DIR
+from .._utils import logger
 from . import set_build_base_mixin
 
 

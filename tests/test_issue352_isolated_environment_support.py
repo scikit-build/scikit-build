@@ -59,7 +59,7 @@ def test_isolated_env_trigger_reconfigure(mocker):
     #
     # mock _save_cmake_spec
     #
-    _save_cmake_spec_original = skbuild.setuptools_wrap._save_cmake_spec
+    _save_cmake_spec_original = skbuild._setuptools_wrap._save_cmake_spec
 
     exit_after_saving_cmake_spec = "exit skbuild saving cmake spec"
 
@@ -67,7 +67,7 @@ def test_isolated_env_trigger_reconfigure(mocker):
         _save_cmake_spec_original(args)
         raise RuntimeError(exit_after_saving_cmake_spec)
 
-    mocker.patch("skbuild.setuptools_wrap._save_cmake_spec", new=_save_cmake_spec_mock)
+    mocker.patch("skbuild._setuptools_wrap._save_cmake_spec", new=_save_cmake_spec_mock)
 
     #
     # mock make

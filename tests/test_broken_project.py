@@ -76,7 +76,7 @@ def test_invalid_cmake(exception, mocker, project_setup_py_test):
             raise exceptions[exception]
         return run_original(*args, **kwargs)
 
-    mocker.patch("skbuild.cmaker.subprocess.run", new=run_mock)
+    mocker.patch("skbuild._cmaker.subprocess.run", new=run_mock)
 
     with push_dir():
         with pytest.raises(SystemExit) as excinfo:
@@ -97,7 +97,7 @@ def test_first_invalid_generator(mocker, capfd, project_setup_py_test):
         type(platform), "default_generators", new_callable=mocker.PropertyMock, return_value=default_generators
     )
 
-    mocker.patch("skbuild.cmaker.get_platform", return_value=platform)
+    mocker.patch("skbuild._cmaker.get_platform", return_value=platform)
 
     with push_dir(), push_env(CMAKE_GENERATOR=None):
         with project_setup_py_test("hello-no-language", ["build"]):
@@ -112,7 +112,7 @@ def test_invalid_generator(mocker, capfd, project_setup_py_test):
     mocker.patch.object(
         type(platform), "default_generators", new_callable=mocker.PropertyMock, return_value=[CMakeGenerator("Invalid")]
     )
-    mocker.patch("skbuild.cmaker.get_platform", return_value=platform)
+    mocker.patch("skbuild._cmaker.get_platform", return_value=platform)
 
     with push_dir(), push_env(CMAKE_GENERATOR=None):
         with pytest.raises(SystemExit) as excinfo:

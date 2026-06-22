@@ -7,8 +7,8 @@ import os
 
 from setuptools.command.build_py import build_py as _build_py
 
-from ..constants import CMAKE_INSTALL_DIR
-from ..utils import distribution_hide_listing, logger
+from .._constants import CMAKE_INSTALL_DIR
+from .._utils import distribution_hide_listing, logger
 from . import set_build_base_mixin
 
 

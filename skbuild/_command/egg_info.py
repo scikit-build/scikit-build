@@ -8,8 +8,8 @@ from typing import Any
 
 from setuptools.command.egg_info import egg_info as _egg_info
 
-from ..constants import CMAKE_INSTALL_DIR
-from ..utils import to_unix_path
+from .._constants import CMAKE_INSTALL_DIR
+from .._utils import to_unix_path
 from . import set_build_base_mixin
 
 

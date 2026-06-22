@@ -7,7 +7,7 @@ from typing import Any
 
 from setuptools.command.install_scripts import install_scripts as _install_scripts
 
-from ..utils import distribution_hide_listing, logger
+from .._utils import distribution_hide_listing, logger
 from . import CommandMixinProtocol, set_build_base_mixin
 
 

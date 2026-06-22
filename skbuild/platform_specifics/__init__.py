@@ -1,13 +1,22 @@
-"""This package provides :func:`get_platform()` allowing to get an instance
-of :class:`.abstract.CMakePlatform` matching the current platform.
+"""Deprecated public alias for :mod:`skbuild._platform_specifics`.
 
-This folder contains files the define CMake's defaults for given platforms.  Any of them can be overridden by either
-command line or by environment variables.
+This package is removed in the next major release, when scikit-build-core's
+setuptools plugin becomes the backend. Importing it emits a
+:class:`~skbuild.exceptions.SKBuildDeprecationWarning`.
 """
 
 from __future__ import annotations
 
-from .abstract import CMakeGenerator
-from .platform_factory import get_platform
+import warnings
+
+from .._platform_specifics import CMakeGenerator, get_platform
+from ..exceptions import SKBuildDeprecationWarning
 
 __all__ = ["CMakeGenerator", "get_platform"]
+
+warnings.warn(
+    "skbuild.platform_specifics is deprecated and will be removed in the next major release, when "
+    "scikit-build-core's setuptools backend takes over; switch to scikit-build-core.",
+    SKBuildDeprecationWarning,
+    stacklevel=2,
+)

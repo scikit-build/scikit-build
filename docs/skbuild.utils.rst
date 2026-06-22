@@ -1,7 +1,7 @@
 skbuild.utils package
 =====================
 
-.. automodule:: skbuild.utils
+.. automodule:: skbuild._utils
    :members:
    :undoc-members:
    :show-inheritance:
