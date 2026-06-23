@@ -29,7 +29,7 @@ repos:
     - black==26.*
 
 - repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.15.17
+  rev: v0.15.18
   hooks:
   - id: ruff-check
     args: ["--fix"]
@@ -51,7 +51,7 @@ repos:
   - id: rst-inline-touching-normal
 
 - repo: https://github.com/henryiii/check-sdist
-  rev: "v1.4.0"
+  rev: "v1.5.0"
   hooks:
    - id: check-sdist
      args: [--inject-junk]
