@@ -104,11 +104,3 @@ skbuild.command.sdist module
    :members:
    :undoc-members:
    :show-inheritance:
-
-skbuild.command.test module
----------------------------
-
-.. automodule:: skbuild.command.test
-   :members:
-   :undoc-members:
-   :show-inheritance:

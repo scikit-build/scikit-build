@@ -92,12 +92,12 @@ Setting up environment
       expression: ``^[0-9]+(\.[0-9]+)*(\.post[0-9]+)?$``.
 
 
-5. In ``CHANGES.rst`` replace ``Next Release`` section header with
+5. In ``CHANGES.md`` replace ``Next Release`` section header with
    ``Scikit-build X.Y.Z`` and commit the changes.
 
   .. code::
 
-    $ git add CHANGES.rst && \
+    $ git add CHANGES.md && \
       git commit -m "Scikit-build $release"
 
 
@@ -121,29 +121,23 @@ Setting up environment
       git push origin main
 
 
-8. Make a `GitHub release <https://github.com/scikit-build/scikit-build/releases/new>`_. Paste the converted release notes as markdown; convert using
-
-  .. code::
-
-    cat CHANGES.rst | pandoc -f rst -t gfm
-
-  and then edit the result (it will not be perfect) to prepare the body of the
-  release. You can also try `clipboardtomarkdown <https://euangoddard.github.io/clipboard2markdown/>`_
-  or copying to a draft `discord <https://discourse.slicer.org/>`_ post. PRs
-  should be converted to simple ``#<number>`` form. Be sure to use the tag you just
-  pushed as the tag version, and ``Scikit-build X.Y.Z`` should be the name.
+8. Make a `GitHub release <https://github.com/scikit-build/scikit-build/releases/new>`_.
+   Paste the release's section from ``CHANGES.md`` as the body. The ``{pr}`` and
+   ``{user}`` roles should be converted to simple ``#<number>`` and ``@<user>``
+   form. Be sure to use the tag you just pushed as the tag version, and
+   ``Scikit-build X.Y.Z`` should be the name.
 
   .. note::
 
     For examples of releases, see https://github.com/scikit-build/scikit-build/releases
 
 
-9. Add a ``Next Release`` section back in ``CHANGES.rst``, commit and push local changes.
+9. Add a ``Next Release`` section back in ``CHANGES.md``, commit and push local changes.
 
   .. code::
 
-    $ git add CHANGES.rst && \
-      git commit -m "CHANGES.rst: Add \"Next Release\" section [ci skip]" && \
+    $ git add CHANGES.md && \
+      git commit -m "CHANGES.md: Add \"Next Release\" section [ci skip]" && \
       git push origin main
 
 
