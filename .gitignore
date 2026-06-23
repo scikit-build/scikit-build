@@ -52,6 +52,15 @@ docs/_build
 .vscode/*
 *~
 
+# OS junk
+.DS_Store
+.DS_Store?
+.Spotlight-V100
+.Trashes
+._*
+Thumbs.db
+ehthumbs.db
+
 # build output (testing)
 skbuild/_cmake_test_compile/*
 
