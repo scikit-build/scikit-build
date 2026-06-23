@@ -78,7 +78,7 @@ def docs(session):
     session.install("-e.[docs]")
 
     session.chdir("docs")
-    shutil.rmtree("_build")
+    shutil.rmtree("_build", ignore_errors=True)
     session.run("sphinx-build", "-M", "html", ".", "_build", "-W")
 
     if args.serve:
