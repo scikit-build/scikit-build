@@ -16,6 +16,45 @@ encouraged to switch.
 
 .. START-BRIEF-CHANGELOG
 
+Scikit-build 0.19.1
+===================
+
+This is a patch release to add support for Visual Studio 2026.
+
+Features
+--------
+
+* Support Visual Studio 18 2026 in :pr:`1186`
+
+
+Bug fixes
+---------
+
+* Correctness bugs found in code review in :pr:`1191`
+* Resolve Visual Studio generator environments lazily in :pr:`1193`
+
+
+Testing
+-------
+
+* Add windows-latest job for Visual Studio 2026 in :pr:`1194`
+* Convert decorator into fixture in :pr:`1175`
+* Remove usage of ``py.path`` in :pr:`1173`
+* Make symlink auto-generated in :pr:`1172`
+
+
+Miscellaneous
+-------------
+
+* Trivial cleanups found in code review in :pr:`1192`
+* Update ruff-check and a bit more in :pr:`1174`
+* Add agent files in :pr:`1184`
+* Bump setup-uv to maintained tag scheme in :pr:`1179`
+* Bump the actions group in :pr:`1180` and :pr:`1183`
+* Bump actions/checkout from 6 to 7 in :pr:`1190`
+* Pre-commit autoupdate in :pr:`1176`, :pr:`1182`, and :pr:`1187`
+
+
 Scikit-build 0.19.0
 ===================
 
