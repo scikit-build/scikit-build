@@ -34,8 +34,9 @@ Dependencies
 Python Packages
 ^^^^^^^^^^^^^^^
 
-The project has a few common Python package dependencies. These can be seen in
-``setup.py`` and ``pyproject.toml``.
+The main runtime dependency is ``scikit-build-core[setuptools]``, which
+provides the build backend. The full list of dependencies can be seen in
+``pyproject.toml``.
 
 Compiler Toolchain
 ^^^^^^^^^^^^^^^^^^

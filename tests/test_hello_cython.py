@@ -36,6 +36,7 @@ def test_hello_cython_sdist(project_setup_py_test):
 
         expected_content = [
             f"{dirname}/CMakeLists.txt",
+            f"{dirname}/MANIFEST.in",
             f"{dirname}/hello/_hello.pyx",
             f"{dirname}/hello/CMakeLists.txt",
             f"{dirname}/hello/__init__.py",
@@ -47,7 +48,7 @@ def test_hello_cython_sdist(project_setup_py_test):
         if sdists_tar:
             sdist_archive = f"dist/{dirname}.tar.gz"
 
-        check_sdist_content(sdist_archive, dirname, expected_content, package_dir="hello")
+        check_sdist_content(sdist_archive, dirname, expected_content)
 
 
 def test_hello_cython_wheel(project_setup_py_test):

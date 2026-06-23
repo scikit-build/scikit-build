@@ -1,0 +1,2 @@
+include hello/CMakeLists.txt
+include hello/_hello.cxx

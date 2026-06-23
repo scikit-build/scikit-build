@@ -8,11 +8,56 @@ details, see the commit logs at https://github.com/scikit-build/scikit-build
 Next Release
 ============
 
-We are hard at work on the next generation of scikit-build `scikit-build-core
-<https://github.com/scikit-build/scikit-build-core>`_, which will eventually
-replace the backend here. We are also continuing to fix bugs, make
-improvements, and backport changes here, but new and existing projects are
-encouraged to switch.
+The classic scikit-build backend has been replaced by `scikit-build-core
+<https://github.com/scikit-build/scikit-build-core>`_'s setuptools plugin.
+``skbuild.setup()`` is now a thin wrapper around
+``scikit_build_core.setuptools.wrapper.setup()``, and scikit-build depends on
+``scikit-build-core[setuptools]``. Most packages — those that only use
+``from skbuild import setup`` with the documented ``cmake_*`` keyword
+arguments — will continue to build unchanged. New projects are still
+encouraged to use scikit-build-core directly.
+
+What still works:
+
+* ``from skbuild import setup`` with ``cmake_args``, ``cmake_source_dir``,
+  ``cmake_install_dir``, and ``cmake_process_manifest_hook``.
+* The shipped CMake modules (``find_package(PythonExtensions)``, ``Cython``,
+  ``F2PY``, ``NumPy``, ...), now provided via scikit-build-core's
+  ``cmake.module`` entry point.
+* The ``SKBUILD`` CMake variable is still set (now ``"2"`` instead of
+  ``TRUE``; both are truthy).
+
+Breaking changes:
+
+* The scikit-build specific command line options were removed:
+  ``--build-type``, ``-G/--generator``, ``-j``, ``--cmake-executable``,
+  ``--skip-generator-test``, ``--hide-listing``, ``--force-cmake``,
+  ``--skip-cmake``, ``--install-target``, and the
+  ``setup.py <args> -- <cmake args> -- <build tool args>`` syntax. Use the
+  ``CMAKE_ARGS``/``CMAKE_GENERATOR`` environment variables, the
+  ``cmake_args`` keyword, or ``[tool.scikit-build]`` settings /
+  ``SKBUILD_*`` environment variables instead.
+* ``cmake_with_sdist=True`` and ``cmake_install_target`` values other than
+  ``"install"`` now raise errors; ``cmake_languages`` and
+  ``cmake_minimum_required_version`` are ignored with a warning (set
+  ``cmake.version`` in ``[tool.scikit-build]`` instead).
+* The internal modules ``skbuild.cmaker``, ``skbuild.constants``,
+  ``skbuild.command``, ``skbuild.platform_specifics``, ``skbuild.utils``,
+  and ``skbuild.setuptools_wrap`` were removed.
+  ``skbuild.exceptions.SKBuildError`` is now an alias of setuptools'
+  ``SetupError``.
+* The ``_skbuild`` build directory is gone; the standard setuptools
+  ``build/`` directories are used (CMake builds in ``build/temp.*/_skbuild``).
+* sdists no longer auto-generate their manifest from git; provide a
+  ``MANIFEST.in`` (or use setuptools-scm) like any setuptools project.
+* Editable installs (``pip install -e .``, ``build_ext --inplace``) require
+  ``editable.mode = "inplace"`` under ``[tool.scikit-build]`` in
+  ``pyproject.toml``.
+* CMake generator probing (including Visual Studio discovery) was removed;
+  CMake's own default generator selection applies, and ``CMAKE_GENERATOR``
+  overrides it.
+* Dependencies changed to ``scikit-build-core[setuptools]``; ``distro``,
+  ``wheel``, and ``tomli`` were dropped.
 
 .. START-BRIEF-CHANGELOG
 

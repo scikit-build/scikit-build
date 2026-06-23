@@ -40,6 +40,7 @@ def test_hello_fortran_sdist(project_setup_py_test):
             dirname = "hello_fortran-1.2.3"
 
         expected_content = [
+            f"{dirname}/MANIFEST.in",
             f"{dirname}/bonjour/_bonjour.f90",
             f"{dirname}/bonjour/_bonjour.pyf",
             f"{dirname}/bonjour/CMakeLists.txt",

@@ -1,14 +1,10 @@
 from __future__ import annotations
 
-import os
 import textwrap
 
 import pytest
 
-import skbuild
-from skbuild.constants import CMAKE_BUILD_DIR
-
-from . import _tmpdir, execute_setup_py
+from . import _tmpdir, cmake_build_dir, execute_setup_py, push_env
 
 
 def test_isolated_env_trigger_reconfigure(mocker):
@@ -39,9 +35,11 @@ def test_isolated_env_trigger_reconfigure(mocker):
     #
     # mock configure
     #
-    def fake_configure(*args, **kwargs):
+    configure_calls = []
+
+    def fake_configure(self, *args, **kwargs):
         # Simulate a successful configuration creating a CMakeCache.txt
-        cmakecache = tmp_dir / CMAKE_BUILD_DIR() / "CMakeCache.txt"
+        cmakecache = self.config.build_dir / "CMakeCache.txt"
         cmakecache.parent.mkdir(parents=True, exist_ok=True)
         cmakecache.write_text(
             textwrap.dedent(
@@ -51,64 +49,44 @@ def test_isolated_env_trigger_reconfigure(mocker):
             """
             )
         )
+        configure_calls.append((args, kwargs))
 
-    # Skip real configuration creating the CMakeCache.txt expected by
-    # "skbuild.setuptools_wrap._load_cmake_spec()" function
-    mocker.patch("skbuild.cmaker.CMaker.configure", new=fake_configure)
-
-    #
-    # mock _save_cmake_spec
-    #
-    _save_cmake_spec_original = skbuild.setuptools_wrap._save_cmake_spec
-
-    exit_after_saving_cmake_spec = "exit skbuild saving cmake spec"
-
-    def _save_cmake_spec_mock(args):
-        _save_cmake_spec_original(args)
-        raise RuntimeError(exit_after_saving_cmake_spec)
-
-    mocker.patch("skbuild.setuptools_wrap._save_cmake_spec", new=_save_cmake_spec_mock)
+    mocker.patch("scikit_build_core.setuptools.build_cmake.Builder.configure", new=fake_configure)
 
     #
-    # mock make
+    # mock build
     #
-    exit_before_running_cmake = "exit skbuild running make"
-    mocker.patch("skbuild.cmaker.CMaker.make", side_effect=RuntimeError(exit_before_running_cmake))
+    exit_before_running_make = "exit skbuild before running make"
+    mocker.patch(
+        "scikit_build_core.setuptools.build_cmake.Builder.build",
+        side_effect=RuntimeError(exit_before_running_make),
+    )
 
-    # first build: "configure" and "_save_cmake_spec" are expected to be called
-    with pytest.raises(RuntimeError, match=exit_after_saving_cmake_spec):
-        with execute_setup_py(tmp_dir, ["build"], disable_languages_test=True):
+    # first build: "configure" is expected to be called
+    with pytest.raises(RuntimeError, match=exit_before_running_make), execute_setup_py(tmp_dir, ["build"]):
+        pass
+    assert len(configure_calls) == 1
+
+    build_dir = cmake_build_dir(tmp_dir)
+    assert build_dir is not None
+    assert (build_dir / "CMakeCache.txt").exists()
+
+    # pip updates PYTHONPATH with the temporary path where the project
+    # dependencies are installed when doing an isolated build. We simulate
+    # this by updating the corresponding environment variable and check that
+    # the following build (re)configures the project so that the tools
+    # (e.g cmake, ninja) from the isolated environment are picked up.
+    #
+    # Note: the scikit-build-core backend always reconfigures (it does not
+    # cache a "cmake spec" like classic scikit-build did), so a changed
+    # isolated environment can never result in a stale configuration.
+    with push_env(PYTHONPATH="/path/to/anything"):
+        with pytest.raises(RuntimeError, match=exit_before_running_make), execute_setup_py(tmp_dir, ["build"]):
             pass
-
-    # second build: no reconfiguration should happen, only "make" is expected to be called
-    with pytest.raises(RuntimeError, match=exit_before_running_cmake):
-        with execute_setup_py(tmp_dir, ["build"], disable_languages_test=True):
-            pass
-
-    # since pip updates PYTHONPATH with the temporary path
-    # where the project dependencies are installed, we simulate
-    # this by updating the corresponding environment variable.
-    os.environ["PYTHONPATH"] = "/path/to/anything"
-
-    # after updating the env, reconfiguration is expected
-    with pytest.raises(RuntimeError, match=exit_after_saving_cmake_spec):
-        with execute_setup_py(tmp_dir, ["build"], disable_languages_test=True):
-            pass
-
-    # no reconfiguration should happen
-    with pytest.raises(RuntimeError, match=exit_before_running_cmake):
-        with execute_setup_py(tmp_dir, ["build"], disable_languages_test=True):
-            pass
+    assert len(configure_calls) == 2
 
     # this is the other variable set by pip when doing isolated build
-    os.environ["PYTHONNOUSERSITE"] = "1"
-
-    # after updating the env, reconfiguration is expected
-    with pytest.raises(RuntimeError, match=exit_after_saving_cmake_spec):
-        with execute_setup_py(tmp_dir, ["build"], disable_languages_test=True):
+    with push_env(PYTHONPATH="/path/to/anything", PYTHONNOUSERSITE="1"):
+        with pytest.raises(RuntimeError, match=exit_before_running_make), execute_setup_py(tmp_dir, ["build"]):
             pass
-
-    # no reconfiguration should happen
-    with pytest.raises(RuntimeError, match=exit_before_running_cmake):
-        with execute_setup_py(tmp_dir, ["build"], disable_languages_test=True):
-            pass
+    assert len(configure_calls) == 3

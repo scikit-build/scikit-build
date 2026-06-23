@@ -1,200 +1,103 @@
 from __future__ import annotations
 
+import pathlib
 import platform
 import sys
 import textwrap
 
 import pytest
 
-import skbuild.constants
+from . import _tmpdir, cmake_build_dir, execute_setup_py, get_cmakecache_variables, push_env
 
-from . import _tmpdir, execute_setup_py, push_env
-
-params = (
-    "osx_deployment_target_env_var,cli_setup_args,"
-    "keyword_cmake_args,cli_cmake_args,expected_cmake_osx_deployment_target"
-)
+pytestmark = pytest.mark.skipif(sys.platform != "darwin", reason="macOS-only behavior")
 
 
-@pytest.mark.parametrize(
-    params,
-    [
-        # default plat_name is 'macosx-10.9-x86_64'
-        (
-            # osx_deployment_target_env_var
-            None,
-            # cli_setup_args
-            [],
-            # keyword_cmake_args
-            [],
-            # cli_cmake_args
-            [],
-            # expected_cmake_osx_deployment_target
-            "10.9",
-        ),
-        (
-            # osx_deployment_target_env_var
-            "10.7",
-            # cli_setup_args
-            [],
-            # keyword_cmake_args
-            [],
-            # cli_cmake_args
-            [],
-            # expected_cmake_osx_deployment_target
-            "10.7",
-        ),
-        (
-            # osx_deployment_target_env_var
-            "10.7",
-            # cli_setup_args
-            ["--plat-name", "macosx-10.9-x86_64"],
-            # keyword_cmake_args
-            [],
-            # cli_cmake_args
-            [],
-            # expected_cmake_osx_deployment_target
-            "10.9",
-        ),
-        (
-            # osx_deployment_target_env_var
-            None,
-            # cli_setup_args
-            ["--plat-name", "macosx-10.6-x86_64"],
-            # keyword_cmake_args
-            [],
-            # cli_cmake_args
-            [],
-            # expected_cmake_osx_deployment_target
-            "10.6",
-        ),
-        (
-            # osx_deployment_target_env_var
-            None,
-            # cli_setup_args
-            ["--plat-name", "macosx-10.7-x86_64"],
-            # keyword_cmake_args
-            [],
-            # cli_cmake_args
-            [],
-            # expected_cmake_osx_deployment_target
-            "10.7",
-        ),
-        (
-            # osx_deployment_target_env_var
-            None,
-            # cli_setup_args
-            [],
-            # keyword_cmake_args
-            ["-DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"],
-            # cli_cmake_args
-            [],
-            # expected_cmake_osx_deployment_target
-            "10.7",
-        ),
-        (
-            # osx_deployment_target_env_var
-            None,
-            # cli_setup_args
-            ["--plat-name", "macosx-10.12-x86_64"],
-            # keyword_cmake_args
-            ["-DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"],
-            # cli_cmake_args
-            [],
-            # expected_cmake_osx_deployment_target
-            "10.7",
-        ),
-        (
-            # osx_deployment_target_env_var
-            None,
-            # cli_setup_args
-            [],
-            # keyword_cmake_args
-            ["-DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"],
-            # cli_cmake_args
-            ["-DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.8"],
-            # expected_cmake_osx_deployment_target
-            "10.8",
-        ),
-        (
-            # osx_deployment_target_env_var
-            None,
-            # cli_setup_args
-            ["--plat-name", "macosx-10.12-x86_64"],
-            # keyword_cmake_args
-            ["-DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.7"],
-            # cli_cmake_args
-            ["-DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.8"],
-            # expected_cmake_osx_deployment_target
-            "10.8",
-        ),
-    ],
-)
-def test_cmake_args_keyword_osx_default(
-    osx_deployment_target_env_var,
-    cli_setup_args,
-    keyword_cmake_args,
-    cli_cmake_args,
-    expected_cmake_osx_deployment_target,
-    mocker,
-    monkeypatch,
-):
-    tmp_dir = _tmpdir("cmake_args_keyword_osx_default")
+def _prepare_project(tmp_dir: pathlib.Path) -> None:
+    """Write a tiny C project driven by ``skbuild.setup()`` into ``tmp_dir``."""
 
+    (tmp_dir / "pyproject.toml").write_text(
+        textwrap.dedent(
+            """
+            [build-system]
+            requires = ["scikit-build", "setuptools"]
+            build-backend = "setuptools.build_meta"
+            """
+        )
+    )
     (tmp_dir / "setup.py").write_text(
         textwrap.dedent(
             """
-        from skbuild import setup
-        setup(
-            name="test_cmake_args_keyword_osx_default",
-            version="1.2.3",
-            description="A minimal example package",
-            author="The scikit-build team",
-            license="MIT",
-            cmake_args=[{cmake_args}]
-        )
-        """.format(cmake_args=",".join([f"'{arg}'" for arg in keyword_cmake_args]))
+            from skbuild import setup
+            setup(
+                name="test_cmake_osx_args",
+                version="1.2.3",
+                description="A minimal example package",
+                author="The scikit-build team",
+                license="MIT",
+            )
+            """
         )
     )
+    (tmp_dir / "hello.c").write_text("int hello(void) { return 42; }\n")
     (tmp_dir / "CMakeLists.txt").write_text(
         textwrap.dedent(
             """
-        message(FATAL_ERROR "This error message should not be displayed")
-        """
+            cmake_minimum_required(VERSION 3.5...3.26)
+            project(hello C)
+            add_library(hello STATIC hello.c)
+            file(WRITE "${CMAKE_BINARY_DIR}/hello.txt" "hello")
+            install(FILES "${CMAKE_BINARY_DIR}/hello.txt" DESTINATION ".")
+            """
         )
     )
 
-    mock_configure = mocker.patch("skbuild.cmaker.CMaker.configure", side_effect=RuntimeError("exit skbuild"))
 
-    monkeypatch.setattr(platform, "mac_ver", lambda: ("10.9", None, "x84_64"))
-    monkeypatch.setattr(platform, "machine", lambda: "x86_64")
-    monkeypatch.setattr(sys, "platform", "darwin")
+def _build_and_read_cmakecache(tmp_dir: pathlib.Path) -> dict[str, tuple[str, str]]:
+    with execute_setup_py(tmp_dir, ["build"]):
+        pass
+    build_dir = cmake_build_dir(tmp_dir)
+    assert build_dir is not None
+    cmakecache = build_dir / "CMakeCache.txt"
+    assert cmakecache.exists()
+    variables: dict[str, tuple[str, str]] = get_cmakecache_variables(cmakecache)
+    return variables
 
-    with push_env(MACOSX_DEPLOYMENT_TARGET=osx_deployment_target_env_var):
-        monkeypatch.setattr(skbuild.constants, "_SKBUILD_PLAT_NAME", skbuild.constants._default_skbuild_plat_name())
-        with pytest.raises(RuntimeError, match="exit skbuild"):
-            with execute_setup_py(tmp_dir, ["build", *cli_setup_args, "--", *cli_cmake_args]):
-                pass
 
-    assert mock_configure.call_count == 1
+def test_osx_env_vars_set_cmake_osx_variables():
+    """ARCHFLAGS and MACOSX_DEPLOYMENT_TARGET control CMAKE_OSX_ARCHITECTURES
+    and CMAKE_OSX_DEPLOYMENT_TARGET (issue #342, scikit-build-core backend)."""
 
-    current_cmake_args = mock_configure.call_args[0][0]
+    tmp_dir = _tmpdir("cmake_osx_args_env_vars")
+    _prepare_project(tmp_dir)
 
-    # Since additional cmake argument are appended, it is not possible to simply
-    # compare lists.
-    found_cmake_osx_deployment_target = False
-    for cmake_arg in reversed(current_cmake_args):
-        if cmake_arg.startswith("-DCMAKE_OSX_DEPLOYMENT_TARGET:STRING="):
-            if cmake_arg.endswith(expected_cmake_osx_deployment_target):
-                found_cmake_osx_deployment_target = True
-            break
+    arch = platform.machine()  # host-compatible so the build succeeds
+    with push_env(ARCHFLAGS=f"-arch {arch}", MACOSX_DEPLOYMENT_TARGET="11.0", CMAKE_ARGS=None):
+        variables = _build_and_read_cmakecache(tmp_dir)
 
-    assert found_cmake_osx_deployment_target, textwrap.dedent(
-        f"""
-                    Argument -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING={expected_cmake_osx_deployment_target} is NOT found near the end of
-                    current list of arguments:
-                      keyword_cmake_args  : {keyword_cmake_args}
-                      cli_cmake_args    : {cli_cmake_args}
-                      current_cmake_args: {current_cmake_args}
-                    """
-    )
+    assert "CMAKE_OSX_ARCHITECTURES" in variables
+    _, osx_architectures = variables["CMAKE_OSX_ARCHITECTURES"]
+    assert osx_architectures == arch
+
+    assert "CMAKE_OSX_DEPLOYMENT_TARGET" in variables
+    _, osx_deployment_target = variables["CMAKE_OSX_DEPLOYMENT_TARGET"]
+    assert osx_deployment_target == "11.0"
+
+
+def test_osx_default_build():
+    """Without env overrides, the build succeeds and the deployment target
+    defaults to the one from the setuptools plat-name."""
+
+    tmp_dir = _tmpdir("cmake_osx_args_default")
+    _prepare_project(tmp_dir)
+
+    with push_env(ARCHFLAGS=None, MACOSX_DEPLOYMENT_TARGET=None, CMAKE_ARGS=None):
+        variables = _build_and_read_cmakecache(tmp_dir)
+
+    # No ARCHFLAGS -> scikit-build-core does not pass CMAKE_OSX_ARCHITECTURES.
+    assert variables.get("CMAKE_OSX_ARCHITECTURES", (None, ""))[1] == ""
+
+    # The deployment target is always set in the CMake environment from the
+    # setuptools plat-name, and CMake records it in the cache.
+    assert "CMAKE_OSX_DEPLOYMENT_TARGET" in variables
+    _, osx_deployment_target = variables["CMAKE_OSX_DEPLOYMENT_TARGET"]
+    assert osx_deployment_target

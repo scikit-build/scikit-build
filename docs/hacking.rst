@@ -2,31 +2,20 @@
 Hacking
 =======
 
-Controlling CMake using scikit-build
-------------------------------------
+Where the build backend lives
+-----------------------------
 
-You can drive CMake directly using scikit-build::
+.. versionchanged:: 2.0
 
-    """ Use scikit-build's `cmaker` to control CMake configuration and build.
+    The ``skbuild.cmaker`` module and the rest of the classic build backend
+    were removed.
 
-    1. Use `cmaker` to define an object that provides convenient access to
-       CMake's configure and build functionality.
-
-    2. Use defined object, `maker`, to call `configure()` to read the
-       `CMakeLists.txt` file in the current directory and generate a Makefile,
-       Visual Studio solution, or whatever is appropriate for your platform.
-
-    3. Call `make()` on the object to execute the build with the
-       appropriate build tool and perform installation to the local directory.
-    """
-    from skbuild import cmaker
-    maker = cmaker.CMaker()
-
-    maker.configure()
-
-    maker.make()
-
-See :obj:`skbuild.cmaker.CMaker` for more details.
+The build backend is provided by the setuptools plugin of `scikit-build-core
+<https://scikit-build-core.readthedocs.io>`_; ``skbuild`` is a thin wrapper
+around it that re-exports ``setup()`` and ships the scikit-build CMake
+modules. If you want to hack on how projects are configured and built, look
+at the `scikit-build-core repository
+<https://github.com/scikit-build/scikit-build-core>`_.
 
 .. _internal_api:
 

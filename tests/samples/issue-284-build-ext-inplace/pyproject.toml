@@ -1,0 +1,2 @@
+[tool.scikit-build]
+editable.mode = "inplace"
