@@ -9,7 +9,7 @@ import sys
 
 from distutils.cmd import Command
 
-from ..constants import SKBUILD_DIR, SKBUILD_MARKER_FILE
+from .._constants import SKBUILD_DIR, SKBUILD_MARKER_FILE
 from . import set_build_base_mixin
 
 

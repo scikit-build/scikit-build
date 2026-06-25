@@ -7,7 +7,7 @@ import os
 from distutils.file_util import copy_file
 from setuptools.command.build_ext import build_ext as _build_ext
 
-from ..constants import CMAKE_INSTALL_DIR
+from .._constants import CMAKE_INSTALL_DIR
 from . import set_build_base_mixin
 
 

@@ -14,10 +14,10 @@ from pathlib import Path
 
 import pytest
 
+from skbuild._platform_specifics.windows import VS_YEAR_TO_VERSION, find_visual_studio
 from skbuild.constants import CMAKE_BUILD_DIR
 from skbuild.exceptions import SKBuildError
 from skbuild.platform_specifics import get_platform
-from skbuild.platform_specifics.windows import VS_YEAR_TO_VERSION, find_visual_studio
 
 from . import get_cmakecache_variables, push_dir, push_env
 

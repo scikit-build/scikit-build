@@ -22,7 +22,7 @@ Submodules
 skbuild.cmaker module
 ---------------------
 
-.. automodule:: skbuild.cmaker
+.. automodule:: skbuild._cmaker
    :members:
    :undoc-members:
    :show-inheritance:
@@ -30,7 +30,7 @@ skbuild.cmaker module
 skbuild.constants module
 ------------------------
 
-.. automodule:: skbuild.constants
+.. automodule:: skbuild._constants
    :members:
    :undoc-members:
    :show-inheritance:
@@ -46,7 +46,7 @@ skbuild.exceptions module
 skbuild.setuptools\_wrap module
 -------------------------------
 
-.. automodule:: skbuild.setuptools_wrap
+.. automodule:: skbuild._setuptools_wrap
    :members:
    :undoc-members:
    :show-inheritance:

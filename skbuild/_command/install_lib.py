@@ -5,7 +5,7 @@ from __future__ import annotations
 
 from setuptools.command.install_lib import install_lib as _install_lib
 
-from ..utils import distribution_hide_listing, logger
+from .._utils import distribution_hide_listing, logger
 from . import CommandMixinProtocol, set_build_base_mixin
 
 

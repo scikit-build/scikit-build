@@ -19,3 +19,9 @@ class SKBuildGeneratorNotFoundError(SKBuildError):
     """Exception raised when no suitable generator is found for the current
     platform.
     """
+
+
+class SKBuildDeprecationWarning(FutureWarning):
+    """Warning for scikit-build features that are removed or changed when the
+    scikit-build-core setuptools backend takes over in the next major release.
+    """

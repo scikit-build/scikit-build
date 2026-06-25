@@ -175,6 +175,10 @@ norecursedirs = ["_skbuild"]
 xfail_strict = true
 filterwarnings = [
   'error',
+  # The classic backend is deprecated ahead of the scikit-build-core swap; the
+  # suite exercises the deprecated kwargs and internal modules on purpose.
+  # Dedicated tests assert these warnings fire via pytest.warns.
+  'ignore::skbuild.exceptions.SKBuildDeprecationWarning',
   'ignore:setup.py install is deprecated:Warning',
   'ignore:easy_install command is deprecated:Warning',
   'ignore:setuptools.installer and fetch_build_eggs are deprecated:Warning',

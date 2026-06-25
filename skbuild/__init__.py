@@ -6,8 +6,8 @@ This module provides the *glue* between the setuptools Python module and CMake.
 
 from __future__ import annotations
 
+from ._setuptools_wrap import setup
 from ._version import version as __version__
-from .setuptools_wrap import setup
 
 __author__ = "The scikit-build team"
 __email__ = "scikit-build@googlegroups.com"

@@ -6,6 +6,11 @@ This is the list of changes to scikit-build between each release. For full detai
 
 We are hard at work on the next generation of scikit-build [scikit-build-core](https://github.com/scikit-build/scikit-build-core), which will eventually replace the backend here. We are also continuing to fix bugs, make improvements, and backport changes here, but new and existing projects are encouraged to switch.
 
+The next major release replaces the classic backend with scikit-build-core's setuptools plugin. To ease that transition, the following now emit a `skbuild.exceptions.SKBuildDeprecationWarning` (a `FutureWarning` subclass):
+
+- The `setup()` keyword arguments `cmake_with_sdist` (use a `MANIFEST.in` or setuptools-scm) and a non-default `cmake_install_target` will become errors; `cmake_languages` (declare languages in your `CMakeLists.txt`) and `cmake_minimum_required_version` (set `cmake.version` in `[tool.scikit-build]`) will be ignored.
+- Importing the internal modules `skbuild.cmaker`, `skbuild.constants`, `skbuild.command`, `skbuild.platform_specifics`, `skbuild.utils`, and `skbuild.setuptools_wrap`; these are removed. Import `setup` from `skbuild` (`from skbuild import setup`) as documented.
+
 <!-- START-BRIEF-CHANGELOG -->
 
 ## Scikit-build 0.19.1
