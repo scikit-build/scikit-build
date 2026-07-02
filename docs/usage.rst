@@ -33,7 +33,8 @@ thin wrapper around ``scikit_build_core.setuptools.wrapper.setup()``. Most
 projects keep working unchanged:
 
 - ``from skbuild import setup`` with the ``cmake_args``, ``cmake_source_dir``,
-  ``cmake_install_dir`` and ``cmake_process_manifest_hook`` keyword arguments.
+  ``cmake_install_dir``, ``cmake_install_target`` and
+  ``cmake_process_manifest_hook`` keyword arguments.
 - The CMake modules shipped with scikit-build, like
   ``find_package(PythonExtensions)``, ``find_package(Cython)``,
   ``find_package(NumPy)`` and ``find_package(F2PY)``. They are now injected
@@ -63,8 +64,7 @@ The following changes are breaking:
   `scikit-build-core configuration documentation
   <https://scikit-build-core.readthedocs.io/en/latest/configuration/index.html>`__.
 
-- ``cmake_with_sdist=True`` and setting ``cmake_install_target`` to anything
-  other than ``install`` now raise an error. ``cmake_languages`` and
+- ``cmake_with_sdist=True`` now raises an error. ``cmake_languages`` and
   ``cmake_minimum_required_version`` are accepted but ignored with a warning;
   the minimum CMake version is configured with the ``cmake.version`` setting
   in the ``[tool.scikit-build]`` table of ``pyproject.toml``.
@@ -83,9 +83,10 @@ The following changes are breaking:
   provide a ``MANIFEST.in`` (or use ``setuptools-scm``) like any other
   setuptools project.
 
-- Editable/in-place installs (``pip install -e .``) require setting
+- Editable installs (``pip install -e .``) require setting
   ``editable.mode = "inplace"`` in the ``[tool.scikit-build]`` table of
-  ``pyproject.toml``.
+  ``pyproject.toml``. A plain ``setup.py build_ext --inplace`` still works
+  without configuration.
 
 - Generators are no longer discovered by probing for Visual Studio and
   running a language test; CMake's own default generator selection applies.
@@ -273,6 +274,22 @@ For example::
 - ``cmake_source_dir``: Relative directory containing the project ``CMakeLists.txt``.
   By default, it is set to the top-level directory where ``setup.py`` is found.
 
+- ``cmake_install_target``: Name of the target to "build" for installing the
+  artifacts into the wheel. By default, this option is set to ``install``,
+  which is always provided by CMake and runs ``cmake --install``. Any other
+  value is installed by building that target with ``cmake --build --target``,
+  which can be used to only install certain components.
+
+For example::
+
+    install(TARGETS foo COMPONENT runtime)
+    add_custom_target(foo-install-runtime
+        ${CMAKE_COMMAND}
+        -DCMAKE_INSTALL_COMPONENT=runtime
+        -P "${PROJECT_BINARY_DIR}/cmake_install.cmake"
+        DEPENDS foo
+        )
+
 - ``cmake_process_manifest_hook``: Python function consuming the list of files to be
   installed produced by cmake. For example, ``cmake_process_manifest_hook`` can be used
   to exclude static libraries from the built wheel.
@@ -290,10 +307,9 @@ For example::
 
 .. versionchanged:: 2.0
 
-    The ``cmake_with_sdist`` and ``cmake_install_target`` options now raise an
-    error if set to a non-default value, and the ``cmake_languages`` and
-    ``cmake_minimum_required_version`` options are ignored with a warning. See
-    :ref:`migration_guide`.
+    The ``cmake_with_sdist`` option now raises an error if set to ``True``,
+    and the ``cmake_languages`` and ``cmake_minimum_required_version`` options
+    are ignored with a warning. See :ref:`migration_guide`.
 
 
 .. _usage-setuptools_options:
@@ -507,8 +523,8 @@ Editable installs
 
     Editable installs previously worked without extra configuration.
 
-Editable and in-place installs (``pip install -e .`` and
-``python setup.py build_ext --inplace``) require opting in to
+In-place builds (``python setup.py build_ext --inplace``) work without extra
+configuration. Editable installs (``pip install -e .``) require opting in to
 scikit-build-core's "inplace" editable mode in ``pyproject.toml``::
 
     [tool.scikit-build]

@@ -86,18 +86,6 @@ def test_cmake_with_sdist_keyword_unsupported():
             )
 
 
-def test_cmake_install_target_keyword_unsupported():
-    tmp_dir = _make_minimal_project("cmake_install_target_unsupported")
-
-    with push_dir(str(tmp_dir)), push_argv(["setup.py", "--name"]):
-        with pytest.raises(SKBuildError, match="cmake_install_target not supported yet"):
-            skbuild_setup(
-                name="test_cmake_install_target",
-                version="0.0.1",
-                cmake_install_target="install-runtime",
-            )
-
-
 def test_cmake_languages_keyword_warns():
     tmp_dir = _make_minimal_project("cmake_languages_warns")
 

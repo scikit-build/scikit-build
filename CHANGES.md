@@ -11,7 +11,7 @@ What still works:
 - `from skbuild import setup` with `cmake_args`, `cmake_source_dir`, `cmake_install_dir`, `cmake_install_target`, and `cmake_process_manifest_hook`.
 - The shipped CMake modules (`find_package(PythonExtensions)`, `Cython`, `F2PY`, `NumPy`, ...), now provided via scikit-build-core's `cmake.module` entry point.
 - The `SKBUILD` CMake variable is still set (now `"2"` instead of `TRUE`; both are truthy).
-- Editable installs (`pip install -e .`, `build_ext --inplace`) build in place.
+- `setup.py build_ext --inplace` builds into the source tree without extra configuration.
 
 Breaking changes:
 
@@ -20,6 +20,7 @@ Breaking changes:
 - The internal modules `skbuild.cmaker`, `skbuild.constants`, `skbuild.command`, `skbuild.platform_specifics`, `skbuild.utils`, and `skbuild.setuptools_wrap` were removed. `skbuild.exceptions.SKBuildError` is now an alias of setuptools' `SetupError`.
 - The `_skbuild` build directory is gone; the standard setuptools `build/` directories are used (CMake builds in `build/temp.*/_skbuild`).
 - sdists no longer auto-generate their manifest from git; provide a `MANIFEST.in` (or use setuptools-scm) like any setuptools project.
+- Editable installs (`pip install -e .`) require `editable.mode = "inplace"` in the `[tool.scikit-build]` table of `pyproject.toml`.
 - CMake generator probing (including Visual Studio discovery) was removed; CMake's own default generator selection applies, and `CMAKE_GENERATOR` overrides it.
 - Dependencies changed to `scikit-build-core[setuptools]`; `distro`, `wheel`, and `tomli` were dropped.
 

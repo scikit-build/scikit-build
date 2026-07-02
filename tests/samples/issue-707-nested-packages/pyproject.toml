@@ -7,6 +7,3 @@ requires = [
     "cython",
 ]
 build-backend = "setuptools.build_meta"
-
-[tool.scikit-build]
-editable.mode = "inplace"
