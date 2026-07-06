@@ -9,12 +9,15 @@ except ImportError:
     import distutils  # Python < 3.10
 
 import contextlib
+import importlib.util
 import os
 import pathlib
+import platform
 import re
 import shutil
 import subprocess
 import sys
+import sysconfig
 import tempfile
 from contextlib import contextmanager
 
@@ -25,6 +28,7 @@ SAMPLES_DIR = pathlib.Path(__file__).resolve().parent / "samples"
 __all__ = [
     "SAMPLES_DIR",
     "cmake_build_dir",
+    "egg_install_incompatible",
     "execute_setup_py",
     "get_cmakecache_variables",
     "initialize_git_repo_and_commit",
@@ -75,9 +79,22 @@ def to_unix_path(path):
 
 def cmake_build_dir(base="."):
     """Return the CMake build directory used by the scikit-build-core
-    setuptools plugin (``build/temp.*/_skbuild``), or None if absent."""
-    candidates = sorted(pathlib.Path(base).glob("build/temp.*/_skbuild"))
+    setuptools plugin (``build/temp.*/_skbuild``, with an extra
+    ``Release``/``Debug`` component on Windows), or None if absent."""
+    candidates = sorted(pathlib.Path(base).glob("build/temp.*/**/_skbuild"))
     return candidates[0] if candidates else None
+
+
+def egg_install_incompatible():
+    """``setup.py install`` on old setuptools (those still shipping
+    ``pkg_resources``) builds an egg tagged with the macOS version the Python
+    binary was compiled for; ``pkg_resources`` rejects such an egg when the
+    running macOS major version is newer, breaking the deprecated egg install."""
+    if sys.platform != "darwin" or importlib.util.find_spec("pkg_resources") is None:
+        return False
+    build_platform = sysconfig.get_platform().split("-")
+    os_major = platform.mac_ver()[0].split(".")[0]
+    return len(build_platform) == 3 and build_platform[1].split(".")[0] != os_major
 
 
 @contextmanager

@@ -77,7 +77,7 @@ The following changes are breaking:
 
 - The ``_skbuild/<platform>-<pyversion>/`` build directory is gone; the
   standard setuptools ``build/`` directories are used instead (CMake builds
-  in ``build/temp.*/_skbuild``).
+  in an ``_skbuild`` directory under ``build/temp.*``).
 
 - sdists no longer automatically generate their file manifest from git;
   provide a ``MANIFEST.in`` (or use ``setuptools-scm``) like any other
@@ -537,8 +537,8 @@ Optimized incremental build
 ---------------------------
 
 To optimize the developer workflow, the CMake build directory is kept inside
-the standard setuptools ``build/`` directory (in ``build/temp.*/_skbuild``)
-and reused across builds.
+the standard setuptools ``build/`` directory (an ``_skbuild`` directory under
+``build/temp.*``) and reused across builds.
 
 If a file is added to the CMake build system by updating one of the
 ``CMakeLists.txt`` files, the generated build-system will automatically
