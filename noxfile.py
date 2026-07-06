@@ -16,12 +16,7 @@ PYTHON_VERSIONS = nox.project.python_versions(PYPROJECT)
 
 PYTHON_ALL_VERSIONS = [*PYTHON_VERSIONS, "pypy3.8", "pypy3.9", "pypy3.10", "pypy3.11"]
 
-# TODO: default to a plain "scikit-build-core[setuptools]" requirement once a
-# release containing scikit_build_core.setuptools.wrapper is on PyPI.
-SKBUILD_CORE_REQ = os.environ.get(
-    "SKBUILD_CORE_REQ",
-    "scikit-build-core[setuptools] @ git+https://github.com/scikit-build/scikit-build-core@main",
-)
+SKBUILD_CORE_REQ = os.environ.get("SKBUILD_CORE_REQ", "scikit-build-core[setuptools]>=1.0")
 
 
 @nox.session

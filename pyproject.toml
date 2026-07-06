@@ -29,11 +29,7 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
-    # TODO: bump to the first release containing scikit_build_core.setuptools.wrapper
-    # (expected 0.13); until then install from
-    # 'scikit-build-core[setuptools] @ git+https://github.com/scikit-build/scikit-build-core@main'
-    # (see noxfile.py / SKBUILD_CORE_REQ).
-    'scikit-build-core[setuptools]>=0.12.3.dev0',
+    'scikit-build-core[setuptools]>=1.0',
 ]
 
 [project.optional-dependencies]

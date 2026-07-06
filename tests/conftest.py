@@ -25,12 +25,7 @@ BASE = DIR.parent
 pytest.register_assert_rewrite("tests.pytest_helpers")
 
 
-# TODO: default to a plain "scikit-build-core[setuptools]" requirement once a
-# release containing scikit_build_core.setuptools.wrapper is on PyPI.
-SKBUILD_CORE_REQ = os.environ.get(
-    "SKBUILD_CORE_REQ",
-    "scikit-build-core[setuptools] @ git+https://github.com/scikit-build/scikit-build-core@main",
-)
+SKBUILD_CORE_REQ = os.environ.get("SKBUILD_CORE_REQ", "scikit-build-core[setuptools]>=1.0")
 
 
 @pytest.fixture(scope="session")

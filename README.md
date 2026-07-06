@@ -14,7 +14,7 @@
 
 The scikit-build package is fundamentally just glue between the `setuptools` Python module and [CMake](https://cmake.org).
 
-The next generation of scikit-build, [scikit-build-core](https://scikit-build-core.readthedocs.io), is currently under development. This provides a simple, reliable build backend for CMake that does not use setuptools and provides a lot of new features. Scikit-build-core can also power a setuptools-based extension system, which will eventually become the backend for scikit-build (classic). If you do not require extensive customization of the build process, you should consider trying scikit-build-core instead of scikit-build.
+The next generation of scikit-build, [scikit-build-core](https://scikit-build-core.readthedocs.io), provides a simple, reliable build backend for CMake that does not use setuptools and provides a lot of new features. Since scikit-build 2.0, scikit-build (classic) is a thin wrapper around scikit-build-core's setuptools plugin. If you do not require setuptools, you should consider using scikit-build-core directly instead.
 
 To get started, see [this example](https://scikit-build.readthedocs.io/en/latest/usage.html#example-of-setup-py-cmakelists-txt-and-pyproject-toml). For more examples, see [scikit-build-sample-projects](https://github.com/scikit-build/scikit-build-sample-projects).
 
