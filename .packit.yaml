@@ -3,61 +3,39 @@
 
 specfile_path: .distro/python-scikit-build.spec
 
-files_to_sync:
-  - src: .distro/
-    dest: ./
-    filters:
-      - "- plans/main.fmf.dist-git"
-      - "- plans/rpminspect.fmf"
-      - "- plans/rpmlint.fmf"
-  - .packit.yaml
-  - src: .distro/plans/main.fmf.dist-git
-    dest: plans/main.fmf
 upstream_package_name: scikit-build
 downstream_package_name: python-scikit-build
-update_release: false
 
-jobs:
-  - &copr_build
+targets:
+  # TODO: Expand as scikit-build-core catches up
+  - fedora-rawhide-x86_64
+  - fedora-rawhide-aarch64
+
+_:
+  # Job templates
+  - &build-in-packit
     job: copr_build
-    trigger: release
+  - &build-in-scikit-build
+    <<: *build-in-packit
     owner: "@scikit-build"
-    project: release
-    targets: &targets
-      - fedora-all-x86_64
-      - fedora-all-aarch64
   - &tests
     job: tests
-    trigger: release
-    targets: *targets
     fmf_path: .distro
-  - <<: *copr_build
+
+jobs:
+  - <<: *build-in-scikit-build
+    trigger: release
+    project: release
+  - <<: *tests
+    trigger: release
+  - <<: *build-in-scikit-build
     trigger: commit
     branch: main
     project: nightly
   - <<: *tests
     trigger: commit
     branch: main
-  - <<: *copr_build
+  - <<: *build-in-packit
     trigger: pull_request
-    project: scikit-build
-    update_release: true
-    release_suffix: "{PACKIT_RPMSPEC_RELEASE}"
   - <<: *tests
     trigger: pull_request
-  - job: propose_downstream
-    trigger: release
-    dist_git_branches:
-      # TODO: Switch to fedora-development and fedora-latest
-      # There is an issue that the commits diverge on different PRs. In the meantime will create PRs on branched fedora
-      # manually
-      # https://github.com/packit/packit/issues/1724
-      - fedora-rawhide
-  - job: koji_build
-    trigger: commit
-    dist_git_branches:
-      - fedora-all
-  - job: bodhi_update
-    trigger: commit
-    dist_git_branches:
-      - fedora-branched
