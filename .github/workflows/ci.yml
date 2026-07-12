@@ -161,6 +161,8 @@ jobs:
     - uses: actions/checkout@v6
       with:
         repository: scikit-build/scikit-build-sample-projects
+        # Pinned so sample-projects changes can't break this repo's CI; bump deliberately.
+        ref: 0ad0bd760a3f2df4d7e21a3c89d5e49353304c32
         path: scikit-build-sample-projects
 
     - uses: actions/setup-python@v6
