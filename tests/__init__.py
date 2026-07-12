@@ -82,6 +82,7 @@ def cmake_build_dir(base="."):
     setuptools plugin (``build/temp.*/_skbuild``, with an extra
     ``Release``/``Debug`` component on Windows), or None if absent."""
     candidates = sorted(pathlib.Path(base).glob("build/temp.*/**/_skbuild"))
+    assert len(candidates) <= 1, f"expected a single CMake build directory, found: {candidates}"
     return candidates[0] if candidates else None
 
 
@@ -101,8 +102,10 @@ def egg_install_incompatible():
 def push_argv(argv):
     old_argv = sys.argv
     sys.argv = argv
-    yield
-    sys.argv = old_argv
+    try:
+        yield
+    finally:
+        sys.argv = old_argv
 
 
 @contextmanager
@@ -114,10 +117,11 @@ def push_env(**kwargs):
             os.environ[var] = value
         elif var in os.environ:
             del os.environ[var]
-    yield
-    os.environ.clear()
-    for saved_var, saved_value in saved_env.items():
-        os.environ[saved_var] = saved_value
+    try:
+        yield
+    finally:
+        os.environ.clear()
+        os.environ.update(saved_env)
 
 
 @contextmanager
@@ -127,8 +131,10 @@ def prepend_sys_path(paths):
     """
     saved_paths = list(sys.path)
     sys.path = paths + saved_paths
-    yield
-    sys.path = saved_paths
+    try:
+        yield
+    finally:
+        sys.path = saved_paths
 
 
 def _tmpdir(basename: str) -> pathlib.Path:

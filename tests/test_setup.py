@@ -300,6 +300,8 @@ def test_invalid_cmake_source_dir_fails():
 
 
 def test_sdist_does_not_run_cmake():
+    # cmake_with_sdist=False is passed explicitly: only True errors, the
+    # default value must keep being accepted.
     tmp_dir = _make_minimal_project("sdist_without_cmake")
 
     (tmp_dir / "setup.py").write_text(
