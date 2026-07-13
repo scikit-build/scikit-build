@@ -38,7 +38,7 @@ jobs:
       with:
         fetch-depth: 0
 
-    - uses: astral-sh/setup-uv@v8.3.0
+    - uses: astral-sh/setup-uv@v8.3.2
 
     - name: Set environment for available GHA MSVCs
       if: matrix.runs-on == 'windows-2022'
@@ -63,7 +63,7 @@ jobs:
         echo "FC=gfortran" >> $GITHUB_ENV
 
     - name: Setup nox
-      uses: wntrblm/nox@2026.04.10
+      uses: wntrblm/nox@2026.07.11
       with:
         python-versions: "3.8,3.9,3.10,3.11,3.12,3.13,3.14"
 
@@ -140,7 +140,7 @@ jobs:
     - uses: yezz123/setup-uv@v4
 
     - name: Setup nox
-      uses: wntrblm/nox@2026.04.10
+      uses: wntrblm/nox@2026.07.11
 
     - uses: actions/setup-python@v6
       with:
