@@ -2,11 +2,17 @@ from __future__ import annotations
 
 import glob
 import os
+from importlib import metadata
 
 import pytest
+from packaging.version import Version
 
 from . import to_unix_path
 from .pytest_helpers import check_sdist_content, check_wheel_content
+
+# scikit-build-core >=1.0.3 reports CMake inputs via get_source_files(), so
+# sdists automatically include them.
+CORE_SDIST_HAS_CMAKE_SOURCES = Version(metadata.version("scikit-build-core")) >= Version("1.0.3")
 
 
 def check_whls(project_name):
@@ -43,8 +49,6 @@ def check_sdist(proj, base=""):
     assert sdists_tar or sdists_zip
 
     expected_content = [
-        # scikit-build-core >=1.0.3 reports CMake inputs via get_source_files()
-        to_unix_path(os.path.join(proj, "CMakeLists.txt")),
         to_unix_path(os.path.join(proj, "setup.py")),
         to_unix_path(os.path.join(proj, base, "hello/__init__.py")),
         to_unix_path(os.path.join(proj, base, "hello/data/subdata/hello_data1_include_from_manifest.txt")),
@@ -63,6 +67,8 @@ def check_sdist(proj, base=""):
         ),
         to_unix_path(os.path.join(proj, base, "hello2/hello2_include_from_manifest.txt")),
     ]
+    if CORE_SDIST_HAS_CMAKE_SOURCES:
+        expected_content.append(to_unix_path(os.path.join(proj, "CMakeLists.txt")))
 
     sdist_archive = f"dist/{proj}.zip"
     if sdists_tar:

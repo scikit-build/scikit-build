@@ -16,7 +16,7 @@ PYTHON_VERSIONS = nox.project.python_versions(PYPROJECT)
 
 PYTHON_ALL_VERSIONS = [*PYTHON_VERSIONS, "pypy3.8", "pypy3.9", "pypy3.10", "pypy3.11"]
 
-SKBUILD_CORE_REQ = os.environ.get("SKBUILD_CORE_REQ", "scikit-build-core[setuptools]>=1.0.3")
+SKBUILD_CORE_REQ = os.environ.get("SKBUILD_CORE_REQ", "scikit-build-core[setuptools]>=1.0")
 
 
 @nox.session

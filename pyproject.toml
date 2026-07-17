@@ -29,7 +29,7 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
-    'scikit-build-core[setuptools]>=1.0.3',
+    'scikit-build-core[setuptools]>=1.0',
 ]
 
 [project.optional-dependencies]
