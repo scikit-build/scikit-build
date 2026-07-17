@@ -43,6 +43,8 @@ def check_sdist(proj, base=""):
     assert sdists_tar or sdists_zip
 
     expected_content = [
+        # scikit-build-core >=1.0.3 reports CMake inputs via get_source_files()
+        to_unix_path(os.path.join(proj, "CMakeLists.txt")),
         to_unix_path(os.path.join(proj, "setup.py")),
         to_unix_path(os.path.join(proj, base, "hello/__init__.py")),
         to_unix_path(os.path.join(proj, base, "hello/data/subdata/hello_data1_include_from_manifest.txt")),

@@ -25,7 +25,7 @@ BASE = DIR.parent
 pytest.register_assert_rewrite("tests.pytest_helpers")
 
 
-SKBUILD_CORE_REQ = os.environ.get("SKBUILD_CORE_REQ", "scikit-build-core[setuptools]>=1.0")
+SKBUILD_CORE_REQ = os.environ.get("SKBUILD_CORE_REQ", "scikit-build-core[setuptools]>=1.0.3")
 
 
 @pytest.fixture(scope="session")
