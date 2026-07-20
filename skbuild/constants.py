@@ -17,6 +17,9 @@ import sys
 import warnings
 from sysconfig import get_platform
 
+from scikit_build_core.builder.builder import archs_to_tags, get_archs
+from scikit_build_core.builder.macos import get_macosx_deployment_target
+
 __all__ = ["skbuild_plat_name"]
 
 warnings.warn(
@@ -31,25 +34,8 @@ def skbuild_plat_name() -> str:
     if not sys.platform.startswith("darwin"):
         return get_platform()
 
-    supported_macos_architectures = {"x86_64", "arm64"}
-    macos_universal2_architectures = {"x86_64", "arm64"}
+    machine = os.environ.get("CMAKE_OSX_ARCHITECTURES") or ";".join(get_archs(os.environ)) or platform.machine()
+    machine = ";".join(archs_to_tags(machine.split(";")))
 
-    release = platform.mac_ver()[0]
-    machine = platform.machine()
-
-    release = os.environ.get("MACOSX_DEPLOYMENT_TARGET", "") or release
-    major_macos, minor_macos = [*release.split("."), "0"][:2]
-
-    if int(major_macos) >= 11:
-        minor_macos = "0"
-
-    archflags = os.environ.get("ARCHFLAGS")
-    if archflags is not None:
-        machine = ";".join(sorted(set(archflags.split()) & supported_macos_architectures))
-
-    machine = os.environ.get("CMAKE_OSX_ARCHITECTURES", machine)
-
-    if set(machine.split(";")) == macos_universal2_architectures:
-        machine = "universal2"
-
-    return f"macosx-{major_macos}.{minor_macos}-{machine}"
+    target = get_macosx_deployment_target(arm=machine == "arm64")
+    return f"macosx-{target}-{machine}"

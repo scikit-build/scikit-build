@@ -8,9 +8,10 @@ files use it to gate on the installed CMake version.
 
 from __future__ import annotations
 
-import shutil
-import subprocess
 import warnings
+from pathlib import Path
+
+from scikit_build_core.program_search import get_cmake_program, get_cmake_programs
 
 from .exceptions import SKBuildError
 
@@ -24,27 +25,24 @@ warnings.warn(
 )
 
 
-def _default_cmake_executable() -> str:
-    for name in ("cmake", "cmake3"):
-        prog = shutil.which(name)
-        if prog:
-            return prog
-    return "cmake"
-
-
 def get_cmake_version(cmake_executable: str = "") -> str:
     """
-    Return the version reported by ``cmake --version``, e.g. ``"3.14.4"``.
+    Return the version of the given (or first found) CMake, e.g. ``"3.14.4"``.
+
+    With no argument, searches the way scikit-build-core does: the ``cmake``
+    PyPI package if installed, then ``cmake3`` and ``cmake`` on PATH.
+    Pre-release suffixes are dropped (``3.30.0-rc1`` reports as ``3.30.0``).
 
     Raises :class:`skbuild.exceptions.SKBuildError` if CMake cannot be run.
     """
-    cmake_executable = cmake_executable or _default_cmake_executable()
+    msg = f"Problem with the CMake installation, aborting build. CMake executable is {cmake_executable or 'cmake'}"
     try:
-        version_string_bytes = subprocess.run(
-            [cmake_executable, "--version"], check=True, stdout=subprocess.PIPE
-        ).stdout
-    except (OSError, subprocess.CalledProcessError) as err:
-        msg = f"Problem with the CMake installation, aborting build. CMake executable is {cmake_executable}"
+        if cmake_executable:
+            program = get_cmake_program(Path(cmake_executable))
+        else:
+            program = next((p for p in get_cmake_programs(module=True) if p.version is not None), None)
+    except OSError as err:
         raise SKBuildError(msg) from err
-
-    return version_string_bytes.decode().splitlines()[0].split(" ")[-1]
+    if program is None or program.version is None:
+        raise SKBuildError(msg)
+    return str(program.version)
