@@ -15,15 +15,7 @@ pytestmark = pytest.mark.skipif(sys.platform != "darwin", reason="macOS-only beh
 def _prepare_project(tmp_dir: pathlib.Path) -> None:
     """Write a tiny C project driven by ``skbuild.setup()`` into ``tmp_dir``."""
 
-    (tmp_dir / "pyproject.toml").write_text(
-        textwrap.dedent(
-            """
-            [build-system]
-            requires = ["scikit-build", "setuptools"]
-            build-backend = "setuptools.build_meta"
-            """
-        )
-    )
+    (tmp_dir / "pyproject.toml").write_text("")
     (tmp_dir / "setup.py").write_text(
         textwrap.dedent(
             """
@@ -42,7 +34,7 @@ def _prepare_project(tmp_dir: pathlib.Path) -> None:
     (tmp_dir / "CMakeLists.txt").write_text(
         textwrap.dedent(
             """
-            cmake_minimum_required(VERSION 3.5...3.26)
+            cmake_minimum_required(VERSION 3.15...3.26)
             project(hello C)
             add_library(hello STATIC hello.c)
             file(WRITE "${CMAKE_BINARY_DIR}/hello.txt" "hello")

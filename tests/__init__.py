@@ -95,6 +95,8 @@ def egg_install_incompatible():
         return False
     build_platform = sysconfig.get_platform().split("-")
     os_major = platform.mac_ver()[0].split(".")[0]
+    # "newer" is really what pkg_resources rejects, but != keeps the version
+    # handling trivial and only over-skips if the target were somehow newer.
     return len(build_platform) == 3 and build_platform[1].split(".")[0] != os_major
 
 
