@@ -123,16 +123,18 @@ def test_make(configure_with_cmake_source_dir, capfd):
             messages += [
                 "/SRC",
                 f"/BUILD/{to_unix_path(CMAKE_BUILD_DIR())}",
-                f"/BUILD/{to_unix_path(CMAKE_INSTALL_DIR())}/./foo.txt",
+                f"/BUILD/{to_unix_path(CMAKE_INSTALL_DIR())}/foo.txt",
             ]
         else:
             messages += [
                 "/SRC",
                 f"/SRC/{to_unix_path(CMAKE_BUILD_DIR())}",
-                f"/SRC/{to_unix_path(CMAKE_INSTALL_DIR())}/./foo.txt",
+                f"/SRC/{to_unix_path(CMAKE_INSTALL_DIR())}/foo.txt",
             ]
 
+        # CMake >= 4 normalizes the redundant "/./" out of install messages.
         out, _ = capfd.readouterr()
+        out = out.replace("/./", "/")
         for message in messages:
             assert message in out
 
