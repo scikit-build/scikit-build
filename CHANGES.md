@@ -17,7 +17,7 @@ Breaking changes:
 
 - The scikit-build specific command line options were removed: `--build-type`, `-G/--generator`, `-j`, `--cmake-executable`, `--skip-generator-test`, `--hide-listing`, `--force-cmake`, `--skip-cmake`, `--install-target`, and the `setup.py <args> -- <cmake args> -- <build tool args>` syntax. Use the `CMAKE_ARGS`/`CMAKE_GENERATOR` environment variables, the `cmake_args` keyword, or `[tool.scikit-build]` settings / `SKBUILD_*` environment variables instead.
 - `cmake_with_sdist=True` now raises an error; `cmake_languages` and `cmake_minimum_required_version` are ignored with a warning (set `cmake.version` in `[tool.scikit-build]` instead).
-- The internal modules `skbuild.cmaker`, `skbuild.constants`, `skbuild.command`, `skbuild.platform_specifics`, `skbuild.utils`, and `skbuild.setuptools_wrap` were removed. `skbuild.exceptions.SKBuildError` is now an alias of setuptools' `SetupError`.
+- The internal modules `skbuild.cmaker`, `skbuild.constants`, `skbuild.command`, `skbuild.platform_specifics`, `skbuild.utils`, and `skbuild.setuptools_wrap` were removed. `skbuild.exceptions.SKBuildError` is now an alias of setuptools' `SetupError`, so it is no longer a `RuntimeError`; its `SKBuildInvalidFileInstallationError` and `SKBuildGeneratorNotFoundError` subclasses were removed.
 - The `_skbuild` build directory is gone; the standard setuptools `build/` directories are used (CMake builds in an `_skbuild` directory under `build/temp.*`).
 - sdists no longer auto-generate their manifest from git; provide a `MANIFEST.in` (or use setuptools-scm) like any setuptools project.
 - Editable installs (`pip install -e .`) require `editable.mode = "inplace"` in the `[tool.scikit-build]` table of `pyproject.toml`.

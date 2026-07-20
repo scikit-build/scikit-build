@@ -73,7 +73,9 @@ The following changes are breaking:
   ``skbuild.command.*``, ``skbuild.platform_specifics``, ``skbuild.utils``
   and ``skbuild.setuptools_wrap`` no longer exist.
   ``skbuild.exceptions.SKBuildError`` is now an alias of setuptools'
-  ``SetupError``.
+  ``SetupError``, so it is no longer a ``RuntimeError``; its
+  ``SKBuildInvalidFileInstallationError`` and
+  ``SKBuildGeneratorNotFoundError`` subclasses were removed.
 
 - The ``_skbuild/<platform>-<pyversion>/`` build directory is gone; the
   standard setuptools ``build/`` directories are used instead (CMake builds
