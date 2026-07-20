@@ -14,7 +14,7 @@
 
 The scikit-build package is fundamentally just glue between the `setuptools` Python module and [CMake](https://cmake.org).
 
-The next generation of scikit-build, [scikit-build-core](https://scikit-build-core.readthedocs.io), provides a simple, reliable build backend for CMake that does not use setuptools and provides a lot of new features. Since scikit-build 2.0, scikit-build (classic) is a thin wrapper around scikit-build-core's setuptools plugin. If you do not require setuptools, you should consider using scikit-build-core directly instead.
+The next generation of scikit-build, [scikit-build-core](https://scikit-build-core.readthedocs.io), provides a simple, reliable build backend for CMake that does not use setuptools and provides a lot of new features. Since scikit-build 1.0, scikit-build (classic) is a thin wrapper around scikit-build-core's setuptools plugin. If you do not require setuptools, you should consider using scikit-build-core directly instead.
 
 To get started, see [this example](https://scikit-build.readthedocs.io/en/latest/usage.html#example-of-setup-py-cmakelists-txt-and-pyproject-toml). For more examples, see [scikit-build-sample-projects](https://github.com/scikit-build/scikit-build-sample-projects).
 
@@ -38,23 +38,12 @@ Please use the first citation when referencing scikit-build in scientific public
 
 ## History
 
-PyCMake was created at SciPy 2014 in response to general difficulties building C++ and Fortran based Python extensions across platforms. It was renamed to "scikit-build" in 2016. Scikit-build-core was started in 2022.
+PyCMake was created at SciPy 2014 in response to general difficulties building C++ and Fortran based Python extensions across platforms. It was renamed to "scikit-build" in 2016. Scikit-build-core was started in 2022, and became the backend for this package in 2026.
 
-## Known Issues
+## New backend
 
-These issues are likely to be addressed in upcoming releases, and are already addressed in [scikit-build-core](https://scikit-build-core.readthedocs.io).
-
-- Editable installs do not work with the latest versions of Setuptools (and had issues with older versions, too).
-- Configuration scikit-build cares about *must* be specified in `setup()` currently.
-- The cache directory (`_skbuild`) may need to be deleted between builds in some cases (like rebuilding with a different Python interpreter).
-- AIX requires a newer version of CMake than the IBM-supplied CMake 3.22.0 from the AIX Toolbox for Open Source Software. We currently recommend building CMake from source on AIX.
-
-We are also working on improving scikit-build, so there are some upcoming changes and deprecations:
-
-- All deprecated setuptools/distutils features are also deprecated in scikit-build, like the `test` command, `easy_install`, etc.
-- Older versions of CMake (\<3.15) are not recommended; a future version will remove support for older CMake's (along with providing a better mechanism for ensuring a proper CMake is available).
-
-If you need any of these features, please open or find an issue explaining what and why you need something.
+- All deprecated setuptools/distutils features are removed in scikit-build 1.0, like the `test` command, `easy_install`, etc. Use standards-based development instead, like `uv`, `pip`, `build`, etc.
+- Older versions of CMake (\<3.15) are no longer supported.
 
 ## Miscellaneous
 

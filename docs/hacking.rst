@@ -5,7 +5,7 @@ Hacking
 Where the build backend lives
 -----------------------------
 
-.. versionchanged:: 2.0
+.. versionchanged:: 1.0
 
     The ``skbuild.cmaker`` module and the rest of the classic build backend
     were removed.

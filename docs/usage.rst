@@ -26,7 +26,7 @@ with the following advantages:
 Migrating from scikit-build 0.x
 ===============================
 
-Starting with scikit-build 2.0, the classic scikit-build backend was replaced
+Starting with scikit-build 1.0, the classic scikit-build backend was replaced
 by the setuptools plugin provided by `scikit-build-core
 <https://scikit-build-core.readthedocs.io>`_. ``skbuild.setup()`` is now a
 thin wrapper around ``scikit_build_core.setuptools.wrapper.setup()``. Most
@@ -305,7 +305,7 @@ For example::
       [...]
     )
 
-.. versionchanged:: 2.0
+.. versionchanged:: 1.0
 
     The ``cmake_with_sdist`` option now raises an error if set to ``True``,
     and the ``cmake_languages`` and ``cmake_minimum_required_version`` options
@@ -317,7 +317,7 @@ For example::
 Command line options
 --------------------
 
-.. versionchanged:: 2.0
+.. versionchanged:: 1.0
 
     The scikit-build-specific command line options and the
     ``setup.py <setuptools args> -- <cmake args> -- <build tool args>``
@@ -356,7 +356,7 @@ and a python wheel, it is possible to test for the variable ``SKBUILD``:
       message(STATUS "The project is built using scikit-build")
     endif()
 
-.. versionchanged:: 2.0
+.. versionchanged:: 1.0
 
     The ``SKBUILD`` variable is now set to ``2`` instead of ``TRUE``. Both
     values are truthy in CMake.
@@ -519,7 +519,7 @@ is explicitly disabled using the pip option ``--no-build-isolation`` available w
 Editable installs
 -----------------
 
-.. versionchanged:: 2.0
+.. versionchanged:: 1.0
 
     Editable installs previously worked without extra configuration.
 
@@ -560,7 +560,7 @@ In addition, every scikit-build-core setting can be set using a corresponding
 ``SKBUILD_*`` environment variable. See the `scikit-build-core configuration
 documentation <https://scikit-build-core.readthedocs.io/en/latest/configuration/index.html>`__.
 
-.. versionchanged:: 2.0
+.. versionchanged:: 1.0
 
     The ``SKBUILD_CONFIGURE_OPTIONS`` and ``SKBUILD_BUILD_OPTIONS``
     environment variables were removed; use ``CMAKE_ARGS`` and

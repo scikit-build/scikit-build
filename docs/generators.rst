@@ -11,7 +11,7 @@ system allowing to build of CPython C extensions.
 
 .. _CMake generator: https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html
 
-.. versionchanged:: 2.0
+.. versionchanged:: 1.0
 
     scikit-build no longer probes for installed Visual Studio versions or
     runs a language test to discover a working generator. CMake's own
