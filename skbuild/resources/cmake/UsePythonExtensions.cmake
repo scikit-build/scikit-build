@@ -105,7 +105,7 @@ function(add_python_library _name)
   # Generate targets for all *.src files
   set(_processed )
   foreach(_source IN LISTS _sources)
-    if(${_source} MATCHES ".pyf.src$" OR ${_source} MATCHES "\\.f\\.src$")
+    if(${_source} MATCHES "\\.pyf\\.src$" OR ${_source} MATCHES "\\.f\\.src$")
       if(NOT NumPy_FOUND)
         message(
           FATAL_ERROR

@@ -72,7 +72,7 @@
 #
 # ``MODULE_SUFFIX <ModuleSuffix>``
 #   Suffix appended to the python extension module file.
-#   The default suffix is retrieved using ``sysconfig.get_config_var("SO")"``,
+#   The default suffix is retrieved using ``sysconfig.get_config_var("EXT_SUFFIX")``,
 #   if not available, the default is then ``.so`` on unix and ``.pyd`` on
 #   windows.
 #   Setting the variable ``PYTHON_EXTENSION_MODULE_SUFFIX`` in the caller
@@ -104,17 +104,16 @@
 #                         [HEADER_OUTPUT_VAR <HeaderOutputVar>]
 #                         [INCLUDE_DIR_OUTPUT_VAR <IncludeDirOutputVar>])
 #
-# without the extension is used as the logical name.  If only ``<Name>`` is
-#
 # If only ``<Name>`` is provided, and it ends in the ".h" extension, then it
 # is assumed to be the ``<HeaderFilename>``.  The filename of the header file
+# without the extension is used as the logical name.  If only ``<Name>`` is
 # provided, and it does not end in the ".h" extension, then the
-# ``<HeaderFilename>`` is assumed to ``<Name>.h``.
+# ``<HeaderFilename>`` is assumed to be ``<Name>.h``.
 #
 # The exact contents of the generated header file depend on the logical
 # ``<Name>``.  It should be set to a value that corresponds to the target
 # application, or for the case of multiple applications, some identifier that
-# conveyes its purpose.  It is featured in the generated multiple inclusion
+# conveys its purpose.  It is featured in the generated multiple inclusion
 # guard as well as the names of the generated initialization routines.
 #
 # The generated header file includes forward declarations for all listed
@@ -133,7 +132,7 @@
 #   preprocessing macro ``EXCLUDE_LOAD_ALL_FUNCTION`` is defined.
 #
 # ``void Py_Initialize_Wrapper();``
-#   Wrapper arpund ``Py_Initialize()`` that initializes all listed python
+#   Wrapper around ``Py_Initialize()`` that initializes all listed python
 #   extension modules.  This function is excluded during preprocessing if the
 #   preprocessing macro ``EXCLUDE_PY_INIT_WRAPPER`` is defined.  If this
 #   function is generated, then ``Py_Initialize()`` is redefined to a macro

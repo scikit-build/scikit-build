@@ -96,17 +96,13 @@ function(add_f2py_target _name)
     endif()
   endif()
 
-  set(_embed_main FALSE)
-
   if("C" IN_LIST languages)
     set(_output_syntax "C")
   else()
     message(FATAL_ERROR "C must be enabled to use F2PY")
   endif()
 
-  set(extension "c")
-
-  set(generated_file "${CMAKE_CURRENT_BINARY_DIR}/${_name}module.${extension}")
+  set(generated_file "${CMAKE_CURRENT_BINARY_DIR}/${_name}module.c")
   set(generated_wrappers
     "${CMAKE_CURRENT_BINARY_DIR}/${_name}-f2pywrappers.f"
     "${CMAKE_CURRENT_BINARY_DIR}/${_name}-f2pywrappers2.f90"
