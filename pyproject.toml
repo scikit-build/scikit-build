@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "scikit-build"
 dynamic = ["version", "readme"]
 description = "Improved build system generator for Python C/C++/Fortran/Cython extensions"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 authors = [
     { name = "The scikit-build team" },
 ]
@@ -19,7 +19,6 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Natural Language :: English",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -109,7 +108,7 @@ replacement = '[@\1](https://github.com/\1)'
 [tool.mypy]
 files = ["skbuild", "tests"]
 exclude = ["tests/samples"]
-python_version = "3.8"
+python_version = "3.9"
 warn_unused_configs = true
 enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
 strict = true
@@ -129,7 +128,7 @@ ignore_missing_imports = true
 
 
 [tool.pylint]
-py-version = "3.8"
+py-version = "3.9"
 jobs = "0"
 reports.output-format = "colorized"
 similarities.ignore-imports = "yes"
@@ -221,7 +220,6 @@ extend-select = [
   "EXE",         # flake8-executable
   "NPY",         # NumPy specific rules
 ]
-typing-modules = ["skbuild._compat.typing"]
 ignore = ["PLR2004", "PLR09", "SIM117"]
 flake8-unused-arguments.ignore-variadic-names = true
 isort.known-third-party = ["distutils"]

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import sys
 import tarfile
 from importlib import metadata
 from zipfile import ZipFile
@@ -36,7 +35,7 @@ def check_sdist_content(sdist_archive, expected_distribution_name, expected_cont
         f"{egg_info_dir}/SOURCES.txt",
     }
 
-    if sdist_zip and sys.version_info > (3, 7, 1):
+    if sdist_zip:
         # Add directory entries in ZIP files created by distutils.
         # See https://github.com/python/cpython/pull/9419
         for entry in expected_content:
