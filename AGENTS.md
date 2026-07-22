@@ -4,7 +4,7 @@ This file provides guidance to agents when working with code in this repository.
 
 ## What this is
 
-scikit-build (classic) is glue between setuptools and CMake: it lets `setup.py` projects build C/C++/Fortran/Cython extensions with CMake. It is in maintenance mode; new development happens in its successor, scikit-build-core. Supports Python 3.8+ and PyPy.
+scikit-build (classic) is glue between setuptools and CMake: it lets `setup.py` projects build C/C++/Fortran/Cython extensions with CMake. It is in maintenance mode; new development happens in its successor, scikit-build-core. Supports Python 3.9+ and PyPy.
 
 ## Commands
 
@@ -31,7 +31,7 @@ The whole package implements one entry point: `skbuild.setup()` (in `skbuild/set
 3. `skbuild/cmaker.py` (`CMaker`) runs CMake configure/build/install into `_skbuild/<platform>-<pyversion>/` (layout defined in `skbuild/constants.py`: `cmake-build/`, `cmake-install/`, `setuptools/`). It injects the shipped CMake modules in `skbuild/resources/cmake/` (`FindPythonExtensions.cmake`, `UseCython.cmake`, `FindF2PY.cmake`, …) onto `CMAKE_MODULE_PATH`.
 4. The CMake-installed files are merged into the setuptools package layout, then control passes to setuptools using the overridden command classes in `skbuild/command/` (subclasses of `build`, `build_py`, `build_ext`, `bdist_wheel`, `sdist`, `install`, etc., plus the mixin in `skbuild/command/__init__.py`) so setuptools accounts for CMake-generated files.
 
-Errors are reported via `SKBuildError` (`skbuild/exceptions.py`). `skbuild/_compat/` holds version shims (e.g. `tomllib`); `typing-modules` in ruff is pointed at `skbuild._compat.typing`.
+Errors are reported via `SKBuildError` (`skbuild/exceptions.py`).
 
 ## Tests
 
@@ -41,4 +41,4 @@ Errors are reported via `SKBuildError` (`skbuild/exceptions.py`). `skbuild/_comp
 
 - Type checking is strict mypy for `skbuild/` (untyped defs allowed in `tests/`); run via pre-commit.
 - Ruff enforces `from __future__ import annotations` in every file; line length 120.
-- CI must pass on Python 3.8 — no 3.9+ only constructs outside `_compat`.
+- CI must pass on Python 3.9 — no 3.10+ only constructs.

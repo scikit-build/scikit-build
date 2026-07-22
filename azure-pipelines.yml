@@ -9,12 +9,12 @@ jobs:
 
     strategy:
       matrix:
-        Python37:
+        Python39:
           python.arch: 'x86'
-          python.version: '3.8'
-        Python37-x64:
+          python.version: '3.9'
+        Python39-x64:
           python.arch: 'x64'
-          python.version: '3.8'
+          python.version: '3.9'
       maxParallel: 2
 
     steps:
