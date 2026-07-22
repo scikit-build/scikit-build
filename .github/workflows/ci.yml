@@ -87,7 +87,7 @@ jobs:
       env:
         TMP: /tmp
         TEMP: /tmp
-      run: python3.9 -m nox -s tests-3.9 -- -m "not deprecated" --durations=20
+      run: python3.9 -m nox -s tests-3.9 -- --durations=20
 
 
   tests-pypy:

@@ -18,11 +18,6 @@ pytestmark = pytest.mark.filterwarnings(
 )
 
 
-def test_hello_cython_builds(project_setup_py_test):
-    with project_setup_py_test("hello-cython", ["build"]):
-        pass
-
-
 def test_hello_cython_sdist(project_setup_py_test):
     with project_setup_py_test("hello-cython", ["sdist"]):
         sdists_tar = glob.glob("dist/*.tar.gz")

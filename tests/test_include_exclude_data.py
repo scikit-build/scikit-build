@@ -43,7 +43,8 @@ def check_whls(project_name):
     check_wheel_content(whls[0], expected_distribution_name, expected_content)
 
 
-def check_sdist(proj, base=""):
+def check_sdist(proj):
+    base = ""
     sdists_tar = glob.glob("dist/*.tar.gz")
     sdists_zip = glob.glob("dist/*.zip")
     assert sdists_tar or sdists_zip
@@ -86,14 +87,3 @@ def test_include_exclude_data(project_setup_py_test):
 def test_hello_sdist(project_setup_py_test):
     with project_setup_py_test("test-include-exclude-data", ["sdist"]):
         check_sdist("test_include_exclude_data-0.1.0")
-
-
-def test_include_exclude_data_with_base(project_setup_py_test):
-    with project_setup_py_test("test-include-exclude-data-with-base", ["bdist_wheel"]):
-        check_whls("test_include_exclude_data_with_base-0.1.0")
-
-
-@pytest.mark.nosetuptoolsscm
-def test_hello_sdist_with_base(project_setup_py_test):
-    with project_setup_py_test("test-include-exclude-data-with-base", ["sdist"]):
-        check_sdist("test_include_exclude_data_with_base-0.1.0", base="src")

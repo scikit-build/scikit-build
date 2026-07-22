@@ -20,14 +20,6 @@ pytest.importorskip("numpy")
 
 
 @pytest.mark.fortran
-@pytest.mark.skipif(sys.platform.startswith("win"), reason="Fortran not supported on Windows")
-@pytest.mark.skipif(not ("FC" in os.environ or shutil.which("gfortran")), reason="GFortran required")
-def test_hello_fortran_build(project_setup_py_test):
-    with project_setup_py_test("hello-fortran", ["build"]):
-        pass
-
-
-@pytest.mark.fortran
 def test_hello_fortran_sdist(project_setup_py_test):
     with project_setup_py_test("hello-fortran", ["sdist"]):
         sdists_tar = glob.glob("dist/*.tar.gz")

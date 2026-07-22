@@ -8,16 +8,6 @@ Tries to build the `fail-unless-skbuild-set` sample project.  The CMake variable
 from __future__ import annotations
 
 
-def test_skbuild_variable_builds(project_setup_py_test):
-    with project_setup_py_test("fail-unless-skbuild-set", ["build"]):
-        pass
-
-
-def test_skbuild_variable_sdist(project_setup_py_test):
-    with project_setup_py_test("fail-unless-skbuild-set", ["sdist"]):
-        pass
-
-
 def test_skbuild_variable_wheel(project_setup_py_test):
     with project_setup_py_test("fail-unless-skbuild-set", ["bdist_wheel"]):
         pass

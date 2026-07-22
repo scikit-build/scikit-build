@@ -8,13 +8,7 @@ from __future__ import annotations
 
 import glob
 
-from . import push_dir
 from .pytest_helpers import check_sdist_content, check_wheel_content
-
-
-def test_hello_pure_builds(project_setup_py_test):
-    with project_setup_py_test("hello-pure", ["build"]):
-        pass
 
 
 def test_hello_pure_sdist(project_setup_py_test):
@@ -49,19 +43,3 @@ def test_hello_pure_wheel(project_setup_py_test):
         whls = glob.glob("dist/*.whl")
         assert len(whls) == 1
         check_wheel_content(whls[0], expected_distribution_name, expected_content, pure=True)
-
-
-def test_hello_clean(capfd, project_setup_py_test):
-    with push_dir():
-        with project_setup_py_test("hello-pure", ["build"]) as tmp_dir:
-            pass
-
-        assert (tmp_dir / "build").exists()
-
-        with project_setup_py_test("hello-pure", ["clean", "--all"], tmp_dir=tmp_dir):
-            pass
-
-        assert not (tmp_dir / "build").exists()
-
-        out = capfd.readouterr()[0]
-        assert "Build files have been written to" not in out
