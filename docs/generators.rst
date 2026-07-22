@@ -47,7 +47,7 @@ for each operating system.
     +------------------+---------------------------+-------------------------+-----------------------------------+
     |                  | Linux                     | MacOSX                  | Windows                           |
     +==================+===========================+=========================+===================================+
-    | **C runtime**    | `GNU C Library (glibc)`_  | `libSystem library`_    | `Microsoft C run-time library`_   |
+    | **C runtime**    | `GNU C Library (glibc)`_  | libSystem               | `Microsoft C run-time library`_   |
     +------------------+---------------------------+-------------------------+-----------------------------------+
     | **Compiler**     | `GNU compiler (gcc)`_     | `clang`_                | Microsoft C/C++ Compiler (cl.exe) |
     +------------------+---------------------------+-------------------------+-----------------------------------+
@@ -58,7 +58,6 @@ for each operating system.
 .. _GNU C Library (glibc): https://en.wikipedia.org/wiki/GNU_C_Library
 .. _Package manager: https://en.wikipedia.org/wiki/Package_manager
 .. _Microsoft C run-time library: https://en.wikipedia.org/wiki/Microsoft_Windows_library_files#Runtime_libraries
-.. _libSystem library: https://www.safaribooksonline.com/library/view/mac-os-x/0596003560/ch05s02.html
 .. _XCode: https://en.wikipedia.org/wiki/Xcode#Version_comparison_table
 .. _Microsoft Windows SDK: https://en.wikipedia.org/wiki/Microsoft_Windows_SDK
 .. _Microsoft Visual Studio: https://en.wikipedia.org/wiki/Microsoft_Visual_Studio

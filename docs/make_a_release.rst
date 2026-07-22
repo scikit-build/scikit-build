@@ -15,6 +15,11 @@ Prerequisites
 
 * You have a `GPG signing key <https://help.github.com/articles/generating-a-new-gpg-key/>`_.
 
+* You can push to the repository and create GitHub releases. No PyPI
+  credentials are needed: publishing the GitHub release triggers a GitHub
+  Actions workflow that builds the package and uploads it to `PyPI`_ using
+  trusted publishing.
+
 -------------------------
 Documentation conventions
 -------------------------
@@ -27,35 +32,6 @@ Commands to evaluate starts with a dollar sign. For example::
   Hello
 
 means that ``echo "Hello"`` should be copied and evaluated in the terminal.
-
-----------------------
-Setting up environment
-----------------------
-
-1. First, `register for an account on PyPI <https://pypi.org>`_.
-
-
-2. If not already the case, ask to be added as a ``Package Index Maintainer``.
-
-
-3. Create a ``~/.pypirc`` file with your login credentials::
-
-    [distutils]
-    index-servers =
-      pypi
-      pypitest
-
-    [pypi]
-    username=<your-username>
-    password=<your-password>
-
-    [pypitest]
-    repository=https://test.pypi.org/legacy/
-    username=<your-username>
-    password=<your-password>
-
-  where ``<your-username>`` and ``<your-password>`` correspond to your PyPI account.
-
 
 ---------------------
 `PyPI`_: Step-by-step
@@ -131,6 +107,9 @@ Setting up environment
 
     For examples of releases, see https://github.com/scikit-build/scikit-build/releases
 
+  Publishing the release triggers the ``CD`` GitHub Actions workflow, which
+  builds the SDist and wheel and uploads them to `PyPI`_.
+
 
 9. Add a ``Next Release`` section back in ``CHANGES.md``, commit and push local changes.
 
@@ -149,15 +128,10 @@ Setting up environment
     For examples of announcements, see https://github.com/orgs/scikit-build/discussions/categories/announcements
 
 
-.. _virtualenvwrapper: https://virtualenvwrapper.readthedocs.io/
-.. _virtualenv: http://virtualenv.readthedocs.io
-.. _venv: https://docs.python.org/3/library/venv.html
-
 .. _Azure Pipelines: https://dev.azure.com/scikit-build/scikit-build/_build
 .. _GitHub Actions: https://github.com/scikit-build/scikit-build/actions
 
 .. _PyPI: https://pypi.org/project/scikit-build
-.. _TestPyPI: https://test.pypi.org/project/scikit-build
 
 .. _scikit-build discussions board: https://github.com/orgs/scikit-build/discussions/categories/announcements
 
@@ -167,7 +141,7 @@ Setting up environment
 
 .. warning::
 
-   Publishing on conda requires to have corresponding the corresponding Github release.
+   Publishing on conda requires the corresponding GitHub release.
 
 After a GitHub release is created in the `scikit-build <https://github.com/scikit-build/scikit-build>`_ project
 and after the conda-forge `Autoticking Bot <https://justcalamari.github.io/jekyll/update/2018/06/11/introduction.html>`_
