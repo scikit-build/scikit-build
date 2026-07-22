@@ -50,9 +50,12 @@ projects keep working unchanged:
   ``TRUE`` (still truthy).
 - The standard setuptools commands: ``build``, ``bdist_wheel``, ``sdist``,
   ``install`` and ``build_ext --inplace``.
-- The recommended ``build-system`` table in ``pyproject.toml`` is unchanged:
+- The classic ``build-system`` table:
   ``requires = ["setuptools", "scikit-build", "cmake", "ninja"]`` with
-  ``build-backend = "setuptools.build_meta"``.
+  ``build-backend = "setuptools.build_meta"``. The recommended backend is now
+  ``scikit_build_core.setuptools.build_meta``, which adds ``cmake`` and
+  ``ninja`` only when needed and supports config-settings; see
+  :ref:`basic_usage_example`.
 
 The following changes are breaking:
 
@@ -62,12 +65,10 @@ The following changes are breaking:
   ``--skip-cmake``, ``--install-target``, as well as the
   ``setup.py <setuptools args> -- <cmake args> -- <build tool args>``
   triple-section syntax. Use the ``CMAKE_ARGS`` and ``CMAKE_GENERATOR``
-  environment variables, the ``cmake_args`` keyword of ``setup()``,
+  environment variables, the ``cmake_args`` keyword of ``setup()``, or
   scikit-build-core's ``[tool.scikit-build]`` settings in ``pyproject.toml``
-  (or the equivalent ``SKBUILD_*`` environment variables), or the options of
-  the new ``build_cmake`` setuptools command (``--source-dir``,
-  ``--cmake-args``, ``--parallel`` and ``--debug``) instead. See the
-  `scikit-build-core configuration documentation
+  (or the equivalent ``SKBUILD_*`` environment variables or config-settings)
+  instead. See the `scikit-build-core configuration documentation
   <https://scikit-build-core.readthedocs.io/en/latest/configuration/index.html>`__.
 
 - ``cmake_with_sdist=True`` now raises an error. ``cmake_languages`` and
@@ -119,8 +120,8 @@ Example of setup.py, CMakeLists.txt and pyproject.toml
 ------------------------------------------------------
 The full example code is `Here <https://github.com/scikit-build/scikit-build-sample-projects/tree/master/projects/hello-cpp>`_
 
-Make a fold name my_project as your project root folder, place the following in your project's
-``setup.py`` file::
+Make a folder named ``my_project`` as your project root folder, and place the
+following in your project's ``setup.py`` file::
 
     from skbuild import setup  # This line replaces 'from setuptools import setup'
     setup(
@@ -148,20 +149,22 @@ a C++ extension named ``_hello`` is built::
     python_extension_module(_hello)
     install(TARGETS _hello LIBRARY DESTINATION hello)
 
-Then, add a ``pyproject.toml`` to list the build system requirements::
+Then, add a ``pyproject.toml`` declaring the build backend::
 
     [build-system]
-    requires = [
-        "setuptools>=42",
-        "scikit-build>=0.13",
-        "cmake>=3.18",
-        "ninja",
-    ]
-    build-backend = "setuptools.build_meta"
+    requires = ["scikit-build>=1"]
+    build-backend = "scikit_build_core.setuptools.build_meta"
+
+The ``scikit_build_core.setuptools.build_meta`` backend adds ``cmake`` (and
+``ninja``) to the build requirements only when a suitable version is not
+already available, and supports config-settings (see
+:ref:`usage-setuptools_options`). If you don't want those, you can use the
+standard setuptools backend here; then list ``cmake`` (and ``ninja``) in
+``requires`` yourself.
 
 Make a hello folder inside my_project folder and place `_hello.cxx <https://github.com/scikit-build/scikit-build-sample-projects/blob/8fdbc8a0dd78656ea0b431e005b49f3e19786444/projects/hello-cpp/hello/_hello.cxx>`_ and `__init__.py <https://github.com/scikit-build/scikit-build-sample-projects/blob/8fdbc8a0dd78656ea0b431e005b49f3e19786444/projects/hello-cpp/hello/__init__.py>`_ inside hello folder.
 
-Now every thing is ready, go to my_project's parent folder and type following command to install your extension::
+Now everything is ready; go to my_project's parent folder and type the following command to install your extension::
 
     pip install my_project/.
 
@@ -178,10 +181,6 @@ Try your new extension::
     >>> hello.hello("scikit-build")
     Hello, scikit-build!
     >>>
-
-You can add lower limits to ``cmake`` or ``scikit-build`` as needed. Ninja
-should be limited to non-Windows systems, as MSVC 2017+ ships with Ninja
-already.
 
 ..  note::
 
@@ -286,16 +285,17 @@ Command line options
     ``setup.py <setuptools args> -- <cmake args> -- <build tool args>``
     syntax were removed. See :ref:`migration_guide`.
 
-Only the standard `setuptools command line options
-<https://setuptools.readthedocs.io/en/latest/setuptools.html#command-reference>`_
-are supported. CMake options can be passed using the ``CMAKE_ARGS``
-environment variable, the ``cmake_args`` keyword of ``setup()``, or
-scikit-build-core's ``[tool.scikit-build]`` settings in ``pyproject.toml``.
+Build with a standard frontend like ``pip``, ``build`` or ``uv``. When using
+the ``scikit_build_core.setuptools.build_meta`` backend (see
+:ref:`basic_usage_example`), any scikit-build-core setting can be passed as a
+config-setting::
 
-In addition, the ``build_cmake`` command accepts the ``--source-dir``,
-``--cmake-args``, ``--parallel`` and ``--debug`` options. For example::
+    pip install . -C cmake.build-type=Debug
+    python -m build -C cmake.args="-DSOME_FEATURE:BOOL=OFF"
 
-    python setup.py build_cmake --cmake-args="-DSOME_FEATURE:BOOL=OFF" --parallel 3
+CMake options can also be passed using the ``CMAKE_ARGS`` environment
+variable, the ``cmake_args`` keyword of ``setup()``, or scikit-build-core's
+``[tool.scikit-build]`` settings in ``pyproject.toml``.
 
 
 ==============
@@ -319,106 +319,17 @@ and a python wheel, it is possible to test for the variable ``SKBUILD``:
     The ``SKBUILD`` variable is now set to ``2`` instead of ``TRUE``. Both
     values are truthy in CMake.
 
-Adding cmake as building requirement only if not installed or too low a version
--------------------------------------------------------------------------------
-
-.. versionchanged:: 1.0
-
-    This previously required writing an in-tree build backend by hand.
-
-Use scikit-build-core's PEP 517 backend instead of ``setuptools.build_meta``;
-it adds ``cmake`` (and ``ninja``) to the build requirements only when a
-suitable version is not already available::
-
-    [build-system]
-    requires = ["setuptools", "scikit-build"]
-    build-backend = "scikit_build_core.setuptools.build_meta"
-
-This backend also supports config-settings, e.g. ``pip install .
--C cmake.build-type=Debug``.
-
 .. _usage_enabling_parallel_build:
 
-Enabling parallel build
------------------------
+Parallel builds
+---------------
 
-.. _Ninja:
+The build runs through ``cmake --build``; with the ``Ninja`` generator it is
+parallel by default. Set the `CMAKE_BUILD_PARALLEL_LEVEL
+<https://cmake.org/cmake/help/latest/envvar/CMAKE_BUILD_PARALLEL_LEVEL.html>`_
+environment variable to control the number of parallel jobs::
 
-Ninja
-^^^^^
-
-If the ``Ninja`` generator is used, the associated build tool (called ``ninja``)
-will automatically parallelize the build based on the number of available CPUs.
-
-To limit the number of parallel jobs, set the ``CMAKE_BUILD_PARALLEL_LEVEL``
-environment variable, or pass the ``--parallel`` option to the ``build_cmake``
-command.
-
-For example, to  limit the number of parallel jobs to ``3``, the following could be done::
-
-    python setup.py build_cmake --parallel 3
-
-For complex projects where more granularity is required, it is also possible to limit
-the number of simultaneous link jobs, or compile jobs, or both, by configuring
-the project with these options:
-
-* `CMAKE_JOB_POOL_COMPILE <https://cmake.org/cmake/help/latest/variable/CMAKE_JOB_POOL_COMPILE.html>`_
-* `CMAKE_JOB_POOL_LINK <https://cmake.org/cmake/help/latest/variable/CMAKE_JOB_POOL_LINK.html>`_
-* `CMAKE_JOB_POOLS <https://cmake.org/cmake/help/latest/variable/CMAKE_JOB_POOLS.html>`_
-
-For example, to have at most ``5`` compile jobs and ``2`` link jobs, the following could be done::
-
-    export CMAKE_ARGS="-DCMAKE_JOB_POOL_COMPILE:STRING=compile \
-      -DCMAKE_JOB_POOL_LINK:STRING=link \
-      -DCMAKE_JOB_POOLS:STRING=compile=5;link=2"
-    python setup.py bdist_wheel
-
-Unix Makefiles
-^^^^^^^^^^^^^^
-
-If the ``Unix Makefiles`` generator is used, the associated build tool (called ``make``)
-will **NOT** automatically parallelize the build, the user has to explicitly set
-the number of jobs.
-
-For example, to limit the number of parallel jobs to ``3``, the following could be done::
-
-    CMAKE_BUILD_PARALLEL_LEVEL=3 python setup.py bdist_wheel
-
-
-.. _Visual Studio IDE:
-
-Visual Studio IDE
-^^^^^^^^^^^^^^^^^
-
-If a ``Visual Studio`` generator is used, there are two types of parallelism:
-
-* target level parallelism
-* object level parallelism
-
-.. warning::
-
-    Since finding the right combination of parallelism can be challenging, whenever
-    possible we recommend to use the ``Ninja`` generator.
-
-
-To adjust the object level parallelism, the compiler flag ``/MP[processMax]`` could
-be specified. To learn more, read `/MP (Build with Multiple Processes)
-<https://docs.microsoft.com/en-us/cpp/build/reference/mp-build-with-multiple-processes>`_.
-
-For example::
-
-    set CXXFLAGS=/MP4
-    python setup.py bdist_wheel
-
-The target level parallelism defines the number of simultaneous ``MSBuild.exe``
-processes. It can be set with the ``CMAKE_BUILD_PARALLEL_LEVEL`` environment
-variable. To learn more, read `Building Multiple Projects in Parallel with MSBuild
-<https://msdn.microsoft.com/en-us/library/bb651793.aspx>`_.
-
-For example::
-
-    set CMAKE_BUILD_PARALLEL_LEVEL=4
-    python setup.py bdist_wheel
+    CMAKE_BUILD_PARALLEL_LEVEL=3 pip install .
 
 
 .. _support_isolated_build:
@@ -477,11 +388,10 @@ Scikit-build support environment variables to configure some options. These are:
   This selects the CMake generator to use. See :doc:`/generators`.
 
 ``SKBUILD_CONFIGURE_OPTIONS``
-  Extra arguments appended when configuring CMake, like ``CMAKE_ARGS``.
+  Extra arguments appended when configuring CMake, like ``CMAKE_ARGS``. (Deprecated)
 
 ``SKBUILD_BUILD_OPTIONS``
-  Extra arguments forwarded to ``cmake --build``. Use a leading ``--`` to
-  pass native build-tool options, e.g. ``SKBUILD_BUILD_OPTIONS="-- -l4"``.
+  Extra arguments forwarded to ``cmake --build``. (Deprecated)
 
 Both ``SKBUILD_*_OPTIONS`` variables are split following shell quoting rules
 and only honored when building through ``skbuild.setup()``.

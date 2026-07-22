@@ -2,6 +2,8 @@
 C Runtime, Compiler and Build System Generator
 ==============================================
 
+.. _Ninja:
+
 Build system generator
 ----------------------
 
@@ -23,15 +25,16 @@ CMake selects its default generator for the current platform, and the
     CMAKE_GENERATOR="Unix Makefiles" pip install .
 
 ``Ninja`` is the recommended generator. It is automatically parallel and is
-available on all platforms; listing the `ninja python package
-<https://pypi.org/project/ninja/>`_ in the ``build-system.requires`` table of
-your ``pyproject.toml`` (see :ref:`basic_usage_example`) ensures it is
-available during the build. On Windows, MSVC 2017 and newer ship with Ninja
-already, so ``ninja`` can be limited to non-Windows systems in
-``build-system.requires``.
+available on all platforms. The recommended
+``scikit_build_core.setuptools.build_meta`` backend (see
+:ref:`basic_usage_example`) adds the `ninja python package
+<https://pypi.org/project/ninja/>`_ to the build requirements automatically
+when no suitable build tool is already available.
 
 For more details about CMake generators, see the `CMake documentation
 <https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html>`_.
+
+.. _Visual Studio IDE:
 
 Compiler
 --------
