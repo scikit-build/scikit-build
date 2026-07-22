@@ -5,12 +5,18 @@
 Why should I use scikit-build ?
 ===============================
 
-Scikit-build is a replacement for `distutils.core.Extension <https://docs.python.org/3/distutils/apiref.html?highlight=extension#distutils.core.Extension>`_
-with the following advantages:
+Scikit-build is a replacement for `setuptools.Extension
+<https://setuptools.pypa.io/en/latest/userguide/ext_modules.html>`_ that
+builds extension modules with CMake, providing:
 
-- provide better support for :doc:`additional compilers and build systems </generators>`
+- better support for :doc:`additional compilers and build systems </generators>`
 - first-class :ref:`cross-compilation <cross_compilation>` support
 - location of dependencies and their associated build requirements
+
+Scikit-build is a lightweight wrapper around the setuptools plugin of
+`scikit-build-core <https://scikit-build-core.readthedocs.io>`_. Use it when
+you have an existing ``setup.py``-based project or need setuptools features;
+for new projects, use scikit-build-core directly.
 
 .. _migration_guide:
 
@@ -69,9 +75,14 @@ The following changes are breaking:
   the minimum CMake version is configured with the ``cmake.version`` setting
   in the ``[tool.scikit-build]`` table of ``pyproject.toml``.
 
-- The Python modules ``skbuild.cmaker``, ``skbuild.constants``,
-  ``skbuild.command.*``, ``skbuild.platform_specifics``, ``skbuild.utils``
-  and ``skbuild.setuptools_wrap`` no longer exist.
+- The internal Python API is gone; only ``skbuild.setup`` and
+  ``skbuild.exceptions.SKBuildError`` remain public.
+  ``skbuild.command.*`` and ``skbuild.platform_specifics`` were removed.
+  ``skbuild.cmaker``, ``skbuild.constants``, ``skbuild.utils`` and
+  ``skbuild.setuptools_wrap`` remain importable as deprecated shims that
+  warn on import: ``skbuild.cmaker`` keeps only ``get_cmake_version()``,
+  ``skbuild.constants`` keeps only ``CMAKE_INSTALL_DIR()`` and
+  ``skbuild_plat_name()``, and the last two expose nothing.
   ``skbuild.exceptions.SKBuildError`` is now an alias of setuptools'
   ``SetupError``, so it is no longer a ``RuntimeError``; its
   ``SKBuildInvalidFileInstallationError`` and
@@ -187,79 +198,21 @@ Setup options
 setuptools options
 ^^^^^^^^^^^^^^^^^^
 
-The section below documents some of the options accepted by the ``setup()``
-function. These currently must be passed in your ``setup.py``, not in
-``setup.cfg``, as scikit-build intercepts them and inspects them. This
-restriction may be relaxed in the future. Setuptools options not listed here can
-be placed in ``setup.cfg`` as normal.
+.. versionchanged:: 1.0
 
-- ``packages``: Explicitly list of all packages to include in the distribution. Setuptools will not recursively
-  scan the source tree looking for any directory with an ``__init__.py`` file. To automatically generate the list
-  of packages, see `Using find_package()`_.
+    scikit-build no longer intercepts or rewrites setuptools options.
 
-- ``package_dir``: A mapping of package to directory names
-
-- ``include_package_data``: If set to ``True``, this tells setuptools to automatically include any data files it finds
-  inside your package directories that are specified by your ``MANIFEST.in`` file. For more information, see the setuptools
-  documentation section on `Including Data Files`_. scikit-build matches
-  `the setuptools behavior <https://setuptools.pypa.io/en/latest/history.html#id255>`__ of defaulting this parameter to
-  ``True`` if a pyproject.toml file exists and contains either the ``project`` or ``tool.setuptools`` table.
-
-- ``package_data``: A dictionary mapping package names to lists of glob patterns. For a complete description and examples,
-  see the setuptools documentation section on `Including Data Files`_.
-  You do not need to use this option if you are using include_package_data, unless you need to add e.g. files that are generated
-  by your setup script and build process. (And are therefore not in source control or are files that you don't want to include
-  in your source distribution.)
-
-- ``exclude_package_data``: Dictionary mapping package names to lists of glob patterns that should be excluded from
-  the package directories. You can use this to trim back any excess files included by include_package_data.
-  For a complete description and examples, see the setuptools documentation section on `Including Data Files`_.
-
-- ``py_modules``: List all modules rather than listing packages. More details in the `Listing individual modules`_
-  section of the distutils documentation.
-
-- ``data_files``: Sequence of ``(directory, files)`` pairs. Each ``(directory, files)`` pair in the sequence specifies
-  the installation directory and the files to install there. More details in the `Installing Additional Files`_
-  section of the setuptools documentation.
-
-- ``entry_points``: A dictionary mapping entry point group names to strings or lists of strings defining the entry points.
-  Entry points are used to support dynamic discovery of services or plugins provided by a project.
-  See `Dynamic Discovery of Services and Plugins`_ for details and examples of the format of this argument. In addition,
-  this keyword is used to support `Automatic Script Creation`_. Note that if using ``pyproject.toml`` for configuration,
-  the requirement to put ``entry_points`` in ``setup.py`` also requires that the ``project`` section include ``entry_points``
-  in the ``dynamic`` section.
-
-- ``scripts``: List of python script relative paths. If the first line of the script starts with ``#!`` and contains the
-  word ``python``, the Distutils will adjust the first line to refer to the current interpreter location.
-  More details in the `Installing Scripts <https://docs.python.org/3/distutils/setupscript.html#installing-scripts>`_ section
-  of the distutils documentation.
-
-.. versionadded:: 0.8.0
-
-- ``zip_safe``: A boolean indicating if the Python packages may be run directly from a zip file. If not already
-  set, scikit-build sets this option to ``False``. See `Setting the zip_safe flag`_
-  section of the setuptools documentation.
-
-.. note::
-
-    As specified in the `Wheel documentation`_, the ``universal`` and ``python-tag`` options
-    have no effect.
-
-.. _Using find_package(): https://setuptools.readthedocs.io/en/latest/setuptools.html#using-find-packages
-.. _Including Data Files: https://setuptools.readthedocs.io/en/latest/setuptools.html#including-data-files
-.. _Installing Additional Files: https://docs.python.org/3/distutils/setupscript.html#installing-additional-files
-.. _Listing individual modules: https://docs.python.org/3/distutils/setupscript.html#listing-individual-modules
-.. _Dynamic Discovery of Services and Plugins: https://setuptools.readthedocs.io/en/latest/setuptools.html#dynamic-discovery-of-services-and-plugins
-.. _Automatic Script Creation: https://setuptools.readthedocs.io/en/latest/setuptools.html#automatic-script-creation
-.. _Setting the zip_safe flag: https://setuptools.readthedocs.io/en/latest/setuptools.html#setting-the-zip-safe-flag
-.. _Wheel documentation: https://wheel.readthedocs.io/en/stable/
+Standard setuptools options are handled by setuptools itself and can be
+declared in ``setup.py``, ``setup.cfg``, or the ``[project]`` table of
+``pyproject.toml`` as usual. See the `setuptools documentation
+<https://setuptools.pypa.io/en/latest/userguide/>`_.
 
 scikit-build options
 ^^^^^^^^^^^^^^^^^^^^
 
 Scikit-build augments the ``setup()`` function with the following options:
 
-- ``cmake_args``: List of `CMake options <https://cmake.org/cmake/help/v3.6/manual/cmake.1.html#options>`_.
+- ``cmake_args``: List of `CMake options <https://cmake.org/cmake/help/latest/manual/cmake.1.html#options>`_.
 
 For example::
 
@@ -307,6 +260,14 @@ For example::
       [...]
     )
 
+These options are described in more detail in the `scikit-build-core
+setuptools plugin documentation
+<https://scikit-build-core.readthedocs.io/en/latest/plugins/setuptools.html>`__.
+All other scikit-build-core settings can be set in the ``[tool.scikit-build]``
+table of ``pyproject.toml``; see the `scikit-build-core configuration
+documentation
+<https://scikit-build-core.readthedocs.io/en/latest/configuration/index.html>`__.
+
 .. versionchanged:: 1.0
 
     The ``cmake_with_sdist`` option now raises an error if set to ``True``,
@@ -336,11 +297,6 @@ In addition, the ``build_cmake`` command accepts the ``--source-dir``,
 
     python setup.py build_cmake --cmake-args="-DSOME_FEATURE:BOOL=OFF" --parallel 3
 
-.. note::
-
-    As specified in the `Wheel documentation`_, the ``--universal`` and ``--python-tag`` options
-    have no effect.
-
 
 ==============
 Advanced Usage
@@ -366,48 +322,20 @@ and a python wheel, it is possible to test for the variable ``SKBUILD``:
 Adding cmake as building requirement only if not installed or too low a version
 -------------------------------------------------------------------------------
 
-If systematically installing cmake wheel is not desired, it is possible to set it using an ``in-tree backend``.
-For this purpose place the following configuration in your ``pyproject.toml``::
+.. versionchanged:: 1.0
+
+    This previously required writing an in-tree build backend by hand.
+
+Use scikit-build-core's PEP 517 backend instead of ``setuptools.build_meta``;
+it adds ``cmake`` (and ``ninja``) to the build requirements only when a
+suitable version is not already available::
 
     [build-system]
-    requires = [
-      "setuptools>=42",
-      "packaging",
-      "scikit-build",
-      "ninja; platform_system!='Windows'"
-    ]
-    build-backend = "backend"
-    backend-path = ["_custom_build"]
+    requires = ["setuptools", "scikit-build"]
+    build-backend = "scikit_build_core.setuptools.build_meta"
 
-then you can implement a thin wrapper around ``build_meta`` in the ``_custom_build/backend.py`` file::
-
-    import re
-    import subprocess
-
-    from setuptools import build_meta as _orig
-
-    prepare_metadata_for_build_wheel = _orig.prepare_metadata_for_build_wheel
-    build_wheel = _orig.build_wheel
-    build_sdist = _orig.build_sdist
-    get_requires_for_build_sdist = _orig.get_requires_for_build_sdist
-
-    def get_requires_for_build_wheel(config_settings=None):
-        from packaging import version
-        packages = []
-        try:
-            output = subprocess.run(
-                ["cmake", "--version"], check=True, capture_output=True, text=True
-            ).stdout
-            cmake_version = re.match(r"cmake version (\S+)", output).group(1)
-            if version.parse(cmake_version) < version.parse("3.15"):
-                packages.append('cmake')
-        except (OSError, subprocess.CalledProcessError, AttributeError):
-            packages.append('cmake')
-
-        return _orig.get_requires_for_build_wheel(config_settings) + packages
-
-Also see `scikit-build-core <https://scikit-build-core.readthedocs.io>`_ where
-this is a built-in feature.
+This backend also supports config-settings, e.g. ``pip install .
+-C cmake.build-type=Debug``.
 
 .. _usage_enabling_parallel_build:
 
@@ -431,10 +359,8 @@ For example, to  limit the number of parallel jobs to ``3``, the following could
     python setup.py build_cmake --parallel 3
 
 For complex projects where more granularity is required, it is also possible to limit
-the number of simultaneous link jobs, or compile jobs, or both.
-
-Indeed, starting with CMake 3.11, it is possible to configure the project with these
-options:
+the number of simultaneous link jobs, or compile jobs, or both, by configuring
+the project with these options:
 
 * `CMAKE_JOB_POOL_COMPILE <https://cmake.org/cmake/help/latest/variable/CMAKE_JOB_POOL_COMPILE.html>`_
 * `CMAKE_JOB_POOL_LINK <https://cmake.org/cmake/help/latest/variable/CMAKE_JOB_POOL_LINK.html>`_
@@ -500,22 +426,10 @@ For example::
 Support for isolated build
 --------------------------
 
-.. versionadded:: 0.8.0
-
-As specified in `PEP 518`_, dependencies required at install time can be specified using a
-``pyproject.toml`` file. Starting with pip 10.0, pip reads the ``pyproject.toml`` file and
-installs the associated dependencies in an isolated environment. See the `pip build system interface`_
-documentation.
-
-An isolated environment will be created when using pip to install packages directly from
-source or to create an editable installation.
-
-scikit-build supports these use cases as well as the case where the isolated environment support
-is explicitly disabled using the pip option ``--no-build-isolation`` available with the ``install``,
-``download`` and ``wheel`` commands.
-
-.. _PEP 518: https://www.python.org/dev/peps/pep-0518/
-.. _pip build system interface: https://pip.pypa.io/en/stable/reference/pip/#build-system-interface
+Build frontends like ``pip`` and ``build`` install the
+``build-system.requires`` entries from ``pyproject.toml`` into an isolated
+environment before building. scikit-build supports isolated builds, as well
+as builds with isolation disabled (``pip install --no-build-isolation``).
 
 
 Editable installs
@@ -531,6 +445,10 @@ scikit-build-core's "inplace" editable mode in ``pyproject.toml``::
 
     [tool.scikit-build]
     editable.mode = "inplace"
+
+For details, including setuptools' strict editable mode, see the
+`scikit-build-core setuptools plugin documentation
+<https://scikit-build-core.readthedocs.io/en/latest/plugins/setuptools.html#editable-installs>`__.
 
 
 .. _optimized_incremental_build:
@@ -558,15 +476,19 @@ Scikit-build support environment variables to configure some options. These are:
 ``CMAKE_GENERATOR``
   This selects the CMake generator to use. See :doc:`/generators`.
 
+``SKBUILD_CONFIGURE_OPTIONS``
+  Extra arguments appended when configuring CMake, like ``CMAKE_ARGS``.
+
+``SKBUILD_BUILD_OPTIONS``
+  Extra arguments forwarded to ``cmake --build``. Use a leading ``--`` to
+  pass native build-tool options, e.g. ``SKBUILD_BUILD_OPTIONS="-- -l4"``.
+
+Both ``SKBUILD_*_OPTIONS`` variables are split following shell quoting rules
+and only honored when building through ``skbuild.setup()``.
+
 In addition, every scikit-build-core setting can be set using a corresponding
 ``SKBUILD_*`` environment variable. See the `scikit-build-core configuration
 documentation <https://scikit-build-core.readthedocs.io/en/latest/configuration/index.html>`__.
-
-.. versionchanged:: 1.0
-
-    The ``SKBUILD_CONFIGURE_OPTIONS`` and ``SKBUILD_BUILD_OPTIONS``
-    environment variables were removed; use ``CMAKE_ARGS`` and
-    ``CMAKE_BUILD_PARALLEL_LEVEL`` instead.
 
 
 .. _cross_compilation:
@@ -574,35 +496,10 @@ documentation <https://scikit-build-core.readthedocs.io/en/latest/configuration/
 Cross-compilation
 -----------------
 
-See `CMake Toolchains <https://cmake.org/cmake/help/v3.6/manual/cmake-toolchains.7.html>`_.
-
-
-Introduction to dockross
-^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. note:: *To be documented.* See :issue:`227`.
-
-
-Using dockcross-manylinux to generate Linux wheels
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. note:: *To be documented.* See :issue:`227`.
-
-
-Using dockcross-mingwpy to generate Windows wheels
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. note:: *To be documented.* See :issue:`227`.
-
-
-Examples for scikit-build developers
-------------------------------------
-
-.. note:: *To be documented.* See :issue:`227`.
-
-    Provide small, self-contained setup function calls for (at least) two use
-    cases:
-
-    - when a `CMakeLists.txt` file already exists
-    - when a user wants scikit-build to create a `CMakeLists.txt` file based
-      on the user specifying some input files.
+Cross-compilation works through the standard CMake mechanisms (`CMake
+toolchains
+<https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html>`_). See
+the scikit-build-core `cross-compilation guide
+<https://scikit-build-core.readthedocs.io/en/latest/guide/crosscompile.html>`_;
+tools like `cibuildwheel <https://cibuildwheel.pypa.io>`_ handle the common
+macOS and Windows cases automatically.

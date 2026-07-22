@@ -89,7 +89,7 @@ Ready to contribute? Here's how to set up ``scikit-build`` for local development
    If you would like to check all Python versions and you don't happen to have them
    all installed locally, you can use the manylinux docker image instead:
 
-   $ docker run --rm -itv $PWD:/src -w /src quay.io/pypa/manylinux_2_24_x86_64:latest pipx run nox
+   $ docker run --rm -itv $PWD:/src -w /src quay.io/pypa/manylinux_2_28_x86_64:latest pipx run nox
 
 6. Commit your changes and push your branch to GitHub::
 
@@ -107,9 +107,7 @@ Before you submit a pull request, check that it meets these guidelines:
 
 1. The pull request should include tests.
 
-2. If the pull request adds functionality, the docs should be updated. Put
-   your new functionality into a function with a docstring, and add the
-   feature to the list in ``README.md``.
+2. If the pull request adds functionality, the docs should be updated.
 
 3. The pull request should work for Python 3.9+ and PyPy.  Make sure that
    the tests pass for all supported Python versions in CI on your PR.
@@ -124,7 +122,7 @@ To run a subset of tests::
 
 You can build and serve the docs::
 
-    $ nox -s docs -- serve
+    $ nox -s docs -- --serve
 
 You can build an SDist and a wheel in the ``dist`` folder::
 

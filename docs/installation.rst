@@ -43,18 +43,19 @@ Compiler Toolchain
 
 The same compiler toolchain used to build the CPython interpreter should also
 be available. Refer to the
-`CPython Developer's Guide <https://docs.python.org/devguide/setup.html#build-dependencies>`_
+`CPython Developer's Guide <https://devguide.python.org/getting-started/setup-building/#install-dependencies>`_
 for details about the compiler toolchain for your operating system.
 
 For example, on *Ubuntu Linux*, install with::
 
     $ sudo apt-get install build-essential
 
-On *Mac OSX*, install `XCode <https://developer.apple.com/xcode/>`_ to build
-packages for the system Python.
+On *macOS*, install `Xcode <https://developer.apple.com/xcode/>`_ or the
+command line tools (``xcode-select --install``).
 
-On Windows, install `the version of Visual Studio used to create the target
-version of CPython <https://docs.python.org/devguide/setup.html#windows>`_
+On *Windows*, install `Visual Studio
+<https://visualstudio.microsoft.com/visual-cpp-build-tools/>`_ with the C++
+workload.
 
 .. _installation_cmake:
 
@@ -62,9 +63,8 @@ CMake
 ^^^^^
 
 The easiest way to get `CMake <https://www.cmake.org/>`_ is :ref:`to add it to
-the pyproject.toml file <basic_usage_example>`.  With pip 10 or later, this
-will cause the CMake Python package to be downloaded and installed when your
-project is built.
+the pyproject.toml file <basic_usage_example>`. The CMake Python package is
+then downloaded and installed when your project is built.
 
 To manually install the *cmake* package from PyPI::
 
