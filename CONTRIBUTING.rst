@@ -109,7 +109,7 @@ Before you submit a pull request, check that it meets these guidelines:
 
 2. If the pull request adds functionality, the docs should be updated.
 
-3. The pull request should work for Python 3.9+ and PyPy.  Make sure that
+3. The pull request should work for Python 3.10+ and PyPy.  Make sure that
    the tests pass for all supported Python versions in CI on your PR.
 
 

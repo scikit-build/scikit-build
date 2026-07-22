@@ -4,7 +4,7 @@ This file provides guidance to agents when working with code in this repository.
 
 ## What this is
 
-scikit-build (classic) is glue between setuptools and CMake: it lets `setup.py` projects build C/C++/Fortran/Cython extensions with CMake. It is in maintenance mode; new development happens in its successor, scikit-build-core. Supports Python 3.9+ and PyPy.
+scikit-build (classic) is glue between setuptools and CMake: it lets `setup.py` projects build C/C++/Fortran/Cython extensions with CMake. It is in maintenance mode; new development happens in its successor, scikit-build-core. Supports Python 3.10+ and PyPy.
 
 ## Commands
 
@@ -41,4 +41,4 @@ Errors are reported via `SKBuildError` (`skbuild/exceptions.py`).
 
 - Type checking is strict mypy for `skbuild/` (untyped defs allowed in `tests/`); run via pre-commit.
 - Ruff enforces `from __future__ import annotations` in every file; line length 120.
-- CI must pass on Python 3.9 — no 3.10+ only constructs.
+- CI must pass on Python 3.10 — no 3.11+ only constructs.

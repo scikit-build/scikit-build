@@ -14,7 +14,7 @@ nox.options.default_venv_backend = "uv|virtualenv"
 PYPROJECT = nox.project.load_toml("pyproject.toml")
 PYTHON_VERSIONS = nox.project.python_versions(PYPROJECT)
 
-PYTHON_ALL_VERSIONS = [*PYTHON_VERSIONS, "pypy3.9", "pypy3.10", "pypy3.11"]
+PYTHON_ALL_VERSIONS = [*PYTHON_VERSIONS, "pypy3.10", "pypy3.11"]
 
 SKBUILD_CORE_REQ = os.environ.get("SKBUILD_CORE_REQ", "scikit-build-core[setuptools]>=1.0")
 
