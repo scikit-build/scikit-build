@@ -111,7 +111,7 @@ Before you submit a pull request, check that it meets these guidelines:
    your new functionality into a function with a docstring, and add the
    feature to the list in ``README.md``.
 
-3. The pull request should work for Python 3.9+ and PyPy.  Make sure that
+3. The pull request should work for Python 3.10+ and PyPy.  Make sure that
    the tests pass for all supported Python versions in CI on your PR.
 
 

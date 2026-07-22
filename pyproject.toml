@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "scikit-build"
 dynamic = ["version", "readme"]
 description = "Improved build system generator for Python C/C++/Fortran/Cython extensions"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 authors = [
     { name = "The scikit-build team" },
 ]
@@ -19,7 +19,6 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Natural Language :: English",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -109,7 +108,7 @@ replacement = '[@\1](https://github.com/\1)'
 [tool.mypy]
 files = ["skbuild", "tests"]
 exclude = ["tests/samples"]
-python_version = "3.9"
+python_version = "3.10"
 warn_unused_configs = true
 enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
 strict = true
@@ -129,7 +128,7 @@ ignore_missing_imports = true
 
 
 [tool.pylint]
-py-version = "3.9"
+py-version = "3.10"
 jobs = "0"
 reports.output-format = "colorized"
 similarities.ignore-imports = "yes"

@@ -9,5 +9,5 @@ setup(
     author="The scikit-build team",
     license="MIT",
     packages=["hello_nested", "hello_nested.goodbye_nested"],
-    python_requires=">=3.9",
+    python_requires=">=3.10",
 )

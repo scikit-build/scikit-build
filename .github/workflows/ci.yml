@@ -31,7 +31,7 @@ jobs:
       # Minimum and maximum Python on all OS's, a couple of middle versions on Linux.
       matrix:
         runs-on: [ubuntu-latest, macos-15-intel, windows-2022, windows-latest]
-        python: ["3.9", "3.14"]
+        python: ["3.10", "3.14"]
         include:
         - { runs-on: ubuntu-latest, python: "3.11" }
         - { runs-on: ubuntu-latest, python: "3.13" }
@@ -66,7 +66,7 @@ jobs:
 
 
   cygwin:
-    name: Tests on 🐍 3.9 • cygwin
+    name: Tests on 🐍 3.12 • cygwin
     runs-on: windows-latest
     timeout-minutes: 120
 
@@ -78,16 +78,16 @@ jobs:
     - uses: cygwin/cygwin-install-action@v6
       with:
         platform: x86_64
-        packages: cmake ninja git make gcc-g++ gcc-fortran python39 python39-devel python39-pip
+        packages: cmake ninja git make gcc-g++ gcc-fortran python312 python312-devel python312-pip
 
     - name: Install nox
-      run: python3.9 -m pip install nox
+      run: python3.12 -m pip install nox
 
     - name: Run tests
       env:
         TMP: /tmp
         TEMP: /tmp
-      run: python3.9 -m nox -s tests-3.9 -- --durations=20
+      run: python3.12 -m nox -s tests-3.12 -- --durations=20
 
 
   tests-pypy:
