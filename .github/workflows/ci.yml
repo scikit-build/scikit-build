@@ -64,6 +64,9 @@ jobs:
         PIP_PRE: ${{ matrix.python == '3.15' && '1' || '0' }}
         UV_EXTRA_INDEX_URL: ${{ matrix.python == '3.15' && 'https://pypi.anaconda.org/scientific-python-nightly-wheels/simple' || '' }}
         UV_PRERELEASE: ${{ matrix.python == '3.15' && 'allow' || 'if-necessary-or-explicit' }}
+        # The nightly index also carries scikit-build-core dev builds; without
+        # this uv's first-index-wins rule blocks the released version on PyPI.
+        UV_INDEX_STRATEGY: ${{ matrix.python == '3.15' && 'unsafe-best-match' || 'first-index' }}
       run: nox -s tests-${{ matrix.python }} -- --cov --cov-report=xml --cov-report=term --durations=20
 
     - name: Upload coverage report
