@@ -25,14 +25,18 @@ jobs:
 
   tests:
     runs-on: ${{ matrix.runs-on }}
-    needs: [lint]
-    timeout-minutes: 60
+    timeout-minutes: 40
     strategy:
       fail-fast: false
+      # Minimum and maximum Python on all OS's, a couple of middle versions on Linux.
       matrix:
         runs-on: [ubuntu-latest, macos-15-intel, windows-2022, windows-latest]
+        python: ["3.9", "3.14"]
+        include:
+        - { runs-on: ubuntu-latest, python: "3.11" }
+        - { runs-on: ubuntu-latest, python: "3.13" }
 
-    name: Tests on ${{ matrix.runs-on }}
+    name: Tests on 🐍 ${{ matrix.python }} • ${{ matrix.runs-on }}
     steps:
     - uses: actions/checkout@v7
       with:
@@ -49,31 +53,15 @@ jobs:
     - name: Setup nox
       uses: wntrblm/nox@2026.07.11
       with:
-        python-versions: "3.9,3.10,3.11,3.12,3.13,3.14"
+        python-versions: "${{ matrix.python }}"
 
-    # We check all Python's on Linux, because it's fast.
-    # We check minimum Python and maximum Python on all OS's.
-
-    - name: Test on 🐍 3.9
-      run: nox -s tests-3.9 -- --cov --cov-report=xml --cov-report=term --durations=20
-    - name: Test on 🐍 3.10
-      if: runner.os == 'Linux'
-      run: nox -s tests-3.10 -- --cov --cov-report=xml --cov-report=term --cov-append --durations=20
-    - name: Test on 🐍 3.11
-      run: nox -s tests-3.11 -- --cov --cov-report=xml --cov-report=term --cov-append --durations=20
-    - name: Test on 🐍 3.12
-      run: nox -s tests-3.12 -- --cov --cov-report=xml --cov-report=term --cov-append --durations=20
-      if: runner.os == 'Linux'
-    - name: Test on 🐍 3.13
-      run: nox -s tests-3.13 -- --cov --cov-report=xml --cov-report=term --cov-append --durations=20
-      if: runner.os == 'Linux'
-    - name: Test on 🐍 3.14
-      run: nox -s tests-3.14 -- --cov --cov-report=xml --cov-report=term --cov-append --durations=20
+    - name: Test on 🐍 ${{ matrix.python }}
+      run: nox -s tests-${{ matrix.python }} -- --cov --cov-report=xml --cov-report=term --durations=20
 
     - name: Upload coverage report
       uses: codecov/codecov-action@v7
       with:
-        name: ${{ matrix.runs-on }}-any
+        name: ${{ matrix.runs-on }}-${{ matrix.python }}
         verbose: true
 
 
@@ -81,7 +69,6 @@ jobs:
     name: Tests on 🐍 3.9 • cygwin
     runs-on: windows-latest
     timeout-minutes: 120
-    needs: [lint]
 
     steps:
     - uses: actions/checkout@v7
@@ -107,7 +94,6 @@ jobs:
     name: Tests on 🐍 PyPy 3.11 • ${{ matrix.runs-on }}
     runs-on: ${{ matrix.runs-on }}
     timeout-minutes: 40
-    needs: [lint]
     strategy:
       fail-fast: false
       matrix:
@@ -144,7 +130,6 @@ jobs:
     name: Sample projects on ${{ matrix.runs-on }}
     runs-on: ${{ matrix.runs-on }}
     timeout-minutes: 30
-    needs: [lint]
     strategy:
       fail-fast: false
       matrix:
@@ -196,7 +181,7 @@ jobs:
   pass:
     if: always()
     timeout-minutes: 1
-    needs: [tests, tests-pypy, sample-projects, dist]
+    needs: [lint, tests, tests-pypy, sample-projects, dist]
     runs-on: ubuntu-slim
     steps:
      - name: Decide whether the needed jobs succeeded or failed

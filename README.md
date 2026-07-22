@@ -1,11 +1,8 @@
 # scikit-build
 
 [![image](https://github.com/scikit-build/scikit-build/actions/workflows/ci.yml/badge.svg)](https://github.com/scikit-build/scikit-build/actions/workflows/ci.yml)
-
 [![image](https://dev.azure.com/scikit-build/scikit-build/_apis/build/status/scikit-build.scikit-build?branchName=main)](https://dev.azure.com/scikit-build/scikit-build/_build/latest?definitionId=1&branchName=main)
-
 [![Code coverage status](https://codecov.io/gh/scikit-build/scikit-build/branch/main/graph/badge.svg)](https://codecov.io/gh/scikit-build/scikit-build)
-
 [![GitHub Discussion](https://img.shields.io/static/v1?label=Discussions&message=Ask&color=blue&logo=github)](https://github.com/orgs/scikit-build/discussions)
 
 <!-- START-INTRO -->
