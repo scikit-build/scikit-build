@@ -4,7 +4,7 @@ CMake modules
 
 To facilitate the writing of ``CMakeLists.txt`` used to build
 CPython C/C++/Cython extensions, **scikit-build** provides the following
-CMake modules:
+historical CMake modules:
 
 .. toctree::
    :maxdepth: 1
@@ -26,3 +26,10 @@ They can be included using ``find_package``:
 
 
 For more details, see the respective documentation of each modules.
+
+New code should not use these. The recommended replacements:
+
+* ``Cython`` -> cython-cmake (on PyPI)
+* ``NumPy`` -> FindPython with NumPy component (CMake built-in)
+* ``PythonExtensions`` -> FindPython (CMake built-in)
+* ``F2PY`` -> f2py-cmake (on PyPI)
