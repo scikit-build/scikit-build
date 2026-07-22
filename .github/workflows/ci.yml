@@ -28,13 +28,14 @@ jobs:
     timeout-minutes: 40
     strategy:
       fail-fast: false
-      # Minimum and maximum Python on all OS's, a couple of middle versions on Linux.
+      # Minimum and maximum stable Python on all OS's, other versions on Linux.
       matrix:
         runs-on: [ubuntu-latest, macos-15-intel, windows-2022, windows-latest]
         python: ["3.10", "3.14"]
         include:
         - { runs-on: ubuntu-latest, python: "3.11" }
         - { runs-on: ubuntu-latest, python: "3.13" }
+        - { runs-on: ubuntu-latest, python: "3.15" }
 
     name: Tests on 🐍 ${{ matrix.python }} • ${{ matrix.runs-on }}
     steps:
@@ -56,6 +57,14 @@ jobs:
         python-versions: "${{ matrix.python }}"
 
     - name: Test on 🐍 ${{ matrix.python }}
+      env:
+        # Get a numpy nightly for the nox env until it publishes 3.15 wheels
+        # (the pep518 wheelhouse handles this itself in conftest.py).
+        UV_EXTRA_INDEX_URL: ${{ matrix.python == '3.15' && 'https://pypi.anaconda.org/scientific-python-nightly-wheels/simple' || '' }}
+        UV_PRERELEASE: ${{ matrix.python == '3.15' && 'allow' || 'if-necessary-or-explicit' }}
+        # The nightly index also carries scikit-build-core dev builds; without
+        # this uv's first-index-wins rule blocks the released version on PyPI.
+        UV_INDEX_STRATEGY: ${{ matrix.python == '3.15' && 'unsafe-best-match' || 'first-index' }}
       run: nox -s tests-${{ matrix.python }} -- --cov --cov-report=xml --cov-report=term --durations=20
 
     - name: Upload coverage report
