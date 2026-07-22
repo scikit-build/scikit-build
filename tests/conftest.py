@@ -89,6 +89,27 @@ def pep518_wheelhouse(tmp_path_factory: pytest.TempPathFactory) -> Path:
         ],
         check=True,
     )
+
+    # No numpy release supports 3.15 yet; take the nightly wheel.
+    if sys.version_info >= (3, 15) and sys.platform != "cygwin":
+        subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "pip",
+                "download",
+                "-q",
+                "--pre",
+                "--no-deps",
+                "--index-url",
+                "https://pypi.anaconda.org/scientific-python-nightly-wheels/simple",
+                "-d",
+                str(wheelhouse),
+                "numpy",
+            ],
+            check=True,
+        )
+
     return wheelhouse
 
 
@@ -169,6 +190,9 @@ class VEnv:
 def pep518(pep518_wheelhouse, monkeypatch):
     monkeypatch.setenv("PIP_FIND_LINKS", str(pep518_wheelhouse))
     monkeypatch.setenv("PIP_NO_INDEX", "true")
+    if sys.version_info >= (3, 15):
+        # The wheelhouse numpy is a nightly (dev version)
+        monkeypatch.setenv("PIP_PRE", "true")
     return pep518_wheelhouse
 
 
