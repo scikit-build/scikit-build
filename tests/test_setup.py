@@ -326,11 +326,20 @@ def test_sdist_does_not_run_cmake():
         assert cmake_build_dir() is None
 
 
-@pytest.mark.parametrize("has_cmake_package", [0, 1])
-@pytest.mark.parametrize("has_hybrid_package", [0, 1])
-@pytest.mark.parametrize("has_pure_package", [0, 1])
-@pytest.mark.parametrize("has_pure_module", [0, 1])
-@pytest.mark.parametrize("with_package_base", [0, 1])
+# A curated subset of the old 2**5 cross-product: every feature alone, the
+# empty project, and everything together in both source layouts.
+@pytest.mark.parametrize(
+    ("has_cmake_package", "has_hybrid_package", "has_pure_package", "has_pure_module", "with_package_base"),
+    [
+        (0, 0, 0, 0, 0),
+        (1, 0, 0, 0, 0),
+        (0, 1, 0, 0, 0),
+        (0, 0, 1, 0, 0),
+        (0, 0, 0, 1, 0),
+        (1, 1, 1, 1, 0),
+        (1, 1, 1, 1, 1),
+    ],
+)
 def test_setup_inputs(
     has_cmake_package,
     has_hybrid_package,

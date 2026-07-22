@@ -10,7 +10,7 @@ import glob
 import os
 from pathlib import Path
 
-from . import SAMPLES_DIR, _copy_dir, _tmpdir, cmake_build_dir, get_ext_suffix, push_dir
+from . import cmake_build_dir, get_ext_suffix, push_dir
 from .pytest_helpers import check_sdist_content, check_wheel_content
 
 
@@ -81,7 +81,7 @@ def test_hello_wheel(project_setup_py_test):
         assert (build_dir / "CMakeCache.txt").exists()
 
 
-def test_hello_clean(capfd, project_setup_py_test):
+def test_hello_clean(capfd, caplog, project_setup_py_test):
     with push_dir():
         with project_setup_py_test("hello-cpp", ["build"]) as tmp_dir:
             pass
@@ -93,9 +93,7 @@ def test_hello_clean(capfd, project_setup_py_test):
         # a separator allowing to differentiate the build and clean output.
         print("<<-->>")
 
-        clean_args = ["clean", "--all"]
-
-        with project_setup_py_test("hello-cpp", clean_args, tmp_dir=tmp_dir):
+        with project_setup_py_test("hello-cpp", ["clean", "--all"], tmp_dir=tmp_dir):
             pass
 
         assert not (tmp_dir / "build").exists()
@@ -103,29 +101,10 @@ def test_hello_clean(capfd, project_setup_py_test):
         build_out, clean_out = capfd.readouterr()[0].split("<<-->>")
         assert "Build files have been written to" in build_out
         assert "Build files have been written to" not in clean_out
-
-
-def test_hello_cleans(capfd, caplog, project_setup_py_test):
-    with push_dir():
-        tmp_dir = _tmpdir("test_hello_cleans")
-
-        _copy_dir(tmp_dir, SAMPLES_DIR / "hello-cpp")
-
-        # Check that a project can be cleaned twice in a row
-        with project_setup_py_test("hello-cpp", ["build"], tmp_dir=tmp_dir):
-            pass
-        capfd.readouterr()
         caplog.clear()
 
+        # Cleaning an already-clean project must also work.
         with project_setup_py_test("hello-cpp", ["clean"], tmp_dir=tmp_dir):
             pass
-        txt1 = caplog.text
-        msg = capfd.readouterr().out + txt1
-        assert "running clean" in msg
-        caplog.clear()
-
-        with project_setup_py_test("hello-cpp", ["clean"], tmp_dir=tmp_dir):
-            pass
-        txt2 = caplog.text
-        msg = capfd.readouterr().out + txt2
+        msg = capfd.readouterr().out + caplog.text
         assert "running clean" in msg
