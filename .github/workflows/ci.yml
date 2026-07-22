@@ -57,6 +57,13 @@ jobs:
         python-versions: "${{ matrix.python }}"
 
     - name: Test on 🐍 ${{ matrix.python }}
+      env:
+        # Get numpy nightlies until it publishes 3.15 wheels; PIP_* covers pip's
+        # isolated build envs (pep518 tests), UV_* the nox env install.
+        PIP_EXTRA_INDEX_URL: ${{ matrix.python == '3.15' && 'https://pypi.anaconda.org/scientific-python-nightly-wheels/simple' || '' }}
+        PIP_PRE: ${{ matrix.python == '3.15' && '1' || '0' }}
+        UV_EXTRA_INDEX_URL: ${{ matrix.python == '3.15' && 'https://pypi.anaconda.org/scientific-python-nightly-wheels/simple' || '' }}
+        UV_PRERELEASE: ${{ matrix.python == '3.15' && 'allow' || 'if-necessary-or-explicit' }}
       run: nox -s tests-${{ matrix.python }} -- --cov --cov-report=xml --cov-report=term --durations=20
 
     - name: Upload coverage report
