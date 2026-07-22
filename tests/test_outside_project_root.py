@@ -2,41 +2,32 @@
 ----------------------------------
 
 Tries to build the `fail-outside-project-root` sample project.  Ensures that the
-attempt fails with a SystemExit exception that has an SKBuildError exception as
-its value.
+attempt fails with a useful error when CMake installs files outside the
+staging area.
 """
 
 from __future__ import annotations
 
 import pytest
 
-from skbuild.exceptions import SKBuildError
-from skbuild.utils import push_dir
+from . import push_dir, push_env
 
 
 @pytest.mark.parametrize("option", [None, "-DINSTALL_FILE:BOOL=1", "-DINSTALL_PROJECT:BOOL=1"])
 def test_outside_project_root_fails(option, project_setup_py_test):
-    with push_dir():
-        expected_failure = False
-
-        cmd = ["install"]
-        if option is not None:
-            expected_failure = True
-            cmd.extend(["--", option])
+    with push_dir(), push_env(CMAKE_ARGS=option):
+        expected_failure = option is not None
 
         failed = False
         msg = ""
         try:
-            with project_setup_py_test("fail-outside-project-root", cmd, disable_languages_test=True):
+            with project_setup_py_test("fail-outside-project-root", ["build"]):
                 pass
         except SystemExit as e:
-            failed = isinstance(e.code, SKBuildError)
-            msg = str(e)
-        except SKBuildError as e:
             failed = True
             msg = str(e)
 
     assert expected_failure == failed
 
     if expected_failure:
-        assert "CMake-installed files must be within the project root." in msg
+        assert "CMake-installed files must stay within the setuptools build directory" in msg

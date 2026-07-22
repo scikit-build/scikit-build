@@ -29,11 +29,7 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
-    'distro',
-    'packaging',
-    'setuptools>=42.0.0',
-    'tomli; python_version<"3.11"',
-    'wheel>=0.32.0',
+    'scikit-build-core[setuptools]>=1.0',
 ]
 
 [project.optional-dependencies]
@@ -62,6 +58,9 @@ test = [
     'requests',
     'virtualenv',
 ]
+
+[project.entry-points."cmake.module"]
+skbuild = "skbuild.resources.cmake"
 
 [project.urls]
 "Bug Tracker" = "https://github.com/scikit-build/scikit-build/issues"
@@ -124,11 +123,7 @@ disallow_untyped_calls = true
 
 [[tool.mypy.overrides]]
 module = [
-  "wheel.*",
-  "setuptools.logging",
-  "setuptools.command.*",
   "numpy",
-  "distro",
 ]
 ignore_missing_imports = true
 

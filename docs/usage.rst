@@ -12,6 +12,92 @@ with the following advantages:
 - first-class :ref:`cross-compilation <cross_compilation>` support
 - location of dependencies and their associated build requirements
 
+.. _migration_guide:
+
+.. _usage-cmake_with_sdist:
+
+.. _usage-cmake_languages:
+
+.. _usage_cmake_configure_options:
+
+.. _usage_cmake_options:
+
+===============================
+Migrating from scikit-build 0.x
+===============================
+
+Starting with scikit-build 1.0, the classic scikit-build backend was replaced
+by the setuptools plugin provided by `scikit-build-core
+<https://scikit-build-core.readthedocs.io>`_. ``skbuild.setup()`` is now a
+thin wrapper around ``scikit_build_core.setuptools.wrapper.setup()``. Most
+projects keep working unchanged:
+
+- ``from skbuild import setup`` with the ``cmake_args``, ``cmake_source_dir``,
+  ``cmake_install_dir``, ``cmake_install_target`` and
+  ``cmake_process_manifest_hook`` keyword arguments.
+- The CMake modules shipped with scikit-build, like
+  ``find_package(PythonExtensions)``, ``find_package(Cython)``,
+  ``find_package(NumPy)`` and ``find_package(F2PY)``. They are now injected
+  into ``CMAKE_MODULE_PATH`` using scikit-build-core's ``cmake.module``
+  entry-point group.
+- The ``SKBUILD`` CMake variable is still set, now to ``2`` instead of
+  ``TRUE`` (still truthy).
+- The standard setuptools commands: ``build``, ``bdist_wheel``, ``sdist``,
+  ``install`` and ``build_ext --inplace``.
+- The recommended ``build-system`` table in ``pyproject.toml`` is unchanged:
+  ``requires = ["setuptools", "scikit-build", "cmake", "ninja"]`` with
+  ``build-backend = "setuptools.build_meta"``.
+
+The following changes are breaking:
+
+- All scikit-build-specific command line options were removed:
+  ``--build-type``, ``-G``/``--generator``, ``-j N``, ``--cmake-executable``,
+  ``--skip-generator-test``, ``--hide-listing``, ``--force-cmake``,
+  ``--skip-cmake``, ``--install-target``, as well as the
+  ``setup.py <setuptools args> -- <cmake args> -- <build tool args>``
+  triple-section syntax. Use the ``CMAKE_ARGS`` and ``CMAKE_GENERATOR``
+  environment variables, the ``cmake_args`` keyword of ``setup()``,
+  scikit-build-core's ``[tool.scikit-build]`` settings in ``pyproject.toml``
+  (or the equivalent ``SKBUILD_*`` environment variables), or the options of
+  the new ``build_cmake`` setuptools command (``--source-dir``,
+  ``--cmake-args``, ``--parallel`` and ``--debug``) instead. See the
+  `scikit-build-core configuration documentation
+  <https://scikit-build-core.readthedocs.io/en/latest/configuration/index.html>`__.
+
+- ``cmake_with_sdist=True`` now raises an error. ``cmake_languages`` and
+  ``cmake_minimum_required_version`` are accepted but ignored with a warning;
+  the minimum CMake version is configured with the ``cmake.version`` setting
+  in the ``[tool.scikit-build]`` table of ``pyproject.toml``.
+
+- The Python modules ``skbuild.cmaker``, ``skbuild.constants``,
+  ``skbuild.command.*``, ``skbuild.platform_specifics``, ``skbuild.utils``
+  and ``skbuild.setuptools_wrap`` no longer exist.
+  ``skbuild.exceptions.SKBuildError`` is now an alias of setuptools'
+  ``SetupError``, so it is no longer a ``RuntimeError``; its
+  ``SKBuildInvalidFileInstallationError`` and
+  ``SKBuildGeneratorNotFoundError`` subclasses were removed.
+
+- The ``_skbuild/<platform>-<pyversion>/`` build directory is gone; the
+  standard setuptools ``build/`` directories are used instead (CMake builds
+  in an ``_skbuild`` directory under ``build/temp.*``).
+
+- sdists no longer automatically generate their file manifest from git;
+  provide a ``MANIFEST.in`` (or use ``setuptools-scm``) like any other
+  setuptools project.
+
+- Editable installs (``pip install -e .``) require setting
+  ``editable.mode = "inplace"`` in the ``[tool.scikit-build]`` table of
+  ``pyproject.toml``. A plain ``setup.py build_ext --inplace`` still works
+  without configuration.
+
+- Generators are no longer discovered by probing for Visual Studio and
+  running a language test; CMake's own default generator selection applies.
+  Set the ``CMAKE_GENERATOR`` environment variable to override it. See
+  :doc:`/generators`.
+
+- scikit-build now depends on ``scikit-build-core[setuptools]`` at run time;
+  the ``distro``, ``wheel`` and ``tomli`` dependencies were dropped.
+
 ===========
 Basic Usage
 ===========
@@ -84,14 +170,14 @@ Try your new extension::
 
 You can add lower limits to ``cmake`` or ``scikit-build`` as needed. Ninja
 should be limited to non-Windows systems, as MSVC 2017+ ships with Ninja
-already, and there are fall-backs if Ninja is missing, and the Python Ninja
-seems to be less likely to find MSVC than the built-in one currently.
+already.
 
 ..  note::
 
     By default, scikit-build looks in the project top-level directory for a
-    file named ``CMakeLists.txt``. It will then invoke ``cmake`` executable
-    specifying a :doc:`generator </generators>` matching the python being used.
+    file named ``CMakeLists.txt``. It will then invoke the ``cmake``
+    executable, using CMake's default :doc:`generator </generators>` unless
+    the ``CMAKE_GENERATOR`` environment variable is set.
 
 .. _usage-setup_options:
 
@@ -190,6 +276,22 @@ For example::
 - ``cmake_source_dir``: Relative directory containing the project ``CMakeLists.txt``.
   By default, it is set to the top-level directory where ``setup.py`` is found.
 
+- ``cmake_install_target``: Name of the target to "build" for installing the
+  artifacts into the wheel. By default, this option is set to ``install``,
+  which is always provided by CMake and runs ``cmake --install``. Any other
+  value is installed by building that target with ``cmake --build --target``,
+  which can be used to only install certain components.
+
+For example::
+
+    install(TARGETS foo COMPONENT runtime)
+    add_custom_target(foo-install-runtime
+        ${CMAKE_COMMAND}
+        -DCMAKE_INSTALL_COMPONENT=runtime
+        -P "${PROJECT_BINARY_DIR}/cmake_install.cmake"
+        DEPENDS foo
+        )
+
 - ``cmake_process_manifest_hook``: Python function consuming the list of files to be
   installed produced by cmake. For example, ``cmake_process_manifest_hook`` can be used
   to exclude static libraries from the built wheel.
@@ -205,191 +307,39 @@ For example::
       [...]
     )
 
-.. _usage-cmake_with_sdist:
+.. versionchanged:: 1.0
 
-.. versionadded:: 0.5.0
-
-- ``cmake_with_sdist``: Boolean indicating if CMake should be executed when
-  running ``sdist`` command. Setting this option to ``True`` is useful when
-  part of the sources specified in ``MANIFEST.in`` are downloaded by CMake.
-  By default, this option is ``False``.
-
-.. _usage-cmake_languages:
-
-.. versionadded:: 0.7.0
-
-- ``cmake_languages``: Tuple of languages that the project use, by default
-  ``('C', 'CXX',)``. This option ensures that a generator is chosen that supports
-  all languages for the project.
-
-- ``cmake_minimum_required_version``: String identifying the minimum version of CMake required
-  to configure the project.
-
-- ``cmake_install_target``: Name of the target to "build" for installing the artifacts into the wheel.
-  By default, this option is set to ``install``, which is always provided by CMake.
-  This can be used to only install certain components.
-
-For example::
-
-    install(TARGETS foo COMPONENT runtime)
-    add_custom_target(foo-install-runtime
-        ${CMAKE_COMMAND}
-        -DCMAKE_INSTALL_COMPONENT=runtime
-        -P "${PROJECT_BINARY_DIR}/cmake_install.cmake"
-        DEPENDS foo
-        )
-
-
-Scikit-build changes the following options:
-
-.. versionadded:: 0.7.0
-
-- ``setup_requires``: If ``cmake`` is found in the list, it is explicitly installed first by scikit-build.
-
-
-Command line options
---------------------
-
-Warning: Passing options to ``setup.py`` is deprecated and may be removed in a
-future release. Environment variables can be used instead for most options.
-
-::
-
-    usage: setup.py [global_opts] cmd1 [cmd1_opts] [cmd2 [cmd2_opts] ...] [skbuild_opts] [cmake_configure_opts] [-- [cmake_opts] [-- [build_tool_opts]]]
-    or: setup.py --help [cmd1 cmd2 ...]
-    or: setup.py --help-commands
-    or: setup.py cmd --help
-
-
-There are few types of options:
-
-- :ref:`setuptools options <usage-setuptools_options>`:
-
-  - ``[global_opts] cmd1 [cmd1_opts] [cmd2 [cmd2_opts] ...]``
-  - ``--help [cmd1 cmd2 ...]``
-  - ``cmd --help``
-
-- :ref:`scikit-build options <usage_scikit-build_options>`: ``[skbuild_opts]``
-
-- :ref:`CMake configure options <usage_cmake_configure_options>`: ``[cmake_configure_opts]``
-
-- :ref:`CMake options <usage_cmake_options>`: ``[cmake_opts]``
-
-- :ref:`build tool options<usage_build_tool_options>`:``[build_tool_opts]``
-
-setuptools, scikit-build and CMake configure options can be passed normally, the cmake and
-build_tool set of options needs to be separated by ``--``::
-
-    Arguments following a "--" are passed directly to CMake (e.g. -DSOME_FEATURE:BOOL=ON).
-    Arguments following a second "--" are passed directly to  the build tool.
+    The ``cmake_with_sdist`` option now raises an error if set to ``True``,
+    and the ``cmake_languages`` and ``cmake_minimum_required_version`` options
+    are ignored with a warning. See :ref:`migration_guide`.
 
 
 .. _usage-setuptools_options:
 
-setuptools options
-^^^^^^^^^^^^^^^^^^
+Command line options
+--------------------
 
-For more details, see the `official documentation <https://setuptools.readthedocs.io/en/latest/setuptools.html#command-reference>`_.
+.. versionchanged:: 1.0
 
-scikit-build extends the global set of setuptools options with:
+    The scikit-build-specific command line options and the
+    ``setup.py <setuptools args> -- <cmake args> -- <build tool args>``
+    syntax were removed. See :ref:`migration_guide`.
 
-.. versionadded:: 0.4.0
+Only the standard `setuptools command line options
+<https://setuptools.readthedocs.io/en/latest/setuptools.html#command-reference>`_
+are supported. CMake options can be passed using the ``CMAKE_ARGS``
+environment variable, the ``cmake_args`` keyword of ``setup()``, or
+scikit-build-core's ``[tool.scikit-build]`` settings in ``pyproject.toml``.
 
-::
+In addition, the ``build_cmake`` command accepts the ``--source-dir``,
+``--cmake-args``, ``--parallel`` and ``--debug`` options. For example::
 
-    Global options:
-      [...]
-      --hide-listing      do not display list of files being included in the
-                          distribution
-
-.. versionadded:: 0.5.0
-
-::
-
-    Global options:
-      [...]
-      --force-cmake       always run CMake
-      --skip-cmake        do not run CMake
+    python setup.py build_cmake --cmake-args="-DSOME_FEATURE:BOOL=OFF" --parallel 3
 
 .. note::
 
     As specified in the `Wheel documentation`_, the ``--universal`` and ``--python-tag`` options
     have no effect.
-
-
-.. _usage_scikit-build_options:
-
-scikit-build options
-^^^^^^^^^^^^^^^^^^^^
-
-::
-
-    scikit-build options:
-      --build-type       specify the CMake build type (e.g. Debug or Release)
-      -G , --generator   specify the CMake build system generator
-      -j N               allow N build jobs at once
-      [...]
-
-.. versionadded:: 0.7.0
-
-::
-
-    scikit-build options:
-      [...]
-      --cmake-executable specify the path to the cmake executable
-
-
-.. versionadded:: 0.8.0
-
-::
-
-    scikit-build options:
-      [...]
-      --skip-generator-test  skip generator test when a generator is explicitly selected using --generator
-
-
-.. _usage_cmake_configure_options:
-
-CMake Configure options
-^^^^^^^^^^^^^^^^^^^^^^^
-
-.. versionadded:: 0.10.1
-
-These options are relevant when configuring a project and can be passed as global options using ``setup.py``
-or ``pip install``.
-
-The CMake options accepted as global options are any of the following:
-
-::
-
-    -C<initial-cache>            = Pre-load a script to populate the cache.
-    -D<var>[:<type>]=<value>     = Create or update a cmake cache entry.
-
-
-.. warning::
-
-    The CMake configure option should be passed without spaces. For example, use `-DSOME_FEATURE:BOOL=ON` instead
-    of `-D SOME_FEATURE:BOOL=ON`.
-
-
-.. _usage_cmake_options:
-
-CMake options
-^^^^^^^^^^^^^
-
-These are any specific to CMake. See list of `CMake options <https://cmake.org/cmake/help/v3.6/manual/cmake.1.html#options>`_.
-
-For example::
-
-  -DSOME_FEATURE:BOOL=OFF
-
-
-.. _usage_build_tool_options:
-
-build tool options
-^^^^^^^^^^^^^^^^^^
-
-These are specific to the underlying build tool (e.g msbuild.exe, make, ninja).
 
 
 ==============
@@ -407,6 +357,11 @@ and a python wheel, it is possible to test for the variable ``SKBUILD``:
     if(SKBUILD)
       message(STATUS "The project is built using scikit-build")
     endif()
+
+.. versionchanged:: 1.0
+
+    The ``SKBUILD`` variable is now set to ``2`` instead of ``TRUE``. Both
+    values are truthy in CMake.
 
 Adding cmake as building requirement only if not installed or too low a version
 -------------------------------------------------------------------------------
@@ -426,6 +381,9 @@ For this purpose place the following configuration in your ``pyproject.toml``::
 
 then you can implement a thin wrapper around ``build_meta`` in the ``_custom_build/backend.py`` file::
 
+    import re
+    import subprocess
+
     from setuptools import build_meta as _orig
 
     prepare_metadata_for_build_wheel = _orig.prepare_metadata_for_build_wheel
@@ -435,13 +393,15 @@ then you can implement a thin wrapper around ``build_meta`` in the ``_custom_bui
 
     def get_requires_for_build_wheel(config_settings=None):
         from packaging import version
-        from skbuild.exceptions import SKBuildError
-        from skbuild.cmaker import get_cmake_version
         packages = []
         try:
-            if version.parse(get_cmake_version()) < version.parse("3.4"):
+            output = subprocess.run(
+                ["cmake", "--version"], check=True, capture_output=True, text=True
+            ).stdout
+            cmake_version = re.match(r"cmake version (\S+)", output).group(1)
+            if version.parse(cmake_version) < version.parse("3.15"):
                 packages.append('cmake')
-        except SKBuildError:
+        except (OSError, subprocess.CalledProcessError, AttributeError):
             packages.append('cmake')
 
         return _orig.get_requires_for_build_wheel(config_settings) + packages
@@ -454,18 +414,21 @@ this is a built-in feature.
 Enabling parallel build
 -----------------------
 
+.. _Ninja:
+
 Ninja
 ^^^^^
 
-If :ref:`Ninja` generator is used, the associated build tool (called ``ninja``)
+If the ``Ninja`` generator is used, the associated build tool (called ``ninja``)
 will automatically parallelize the build based on the number of available CPUs.
 
-To limit the number of parallel jobs, the build tool option ``-j N`` can be passed
-to ``ninja``.
+To limit the number of parallel jobs, set the ``CMAKE_BUILD_PARALLEL_LEVEL``
+environment variable, or pass the ``--parallel`` option to the ``build_cmake``
+command.
 
 For example, to  limit the number of parallel jobs to ``3``, the following could be done::
 
-    python setup.py bdist_wheel -- -- -j3
+    python setup.py build_cmake --parallel 3
 
 For complex projects where more granularity is required, it is also possible to limit
 the number of simultaneous link jobs, or compile jobs, or both.
@@ -479,27 +442,29 @@ options:
 
 For example, to have at most ``5`` compile jobs and ``2`` link jobs, the following could be done::
 
-    python setup.py bdist_wheel -- \
-      -DCMAKE_JOB_POOL_COMPILE:STRING=compile \
+    export CMAKE_ARGS="-DCMAKE_JOB_POOL_COMPILE:STRING=compile \
       -DCMAKE_JOB_POOL_LINK:STRING=link \
-      '-DCMAKE_JOB_POOLS:STRING=compile=5;link=2'
+      -DCMAKE_JOB_POOLS:STRING=compile=5;link=2"
+    python setup.py bdist_wheel
 
 Unix Makefiles
 ^^^^^^^^^^^^^^
 
-If :ref:`Unix Makefiles` generator is used, the associated build tool (called ``make``)
-will **NOT** automatically parallelize the build, the user has to explicitly pass
-option like ``-j N``.
+If the ``Unix Makefiles`` generator is used, the associated build tool (called ``make``)
+will **NOT** automatically parallelize the build, the user has to explicitly set
+the number of jobs.
 
 For example, to limit the number of parallel jobs to ``3``, the following could be done::
 
-    python setup.py bdist_wheel -- -- -j3
+    CMAKE_BUILD_PARALLEL_LEVEL=3 python setup.py bdist_wheel
 
+
+.. _Visual Studio IDE:
 
 Visual Studio IDE
 ^^^^^^^^^^^^^^^^^
 
-If :ref:`Visual Studio IDE` generator is used, there are two types of parallelism:
+If a ``Visual Studio`` generator is used, there are two types of parallelism:
 
 * target level parallelism
 * object level parallelism
@@ -507,7 +472,7 @@ If :ref:`Visual Studio IDE` generator is used, there are two types of parallelis
 .. warning::
 
     Since finding the right combination of parallelism can be challenging, whenever
-    possible we recommend to use the `Ninja`_ generator.
+    possible we recommend to use the ``Ninja`` generator.
 
 
 To adjust the object level parallelism, the compiler flag ``/MP[processMax]`` could
@@ -519,14 +484,15 @@ For example::
     set CXXFLAGS=/MP4
     python setup.py bdist_wheel
 
-The target level parallelism can be set from command line
-using ``/maxcpucount:N``. This defines the number of simultaneous ``MSBuild.exe`` processes.
-To learn more, read `Building Multiple Projects in Parallel with MSBuild
+The target level parallelism defines the number of simultaneous ``MSBuild.exe``
+processes. It can be set with the ``CMAKE_BUILD_PARALLEL_LEVEL`` environment
+variable. To learn more, read `Building Multiple Projects in Parallel with MSBuild
 <https://msdn.microsoft.com/en-us/library/bb651793.aspx>`_.
 
 For example::
 
-    python setup.py bdist_wheel -- -- /maxcpucount:4
+    set CMAKE_BUILD_PARALLEL_LEVEL=4
+    python setup.py bdist_wheel
 
 
 .. _support_isolated_build:
@@ -552,25 +518,33 @@ is explicitly disabled using the pip option ``--no-build-isolation`` available w
 .. _pip build system interface: https://pip.pypa.io/en/stable/reference/pip/#build-system-interface
 
 
+Editable installs
+-----------------
+
+.. versionchanged:: 1.0
+
+    Editable installs previously worked without extra configuration.
+
+In-place builds (``python setup.py build_ext --inplace``) work without extra
+configuration. Editable installs (``pip install -e .``) require opting in to
+scikit-build-core's "inplace" editable mode in ``pyproject.toml``::
+
+    [tool.scikit-build]
+    editable.mode = "inplace"
+
+
 .. _optimized_incremental_build:
 
 Optimized incremental build
 ---------------------------
 
-To optimize the developer workflow, scikit-build reconfigures the CMake project only when
-needed. It caches the environment associated with the generator as well as the CMake execution
-properties.
+To optimize the developer workflow, the CMake build directory is kept inside
+the standard setuptools ``build/`` directory (an ``_skbuild`` directory under
+``build/temp.*``) and reused across builds.
 
-The CMake properties are saved in a :func:`CMake spec file <skbuild.constants.CMAKE_SPEC_FILE()>` responsible
-to store the CMake executable path, the CMake configuration arguments, the CMake version as well as the
-environment variables ``PYTHONNOUSERSITE`` and ``PYTHONPATH``.
-
-If there are no ``CMakeCache.txt`` file or if any of the CMake properties changes, scikit-build will
-explicitly reconfigure the project calling :meth:`skbuild.cmaker.CMaker.configure`.
-
-If a file is added to the CMake build system by updating one of the ``CMakeLists.txt`` file, scikit-build
-will not explicitly reconfigure the project. Instead, the generated build-system will automatically
-detect the change and reconfigure the project after :meth:`skbuild.cmaker.CMaker.make` is called.
+If a file is added to the CMake build system by updating one of the
+``CMakeLists.txt`` files, the generated build-system will automatically
+detect the change and reconfigure the project the next time a build is run.
 
 
 Environment variable configuration
@@ -578,13 +552,21 @@ Environment variable configuration
 
 Scikit-build support environment variables to configure some options. These are:
 
-``SKBUILD_CONFIGURE_OPTIONS``/``CMAKE_ARGS``
+``CMAKE_ARGS``
   This will add configuration options when configuring CMake.
-  ``SKBUILD_CONFIGURE_OPTIONS`` will be used instead of ``CMAKE_ARGS`` if both
-  are defined.
 
-``SKBUILD_BUILD_OPTIONS``
-  Pass options to the build.
+``CMAKE_GENERATOR``
+  This selects the CMake generator to use. See :doc:`/generators`.
+
+In addition, every scikit-build-core setting can be set using a corresponding
+``SKBUILD_*`` environment variable. See the `scikit-build-core configuration
+documentation <https://scikit-build-core.readthedocs.io/en/latest/configuration/index.html>`__.
+
+.. versionchanged:: 1.0
+
+    The ``SKBUILD_CONFIGURE_OPTIONS`` and ``SKBUILD_BUILD_OPTIONS``
+    environment variables were removed; use ``CMAKE_ARGS`` and
+    ``CMAKE_BUILD_PARALLEL_LEVEL`` instead.
 
 
 .. _cross_compilation:

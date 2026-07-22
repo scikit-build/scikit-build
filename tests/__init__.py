@@ -8,25 +8,27 @@ try:
 except ImportError:
     import distutils  # Python < 3.10
 
+import contextlib
+import importlib.util
 import os
 import pathlib
+import platform
 import re
 import shutil
 import subprocess
 import sys
+import sysconfig
 import tempfile
 from contextlib import contextmanager
-from unittest.mock import patch
 
 import requests
-
-from skbuild.platform_specifics import get_platform
-from skbuild.utils import push_dir
 
 SAMPLES_DIR = pathlib.Path(__file__).resolve().parent / "samples"
 
 __all__ = [
     "SAMPLES_DIR",
+    "cmake_build_dir",
+    "egg_install_incompatible",
     "execute_setup_py",
     "get_cmakecache_variables",
     "initialize_git_repo_and_commit",
@@ -34,15 +36,78 @@ __all__ = [
     "prepare_project",
     "push_dir",
     "push_env",
+    "to_platform_path",
+    "to_unix_path",
 ]
+
+
+class push_dir(contextlib.ContextDecorator):
+    """Context manager to change current directory."""
+
+    def __init__(self, directory=None, make_directory=False):
+        super().__init__()
+        self.directory = directory
+        self.make_directory = make_directory
+        self.old_cwd = None
+
+    def __enter__(self):
+        self.old_cwd = os.getcwd()
+        if self.directory:
+            if self.make_directory:
+                os.makedirs(self.directory, exist_ok=True)
+            os.chdir(self.directory)
+        return self
+
+    def __exit__(self, typ, val, traceback):
+        assert self.old_cwd is not None
+        os.chdir(self.old_cwd)
+
+
+def to_platform_path(path):
+    """Return a version of ``path`` where all separator are :attr:`os.sep`"""
+    if path is None:
+        return path
+    return path.replace("/", os.sep).replace("\\", os.sep)
+
+
+def to_unix_path(path):
+    """Return a version of ``path`` where all separator are ``/``"""
+    if path is None:
+        return path
+    return path.replace("\\", "/")
+
+
+def cmake_build_dir(base="."):
+    """Return the CMake build directory used by the scikit-build-core
+    setuptools plugin (``build/temp.*/_skbuild``, with an extra
+    ``Release``/``Debug`` component on Windows), or None if absent."""
+    candidates = sorted(pathlib.Path(base).glob("build/temp.*/**/_skbuild"))
+    assert len(candidates) <= 1, f"expected a single CMake build directory, found: {candidates}"
+    return candidates[0] if candidates else None
+
+
+def egg_install_incompatible():
+    """``setup.py install`` on old setuptools (those still shipping
+    ``pkg_resources``) builds an egg tagged with the macOS version the Python
+    binary was compiled for; ``pkg_resources`` rejects such an egg when the
+    running macOS major version is newer, breaking the deprecated egg install."""
+    if sys.platform != "darwin" or importlib.util.find_spec("pkg_resources") is None:
+        return False
+    build_platform = sysconfig.get_platform().split("-")
+    os_major = platform.mac_ver()[0].split(".")[0]
+    # "newer" is really what pkg_resources rejects, but != keeps the version
+    # handling trivial and only over-skips if the target were somehow newer.
+    return len(build_platform) == 3 and build_platform[1].split(".")[0] != os_major
 
 
 @contextmanager
 def push_argv(argv):
     old_argv = sys.argv
     sys.argv = argv
-    yield
-    sys.argv = old_argv
+    try:
+        yield
+    finally:
+        sys.argv = old_argv
 
 
 @contextmanager
@@ -54,10 +119,11 @@ def push_env(**kwargs):
             os.environ[var] = value
         elif var in os.environ:
             del os.environ[var]
-    yield
-    os.environ.clear()
-    for saved_var, saved_value in saved_env.items():
-        os.environ[saved_var] = saved_value
+    try:
+        yield
+    finally:
+        os.environ.clear()
+        os.environ.update(saved_env)
 
 
 @contextmanager
@@ -67,8 +133,10 @@ def prepend_sys_path(paths):
     """
     saved_paths = list(sys.path)
     sys.path = paths + saved_paths
-    yield
-    sys.path = saved_paths
+    try:
+        yield
+    finally:
+        sys.path = saved_paths
 
 
 def _tmpdir(basename: str) -> pathlib.Path:
@@ -201,7 +269,7 @@ def prepare_project(project, tmp_project_dir, force=False):
 
 
 @contextmanager
-def execute_setup_py(project_dir, setup_args, disable_languages_test=False):
+def execute_setup_py(project_dir, setup_args):
     """Context manager executing ``setup.py`` with the given arguments.
 
     It yields after changing the current working directory
@@ -215,28 +283,12 @@ def execute_setup_py(project_dir, setup_args, disable_languages_test=False):
     assert to_clear is not None, "Must have one of the two supported clearing mechanisms"
     to_clear.clear()
 
-    # Clear _PYTHON_HOST_PLATFORM to ensure value sets in skbuild.setuptools_wrap.setup() does not
-    # influence other tests.
-    if "_PYTHON_HOST_PLATFORM" in os.environ:
-        del os.environ["_PYTHON_HOST_PLATFORM"]
-
     with push_dir(str(project_dir)), push_argv(["setup.py", *setup_args]), prepend_sys_path([str(project_dir)]):
         with open("setup.py") as fp:
             setup_code = compile(fp.read(), "setup.py", mode="exec")
 
             if setup_code is not None:
-                if disable_languages_test:
-                    platform = get_platform()
-                    original_write_test_cmakelist = platform.write_test_cmakelist
-
-                    def write_test_cmakelist_no_languages(_self, _languages):
-                        original_write_test_cmakelist([])
-
-                    with patch.object(type(platform), "write_test_cmakelist", new=write_test_cmakelist_no_languages):
-                        exec(setup_code)
-
-                else:
-                    exec(setup_code)
+                exec(setup_code)
 
         yield
 

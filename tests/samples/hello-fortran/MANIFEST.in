@@ -1,0 +1,6 @@
+include CMakeLists.txt
+include hello/CMakeLists.txt
+include hello/_hello.f90
+include bonjour/CMakeLists.txt
+include bonjour/_bonjour.f90
+include bonjour/_bonjour.pyf
