@@ -342,7 +342,6 @@ function(_set_python_extension_symbol_visibility _target)
   else()
     set(_modinit_prefix "init")
   endif()
-  message("_modinit_prefix:${_modinit_prefix}")
   if("${CMAKE_C_COMPILER_ID}" STREQUAL "MSVC")
     set_target_properties(${_target} PROPERTIES LINK_FLAGS
         "/EXPORT:${_modinit_prefix}${_target}"
@@ -601,7 +600,7 @@ function(python_modules_header _name)
   if(_args_INCLUDE_DIR_OUTPUT_VAR)
     set(_include_dir_var ${_args_INCLUDE_DIR_OUTPUT_VAR})
   endif()
-  set(${_include_dirs_var} ${CMAKE_CURRENT_BINARY_DIR} PARENT_SCOPE)
+  set(${_include_dir_var} ${CMAKE_CURRENT_BINARY_DIR} PARENT_SCOPE)
 endfunction()
 
 include(UsePythonExtensions)
