@@ -1,6 +1,6 @@
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: "v6.0.0"
+  rev: "3e8a8703264a2f4a69428a0aa4dcb512790b2c8c"  # frozen: v6.0.0
   hooks:
   - id: check-added-large-files
   - id: check-case-conflict
@@ -16,20 +16,20 @@ repos:
   - id: trailing-whitespace
 
 - repo: https://github.com/sirosen/texthooks
-  rev: "0.7.1"
+  rev: "869eecde9a62460e123fa60b83858fac426163e8"  # frozen: 0.7.1
   hooks:
   - id: fix-ligatures
   - id: fix-smartquotes
 
 - repo: https://github.com/adamchainz/blacken-docs
-  rev: 1.20.0
+  rev: fda77690955e9b63c6687d8806bafd56a526e45f  # frozen: 1.20.0
   hooks:
   - id: "blacken-docs"
     additional_dependencies:
     - black==26.*
 
 - repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.15.22
+  rev: 2700fd5671c633760d912769c041bfcde2b9a01b  # frozen: v0.15.22
   hooks:
   - id: ruff-check
     args: ["--fix"]
@@ -37,21 +37,21 @@ repos:
     exclude: ^docs/conf\.py$
 
 - repo: https://github.com/codespell-project/codespell
-  rev: "v2.4.3"
+  rev: "57b21406f092110c18776e39b0bda50d37c945c8"  # frozen: v2.4.3
   hooks:
   - id: codespell
     exclude: "(.png|.svg|^_version.py)$"
     args: ["-L", "ba,endwhile,unparseable"]
 
 - repo: https://github.com/pre-commit/pygrep-hooks
-  rev: "v1.10.0"
+  rev: "3a6eb0fadf60b3cccfd80bad9dbb6fae7e47b316"  # frozen: v1.10.0
   hooks:
   - id: rst-backticks
   - id: rst-directive-colons
   - id: rst-inline-touching-normal
 
 - repo: https://github.com/henryiii/check-sdist
-  rev: "v1.5.0"
+  rev: "377c4f639d3c5fd025ee882a22ae243e12bef469"  # frozen: v1.5.0
   hooks:
    - id: check-sdist
      args: [--inject-junk]
@@ -60,8 +60,15 @@ repos:
      - hatch-vcs
      - hatchling
 
+- repo: https://github.com/zizmorcore/zizmor-pre-commit
+  rev: 64a97fb7fa63188393d3215c6e312f5f9c6d0f78  # frozen: v1.27.0
+  hooks:
+  - id: zizmor
+    files: "^\\.github"
+    args: [--persona=pedantic]
+
 - repo: https://github.com/pre-commit/mirrors-mypy
-  rev: "v2.3.0"
+  rev: "41e691678310dfd3833f7ab4e180ddb014310356"  # frozen: v2.3.0
   hooks:
   - id: mypy
     files: ^(skbuild|tests)
