@@ -2,7 +2,9 @@
 
 This is the list of changes to scikit-build between each release. For full details, see the commit logs at <https://github.com/scikit-build/scikit-build>
 
-## Next Release
+<!-- START-BRIEF-CHANGELOG -->
+
+## Scikit-build 1.0.0
 
 The classic scikit-build backend has been replaced by [scikit-build-core](https://github.com/scikit-build/scikit-build-core)'s setuptools plugin. `skbuild.setup()` is now a thin wrapper around `scikit_build_core.setuptools.wrapper.setup()`, and scikit-build depends on `scikit-build-core[setuptools]`. Most packages — those that only use `from skbuild import setup` with the documented `cmake_*` keyword arguments — will continue to build unchanged. New projects are still encouraged to use scikit-build-core directly.
 
@@ -23,8 +25,41 @@ Breaking changes:
 - Editable installs (`pip install -e .`) require `editable.mode = "inplace"` in the `[tool.scikit-build]` table of `pyproject.toml`.
 - CMake generator probing (including Visual Studio discovery) was removed; CMake's own default generator selection applies, and `CMAKE_GENERATOR` overrides it.
 - Dependencies changed to `scikit-build-core[setuptools]`; `distro`, `wheel`, and `tomli` were dropped.
+- Python 3.8 and 3.9 support was dropped; Python 3.10+ is required.
 
-<!-- START-BRIEF-CHANGELOG -->
+### Features
+
+- Use scikit-build-core's setuptools plugin as the backend in {pr}`1185`
+- Drop Python 3.8 support in {pr}`1207`
+- Drop Python 3.9 support in {pr}`1210`
+
+### Bug fixes
+
+- Repair `add_f2py_target` argument handling and the F2PY version regex in {pr}`1216`
+- Fix the `python_modules_header` include-dir output variable and drop a debug print in {pr}`1217`
+
+### Documentation
+
+- Review and update for the scikit-build-core backend in {pr}`1212`
+- Recommend the scikit-build-core setuptools backend in {pr}`1213`
+- Switch to furo, matching scikit-build-core, in {pr}`1208`
+- Convert changelog and README to Markdown with MyST in {pr}`1198`
+
+### Testing
+
+- Trim the suite now that the backend lives in scikit-build-core in {pr}`1211`
+- Tolerate CMake 4 install path normalization in {pr}`1205`
+- Split the test matrix per Python version in {pr}`1209`
+- Test on Python 3.15 in {pr}`1215`
+
+### Miscellaneous
+
+- Remove dead code and fix docs in the CMake modules in {pr}`1218`
+- Pin GitHub Actions to commit SHAs and harden workflows in {pr}`1219` and {pr}`1221`
+- Drop ref-names from `.git_archival.txt` in {pr}`1220`
+- Packit maintenance in {pr}`1201`
+- Bump the actions group in {pr}`1200` and {pr}`1204`
+- Pre-commit autoupdate in {pr}`1199`, {pr}`1203`, and {pr}`1206`
 
 ## Scikit-build 0.19.1
 
