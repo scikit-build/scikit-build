@@ -11,9 +11,7 @@ A core developer should use the following steps to create a release ``X.Y.Z`` of
 Prerequisites
 -------------
 
-* All CI tests are passing on `GitHub Actions`_ and `Azure Pipelines`_.
-
-* You have a `GPG signing key <https://help.github.com/articles/generating-a-new-gpg-key/>`_.
+* All CI tests are passing on `GitHub Actions`_.
 
 * You can push to the repository and create GitHub releases. No PyPI
   credentials are needed: publishing the GitHub release triggers a GitHub
@@ -37,7 +35,7 @@ means that ``echo "Hello"`` should be copied and evaluated in the terminal.
 `PyPI`_: Step-by-step
 ---------------------
 
-1. Make sure that all CI tests are passing on `GitHub Actions`_ and `Azure Pipelines`_.
+1. Make sure that all CI tests are passing on `GitHub Actions`_.
 
 
 2. Download the latest sources (or use an existing git checkout)
@@ -62,14 +60,17 @@ means that ``echo "Hello"`` should be copied and evaluated in the terminal.
 
     $ release=X.Y.Z
 
-  .. warning::
+  .. note::
 
-      To ensure the packages are uploaded on `PyPI`_, tags must match this regular
-      expression: ``^[0-9]+(\.[0-9]+)*(\.post[0-9]+)?$``.
+      Tags are bare :pep:`440` versions with no ``v`` prefix: ``1.0.0``,
+      ``1.0.0rc1``, ``1.0.0.post1``. The version is derived from the tag by
+      hatch-vcs.
 
 
 5. In ``CHANGES.md`` replace ``Next Release`` section header with
-   ``Scikit-build X.Y.Z`` and commit the changes.
+   ``Scikit-build X.Y.Z`` and commit the changes. Keep the
+   ``START-BRIEF-CHANGELOG`` marker above the newest release section so the
+   release notes appear in the PyPI readme.
 
   .. code::
 
@@ -81,12 +82,7 @@ means that ``echo "Hello"`` should be copied and evaluated in the terminal.
 
   .. code::
 
-    $ git tag --sign -m "Scikit-build $release" $release main
-
-  .. warning::
-
-      We recommend using a `GPG signing key <https://help.github.com/articles/generating-a-new-gpg-key/>`_
-      to sign the tag.
+    $ git tag -a -m "Scikit-build $release" $release main
 
 
 7. Publish both the release tag and the main branch
@@ -101,7 +97,8 @@ means that ``echo "Hello"`` should be copied and evaluated in the terminal.
    Paste the release's section from ``CHANGES.md`` as the body. The ``{pr}`` and
    ``{user}`` roles should be converted to simple ``#<number>`` and ``@<user>``
    form. Be sure to use the tag you just pushed as the tag version, and
-   ``Scikit-build X.Y.Z`` should be the name.
+   ``Scikit-build X.Y.Z`` should be the name. For a release candidate, check
+   the "Set as a pre-release" box so it does not become the latest release.
 
   .. note::
 
@@ -128,7 +125,6 @@ means that ``echo "Hello"`` should be copied and evaluated in the terminal.
     For examples of announcements, see https://github.com/orgs/scikit-build/discussions/categories/announcements
 
 
-.. _Azure Pipelines: https://dev.azure.com/scikit-build/scikit-build/_build
 .. _GitHub Actions: https://github.com/scikit-build/scikit-build/actions
 
 .. _PyPI: https://pypi.org/project/scikit-build
