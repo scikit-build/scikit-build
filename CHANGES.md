@@ -54,6 +54,7 @@ Breaking changes:
 
 ### Miscellaneous
 
+- Mark as Production/Stable and prepare the release in {pr}`1222`
 - Remove dead code and fix docs in the CMake modules in {pr}`1218`
 - Pin GitHub Actions to commit SHAs and harden workflows in {pr}`1219` and {pr}`1221`
 - Drop ref-names from `.git_archival.txt` in {pr}`1220`
