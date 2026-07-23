@@ -106,6 +106,10 @@ pattern = '\{user\}`(\S+)`'
 replacement = '[@\1](https://github.com/\1)'
 
 
+[tool.uv]
+exclude-newer = "7 days"
+
+
 [tool.mypy]
 files = ["skbuild", "tests"]
 exclude = ["tests/samples"]

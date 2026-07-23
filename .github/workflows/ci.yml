@@ -10,6 +10,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 env:
   FORCE_COLOR: "3"
 
@@ -19,9 +22,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-    - uses: actions/checkout@v7
-    - uses: actions/setup-python@v7
-    - uses: pre-commit/action@v3.0.1
+    - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      with:
+        persist-credentials: false
+    - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+    - uses: pre-commit/action@2c7b3805fd2a0fd8c1884dcaebf91fc102a13ecd # v3.0.1
 
   tests:
     runs-on: ${{ matrix.runs-on }}
@@ -39,11 +44,12 @@ jobs:
 
     name: Tests on 🐍 ${{ matrix.python }} • ${{ matrix.runs-on }}
     steps:
-    - uses: actions/checkout@v7
+    - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       with:
         fetch-depth: 0
+        persist-credentials: false
 
-    - uses: astral-sh/setup-uv@v8.3.2
+    - uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
 
     - name: Set environment for Fortran compiler on MacOS
       if: runner.os == 'macOS'
@@ -52,12 +58,14 @@ jobs:
         echo "FC=gfortran" >> $GITHUB_ENV
 
     - name: Setup nox
-      uses: wntrblm/nox@2026.07.11
+      uses: wntrblm/nox@3284968a16fa5bd7fc0cc64a69a531404ccb4756 # 2026.07.11
       with:
         python-versions: "${{ matrix.python }}"
 
     - name: Test on 🐍 ${{ matrix.python }}
+      shell: bash
       env:
+        PYTHON: ${{ matrix.python }}
         # Get a numpy nightly for the nox env until it publishes 3.15 wheels
         # (the pep518 wheelhouse handles this itself in conftest.py).
         UV_EXTRA_INDEX_URL: ${{ matrix.python == '3.15' && 'https://pypi.anaconda.org/scientific-python-nightly-wheels/simple' || '' }}
@@ -65,10 +73,10 @@ jobs:
         # The nightly index also carries scikit-build-core dev builds; without
         # this uv's first-index-wins rule blocks the released version on PyPI.
         UV_INDEX_STRATEGY: ${{ matrix.python == '3.15' && 'unsafe-best-match' || 'first-index' }}
-      run: nox -s tests-${{ matrix.python }} -- --cov --cov-report=xml --cov-report=term --durations=20
+      run: nox -s "tests-$PYTHON" -- --cov --cov-report=xml --cov-report=term --durations=20
 
     - name: Upload coverage report
-      uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f  # v7
+      uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
       with:
         name: ${{ matrix.runs-on }}-${{ matrix.python }}
         verbose: true
@@ -80,11 +88,12 @@ jobs:
     timeout-minutes: 120
 
     steps:
-    - uses: actions/checkout@v7
+    - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       with:
         fetch-depth: 0
+        persist-credentials: false
 
-    - uses: cygwin/cygwin-install-action@v6
+    - uses: cygwin/cygwin-install-action@3f0a3f9f988f7e96b8c18098ae05eaec175f5b52 # v6.1
       with:
         platform: x86_64
         packages: cmake ninja git make gcc-g++ gcc-fortran python312 python312-devel python312-pip
@@ -109,27 +118,29 @@ jobs:
         runs-on: [ubuntu-latest, macos-latest, windows-latest]
 
     steps:
-    - uses: actions/checkout@v7
+    - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       with:
         fetch-depth: 0
+        persist-credentials: false
 
-    - uses: yezz123/setup-uv@v4
+    - uses: yezz123/setup-uv@ab6be5a42627f19dc36e57b548592a5e52cece4a # v4.1
 
     - name: Setup nox
-      uses: wntrblm/nox@2026.07.11
+      uses: wntrblm/nox@3284968a16fa5bd7fc0cc64a69a531404ccb4756 # 2026.07.11
 
-    - uses: actions/setup-python@v7
+    - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
       with:
         python-version: pypy3.11-v7.3.22
 
     - name: Test on 🐍 PyPy
-      run: >
-        nox -s tests-pypy3.11 --
-        --cov --cov-report=xml --cov-report=term --durations=20
-        ${{ matrix.runs-on == 'windows-latest' && '-k "not pep518"' || '' }}
+      shell: bash
+      run: |
+        deselect=()
+        if [[ "$RUNNER_OS" == "Windows" ]]; then deselect=(-k "not pep518"); fi
+        nox -s tests-pypy3.11 -- --cov --cov-report=xml --cov-report=term --durations=20 "${deselect[@]}"
 
     - name: Upload coverage report
-      uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f  # v7
+      uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
       with:
         name: ${{ runner.os }}-pypy3.11
         verbose: true
@@ -145,23 +156,25 @@ jobs:
         runs-on: [ubuntu-latest, macos-latest, windows-latest]
 
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       with:
         fetch-depth: 0
+        persist-credentials: false
 
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       with:
         repository: scikit-build/scikit-build-sample-projects
         # Pinned so sample-projects changes can't break this repo's CI; bump deliberately.
         ref: 0ad0bd760a3f2df4d7e21a3c89d5e49353304c32
         path: scikit-build-sample-projects
+        persist-credentials: false
 
-    - uses: actions/setup-python@v6
+    - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
       with:
         python-version: "3.13"
 
     - name: Setup nox
-      uses: wntrblm/nox@2026.04.10
+      uses: wntrblm/nox@3284968a16fa5bd7fc0cc64a69a531404ccb4756 # 2026.07.11
 
     - name: Build sample projects
       run: nox -s sample_projects
@@ -172,14 +185,15 @@ jobs:
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v7
+    - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       with:
         fetch-depth: 0
+        persist-credentials: false
 
     - name: Build SDist and wheel
       run: pipx run build
 
-    - uses: actions/upload-artifact@v7
+    - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
       with:
         path: dist/*
 
@@ -188,12 +202,13 @@ jobs:
 
 
   pass:
+    name: Pass
     if: always()
     timeout-minutes: 1
     needs: [lint, tests, tests-pypy, sample-projects, dist]
     runs-on: ubuntu-slim
     steps:
      - name: Decide whether the needed jobs succeeded or failed
-       uses: re-actors/alls-green@release/v1
+       uses: re-actors/alls-green@05ac9388f0aebcb5727afa17fcccfecd6f8ec5fe # v1.2.2
        with:
          jobs: ${{ toJSON(needs) }}
