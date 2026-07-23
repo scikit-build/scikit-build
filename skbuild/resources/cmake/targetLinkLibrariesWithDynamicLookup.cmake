@@ -515,10 +515,6 @@ function(_check_dynamic_lookup
 
   if(NOT DEFINED ${cache_var})
 
-    if(CMAKE_CROSSCOMPILING AND NOT CMAKE_CROSSCOMPILING_EMULATOR)
-      set(skip_test TRUE)
-    endif()
-
     _test_weak_link_project(${target_type}
                             ${lib_type}
                             has_dynamic_lookup

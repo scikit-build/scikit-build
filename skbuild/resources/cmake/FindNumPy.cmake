@@ -8,7 +8,7 @@
 # ``NumPy_FOUND``
 #   True if NumPy was found.
 # ``NumPy_INCLUDE_DIRS``
-#   The include directories needed to use NumpPy.
+#   The include directories needed to use NumPy.
 # ``NumPy_VERSION``
 #   The version of NumPy found.
 # ``NumPy_CONV_TEMPLATE_EXECUTABLE``
@@ -22,9 +22,9 @@
 #
 # .. note::
 #
-#     To support NumPy < v0.15.0 where ``from-template`` and ``conv-template`` are not declared as entry points,
+#     To support NumPy < v1.15.0 where ``from-template`` and ``conv-template`` are not declared as entry points,
 #     the module emulates the behavior of standalone executables by setting the corresponding variables with the
-#     path the the python interpreter and the path to the associated script. For example:
+#     path to the python interpreter and the path to the associated script. For example:
 #     ::
 #
 #         set(NumPy_CONV_TEMPLATE_EXECUTABLE /path/to/python /path/to/site-packages/numpy/distutils/conv_template.py CACHE STRING "Command executing conv-template program" FORCE)
@@ -33,14 +33,6 @@
 #
 
 if(NOT NumPy_FOUND)
-  set(_find_extra_args)
-  if(NumPy_FIND_REQUIRED)
-    list(APPEND _find_extra_args REQUIRED)
-  endif()
-  if(NumPy_FIND_QUIET)
-    list(APPEND _find_extra_args QUIET)
-  endif()
-
   find_program(NumPy_CONV_TEMPLATE_EXECUTABLE NAMES conv-template)
   find_program(NumPy_FROM_TEMPLATE_EXECUTABLE NAMES from-template)
 
@@ -58,7 +50,7 @@ if(NOT NumPy_FOUND)
       ERROR_QUIET
       )
 
-    # XXX This is required to support NumPy < v0.15.0. See note in module documentation above.
+    # XXX This is required to support NumPy < v1.15.0. See note in module documentation above.
     if(NOT NumPy_CONV_TEMPLATE_EXECUTABLE)
       execute_process(COMMAND "${PYTHON_EXECUTABLE}"
         -c "from numpy.distutils import conv_template; print(conv_template.__file__)"
@@ -69,7 +61,7 @@ if(NOT NumPy_FOUND)
       set(NumPy_CONV_TEMPLATE_EXECUTABLE "${PYTHON_EXECUTABLE}" "${_numpy_conv_template_file}" CACHE STRING "Command executing conv-template program" FORCE)
     endif()
 
-    # XXX This is required to support NumPy < v0.15.0. See note in module documentation above.
+    # XXX This is required to support NumPy < v1.15.0. See note in module documentation above.
     if(NOT NumPy_FROM_TEMPLATE_EXECUTABLE)
       execute_process(COMMAND "${PYTHON_EXECUTABLE}"
         -c "from numpy.distutils import from_template; print(from_template.__file__)"
