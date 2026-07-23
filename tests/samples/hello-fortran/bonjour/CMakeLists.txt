@@ -1,9 +1,6 @@
 set(_module_name _bonjour)
 
-add_f2py_target(_bonjour
-  "${CMAKE_CURRENT_SOURCE_DIR}/_bonjour.pyf"
-  OUTPUT_VAR _pyf_target_output
-  )
+add_f2py_target(_bonjour.pyf OUTPUT_VAR _pyf_target_output)
 
 add_library(${_module_name} MODULE ${_module_name}.f90)
 target_include_directories(${_module_name} PRIVATE ${F2PY_INCLUDE_DIRS})

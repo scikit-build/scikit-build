@@ -105,7 +105,7 @@ if(F2PY_EXECUTABLE)
   execute_process(COMMAND "${F2PY_EXECUTABLE}" -v
                   OUTPUT_VARIABLE F2PY_VERSION_STRING
                   OUTPUT_STRIP_TRAILING_WHITESPACE)
-  if("${F2PY_VERSION_STRING}" MATCHES "^([0-9]+)(.([0-9+]))?(.([0-9+]))?$")
+  if("${F2PY_VERSION_STRING}" MATCHES "^([0-9]+)(\\.([0-9]+))?(\\.([0-9]+))?$")
     set(F2PY_VERSION_MAJOR ${CMAKE_MATCH_1})
     set(F2PY_VERSION_MINOR "${CMAKE_MATCH_3}")
     set(F2PY_VERSION_PATCH "${CMAKE_MATCH_5}")

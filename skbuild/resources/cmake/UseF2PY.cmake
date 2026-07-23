@@ -88,7 +88,7 @@ function(add_f2py_target _name)
     # if extension provided, _name is the source file
     if(_name_ext)
       set(_source_file ${_name})
-      string(REGEX REPLACE "\\.[^.]*$" "" _name ${_source})
+      string(REGEX REPLACE "\\.[^.]*$" "" _name ${_source_file})
 
     # otherwise, assume the source file is ${_name}.pyf
     else()
@@ -137,6 +137,6 @@ function(add_f2py_target _name)
                      DEPENDS ${_source_file}
                              ${_args_DEPENDS}
                      WORKING_DIRECTORY ${generated_file_dir}
-                     COMMENT ${source_comment})
+                     COMMENT "${comment}")
 
 endfunction()
