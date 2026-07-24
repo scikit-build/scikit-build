@@ -13,6 +13,11 @@ build:
   os: ubuntu-24.04
   tools:
     python: "3.13"
+  jobs:
+    post_checkout:
+      # RTD does a shallow clone, hiding the release tag from setuptools-scm and
+      # producing a bogus 0.1.devN version. Fetch full history + tags.
+      - git fetch --unshallow --tags || true
 
 # Build documentation in the docs/ directory with Sphinx
 sphinx:
