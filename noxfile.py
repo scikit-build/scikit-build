@@ -38,14 +38,16 @@ def tests(session: nox.Session) -> None:
     env["SKBUILD_CORE_REQ"] = SKBUILD_CORE_REQ
 
     numpy = [] if "pypy" in session.python or sys.platform == "cygwin" else ["numpy"]
-    install_spec = "-e.[test,cov,doctest]" if "--cov" in posargs else ".[test,doctest]"
     if "--cov" in posargs:
+        install_spec = ["-e.", "--group=cov", "--group=doctest"]
         posargs.append("--cov-config=pyproject.toml")
+    else:
+        install_spec = [".", "--group=test", "--group=doctest"]
 
     # Latest versions may break things, so grab them for testing!
     session.install("-U", "setuptools", "wheel", "virtualenv")
     session.install(SKBUILD_CORE_REQ)
-    session.install(install_spec, *numpy)
+    session.install(*install_spec, *numpy)
     session.run("pytest", *posargs, env=env)
 
 
@@ -71,7 +73,7 @@ def docs(session):
     args = parser.parse_args(session.posargs)
 
     session.install(SKBUILD_CORE_REQ)
-    session.install("-e.[docs]")
+    session.install("-e.", "--group=docs")
 
     session.chdir("docs")
     shutil.rmtree("_build", ignore_errors=True)
