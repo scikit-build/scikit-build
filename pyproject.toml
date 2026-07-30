@@ -80,9 +80,9 @@ build.hooks.vcs.version-file = "skbuild/_version.py"
 content-type = "text/markdown"
 
 [[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
-path = "README.md"
-start-after = "<!-- START-INTRO -->"
-end-before = "<!-- END-INTRO -->"
+path = "README.rst"
+start-after = ".. START-INTRO"
+end-before = ".. END-INTRO"
 
 [[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
 path = "CHANGES.md"
@@ -90,8 +90,8 @@ start-after = "<!-- START-BRIEF-CHANGELOG -->"
 end-before = "<!-- END-BRIEF-CHANGELOG -->"
 
 [[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
-path = "README.md"
-start-after = "<!-- INJECT-CHANGELOG -->"
+path = "README.rst"
+start-after = ".. INJECT-CHANGELOG"
 
 [[tool.hatch.metadata.hooks.fancy-pypi-readme.substitutions]]
 pattern = '\{pr\}`(\d+)`'
