@@ -179,7 +179,7 @@ class VEnv:
     @overload
     def module(self, *args: str | os.PathLike[str], capture: Literal[True], cwd: Path | None = ...) -> str: ...
 
-    def module(self, *args: str | os.PathLike[str], capture: bool = False, cwd: Path | None = None) -> None | str:
+    def module(self, *args: str | os.PathLike[str], capture: bool = False, cwd: Path | None = None) -> str | None:
         return self.run(str(self.executable), "-m", *args, capture=capture, cwd=cwd)  # type: ignore[no-any-return,call-overload]
 
     def install(self, *args: str | os.PathLike[str]) -> None:

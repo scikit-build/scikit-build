@@ -270,7 +270,7 @@ def execute_setup_py(project_dir, setup_args):
             setup_code = compile(fp.read(), "setup.py", mode="exec")
 
             if setup_code is not None:
-                exec(setup_code)
+                exec(setup_code)  # noqa: S102
 
         yield
 
@@ -287,7 +287,7 @@ def get_cmakecache_variables(cmakecache):
     results = {}
     cache_entry_pattern = re.compile(r"^([\w\d_-]+):([\w]+)=")
     with open(cmakecache) as content:
-        for full_line in content.readlines():
+        for full_line in content:
             line = full_line.strip()
             result = cache_entry_pattern.match(line)
             if result:
