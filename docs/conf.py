@@ -31,7 +31,7 @@ extensions = [
 
 issues_github_path = 'scikit-build/scikit-build'
 
-# README.md/CHANGES.md fragments are spliced into index.rst, so they start at H2.
+# README.md/CHANGES.md fragments are spliced into index.md, so they start at H2.
 suppress_warnings = ['myst.header']
 
 templates_path = ['_templates']
