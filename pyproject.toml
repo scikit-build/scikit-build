@@ -114,6 +114,7 @@ replacement = '[@\1](https://github.com/\1)'
 
 
 [tool.uv]
+cache-keys = [{ file = "pyproject.toml" }, { git = { commit = true, tags = true } }, { file = "skbuild/_version.py" }]
 exclude-newer = "7 days"
 
 
