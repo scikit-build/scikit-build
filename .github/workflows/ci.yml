@@ -25,7 +25,7 @@ jobs:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
         persist-credentials: false
-    - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+    - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
     - uses: pre-commit/action@2c7b3805fd2a0fd8c1884dcaebf91fc102a13ecd # v3.0.1
 
   tests:
@@ -49,7 +49,7 @@ jobs:
         fetch-depth: 0
         persist-credentials: false
 
-    - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+    - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
 
     - name: Set environment for Fortran compiler on MacOS
       if: runner.os == 'macOS'
@@ -58,7 +58,7 @@ jobs:
         echo "FC=gfortran" >> $GITHUB_ENV
 
     - name: Setup nox
-      uses: wntrblm/nox@a976d7ee04ab7a13634adc1016d4755a1348225f # 2026.08.17
+      uses: wntrblm/nox@afa3983bbac3143bab5c8406244327581f76a3d7 # 2026.10.20
       with:
         python-versions: "${{ matrix.python }}"
 
@@ -93,7 +93,7 @@ jobs:
         fetch-depth: 0
         persist-credentials: false
 
-    - uses: cygwin/cygwin-install-action@3f0a3f9f988f7e96b8c18098ae05eaec175f5b52 # v6.1
+    - uses: cygwin/cygwin-install-action@5a1b0cd107181fa6bb6bf3f90d500f4fb3132f18 # v7.0.0
       with:
         platform: x86_64
         packages: cmake ninja git make gcc-g++ gcc-fortran python312 python312-devel python312-pip
@@ -126,9 +126,9 @@ jobs:
     - uses: yezz123/setup-uv@ab6be5a42627f19dc36e57b548592a5e52cece4a # v4.1
 
     - name: Setup nox
-      uses: wntrblm/nox@a976d7ee04ab7a13634adc1016d4755a1348225f # 2026.08.17
+      uses: wntrblm/nox@afa3983bbac3143bab5c8406244327581f76a3d7 # 2026.10.20
 
-    - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+    - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
       with:
         python-version: pypy3.11-v7.3.22
 
@@ -169,12 +169,12 @@ jobs:
         path: scikit-build-sample-projects
         persist-credentials: false
 
-    - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+    - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
       with:
         python-version: "3.13"
 
     - name: Setup nox
-      uses: wntrblm/nox@a976d7ee04ab7a13634adc1016d4755a1348225f # 2026.08.17
+      uses: wntrblm/nox@afa3983bbac3143bab5c8406244327581f76a3d7 # 2026.10.20
 
     - name: Build sample projects
       run: nox -s sample_projects
@@ -193,7 +193,7 @@ jobs:
     - name: Build SDist and wheel
       run: pipx run build
 
-    - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+    - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
       with:
         path: dist/*
 
